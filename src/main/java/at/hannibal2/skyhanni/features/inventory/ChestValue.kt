@@ -339,7 +339,7 @@ object ChestValue {
     @HandleEvent
     private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(
-            149,
+            150,
             "inventory.chestValueConfig.enableInOwnInventory",
             "inventory.chestValueConfig.enabledIn",
         ) { element ->
