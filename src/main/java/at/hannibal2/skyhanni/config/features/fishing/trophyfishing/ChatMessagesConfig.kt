@@ -19,9 +19,13 @@ class ChatMessagesConfig {
     @Expose
     @ConfigOption(
         name = "Trophy Counter Design",
-        desc = "§fStyle 1: §72. §6§lGOLD §5Moldfin\n" +
+        desc =
+        "§fStyle 1: §c§lFIRST §6§lGOLD §5Moldfin\n" +
+            "§f           §72nd §6§lGOLD §5Moldfin §7x2\n" +
             "§fStyle 2: §bYou caught a §5Moldfin §6§lGOLD§b. §7(2)\n" +
-            "§fStyle 3: §bYou caught your 2nd §6§lGOLD §5Moldfin§b."
+            "§f           §bYou caught a §5Moldfin §7x2 §6§lGOLD§b. §7(4)\n" +
+            "§fStyle 3: §bYou caught your 2nd §6§lGOLD §5Moldfin§b.\n" +
+            "§f           §bYou caught your 4th §6§lGOLD §5Moldfin §7x2§b."
     )
     @ConfigEditorDropdown
     var design: DesignFormat = DesignFormat.STYLE_1
