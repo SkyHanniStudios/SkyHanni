@@ -52,36 +52,36 @@ object SkyHanniConfigSearchResetCommand {
         "autosave" -> autoSaveCommand()
         "raw" -> rawCommand(args)
         "version" -> versionCommand(args)
-        else -> "§c/shconfig <search;reset;set;toggle;save;autosave;raw;version>"
+        else -> "§cUsage: §e/shconfig <search|reset|set|toggle|save|autosave|raw|version>"
     }
 
     fun resetCommand(args: Array<String>): String {
-        if (args.size != 2) return "§c/shconfig reset <config element>"
+        if (args.size != 2) return "§cUsage: §e/shconfig reset <config element>"
         val term = args[1]
-        if (term.startsWith("playerSpecific")) return "§cCannot reset playerSpecific! Use §e/shconfig set §cinstead."
-        if (term.startsWith("profileSpecific")) return "§cCannot reset profileSpecific! Use §e/shconfig set §cinstead."
+        if (term.startsWith("playerSpecific")) return "§cCannot reset §bplayerSpecific§c! Use §e/shconfig set §cinstead."
+        if (term.startsWith("profileSpecific")) return "§cCannot reset §bprofileSpecific§c! Use §e/shconfig set §cinstead."
 
         try {
             val (field, defaultObject, _) = getComplexField(term, SkyHanniConfig())
             val (_, _, parent) = getComplexField(term, SkyHanniMod.feature)
             val affectedElements = findConfigElements({ it.startsWith("$term.") }, { true }).size
             if (affectedElements > 3 && !args.contentEquals(lastCommand)) {
-                return "§cThis will change $affectedElements config elements! Use the command again to confirm."
+                return "§cThis will change §f$affectedElements §cconfig elements! Use the command again to confirm."
             }
             field.set(parent, defaultObject)
-            return "§eSuccessfully reset config element '$term'"
+            return "§7Reset §b$term §7to its default value."
         } catch (e: Throwable) {
             ErrorManager.logErrorWithData(
                 e, "Could not reset config element '$term'",
                 "term" to term,
                 "args" to args.joinToString(" "),
             )
-            return "§cCould not reset config element '$term'"
+            return "§cCould not reset §b$term§c."
         }
     }
 
     private fun searchCommand(args: Array<String>): String {
-        if (args.size == 1) return "§c/shconfig search <config name> [class name]"
+        if (args.size == 1) return "§cUsage: §e/shconfig search <config name> [class name]"
 
         return try {
             startSearch(args)
@@ -90,26 +90,26 @@ object SkyHanniConfigSearchResetCommand {
                 e, "Error while trying to search config",
                 "args" to args.joinToString(" "),
             )
-            "§cError while trying to search config"
+            "§cError while trying to search the config."
         }
     }
 
     private fun setCommand(args: Array<String>): String {
-        if (args.size < 3) return "§c/shconfig set <config name> <json element>"
+        if (args.size < 3) return "§cUsage: §e/shconfig set <config name> <json element>"
         val term = args[1]
-        val rawJson = readValue(args) ?: return "§cClipboard has no string!"
+        val rawJson = readValue(args) ?: return "§cThe clipboard has no text!"
 
         val shimmy = findShimmy(term) { return it }
 
         val affectedElements = findConfigElements({ it.startsWith("$term.") }, { true }).size
         if (affectedElements > 3 && !args.contentEquals(lastCommand)) {
-            return "§cThis will change $affectedElements config elements! Use the command again to confirm."
+            return "§cThis will change §f$affectedElements §cconfig elements! Use the command again to confirm."
         }
 
         val element = ConfigManager.gson.fromJson(rawJson, JsonElement::class.java)
         return try {
             shimmy.setJson(element)
-            "§eChanged config element $term to ${shortValue(rawJson)}."
+            "§7Changed §b$term §7to §f${shortValue(rawJson)}§7."
         } catch (e: Exception) {
             ErrorManager.logErrorWithData(
                 e, "Could not change config element",
@@ -118,12 +118,12 @@ object SkyHanniConfigSearchResetCommand {
                 "rawJson" to rawJson,
                 "args" to args.joinToString(" "),
             )
-            "§cCould not change config element '$term' to '${shortValue(rawJson)}'"
+            "§cCould not change §b$term §cto §f${shortValue(rawJson)}§c."
         }
     }
 
     private fun toggleCommand(args: Array<String>): String {
-        if (args.size == 1 || args.size == 3) return "§c/shconfig toggle <config name> [value 1] [value 2]"
+        if (args.size == 1 || args.size == 3) return "§cUsage: §e/shconfig toggle <config name> [value 1] [value 2]"
 
         val path = args[1]
         val rawJson1 = if (args.size > 2) args[2] else "true"
@@ -143,7 +143,7 @@ object SkyHanniConfigSearchResetCommand {
                 "rawJson1" to rawJson1,
                 "rawJson2" to rawJson2,
             )
-            "§cError while trying to toggle config element"
+            "§cError while trying to toggle §b$path§c."
         }
     }
 
@@ -151,25 +151,25 @@ object SkyHanniConfigSearchResetCommand {
     private inline fun findShimmy(term: String, onError: (String) -> Nothing): Shimmy {
         val root: Any = when {
             term.startsWith("config") -> SkyHanniMod.feature
-            term.startsWith("playerSpecific") -> ProfileStorageData.playerSpecific ?: onError("§cplayerSpecific is null!")
-            term.startsWith("profileSpecific") -> ProfileStorageData.profileSpecific ?: onError("§cprofileSpecific is null!")
-            else -> onError("§cUnknown config location!")
+            term.startsWith("playerSpecific") -> ProfileStorageData.playerSpecific ?: onError("§bplayerSpecific §cis not loaded!")
+            term.startsWith("profileSpecific") -> ProfileStorageData.profileSpecific ?: onError("§bprofileSpecific §cis not loaded!")
+            else -> onError("§cUnknown config location §b$term§c!")
         }
-        return Shimmy(root, term.split(".").drop(1)) ?: onError("§cCould not change config element '$term', not found!")
+        return Shimmy(root, term.split(".").drop(1)) ?: onError("§cConfig element §b$term §cnot found!")
     }
 
     private fun saveCommand(): String {
         val failed = SkyHanniMod.configManager.saveAll("manual-command")
-        if (failed.isEmpty()) return "§eSaved all config files."
-        return "§cCould not save: ${failed.joinToString { it.fileName }}"
+        if (failed.isEmpty()) return "§7Saved all config files."
+        return "§cCould not save ${failed.joinToString("§c, ") { "§b${it.fileName}.json" }}§c."
     }
 
     private fun autoSaveCommand(): String {
         val configManager = SkyHanniMod.configManager
         configManager.autoSave = !configManager.autoSave
-        if (configManager.autoSave) return "§eAuto save is on again."
-        val writers = "§b/shconfig save§e, §braw §eand §bversion"
-        return "§eAuto save is off until the next restart. Only $writers §ecan still write the config files."
+        if (configManager.autoSave) return "§7Auto save is on again."
+        val writers = "§e/shconfig save§7, §eraw §7and §eversion"
+        return "§7Auto save is off until the next restart. Only $writers §7can still write the config files."
     }
 
     /**
@@ -186,48 +186,48 @@ object SkyHanniConfigSearchResetCommand {
         if (rawJson.length <= 80) rawJson else "${rawJson.take(50)}... (${rawJson.length} characters)"
 
     private fun rawCommand(args: Array<String>): String {
-        if (args.size < 2) return "§c/shconfig raw <file>.<path> [json element|clipboard]"
+        if (args.size < 2) return "§cUsage: §e/shconfig raw <file>.<path> [json element|clipboard]"
         val term = args[1]
         val fileName = term.substringBefore(".")
         val fileType = ConfigFileType.entries.find { it.fileName == fileName }
-            ?: return "§cUnknown config file '$fileName'! Known: ${ConfigFileType.entries.joinToString { it.fileName }}"
-        if (!fileType.file.exists()) return "§c$fileName.json does not exist yet."
+            ?: return "§cUnknown config file §b$fileName§c! Known: ${ConfigFileType.entries.joinToString("§c, ") { "§b${it.fileName}" }}"
+        if (!fileType.file.exists()) return "§b$fileName.json §cdoes not exist yet."
         val path = term.split(".").drop(1)
-        if (path.any { it.isEmpty() }) return "§cThe path '$term' has an empty part."
+        if (path.any { it.isEmpty() }) return "§cThe path §b$term §chas an empty part."
         val json = SkyHanniMod.configManager.readFileJson(fileType)
         return if (args.size == 2) readRaw(term, fileType, path, json) else writeRaw(args, term, fileType, path, json)
     }
 
     private fun readRaw(term: String, fileType: ConfigFileType, path: List<String>, json: JsonObject): String {
-        val element = json.at(path, init = false) ?: return "§cNothing at '$term' in ${fileType.fileName}.json."
+        val element = json.at(path, init = false) ?: return "§cNothing at §b$term §cin §b${fileType.fileName}.json§c."
         OSUtils.copyToClipboard(ConfigManager.gson.toJson(element))
-        return "§eCopied '$term' from ${fileType.fileName}.json to the clipboard."
+        return "§7Copied §b$term §7from §b${fileType.fileName}.json §7to the clipboard."
     }
 
     private fun writeRaw(args: Array<String>, term: String, fileType: ConfigFileType, path: List<String>, json: JsonObject): String {
+        val file = "${fileType.fileName}.json"
         if (SkyHanniMod.configManager.autoSave) {
-            return "§cTurn auto save off first with §b/shconfig autosave§c, otherwise the next save overwrites ${fileType.fileName}.json."
+            return "§cTurn auto save off first with §e/shconfig autosave§c, otherwise the next save overwrites §b$file§c."
         }
-        if (path.isEmpty()) return "§c/shconfig raw needs a path inside the file to write to."
-        val rawJson = readValue(args) ?: return "§cClipboard has no string!"
+        if (path.isEmpty()) return "§e/shconfig raw §cneeds a path inside the file to write to."
+        val rawJson = readValue(args) ?: return "§cThe clipboard has no text!"
         val element = ConfigManager.gson.fromJson(rawJson, JsonElement::class.java)
         val parent = json.at(path.dropLast(1), init = true) as? JsonObject
-            ?: return "§cCannot write into '$term', a part of the path is not an object."
+            ?: return "§cCannot write into §b$term§c, a part of the path is not an object."
         parent.add(path.last(), element)
         SkyHanniMod.configManager.writeFileJson(fileType, json)
-        val target = "'$term' in ${fileType.fileName}.json"
-        val hint = "Restart with auto save still off to load it. §b/shconfig save §ewould overwrite it."
-        return "§eWrote ${shortValue(rawJson)} to $target. $hint"
+        val hint = "Restart with auto save still off to load it. §e/shconfig save §7would overwrite it."
+        return "§7Wrote §f${shortValue(rawJson)} §7to §b$term §7in §b$file§7. $hint"
     }
 
     private fun versionCommand(args: Array<String>): String {
         if (args.size > 1) {
-            val version = args[1].formatIntOrNull() ?: return "§c/shconfig version [number]"
+            val version = args[1].formatIntOrNull() ?: return "§cUsage: §e/shconfig version [number]"
             return rawCommand(arrayOf("raw", "config.lastVersion", version.toString()))
         }
-        if (!ConfigFileType.FEATURES.file.exists()) return "§cconfig.json does not exist yet."
+        if (!ConfigFileType.FEATURES.file.exists()) return "§bconfig.json §cdoes not exist yet."
         val fileVersion = SkyHanniMod.configManager.readFileJson(ConfigFileType.FEATURES)["lastVersion"]
-        return "§econfig.json has lastVersion §b$fileVersion§e, the code is at §b${ConfigUpdaterMigrator.CONFIG_VERSION}§e."
+        return "§bconfig.json §7has lastVersion §f$fileVersion§7, the code is at §f${ConfigUpdaterMigrator.CONFIG_VERSION}§7."
     }
 
     private fun createFilter(condition: Boolean, searchTerm: () -> String): Pair<(String) -> Boolean, String> {
@@ -256,7 +256,7 @@ object SkyHanniConfigSearchResetCommand {
         }
         builder.append("```")
         OSUtils.copyToClipboard(builder.toString())
-        return "§eCopied search result ($size) to clipboard."
+        return "§7Copied §f$size §7search results to the clipboard."
     }
 
     private fun findConfigElements(
