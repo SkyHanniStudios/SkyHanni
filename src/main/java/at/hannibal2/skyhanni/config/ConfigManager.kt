@@ -29,6 +29,8 @@ import at.hannibal2.skyhanni.utils.collection.CollectionUtils.enumMapOf
 import at.hannibal2.skyhanni.utils.json.BaseGsonBuilder
 import at.hannibal2.skyhanni.utils.system.PlatformUtils
 import com.google.gson.Gson
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import io.github.notenoughupdates.moulconfig.annotations.ConfigLink
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 import io.github.notenoughupdates.moulconfig.gui.GuiOptionEditor
@@ -58,12 +60,12 @@ class ConfigManager {
 
     lateinit var processor: BlockingMoulConfigProcessor
     /**
-     * Set by /shresetconfig on the manager it replaces, blocks every write of that manager for good.
-     * Unlike [autoSave], it also blocks [saveAll].
+     * Set by /shresetconfig on the manager it replaces. Blocks [saveConfig] and, unlike [autoSave], also [saveAll]
+     * of that manager for good.
      */
     private var disableSaving = false
 
-    /** Session only, switched with `/shconfig autosave`. While off, only [saveAll] can write the config files. */
+    /** Session only, switched with `/shconfig autosave`. While off, only [saveAll] and [writeFileJson] can write the config files. */
     @Volatile
     var autoSave = true
         set(value) {
@@ -225,6 +227,15 @@ class ConfigManager {
 
     /** Tries to write every config file, also while [autoSave] is off. Returns the file types whose main file could not be written. */
     fun saveAll(reason: String): List<ConfigFileType> = ConfigFileType.entries.filterNot { writeConfig(it, reason) }
+
+    /** Reads the file of [fileType] from disk, independent of the loaded config. */
+    fun readFileJson(fileType: ConfigFileType): JsonObject =
+        JsonParser.parseString(StringFileHandler(fileType.file).load()).asJsonObject
+
+    /** Replaces the file of [fileType] with [json]. The loaded config does not change. */
+    fun writeFileJson(fileType: ConfigFileType, json: JsonObject) = synchronized(writeLocks.getValue(fileType)) {
+        StringFileHandler(fileType.file).save(gson.toJson(json))
+    }
 
     // StringFileHandler writes every save of a file through the same temp file, so saves of one file must not overlap
     private fun writeConfig(fileType: ConfigFileType, reason: String): Boolean = synchronized(writeLocks.getValue(fileType)) {
