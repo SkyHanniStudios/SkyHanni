@@ -85,8 +85,11 @@ open class BrigadierBuilder<B : ArgumentBuilder<FabricClientCommandSource, B>>(
      *
      * Usage of this method is discouraged, unless it's for compatibility with legacy code.
      */
-    fun legacyCallbackArgs(block: (Array<String>) -> Unit) {
-        argCallback("allArgs", BrigadierArguments.greedyString()) { allArgs ->
+    fun legacyCallbackArgs(block: (Array<String>) -> Unit) = legacyCallbackArgs(null, block)
+
+    /** Same as the overload without [suggestions], which are offered while the first argument is typed. */
+    fun legacyCallbackArgs(suggestions: Collection<String>?, block: (Array<String>) -> Unit) {
+        argCallback("allArgs", BrigadierArguments.greedyString(), suggestions?.toSuggestionProvider()) { allArgs ->
             block(allArgs.split(" ").toTypedArray())
         }
         simpleCallback { block(emptyArray()) }

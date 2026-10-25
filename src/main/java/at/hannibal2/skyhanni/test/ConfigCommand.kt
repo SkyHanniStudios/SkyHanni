@@ -42,6 +42,9 @@ object ConfigCommand {
 
     private var lastCommand = emptyArray<String>()
 
+    // offered as tab completion and listed in the usage line, keep in sync with runCommand
+    private val subcommands = listOf("search", "reset", "set", "toggle", "save", "autosave", "raw", "version", "rebuildgui", "migrate")
+
     private fun runCommand(args: Array<String>): String = if (args.isEmpty()) {
         "§cThis is a powerful config-edit command, only use it if you know what you are doing!"
     } else when (args[0].lowercase()) {
@@ -55,7 +58,7 @@ object ConfigCommand {
         "version" -> versionCommand(args)
         "rebuildgui" -> rebuildGuiCommand()
         "migrate" -> migrateCommand(args)
-        else -> "§cUsage: §e/shconfig <search|reset|set|toggle|save|autosave|raw|version|rebuildgui|migrate>"
+        else -> "§cUsage: §e/shconfig <${subcommands.joinToString("|")}>"
     }
 
     fun resetCommand(args: Array<String>): String {
@@ -498,7 +501,7 @@ object ConfigCommand {
         event.registerBrigadier("shconfig") {
             description = "Searches, changes and saves the config §c(warning, dangerous!)"
             category = CommandCategory.DEVELOPER_DEBUG
-            legacyCallbackArgs {
+            legacyCallbackArgs(subcommands) {
                 SkyHanniMod.launchCoroutine("shconfig command") {
                     ChatUtils.chat(runCommand(it))
                 }
