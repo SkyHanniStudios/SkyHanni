@@ -35,7 +35,7 @@ object CustomEquipmentWardrobe : AbstractCustomWardrobe(EquipmentWardrobeApi, "E
         containerWidth: Int,
     ): Renderable {
         val padding = (containerHeight * VERTICAL_PADDING).toInt()
-        val sectionHeights = itemSectionHeights(containerHeight - 2 * padding)
+        val sectionHeights = itemSectionHeights(containerHeight - 2 * padding - 2)
         val itemScale = min(containerWidth, sectionHeights.min()) / ITEM_SIZE * ITEM_FILL
 
         val sections = sectionHeights.mapIndexed { index, sectionHeight ->

@@ -152,6 +152,7 @@ abstract class AbstractWardrobeApi {
         var foundCurrentSlot = false
 
         for (slot in slots.filter { it.isInCurrentPage() }) {
+            if (itemsList[slot.inventorySlot] == null) continue
             val items = listOf(
                 getWardrobeItem(itemsList[slot.item1Slot]),
                 getWardrobeItem(itemsList[slot.item2Slot]),

@@ -63,5 +63,5 @@ object CustomLoadoutKeybinds {
     fun allowKeyboardClick() = isEnabled() && keybinds.filter { it > 0 }.any { it.isKeyHeld() }
 
     private fun isEnabled() =
-        SkyBlockUtils.inSkyBlock && config.slotKeybindsToggle && (CustomLoadout.inCustomMenu || LoadoutApi.inLoadouts())
+        SkyBlockUtils.inSkyBlock && config.slotKeybindsToggle && LoadoutApi.inLoadouts()
 }

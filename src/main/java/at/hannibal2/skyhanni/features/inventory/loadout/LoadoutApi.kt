@@ -16,6 +16,7 @@ import at.hannibal2.skyhanni.utils.ItemUtils.getLoreComponent
 import at.hannibal2.skyhanni.utils.NumberUtil.formatInt
 import at.hannibal2.skyhanni.utils.RegexUtils.find
 import at.hannibal2.skyhanni.utils.RegexUtils.findMatcher
+import at.hannibal2.skyhanni.utils.RegexUtils.groupOrNull
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.SafeItemStack
@@ -26,6 +27,7 @@ import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLeadingWhiteLessRes
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLessResets
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import com.google.gson.annotations.Expose
+import java.util.regex.Matcher
 import kotlin.time.Duration.Companion.milliseconds
 
 @SkyHanniModule
@@ -42,7 +44,7 @@ object LoadoutApi {
      */
     private val inventoryPattern by patternGroup.pattern(
         "inventory.name",
-        "\\((?<currentPage>\\d+)/\\d+\\) Loadouts",
+        "\\((?<currentPage>\\d+)/(?<maxPage>\\d+)\\) Loadouts",
     )
 
     /**
@@ -130,7 +132,8 @@ object LoadoutApi {
     var currentPage: Int? = null
     private var inLoadouts = false
 
-    val maxPage get() = slots.maxOfOrNull { it.page } ?: MAX_PAGES
+    var maxPage: Int = MAX_PAGES
+        private set
 
     internal fun emptyArmor(): List<SafeItemStack?> = listOf(null, null, null, null)
     internal fun emptyEquipment(): List<SafeItemStack?> = listOf(null, null, null, null)
@@ -159,6 +162,10 @@ object LoadoutApi {
     private fun getLoadoutItem(itemStack: SafeItemStack?) =
         if (itemStack == null || itemStack.isStainedGlassPane()) null else itemStack
 
+    private fun Matcher.readMaxPage() {
+        groupOrNull("maxPage")?.formatInt()?.let { maxPage = it.coerceIn(1, MAX_PAGES) }
+    }
+
     private fun getLoadoutSlotFromId(id: Int?) = slots.find { it.id == id }
 
     fun inLoadouts() = inLoadouts && (InventoryUtils.inInventory() || CustomLoadout.inCustomMenu)
@@ -169,7 +176,7 @@ object LoadoutApi {
     }
 
     internal fun matchesInventoryName(inventoryName: String): Boolean {
-        val matched = inventoryPattern.matches(inventoryName)
+        val matched = inventoryPattern.matchMatcher(inventoryName) { readMaxPage() } != null
         inLoadouts = matched
         return matched
     }
@@ -179,6 +186,7 @@ object LoadoutApi {
         inventoryPattern.matchMatcher(event.inventoryName) {
             inLoadouts = true
             currentPage = group("currentPage").formatInt()
+            readMaxPage()
         } ?: return
 
         val itemsList = event.inventoryItems

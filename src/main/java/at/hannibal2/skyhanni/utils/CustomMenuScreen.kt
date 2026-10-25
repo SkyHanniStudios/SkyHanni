@@ -20,7 +20,6 @@ class CustomMenuScreen(
 
     override fun onInitGui() {
         gui.switchingScreens = false
-        gui.onInventoryUpdate()
         gui.updateScreenSize(width to height)
     }
 

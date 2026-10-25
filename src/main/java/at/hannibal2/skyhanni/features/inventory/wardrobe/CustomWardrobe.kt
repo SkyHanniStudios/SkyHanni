@@ -36,7 +36,7 @@ object CustomWardrobe : AbstractCustomWardrobe(ArmorWardrobeApi, "Custom Wardrob
         for (equipment in Inventory.EQUIPMENT_SLOT_MAPPING.values) {
             val armorOrdinal = equipment.ordinal - 2
             if (armorOrdinal !in 0..3) continue
-            var stack = slot.armor.reversed()[armorOrdinal]?.copy()?.removeEnchants()
+            var stack = slot.armor[3 - armorOrdinal]?.copy()?.removeEnchants()
             if (stack == null) stack = SafeItemStack.EMPTY
             fakePlayer.equipment.set(equipment, stack)
         }

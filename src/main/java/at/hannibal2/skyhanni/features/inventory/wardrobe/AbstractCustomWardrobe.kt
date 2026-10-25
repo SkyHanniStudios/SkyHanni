@@ -1,8 +1,6 @@
 package at.hannibal2.skyhanni.features.inventory.wardrobe
 
-import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.config.core.config.Position
-import at.hannibal2.skyhanni.config.features.inventory.customloadout.CustomLoadoutConfig
 import at.hannibal2.skyhanni.config.features.inventory.customwardrobe.CustomWardrobeConfig
 import at.hannibal2.skyhanni.features.inventory.wardrobe.AbstractWardrobeApi.Companion.MAX_SLOT_PER_PAGE
 import at.hannibal2.skyhanni.features.misc.items.EstimatedItemValue
@@ -13,7 +11,6 @@ import at.hannibal2.skyhanni.utils.ColorUtils.addAlpha
 import at.hannibal2.skyhanni.utils.ColorUtils.darker
 import at.hannibal2.skyhanni.utils.ColorUtils.toColor
 import at.hannibal2.skyhanni.utils.ConditionalUtils.transformIf
-import at.hannibal2.skyhanni.utils.DelayedRun
 import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.KeyboardManager.isKeyHeld
 import at.hannibal2.skyhanni.utils.RenderUtils.HorizontalAlignment
@@ -34,7 +31,6 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.navigation.ScreenRectangle
 import net.minecraft.network.chat.Component
 import java.awt.Color
-import kotlin.math.min
 
 @Suppress("TooManyFunctions")
 abstract class AbstractCustomWardrobe(
@@ -42,12 +38,7 @@ abstract class AbstractCustomWardrobe(
     guiName: String,
 ) : AbstractCustomMenu(guiName) {
 
-    /** Holds the colors, spacing and other settings that are shared with the custom loadout gui. */
-    protected val loadoutConfig: CustomLoadoutConfig get() = SkyHanniMod.feature.inventory.customLoadout
     val config: CustomWardrobeConfig get() = loadoutConfig.wardrobe
-
-    /** Stored separately per wardrobe, so the favorite filter of one gui does not hide the slots of the other. */
-    abstract var onlyFavorites: Boolean
 
     protected abstract fun isFeatureEnabled(): Boolean
 
@@ -66,10 +57,6 @@ abstract class AbstractCustomWardrobe(
 
     private val position: Position = Position().ignoreScale()
     private val loadingPosition: Position = Position().ignoreScale()
-
-    private var activeScale: Double = 1.0
-    private var currentMaxSize: Pair<Int, Int>? = null
-    private var lastScreenSize: Pair<Int, Int>? = null
 
     private var renderableTopCorner: Pair<Int, Int> = 0 to 0
     private var renderableDimensions: Pair<Int, Int> = 0 to 0
@@ -91,14 +78,7 @@ abstract class AbstractCustomWardrobe(
     override fun handleKeybinds() = CustomWardrobeKeybinds.handlePress(this)
 
     override fun renderOverlay(screenWidth: Int, screenHeight: Int) {
-        val screenSize = screenWidth to screenHeight
-
-        if (screenSize != lastScreenSize) {
-            lastScreenSize = screenSize
-            if (updateScreenSize(screenSize)) {
-                return
-            }
-        }
+        if (checkScreenSize(screenWidth to screenHeight)) return
 
         val renderable = displayRenderable ?: return
 
@@ -133,7 +113,7 @@ abstract class AbstractCustomWardrobe(
         update()
     }
 
-    internal fun update() {
+    override fun update() {
         displayRenderable = createRenderables()
         lastScreenSize?.let { updateRenderablePosition(it) }
     }
@@ -145,22 +125,12 @@ abstract class AbstractCustomWardrobe(
             updateRenderablePosition(gui)
             return true
         }
-        val previousActiveScale = activeScale
-        val unscaledRenderableWidth = renderable.first / activeScale
-        val unscaledRenderableHeight = renderable.second / activeScale
-        val autoScaleWidth = 0.95 * gui.first / unscaledRenderableWidth
-        val autoScaleHeight = 0.95 * gui.second / unscaledRenderableHeight
-        val maxScale = min(autoScaleWidth, autoScaleHeight)
-
-        activeScale = (loadoutConfig.spacing.globalScale / 100.0).coerceAtMost(maxScale)
-
-        if (activeScale != previousActiveScale) {
-            update()
-        }
+        val scaleChanged = fitScale(gui, renderable)
+        if (scaleChanged) update()
 
         updateRenderablePosition(gui)
 
-        return activeScale != previousActiveScale
+        return scaleChanged
     }
 
     private fun updateRenderablePosition(gui: Pair<Int, Int>) {
@@ -263,18 +233,18 @@ abstract class AbstractCustomWardrobe(
 
         val maxPlayersPerRow = config.maxPlayersPerRow.coerceAtLeast(1)
         val maxPlayersRows = ((MAX_SLOT_PER_PAGE * api.maxPage - 1) / maxPlayersPerRow) + 1
-        val containerWidth = (loadoutConfig.spacing.slotWidth * activeScale).toInt()
-        val containerHeight = (loadoutConfig.spacing.slotHeight * activeScale).toInt()
+        val containerWidth = loadoutConfig.spacing.slotWidth.scaled()
+        val containerHeight = loadoutConfig.spacing.slotHeight.scaled()
         val playerWidth = (containerWidth * (loadoutConfig.spacing.playerScale / 100.0))
-        val horizontalSpacing = (loadoutConfig.spacing.horizontalSpacing * activeScale).toInt()
-        val verticalSpacing = (loadoutConfig.spacing.verticalSpacing * activeScale).toInt()
-        val backgroundPadding = (loadoutConfig.spacing.backgroundPadding * activeScale).toInt()
-        val buttonSlotsVerticalSpacing = (loadoutConfig.spacing.buttonSlotsVerticalSpacing * activeScale).toInt()
+        val horizontalSpacing = loadoutConfig.spacing.horizontalSpacing.scaled()
+        val verticalSpacing = loadoutConfig.spacing.verticalSpacing.scaled()
+        val backgroundPadding = loadoutConfig.spacing.backgroundPadding.scaled()
+        val buttonSlotsVerticalSpacing = loadoutConfig.spacing.buttonSlotsVerticalSpacing.scaled()
 
         var maxRenderableWidth = maxPlayersPerRow * containerWidth + (maxPlayersPerRow - 1) * horizontalSpacing
         var maxRenderableHeight = maxPlayersRows * containerHeight + (maxPlayersRows - 1) * verticalSpacing
 
-        val button = addButtons()
+        val button = createMenuButtons()
 
         if (button.width > maxRenderableWidth) maxRenderableWidth = button.width
         maxRenderableHeight += button.height + buttonSlotsVerticalSpacing
@@ -310,11 +280,9 @@ abstract class AbstractCustomWardrobe(
                     armorTooltipRenderable,
                     topLayerRenderable = addSlotHoverableButtons(slot),
                     hoveredColor = slot.getSlotColor(),
-                    borderOutlineThickness = loadoutConfig.spacing.outlineThickness,
-                    borderOutlineBlur = loadoutConfig.spacing.outlineBlur,
-                    onClick = { slot.clickSlot() },
                     topOutlineColor = topOutline,
                     bottomOutlineColor = bottomOutline,
+                    onClick = { slot.clickSlot() },
                 )
 
                 val playerRenderable = createSlotContentRenderable(slot, playerWidth, containerHeight, containerWidth)
@@ -357,8 +325,7 @@ abstract class AbstractCustomWardrobe(
                     ).let { Renderable.hoverable(hovered = Renderable.underlined(it), unHovered = it) },
                     onLeftClick = {
                         jumpToConfig()
-                        reset()
-                        api.currentPage = null
+                        onExit()
                     },
                 ),
                 blockBottomHover = false,
@@ -367,71 +334,13 @@ abstract class AbstractCustomWardrobe(
             padding = borderPadding,
         )
 
-    internal fun reset() {
+    override fun reset() {
         displayRenderable = null
     }
 
-    private fun addButtons(): Renderable {
-        val (horizontalSpacing, verticalSpacing) = with(loadoutConfig.spacing) {
-            buttonHorizontalSpacing * activeScale to buttonVerticalSpacing * activeScale
-        }
-
-        val backButton = createLabeledButton(
-            "§aBack",
-            onClick = {
-                InventoryUtils.clickSlot(48)
-                reset()
-                api.currentPage = null
-            },
-        )
-        val exitButton = createLabeledButton(
-            "§cClose",
-            onClick = {
-                InventoryUtils.clickSlot(49)
-                reset()
-                api.currentPage = null
-            },
-        )
-
-        val greenColor = Color(85, 255, 85, 200)
-        val redColor = Color(255, 85, 85, 200)
-
-        val onlyFavoriteButton = createLabeledButton(
-            "§eFavorite",
-            hoveredColor = if (onlyFavorites) greenColor else redColor,
-            onClick = {
-                onlyFavorites = !onlyFavorites
-                update()
-            },
-        )
-
-        val editButton = createLabeledButton(
-            "§bEdit",
-            onClick = {
-                DelayedRun.runNextTick {
-                    reset()
-                    enterEditMode()
-                }
-            },
-        )
-
-        val row = Renderable.horizontal(
-            backButton,
-            exitButton,
-            onlyFavoriteButton,
-            spacing = horizontalSpacing.toInt(),
-            horizontalAlign = HorizontalAlignment.CENTER,
-        )
-
-        val total = Renderable.vertical(
-            row,
-            editButton,
-            spacing = verticalSpacing.toInt(),
-            horizontalAlign = HorizontalAlignment.CENTER,
-            verticalAlign = VerticalAlignment.CENTER,
-        )
-
-        return total
+    override fun onExit() {
+        reset()
+        api.currentPage = null
     }
 
     private fun addSlotHoverableButtons(wardrobeSlot: WardrobeSlot): Renderable {
@@ -463,91 +372,6 @@ abstract class AbstractCustomWardrobe(
 
         return Renderable.vertical(list, 1, HorizontalAlignment.RIGHT)
     }
-
-    override fun createLabeledButton(
-        text: String,
-        hoveredColor: Color,
-        unhoveredColor: Color,
-        onClick: () -> Unit,
-    ): Renderable {
-        val buttonWidth = (loadoutConfig.spacing.buttonWidth * activeScale).toInt()
-        val buttonHeight = (loadoutConfig.spacing.buttonHeight * activeScale).toInt()
-        val textScale = activeScale
-
-        val renderable = Renderable.hoverable(
-            Renderable.drawInsideRoundedRectWithOutline(
-                Renderable.doubleLayered(
-                    Renderable.clickable(
-                        Renderable.placeholder(buttonWidth, buttonHeight),
-                        onClick,
-                    ),
-                    centerString(text, scale = textScale),
-                    false,
-                ),
-                hoveredColor,
-                padding = 0,
-                topOutlineColor = loadoutConfig.color.topBorderColor.toColor().rgb,
-                bottomOutlineColor = loadoutConfig.color.bottomBorderColor.toColor().rgb,
-                borderOutlineThickness = 2,
-                horizontalAlign = HorizontalAlignment.CENTER,
-            ),
-            Renderable.drawInsideRoundedRect(
-                Renderable.doubleLayered(
-                    Renderable.placeholder(buttonWidth, buttonHeight),
-                    centerString(text, scale = textScale),
-                ),
-                unhoveredColor.darker(0.57),
-                padding = 0,
-                horizontalAlign = HorizontalAlignment.CENTER,
-            ),
-        )
-
-        return renderable
-    }
-
-    private fun createHoverableRenderable(
-        hoveredRenderable: Renderable,
-        unhoveredRenderable: Renderable = Renderable.placeholder(hoveredRenderable.width, hoveredRenderable.height),
-        topLayerRenderable: Renderable = Renderable.placeholder(0, 0),
-        padding: Int = 0,
-        horizontalAlignment: HorizontalAlignment = HorizontalAlignment.CENTER,
-        verticalAlignment: VerticalAlignment = VerticalAlignment.CENTER,
-        hoveredColor: Color,
-        unHoveredColor: Color = hoveredColor,
-        borderOutlineThickness: Int,
-        borderOutlineBlur: Float = 0.5f,
-        onClick: () -> Unit,
-        onHover: () -> Unit = {},
-        topOutlineColor: Color,
-        bottomOutlineColor: Color,
-    ): Renderable =
-        Renderable.hoverable(
-            Renderable.drawInsideRoundedRectWithOutline(
-                Renderable.doubleLayered(
-                    Renderable.clickable(
-                        hoveredRenderable,
-                        onClick,
-                    ),
-                    topLayerRenderable,
-                ),
-                hoveredColor,
-                padding = padding,
-                topOutlineColor = topOutlineColor.rgb,
-                bottomOutlineColor = bottomOutlineColor.rgb,
-                borderOutlineThickness = borderOutlineThickness,
-                blur = borderOutlineBlur,
-                horizontalAlign = horizontalAlignment,
-                verticalAlign = verticalAlignment,
-            ),
-            Renderable.drawInsideRoundedRect(
-                unhoveredRenderable,
-                unHoveredColor,
-                padding = padding,
-                horizontalAlign = horizontalAlignment,
-                verticalAlign = verticalAlignment,
-            ),
-            onHover = { onHover() },
-        )
 
     private fun WardrobeSlot.getOutlineColor(): Pair<Color, Color> {
         val (top, bottom) = loadoutConfig.color.topBorderColor.toColor() to loadoutConfig.color.bottomBorderColor.toColor()
@@ -592,10 +416,4 @@ abstract class AbstractCustomWardrobe(
     }
 
     private fun isEnabled() = SkyBlockUtils.inSkyBlock && isFeatureEnabled()
-
-    private fun centerString(
-        text: String,
-        scale: Double = 1.0,
-        color: Color = Color.WHITE,
-    ) = Renderable.text(text, scale, color, horizontalAlign = HorizontalAlignment.CENTER)
 }

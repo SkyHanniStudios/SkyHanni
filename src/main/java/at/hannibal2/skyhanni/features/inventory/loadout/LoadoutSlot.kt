@@ -40,7 +40,7 @@ class LoadoutSlot(
 
     var icon: SafeItemStack? = null
 
-    fun getUncachedIcon(): SafeItemStack? = icon?.takeIf { !locked && isEmpty() }
+    fun getUncachedIcon(): SafeItemStack? = icon?.takeIf { !locked && !isEmpty() }
 
     fun getUncachedArmorPiece(): SafeItemStack? = getUncachedIcon()?.takeIf { !it.isDye() }
 

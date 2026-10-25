@@ -18,7 +18,6 @@ import at.hannibal2.skyhanni.utils.DelayedRun
 import at.hannibal2.skyhanni.utils.FakePlayer
 import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.ItemUtils.removeEnchants
-import at.hannibal2.skyhanni.utils.KeyboardManager
 import at.hannibal2.skyhanni.utils.RenderUtils.HorizontalAlignment
 import at.hannibal2.skyhanni.utils.RenderUtils.VerticalAlignment
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderable
@@ -32,7 +31,6 @@ import at.hannibal2.skyhanni.utils.renderables.container.VerticalContainerRender
 import at.hannibal2.skyhanni.utils.renderables.fakePlayer
 import at.hannibal2.skyhanni.utils.renderables.primitives.ItemStackRenderable.Companion.item
 import at.hannibal2.skyhanni.utils.renderables.primitives.placeholder
-import at.hannibal2.skyhanni.utils.renderables.primitives.text
 import com.google.gson.JsonPrimitive
 import net.minecraft.client.Minecraft
 import net.minecraft.core.component.DataComponents
@@ -40,7 +38,6 @@ import net.minecraft.network.chat.Component
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.player.Inventory
 import java.awt.Color
-import kotlin.math.min
 
 @SkyHanniModule
 @Suppress("TooManyFunctions")
@@ -55,9 +52,11 @@ object CustomLoadout : AbstractCustomMenu("Custom Loadout") {
 
     private val position: Position = Position().ignoreScale()
 
-    private var activeScale: Int = 100
-    private var currentMaxSize: Pair<Int, Int>? = null
-    private var lastScreenSize: Pair<Int, Int>? = null
+    override var onlyFavorites: Boolean
+        get() = config.onlyFavorites
+        set(value) {
+            config.onlyFavorites = value
+        }
 
     override fun shouldReplace(inventoryName: String): Boolean {
         if (!isEnabled()) return false
@@ -71,14 +70,7 @@ object CustomLoadout : AbstractCustomMenu("Custom Loadout") {
     override fun onScreenClosed() = reset()
 
     override fun renderOverlay(screenWidth: Int, screenHeight: Int) {
-        val screenSize = screenWidth to screenHeight
-
-        if (screenSize != lastScreenSize) {
-            lastScreenSize = screenSize
-            if (updateScreenSize(screenSize)) {
-                return
-            }
-        }
+        if (checkScreenSize(screenWidth to screenHeight)) return
 
         if (displayRenderable == null) update()
         val renderable = displayRenderable ?: return
@@ -100,38 +92,29 @@ object CustomLoadout : AbstractCustomMenu("Custom Loadout") {
         update()
     }
 
-    private fun update() {
+    override fun update() {
         displayRenderable = createRenderables()
     }
 
     override fun updateScreenSize(gui: Pair<Int, Int>): Boolean {
         val renderable = currentMaxSize ?: run {
-            activeScale = config.spacing.globalScale
+            activeScale = config.spacing.globalScale / 100.0
             update()
             return true
         }
-        val previousActiveScale = activeScale
-        val unscaledWidth = renderable.first / activeScale.toDouble()
-        val unscaledHeight = renderable.second / activeScale.toDouble()
-        val autoScaleWidth = 0.95 * gui.first / unscaledWidth
-        val autoScaleHeight = 0.95 * gui.second / unscaledHeight
-        val maxScale = min(autoScaleWidth, autoScaleHeight).toInt()
-
-        activeScale = config.spacing.globalScale.coerceAtMost(maxScale)
-        if (activeScale == previousActiveScale) return false
+        if (!fitScale(gui, renderable)) return false
         update()
         return true
     }
 
     private fun createRenderables(): Renderable {
-        val scale = activeScale / 100.0
-        val containerWidth = (config.spacing.slotWidth * scale).toInt()
-        val containerHeight = (config.spacing.slotHeight * scale).toInt()
+        val containerWidth = config.spacing.slotWidth.scaled()
+        val containerHeight = config.spacing.slotHeight.scaled()
         val playerScale = containerWidth * (config.spacing.playerScale / 100.0)
-        val horizontalSpacing = (config.spacing.horizontalSpacing * scale).toInt()
-        val verticalSpacing = (config.spacing.verticalSpacing * scale).toInt()
-        val backgroundPadding = (config.spacing.backgroundPadding * scale).toInt()
-        val buttonSlotsVerticalSpacing = (config.spacing.buttonSlotsVerticalSpacing * scale).toInt()
+        val horizontalSpacing = config.spacing.horizontalSpacing.scaled()
+        val verticalSpacing = config.spacing.verticalSpacing.scaled()
+        val backgroundPadding = config.spacing.backgroundPadding.scaled()
+        val buttonSlotsVerticalSpacing = config.spacing.buttonSlotsVerticalSpacing.scaled()
 
         val pageButtons = addPageButtons()
         val pageButtonsSpacing = horizontalSpacing + (containerWidth / 5)
@@ -141,7 +124,7 @@ object CustomLoadout : AbstractCustomMenu("Custom Loadout") {
             pageButtonsSpacing + pageButtons.width
         var maxHeight = maxRows * containerHeight + (maxRows - 1) * verticalSpacing
 
-        val bottomButtons = addBottomButtons()
+        val bottomButtons = createMenuButtons()
         if (bottomButtons.width > maxWidth) maxWidth = bottomButtons.width
         maxHeight += bottomButtons.height + buttonSlotsVerticalSpacing
         maxWidth += 2 * backgroundPadding
@@ -151,7 +134,7 @@ object CustomLoadout : AbstractCustomMenu("Custom Loadout") {
         val pageSlots = displayedSlots()
 
         val grid = if (pageSlots.isEmpty()) {
-            centerString("§cNo favorite loadouts on this page", scale = scale)
+            centerString("§cNo favorite loadouts on this page", scale = activeScale)
         } else {
             val rows = pageSlots.chunked(LOADOUTS_PER_ROW).map { row ->
                 val slotRenderables =
@@ -191,12 +174,10 @@ object CustomLoadout : AbstractCustomMenu("Custom Loadout") {
             Renderable.placeholder(containerWidth, containerHeight),
             topLayerRenderable = addSlotHoverableButtons(slot),
             hoveredColor = slot.getSlotColor(),
-            borderOutlineThickness = config.spacing.outlineThickness,
-            borderOutlineBlur = config.spacing.outlineBlur,
-            onClick = { clickSlot(slot) },
-            onRightClick = { rightClickSlot(slot) },
             topOutlineColor = topOutline,
             bottomOutlineColor = bottomOutline,
+            onClick = { clickSlot(slot) },
+            onRightClick = { rightClickSlot(slot) },
         )
         val player = createFakePlayerRenderable(slot, playerScale * 0.75, containerWidth, containerHeight)
         var layered =
@@ -237,10 +218,9 @@ object CustomLoadout : AbstractCustomMenu("Custom Loadout") {
     private fun addSlotName(slot: LoadoutSlot, containerWidth: Int): Renderable? {
         if (slot.locked) return null
         val name = slot.name ?: return null
-        val baseScale = activeScale / 100.0
         val rawTextWidth = Minecraft.getInstance().font.width(name).toDouble().coerceAtLeast(1.0)
         val maxTextWidth = containerWidth * 0.66
-        val scale = minOf(baseScale, maxTextWidth / rawTextWidth)
+        val scale = minOf(activeScale, maxTextWidth / rawTextWidth)
         return Renderable.vertical {
             add(Renderable.placeholder(0, 4))
             add(
@@ -273,7 +253,7 @@ object CustomLoadout : AbstractCustomMenu("Custom Loadout") {
     }
 
     private fun addSlotHoverableButtons(slot: LoadoutSlot): Renderable {
-        val textScale = 1.5 * (activeScale / 100.0)
+        val textScale = 1.5 * activeScale
         val canFavorite = !slot.isEmpty() && !slot.locked
         if (!canFavorite && !slot.favorite) return Renderable.placeholder(0, 0)
         val heart = Renderable.clickable(
@@ -311,7 +291,7 @@ object CustomLoadout : AbstractCustomMenu("Custom Loadout") {
         for (equipment in Inventory.EQUIPMENT_SLOT_MAPPING.values) {
             val armorOrdinal = equipment.ordinal - 2
             if (armorOrdinal !in 0..3) continue
-            val stack = armor.reversed()[armorOrdinal]?.copy()?.removeEnchants() ?: SafeItemStack.EMPTY
+            val stack = armor[3 - armorOrdinal]?.copy()?.removeEnchants() ?: SafeItemStack.EMPTY
             fakePlayer.equipment.set(equipment, stack)
         }
 
@@ -326,7 +306,7 @@ object CustomLoadout : AbstractCustomMenu("Custom Loadout") {
     }
 
     private fun LoadoutSlot.getDisplayedArmor(): List<SafeItemStack?> {
-        val armorPiece = getUncachedArmorPiece() ?: return getData()?.armor ?: LoadoutApi.emptyArmor()
+        val armorPiece = getUncachedArmorPiece() ?: return LoadoutApi.emptyArmor()
         val armorIndex = when (armorPiece.get(DataComponents.EQUIPPABLE)?.slot()) {
             EquipmentSlot.CHEST -> 1
             EquipmentSlot.LEGS -> 2
@@ -367,60 +347,16 @@ object CustomLoadout : AbstractCustomMenu("Custom Loadout") {
 
     private fun addPageButtons(): Renderable {
         val current = LoadoutApi.currentPage ?: 1
-        val verticalSpacing = (config.spacing.buttonVerticalSpacing * (activeScale / 100.0)).toInt()
+        val verticalSpacing = config.spacing.buttonVerticalSpacing.scaled()
         val upButton = createLabeledButton("§a▲", onClick = { changePage(-1) })
         val downButton = createLabeledButton("§a▼", onClick = { changePage(1) })
-        val pageIndicator = centerString("§7$current/${LoadoutApi.maxPage}", scale = activeScale / 100.0)
+        val pageIndicator = centerString("§7$current/${LoadoutApi.maxPage}", scale = activeScale)
         return Renderable.vertical(
             listOf(upButton, pageIndicator, downButton),
             verticalSpacing,
             horizontalAlign = HorizontalAlignment.CENTER,
             verticalAlign = VerticalAlignment.CENTER,
         )
-    }
-
-    private fun addBottomButtons(): Renderable {
-        val horizontalSpacing = (config.spacing.buttonHorizontalSpacing * (activeScale / 100.0)).toInt()
-        val verticalSpacing = (config.spacing.buttonVerticalSpacing * (activeScale / 100.0)).toInt()
-        val backButton = createLabeledButton("§aBack", onClick = { exit(48) })
-        val closeButton = createLabeledButton("§cClose", onClick = { exit(49) })
-
-        val greenColor = Color(85, 255, 85, 200)
-        val redColor = Color(255, 85, 85, 200)
-        val favoriteButton = createLabeledButton(
-            "§eFavorite",
-            hoveredColor = if (config.onlyFavorites) greenColor else redColor,
-            onClick = {
-                config.onlyFavorites = !config.onlyFavorites
-                update()
-            },
-        )
-        val editButton = createLabeledButton(
-            "§bEdit",
-            onClick = {
-                DelayedRun.runNextTick {
-                    reset()
-                    enterEditMode()
-                }
-            },
-        )
-
-        val row = Renderable.horizontal(
-            listOf(backButton, closeButton, favoriteButton),
-            horizontalSpacing,
-            horizontalAlign = HorizontalAlignment.CENTER,
-        )
-        return Renderable.vertical(
-            listOf(row, editButton),
-            verticalSpacing,
-            horizontalAlign = HorizontalAlignment.CENTER,
-            verticalAlign = VerticalAlignment.CENTER,
-        )
-    }
-
-    private fun exit(inventorySlot: Int) {
-        InventoryUtils.clickSlot(inventorySlot)
-        reset()
     }
 
     private fun changePage(delta: Int) {
@@ -446,10 +382,10 @@ object CustomLoadout : AbstractCustomMenu("Custom Loadout") {
 
     fun displayedSlots(): List<LoadoutSlot> {
         val pageSlots = LoadoutApi.slots.filter { it.isInCurrentPage() }
-        return if (config.onlyFavorites) pageSlots.filter { it.favorite || it.isCurrentSlot() } else pageSlots
+        return if (onlyFavorites) pageSlots.filter { it.favorite || it.isCurrentSlot() } else pageSlots
     }
 
-    internal fun reset() {
+    override fun reset() {
         displayRenderable = null
         waitingForInventoryUpdate = false
         currentMaxSize = null
@@ -467,7 +403,7 @@ object CustomLoadout : AbstractCustomMenu("Custom Loadout") {
     private fun LoadoutSlot.getSlotColor(): Color = with(config.color) {
         when {
             isCurrentSlot() -> equippedColor.toColor()
-            favorite && !config.onlyFavorites -> favoriteColor.toColor()
+            favorite && !onlyFavorites -> favoriteColor.toColor()
             else -> samePageColor.toColor().transformIf({ locked || isEmpty() }) { darker(0.2) }.addAlpha(100)
         }
     }
@@ -477,85 +413,6 @@ object CustomLoadout : AbstractCustomMenu("Custom Loadout") {
         config.color.backgroundColor.toColor(),
         padding = borderPadding,
     )
-
-    override fun createLabeledButton(
-        text: String,
-        hoveredColor: Color,
-        unhoveredColor: Color,
-        onClick: () -> Unit,
-    ): Renderable {
-        val buttonWidth = (config.spacing.buttonWidth * (activeScale / 100.0)).toInt()
-        val buttonHeight = (config.spacing.buttonHeight * (activeScale / 100.0)).toInt()
-        val textScale = activeScale / 100.0
-
-        return Renderable.hoverable(
-            Renderable.drawInsideRoundedRectWithOutline(
-                Renderable.doubleLayered(
-                    Renderable.clickable(Renderable.placeholder(buttonWidth, buttonHeight), onClick),
-                    centerString(text, scale = textScale),
-                    false,
-                ),
-                hoveredColor,
-                padding = 0,
-                topOutlineColor = config.color.topBorderColor.toColor().rgb,
-                bottomOutlineColor = config.color.bottomBorderColor.toColor().rgb,
-                borderOutlineThickness = 2,
-                horizontalAlign = HorizontalAlignment.CENTER,
-            ),
-            Renderable.drawInsideRoundedRect(
-                Renderable.doubleLayered(
-                    Renderable.placeholder(buttonWidth, buttonHeight),
-                    centerString(text, scale = textScale),
-                ),
-                unhoveredColor.darker(0.57),
-                padding = 0,
-                horizontalAlign = HorizontalAlignment.CENTER,
-            ),
-        )
-    }
-
-    private fun createHoverableRenderable(
-        hoveredRenderable: Renderable,
-        topLayerRenderable: Renderable = Renderable.placeholder(0, 0),
-        hoveredColor: Color,
-        borderOutlineThickness: Int,
-        borderOutlineBlur: Float = 0.5f,
-        onClick: () -> Unit,
-        onRightClick: () -> Unit = {},
-        topOutlineColor: Color,
-        bottomOutlineColor: Color,
-    ): Renderable = Renderable.hoverable(
-        Renderable.drawInsideRoundedRectWithOutline(
-            Renderable.doubleLayered(
-                Renderable.clickable(
-                    hoveredRenderable,
-                    mapOf(KeyboardManager.LEFT_MOUSE to onClick, KeyboardManager.RIGHT_MOUSE to onRightClick),
-                ),
-                topLayerRenderable,
-            ),
-            hoveredColor,
-            padding = 0,
-            topOutlineColor = topOutlineColor.rgb,
-            bottomOutlineColor = bottomOutlineColor.rgb,
-            borderOutlineThickness = borderOutlineThickness,
-            blur = borderOutlineBlur,
-            horizontalAlign = HorizontalAlignment.CENTER,
-            verticalAlign = VerticalAlignment.CENTER,
-        ),
-        Renderable.drawInsideRoundedRect(
-            Renderable.placeholder(hoveredRenderable.width, hoveredRenderable.height),
-            hoveredColor,
-            padding = 0,
-            horizontalAlign = HorizontalAlignment.CENTER,
-            verticalAlign = VerticalAlignment.CENTER,
-        ),
-    )
-
-    private fun centerString(
-        text: String,
-        scale: Double = 1.0,
-        color: Color = Color.WHITE,
-    ) = Renderable.text(text, scale, color, horizontalAlign = HorizontalAlignment.CENTER)
 
     private fun isEnabled() = SkyBlockUtils.inSkyBlock && config.enabled
 
