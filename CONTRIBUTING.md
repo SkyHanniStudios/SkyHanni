@@ -331,9 +331,11 @@ Everyone is still welcome to leave comments and feedback on any PR.
 - Please use Regex instead of String comparison when it is likely Hypixel will change the message in the future.
 - Do not use `fixedRateTimer` when possible and instead use `SecondPassedEvent` to safely execute the repeating event on
   the main thread.
-- When updating a config option variable, use the `ConfigUpdaterMigrator.ConfigFixEvent` with event.move() when moving a value, and
-  event.transform() when updating a
-  value. [For Example](https://github.com/SkyHanniStudios/SkyHanni/blob/beta/src/main/java/at/hannibal2/skyhanni/features/gui/customscoreboard/CustomScoreboard.kt#L276).
+- When a change renames, moves or replaces a config option, or changes the type of its value, migrate the stored value with
+  `ConfigUpdaterMigrator.ConfigFixEvent`. Use `event.move()` when moving a value, optionally converting it with a lambda, and
+  `event.transform()` when converting a value in place.
+  [For Example](https://github.com/SkyHanniStudios/SkyHanni/blob/beta/src/main/java/at/hannibal2/skyhanni/features/combat/BroodmotherFeatures.kt).
+  See [Testing a Config Migration](#testing-a-config-migration) for how to test it in game.
 - Use American English spelling conventions (e.g., "color" not "colour").
 - When creating/updating a command, move it out of the `Commands.kt` class, if it isn't already, into the class that it belongs to.
 - Avoid direct function imports. Always access functions or members through their respective namespaces or parent classes to improve
@@ -430,9 +432,28 @@ A copy of its files is stored on the computer under `.minecraft\skyhanni\neurepo
 
 ### Config
 
-SkyHanni stores the config (settings and user data) as a JSON object in a single text file.
+SkyHanni stores the config as JSON in several files under `.minecraft\config\skyhanni`. The settings shown in `/sh` live in
+`config.json`, the other files hold data such as sacks or pets.
 For rendering the /sh config (categories, toggles, search, etc.),
 SkyHanni uses **[MoulConfig](https://github.com/NotEnoughUpdates/MoulConfig)**, the same config system as NotEnoughUpdates.
+
+#### Testing a Config Migration
+
+Config migrations only run on `config.json`. You can test one in game without a restart and without editing the file by hand:
+
+1. `/shconfig autosave` switches auto save on or off. It is on after every game start, so the first use turns it off, and the chat
+   confirms the new state. While it is off, no save overwrites the value from the next step.
+2. `/shconfig raw config.<old path> <old value>` writes the old value into `config.json`. The value is JSON, so text goes in
+   quotes, and the first part of the path names the file. For a long value, copy it and write `clipboard` in its place.
+3. `/shconfig migrate <version> <path>` runs your migration and every newer one on a copy of `config.json`. Pass the number one
+   below the version of your migration, for example 148 for a migration with version 149. This path starts inside `config.json`, so
+   it has no `config.` part. Pass a path that contains both the old and the new location, for example their common parent. The chat
+   says whether the value at that path changed, and the clipboard holds it before and after the migration.
+4. `/shconfig autosave` turns auto save back on. Within a minute the next save writes the loaded config again and replaces what
+   step 2 wrote.
+
+Example for the migration in `BroodmotherFeatures.kt`: `/shconfig raw config.combat.broodmother.stages ["SLAIN"]`, then
+`/shconfig migrate 148 combat.broodmother`.
 
 ### Elite Farmers API
 
