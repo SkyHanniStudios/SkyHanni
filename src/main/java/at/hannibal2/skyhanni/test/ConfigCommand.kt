@@ -38,7 +38,7 @@ import java.util.UUID
 // TODO in the future change something here
 //  ^ Convert the command functions to suspend funs, use coroutines
 @SkyHanniModule
-object SkyHanniConfigSearchResetCommand {
+object ConfigCommand {
 
     private var lastCommand = emptyArray<String>()
 

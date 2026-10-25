@@ -6,7 +6,7 @@ import at.hannibal2.skyhanni.config.commands.CommandCategory
 import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
 import at.hannibal2.skyhanni.events.hypixel.HypixelJoinEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
-import at.hannibal2.skyhanni.test.SkyHanniConfigSearchResetCommand
+import at.hannibal2.skyhanni.test.ConfigCommand
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.SkyHanniLogger
 import at.hannibal2.skyhanni.utils.system.PlatformUtils
@@ -43,7 +43,7 @@ object UpdateKeybinds {
     }
 
     private fun resetKeybind(key: String) {
-        SkyHanniConfigSearchResetCommand.resetCommand(arrayOf("reset", "config.$key"))
+        ConfigCommand.resetCommand(arrayOf("reset", "config.$key"))
     }
 
     @HandleEvent
