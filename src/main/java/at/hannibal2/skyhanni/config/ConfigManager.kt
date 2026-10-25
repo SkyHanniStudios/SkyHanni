@@ -57,7 +57,21 @@ class ConfigManager {
     private val jsonHolder: Map<ConfigFileType, Any> = enumMapOf()
 
     lateinit var processor: BlockingMoulConfigProcessor
+    /**
+     * Set by /shresetconfig on the manager it replaces, blocks every write of that manager for good.
+     * Unlike [autoSave], it also blocks [saveAll].
+     */
     private var disableSaving = false
+
+    /** Session only, switched with `/shconfig autosave`. While off, only [saveAll] can write the config files. */
+    @Volatile
+    var autoSave = true
+        set(value) {
+            field = value
+            logger.log("Auto save turned ${if (value) "on" else "off"}")
+        }
+
+    private val writeLocks = ConfigFileType.entries.associateWith { Any() }
 
     private fun setConfigHolder(type: ConfigFileType, value: Any) {
         require(value.javaClass == type.clazz)
@@ -205,20 +219,31 @@ class ConfigManager {
     }
 
     fun saveConfig(fileType: ConfigFileType, reason: String) {
-        val json = jsonHolder[fileType] ?: error("Could not find json object for $fileType")
-        saveFile(fileType.file, fileType.fileName, json, reason)
-        saveFile(fileType.backupFile, fileType.fileName, json, reason)
+        if (!autoSave) return
+        writeConfig(fileType, reason)
     }
 
-    private fun saveFile(file: File, fileName: String, data: Any, reason: String) {
-        if (disableSaving) return
-        if (HypixelData.hypixelAlpha && !PlatformUtils.isDevEnvironment) return
+    /** Tries to write every config file, also while [autoSave] is off. Returns the file types whose main file could not be written. */
+    fun saveAll(reason: String): List<ConfigFileType> = ConfigFileType.entries.filterNot { writeConfig(it, reason) }
+
+    // StringFileHandler writes every save of a file through the same temp file, so saves of one file must not overlap
+    private fun writeConfig(fileType: ConfigFileType, reason: String): Boolean = synchronized(writeLocks.getValue(fileType)) {
+        val json = jsonHolder[fileType] ?: error("Could not find json object for $fileType")
+        val saved = saveFile(fileType.file, fileType.fileName, json, reason)
+        saveFile(fileType.backupFile, fileType.fileName, json, reason)
+        saved
+    }
+
+    private fun saveFile(file: File, fileName: String, data: Any, reason: String): Boolean {
+        if (disableSaving) return false
+        if (HypixelData.hypixelAlpha && !PlatformUtils.isDevEnvironment) return false
         logger.log("saveConfig: $reason")
         try {
             logger.log("Saving $fileName file")
             file.parentFile.mkdirs()
             StringFileHandler(file).save(gson.toJson(data))
             logger.log("Saved $fileName file successfully")
+            return true
         } catch (e: ClassCastException) {
             ErrorManager.logErrorWithData(
                 e,
@@ -231,6 +256,7 @@ class ConfigManager {
         } catch (e: IOException) {
             logger.logError("Could not save $fileName file to $file", e)
         }
+        return false
     }
 
     fun disableSaving() {

@@ -8,6 +8,7 @@ import at.hannibal2.skyhanni.config.commands.CommandCategory
 import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
 import at.hannibal2.skyhanni.config.core.config.Position
 import at.hannibal2.skyhanni.data.ProfileStorageData
+import at.hannibal2.skyhanni.events.DebugDataCollectEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.ChatUtils
@@ -42,7 +43,9 @@ object SkyHanniConfigSearchResetCommand {
         "search" -> searchCommand(args)
         "set" -> setCommand(args)
         "toggle" -> toggleCommand(args)
-        else -> "§c/shconfig <search;reset;set;toggle>"
+        "save" -> saveCommand()
+        "autosave" -> autoSaveCommand()
+        else -> "§c/shconfig <search;reset;set;toggle;save;autosave>"
     }
 
     fun resetCommand(args: Array<String>): String {
@@ -145,7 +148,6 @@ object SkyHanniConfigSearchResetCommand {
             val newValue = if (currentValue == "[$rawJson1]") rawJson2 else rawJson1
 
             setCommand(arrayOf("set", path, newValue))
-
         } catch (e: Exception) {
             ErrorManager.logErrorWithData(
                 e, "Error while trying to toggle config element",
@@ -155,6 +157,19 @@ object SkyHanniConfigSearchResetCommand {
             )
             "§cError while trying to toggle config element"
         }
+    }
+
+    private fun saveCommand(): String {
+        val failed = SkyHanniMod.configManager.saveAll("manual-command")
+        if (failed.isEmpty()) return "§eSaved all config files."
+        return "§cCould not save: ${failed.joinToString { it.fileName }}"
+    }
+
+    private fun autoSaveCommand(): String {
+        val configManager = SkyHanniMod.configManager
+        configManager.autoSave = !configManager.autoSave
+        if (configManager.autoSave) return "§eAuto save is on again."
+        return "§eAuto save is off until the next restart. Only §b/shconfig save §ecan still write the config files."
     }
 
     private fun createFilter(condition: Boolean, searchTerm: () -> String): Pair<(String) -> Boolean, String> {
@@ -345,26 +360,27 @@ object SkyHanniConfigSearchResetCommand {
         }
     }
 
-    private fun Any.getObjectName(): String = when {
-        this is Position -> {
+    private fun Any.getObjectName(): String = when (this) {
+        is Position -> {
             val x = getPrivateFieldValue("x")
             val y = getPrivateFieldValue("y")
             val scale = getPrivateFieldValue("scale")
             "($x, $y, $scale)"
         }
-        this is String && isEmpty() -> "<empty string>"
-        this is String -> "'$this'"
-        this is Property<*> -> getPrivateFieldValue("value").getObjectName()
-        this is Int -> addSeparators()
-        this is Long -> addSeparators()
-        this is Runnable -> "<Runnable>"
+
+        is String if isEmpty() -> "<empty string>"
+        is String -> "'$this'"
+        is Property<*> -> getPrivateFieldValue("value").getObjectName()
+        is Int -> addSeparators()
+        is Long -> addSeparators()
+        is Runnable -> "<Runnable>"
         else -> toString()
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shconfig") {
-            description = "Searches or resets config elements §c(warning, dangerous!)"
+            description = "Searches, changes and saves the config §c(warning, dangerous!)"
             category = CommandCategory.DEVELOPER_DEBUG
             legacyCallbackArgs {
                 SkyHanniMod.launchCoroutine("shconfig command") {
@@ -372,6 +388,16 @@ object SkyHanniConfigSearchResetCommand {
                 }
                 lastCommand = it
             }
+        }
+    }
+
+    @HandleEvent
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
+        event.title("Config Saving")
+        if (SkyHanniMod.configManager.autoSave) {
+            event.addIrrelevant("auto save is on")
+        } else {
+            event.addData("auto save is off, only /shconfig save can write the config files")
         }
     }
 }
