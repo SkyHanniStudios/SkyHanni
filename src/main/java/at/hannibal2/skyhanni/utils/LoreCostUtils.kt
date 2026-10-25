@@ -4,6 +4,7 @@ import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.ItemUtils.getLoreComponent
 import at.hannibal2.skyhanni.utils.NumberUtil.formatLong
+import at.hannibal2.skyhanni.utils.RegexUtils.anyMatches
 import at.hannibal2.skyhanni.utils.RegexUtils.groupOrNull
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
@@ -36,7 +37,8 @@ object LoreCostUtils {
      * in the tooltip. Matching without color would strip it and break that lookup.
      *
      * Menus that list their costs below the header write it in singular or plural, with a colon
-     * or without one.
+     * or without one. The prefixes are listed one by one on purpose: a generic word in front of
+     * "Cost" would also match ability lines such as "Mana Cost: 100".
      *
      * REGEX-TEST: §7Cost
      * REGEX-TEST: §5§o§7Cost
@@ -44,10 +46,11 @@ object LoreCostUtils {
      * REGEX-TEST: §7Cost:
      * REGEX-TEST: §7Cost: §b5,000 Bits
      * REGEX-TEST: §7Cost to unlock: §550 Tokens
+     * REGEX-TEST: §7Donation Cost:
      */
     private val costHeaderPattern by patternGroup.pattern(
         "cost.header",
-        "(?:§.)*Costs?(?: to unlock)?(?::(?: (?<cost>.+))?)?",
+        "(?:§.)*(?:Donation )?Costs?(?: to unlock)?(?::(?: (?<cost>.+))?)?",
     )
 
     /**
@@ -57,13 +60,16 @@ object LoreCostUtils {
      * REGEX-TEST: Click to trade!
      * REGEX-TEST: Click to unlock!
      * REGEX-TEST: Click to level up!
+     * REGEX-TEST: Click to buy!
+     * REGEX-TEST: Click to donate!
+     * REGEX-TEST: Click to bake!
      * REGEX-TEST: Left Click to unlock!
      * REGEX-TEST: You can't afford this upgrade!
      * REGEX-FAIL: Right Click to preview!
      */
     private val tradeLinePattern by patternGroup.pattern(
         "trade.click",
-        "(?:Left )?Click to (?:trade|unlock|level up)!|You can't afford this upgrade!",
+        "(?:Left )?Click to (?:trade|unlock|level up|buy|donate|bake)!|You can't afford this upgrade!",
     )
 
     /**
@@ -73,6 +79,15 @@ object LoreCostUtils {
     private val amountFirstPattern by patternGroup.pattern(
         "cost.amount-first",
         "(?<amount>[\\d,]+) (?<name>[\\w' ]+)",
+    )
+
+    // Great Spook shop writes "???" for the cost of items
+    /**
+     * REGEX-TEST: ???
+     */
+    private val invalidCurrencyNamesPattern by patternGroup.list(
+        "cost.invalid-currency-names",
+        "\\?\\?\\?"
     )
 
     fun SafeItemStack.readLoreCosts(): List<LoreCostEntry> = getLoreComponent()
@@ -91,8 +106,8 @@ object LoreCostUtils {
     }
 
     private fun readCostLine(rawLine: String, itemName: String): LoreCostEntry {
-        // some lines write the amount as "Gold medal§8 x2" instead of "Gold medal §8x2"
-        val line = rawLine.replace("§8 ", " §8")
+        // some menus indent their cost lines, and some write "Gold medal§8 x2" instead of "Gold medal §8x2"
+        val line = rawLine.trim().replace("§8 ", " §8")
 
         readCurrencyOrNull(line, rawLine)?.let { return it }
         readAmountFirstOrNull(line, rawLine)?.let { return it }
@@ -100,6 +115,10 @@ object LoreCostUtils {
         val (name, amount) = ItemUtils.readItemAmount(line) ?: run {
             logCostLineError("Could not read the amount of a cost line", rawLine, itemName)
             return LoreCostEntry(NeuInternalName.MISSING_ITEM, 1, rawLine)
+        }
+
+        if (invalidCurrencyNamesPattern.anyMatches(name)) {
+            return LoreCostEntry(NeuInternalName.MISSING_ITEM, amount.toLong(), rawLine)
         }
 
         // currencies without a repo item only arrive here, their amount is written behind the name or not at all

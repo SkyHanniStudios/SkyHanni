@@ -173,7 +173,7 @@ Use `/sh` or `/skyhanni` to open the SkyHanni config in game.
       around items that meet that requirement.
     + Works in:
         + In NPC sell inventories, ender chests and backpacks, salvaging in the dungeon hub, player trade
-        + bazaar, auction house, accessory bag, sack of sacks, fishing bag, potion bag,
+        + bazaar, auction house, accessory bag, sack of sacks, potion bag,
         + chests on the private island, attribute fusion, equipment GUI, Rift Motes Grubber
     + Option to allow/block clicks
 + Option to change the gray-out opacity for 'Not Clickable Items'.
@@ -325,6 +325,19 @@ Use `/sh` or `/skyhanni` to open the SkyHanni config in game.
 + Added NPC Trade Helper. - hannibal2 (https://github.com/hannibal002/SkyHanni/pull/6365)
     + Highlights items in NPC trade menus that you can buy right now.
     + Also shows the price, the number you own and the total cost in the item lore.
++ Added an option to highlight how full each lobby is in the SkyBlock Hub Selector. - RemainingDelta (https://github.com/hannibal002/SkyHanni/pull/6207)
++ Added a command to prevent items from being sold. - hannibal2 (https://github.com/hannibal002/SkyHanni/pull/6468)
+    + Type `/shpreventsell` while holding an item in hand.
+    + Blocks clicks in the Auction House and in NPC or other player trades.
+    + Beware, this does not prevent moving the item in chests, in the Bazaar, or dropping it.
+    + Only works with items that have a UUID (most Bazaar products are excluded).
++ Added Compactor GFS Keybind. - hannibal2 (https://github.com/hannibal002/SkyHanni/pull/6502)
+    + Hold the keybind to mark every item in your inventory that can be crafted into another item.
+    + Click a marked item to grab the number of items missing for that craft from your sacks.
+    + Items that cannot be used show the reason in their tooltip.
++ Added Stonks Auction features. - RemainingDelta (https://github.com/SkyHanniStudios/SkyHanni/pull/6304)
+    + A One Minute Warning and a New Round Alert.
+    + A Countdown showing the time left in the round and your bid status.
 
 ### Bazaar
 
@@ -974,6 +987,12 @@ Use `/sh` or `/skyhanni` to open the SkyHanni config in game.
   + Modes are Default, Muted, Custom, and Plumber.
 + Added option to show crops instead of tools in Farming Toolkit menu. - Growling_Grizzly (https://github.com/hannibal002/SkyHanni/pull/5657)
 
+### Greenhouse
+
++ Added a link to the Sky Mutations website. - hannibal2 (https://github.com/hannibal002/SkyHanni/pull/6467)
+    + Shows up in the Carpenter inventory in the Greenhouse and in the Crop Analyzer in the Secret Lab.
+    + Clicking the item opens the website, which offers useful information about mutations.
+
 </details>
 <details open><summary>
 
@@ -1179,6 +1198,9 @@ Use `/sh` or `/skyhanni` to open the SkyHanni config in game.
 + Added Mute when all Mineshaft Corpses are found. - Piggered (https://github.com/hannibal002/SkyHanni/pull/5929)
     + Mutes the sounds made from the Organ Donor accessory once all Frozen Corpses in the Mineshaft have been found.
     + Requires Corpse Locator to be enabled.
++ Added Fallen Star Cult Timer. - hannibal2 (https://github.com/hannibal002/SkyHanni/pull/6521)
+    + Shows the time until the next Cult of the Fallen Star meeting in Dwarven Mines.
+    + By default only visible inside the cult room or while wearing the Fallen Star Helmet. Can be changed to always show.
 
 </details>
 <details open><summary>
@@ -1248,6 +1270,13 @@ Use `/sh` or `/skyhanni` to open the SkyHanni config in game.
 + Added Attribute Shard Tracker. - nopo (https://github.com/hannibal002/SkyHanni/pull/4813)
 + Shard Fusion Display. - nopo (https://github.com/hannibal002/SkyHanni/pull/4819)
 + Added tracker for hunting to count shards collected. - Pugzy (https://github.com/hannibal002/SkyHanni/pull/4764)
++ Added an option to hide Critter Capsules on the Critter Safari. - hannibal2 (https://github.com/hannibal002/SkyHanni/pull/6542)
+    + Capsules in flight can be hidden always or only while close to the player.
+    + Capsules lying on the ground can be hidden with a separate option.
++ Added Critter Safari Shard Checklist. - pan_truskawka045 (https://github.com/hannibal002/SkyHanni/pull/6526)
+    + Tracks which shards you caught during the current run and shows the ones still missing.
+    + Can show every biome, the current biome first, or only the current biome with a one-line summary for the rest.
+    + Can hide already caught shards and the shard icons.
 
 </details>
 <details open><summary>
@@ -1290,6 +1319,9 @@ Use `/sh` or `/skyhanni` to open the SkyHanni config in game.
     + Shows lines between you, your pig and it's orb.
 + Added Shiny orb tracker. - Daveed (https://github.com/hannibal002/SkyHanni/pull/4355)
 + Added a fix for a Hypixel bug where Diana spades will sometimes play low-pitched Minecraft music. - Luna (https://github.com/hannibal002/SkyHanni/pull/5527)
++ Added a tracker for Beach Balls used and Fishy Treats earned during the Year of the Seal. - RemainingDelta (https://github.com/hannibal002/SkyHanni/pull/6459)
++ Added Season-Locked Messages. - hannibal2 (https://github.com/hannibal002/SkyHanni/pull/6520)
+    + When trying to enter Jerry's Workshop outside of Late Winter, the remaining time and the date until it opens are now shown in chat.
 
 ### Hoppity and Chocolate Factory
 
