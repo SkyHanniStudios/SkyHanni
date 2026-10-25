@@ -4,9 +4,6 @@ import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.SkyHanniMod.launchCoroutine
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.api.event.SkyHanniEvents
-import at.hannibal2.skyhanni.config.ConfigFileType
-import at.hannibal2.skyhanni.config.ConfigGuiManager
-import at.hannibal2.skyhanni.config.ConfigManager
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.config.commands.CommandCategory
 import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
@@ -52,7 +49,6 @@ import at.hannibal2.skyhanni.utils.NeuInternalName
 import at.hannibal2.skyhanni.utils.NeuItems.getItemStack
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 import at.hannibal2.skyhanni.utils.OSUtils
-import at.hannibal2.skyhanni.utils.ReflectionUtils.makeAccessible
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderables
 import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
@@ -213,27 +209,6 @@ object SkyHanniDebugsAndTests {
             if (value == null) println("config null at $newName")
             else findNull(value, newName)
         }
-    }
-
-    private fun resetConfig() {
-        // saving old config state
-        SkyHanniMod.configManager.saveConfig(ConfigFileType.FEATURES, "reload config manager")
-        SkyHanniMod.configManager.saveConfig(ConfigFileType.SACKS, "reload config manager")
-        SkyHanniMod.configManager.saveConfig(ConfigFileType.PETS, "reload config manager")
-        Thread {
-            Thread.sleep(500)
-            SkyHanniMod.configManager.disableSaving()
-
-            // initializing a new config manager, calling firstLoad, and setting it as the config manager in use.
-            val configManager = ConfigManager()
-            configManager.firstLoad()
-            SkyHanniMod::class.java.enclosingClass.getDeclaredField("configManager").makeAccessible()
-                .set(SkyHanniMod, configManager)
-
-            // resetting the MoulConfigProcessor in use
-            ConfigGuiManager.editor = null
-            ChatUtils.chat("Reset the config manager!")
-        }.start()
     }
 
     private fun testGardenVisitors() {
@@ -537,21 +512,6 @@ object SkyHanniDebugsAndTests {
     @Suppress("LongMethod")
     @HandleEvent
     private fun onCommandRegistration(event: CommandRegistrationEvent) {
-        event.registerBrigadier("shresetconfig") {
-            description = "Reloads the config manager and rendering processors of MoulConfig. " +
-                "This §cWILL RESET §7your config, but also update the config files " +
-                "(names, description, orderings and stuff)."
-            category = CommandCategory.DEVELOPER_TEST
-            simpleCallback {
-                ChatUtils.clickableChat(
-                    "§cTHIS WILL RESET YOUR SkyHanni CONFIG! Click here to proceed.",
-                    onClick = { resetConfig() },
-                    "§eClick to confirm.",
-                    prefix = false,
-                    oneTimeClick = true,
-                )
-            }
-        }
         event.registerBrigadier("shversion") {
             description = "Prints the SkyHanni version in the chat"
             category = CommandCategory.DEVELOPER_DEBUG

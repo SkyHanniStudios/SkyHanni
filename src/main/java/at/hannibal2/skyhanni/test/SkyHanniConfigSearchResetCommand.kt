@@ -15,6 +15,7 @@ import at.hannibal2.skyhanni.events.DebugDataCollectEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.ChatUtils
+import at.hannibal2.skyhanni.utils.DelayedRun
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 import at.hannibal2.skyhanni.utils.NumberUtil.formatIntOrNull
 import at.hannibal2.skyhanni.utils.OSUtils
@@ -52,7 +53,8 @@ object SkyHanniConfigSearchResetCommand {
         "autosave" -> autoSaveCommand()
         "raw" -> rawCommand(args)
         "version" -> versionCommand(args)
-        else -> "§cUsage: §e/shconfig <search|reset|set|toggle|save|autosave|raw|version>"
+        "rebuildgui" -> rebuildGuiCommand()
+        else -> "§cUsage: §e/shconfig <search|reset|set|toggle|save|autosave|raw|version|rebuildgui>"
     }
 
     fun resetCommand(args: Array<String>): String {
@@ -170,6 +172,12 @@ object SkyHanniConfigSearchResetCommand {
         if (configManager.autoSave) return "§7Auto save is on again."
         val writers = "§e/shconfig save§7, §eraw §7and §eversion"
         return "§7Auto save is off until the next restart. Only $writers §7can still write the config files."
+    }
+
+    private fun rebuildGuiCommand(): String {
+        // the main thread reads the editor and processor when it opens the config GUI, so they are replaced there
+        DelayedRun.runOrNextTick { SkyHanniMod.configManager.recreateConfig() }
+        return "§7Rebuilding the config GUI. Open §e/sh §7to see the changes."
     }
 
     /**

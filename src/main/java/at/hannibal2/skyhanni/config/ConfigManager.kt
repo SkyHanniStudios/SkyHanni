@@ -59,11 +59,6 @@ class ConfigManager {
     private val jsonHolder: Map<ConfigFileType, Any> = enumMapOf()
 
     lateinit var processor: BlockingMoulConfigProcessor
-    /**
-     * Set by /shresetconfig on the manager it replaces. Blocks [saveConfig] and, unlike [autoSave], also [saveAll]
-     * of that manager for good.
-     */
-    private var disableSaving = false
 
     /** Session only, switched with `/shconfig autosave`. While off, only [saveAll] and [writeFileJson] can write the config files. */
     @Volatile
@@ -246,7 +241,6 @@ class ConfigManager {
     }
 
     private fun saveFile(file: File, fileName: String, data: Any, reason: String): Boolean {
-        if (disableSaving) return false
         if (HypixelData.hypixelAlpha && !PlatformUtils.isDevEnvironment) return false
         logger.log("saveConfig: $reason")
         try {
@@ -268,10 +262,6 @@ class ConfigManager {
             logger.logError("Could not save $fileName file to $file", e)
         }
         return false
-    }
-
-    fun disableSaving() {
-        disableSaving = true
     }
 
     /**
