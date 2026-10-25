@@ -54,7 +54,8 @@ object ConfigCommand {
         "raw" -> rawCommand(args)
         "version" -> versionCommand(args)
         "rebuildgui" -> rebuildGuiCommand()
-        else -> "§cUsage: §e/shconfig <search|reset|set|toggle|save|autosave|raw|version|rebuildgui>"
+        "migrate" -> migrateCommand(args)
+        else -> "§cUsage: §e/shconfig <search|reset|set|toggle|save|autosave|raw|version|rebuildgui|migrate>"
     }
 
     fun resetCommand(args: Array<String>): String {
@@ -236,6 +237,55 @@ object ConfigCommand {
         if (!ConfigFileType.FEATURES.file.exists()) return "§bconfig.json §cdoes not exist yet."
         val fileVersion = SkyHanniMod.configManager.readFileJson(ConfigFileType.FEATURES)["lastVersion"]
         return "§bconfig.json §7has lastVersion §f$fileVersion§7, the code is at §f${ConfigUpdaterMigrator.CONFIG_VERSION}§7."
+    }
+
+    /**
+     * Runs the config migrations on a copy of config.json read from disk and puts the part before and after into the
+     * clipboard. Neither the loaded config nor the file changes.
+     */
+    private fun migrateCommand(args: Array<String>): String {
+        val fromVersion = args.getOrNull(1)?.formatIntOrNull()?.takeIf { args.size <= 3 }
+            ?: return "§cUsage: §e/shconfig migrate <from version> [path inside config.json]"
+        val codeVersion = ConfigUpdaterMigrator.CONFIG_VERSION
+        if (fromVersion !in 0 until codeVersion) return "§cThe version has to be between §f0 §cand §f${codeVersion - 1}§c."
+        if (!ConfigFileType.FEATURES.file.exists()) return "§bconfig.json §cdoes not exist yet."
+        val path = args.getOrNull(2)?.split(".").orEmpty()
+        if (path.any { it.isEmpty() }) return "§cThe path §b${args[2]} §chas an empty part."
+
+        val before = SkyHanniMod.configManager.readFileJson(ConfigFileType.FEATURES)
+        before.addProperty("lastVersion", fromVersion)
+        val after = ConfigUpdaterMigrator.fixConfig(before.deepCopy())
+        val beforePart = before.at(path, init = false)
+        val afterPart = after.at(path, init = false)
+        OSUtils.copyToClipboard(migrationReport(fromVersion, codeVersion, path, beforePart, afterPart))
+
+        // fixConfig always raises lastVersion, which would make every whole-file run count as changed
+        val changed = if (path.isEmpty()) {
+            before.deepCopy().apply { remove("lastVersion") } != after.deepCopy().apply { remove("lastVersion") }
+        } else {
+            beforePart != afterPart
+        }
+        val target = if (path.isEmpty()) "§bconfig.json" else "§b${path.joinToString(".")}"
+        val result = when {
+            beforePart == null && afterPart == null -> "§7is not present before or after the migration"
+            changed -> "§7changed"
+            else -> "§7did not change"
+        }
+        return "§7Migrated a copy of §bconfig.json §7from §f$fromVersion §7to §f$codeVersion§7: $target $result. " +
+            "Before and after are in the clipboard, nothing was saved."
+    }
+
+    private fun migrationReport(from: Int, to: Int, path: List<String>, before: JsonElement?, after: JsonElement?): String {
+        val location = if (path.isEmpty()) "the whole file" else path.joinToString(".")
+        return buildString {
+            appendLine("Migration of a copy of config.json from lastVersion $from to $to, showing $location")
+            appendLine()
+            appendLine("Before:")
+            appendLine(before?.let { ConfigManager.gson.toJson(it) } ?: "<not present>")
+            appendLine()
+            appendLine("After:")
+            append(after?.let { ConfigManager.gson.toJson(it) } ?: "<not present>")
+        }
     }
 
     private fun createFilter(condition: Boolean, searchTerm: () -> String): Pair<(String) -> Boolean, String> {
