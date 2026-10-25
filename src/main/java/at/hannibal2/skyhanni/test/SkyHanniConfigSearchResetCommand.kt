@@ -96,19 +96,7 @@ object SkyHanniConfigSearchResetCommand {
             rawJson = readFromClipboard
         }
 
-        val root: Any = when {
-            term.startsWith("config") -> SkyHanniMod.feature
-
-            term.startsWith("playerSpecific") -> {
-                ProfileStorageData.playerSpecific ?: return "§cplayerSpecific is null!"
-            }
-
-            term.startsWith("profileSpecific") -> {
-                ProfileStorageData.profileSpecific ?: return "§cprofileSpecific is null!"
-            }
-
-            else -> return "§cUnknown config location!"
-        }
+        val shimmy = findShimmy(term) { return it }
 
         val affectedElements = findConfigElements({ it.startsWith("$term.") }, { true }).size
         if (affectedElements > 3 && !args.contentEquals(lastCommand)) {
@@ -116,8 +104,6 @@ object SkyHanniConfigSearchResetCommand {
         }
 
         val element = ConfigManager.gson.fromJson(rawJson, JsonElement::class.java)
-        val list = term.split(".").drop(1)
-        val shimmy = Shimmy(root, list) ?: return "§cCould not change config element '$term', not found!"
         return try {
             shimmy.setJson(element)
             "§eChanged config element $term to $rawJson."
@@ -141,11 +127,10 @@ object SkyHanniConfigSearchResetCommand {
         val rawJson2 = if (args.size > 2) args[3] else "false"
 
         return try {
-            val (argsFilter) = createFilter(true) { path.lowercase() }
-            val (classFilter) = createFilter(false) { path.lowercase() }
-
-            val currentValue = findConfigElements(argsFilter, classFilter, onlyValue = true).toString()
-            val newValue = if (currentValue == "[$rawJson1]") rawJson2 else rawJson1
+            // reads exactly this path, a contains search would also match longer paths that start the same
+            val currentValue = findShimmy(path) { return it }.getJson()
+            val firstValue = ConfigManager.gson.fromJson(rawJson1, JsonElement::class.java)
+            val newValue = if (currentValue == firstValue) rawJson2 else rawJson1
 
             setCommand(arrayOf("set", path, newValue))
         } catch (e: Exception) {
@@ -157,6 +142,17 @@ object SkyHanniConfigSearchResetCommand {
             )
             "§cError while trying to toggle config element"
         }
+    }
+
+    /** Resolves a /shconfig path. Calls [onError] with the message for the player when the path does not resolve. */
+    private inline fun findShimmy(term: String, onError: (String) -> Nothing): Shimmy {
+        val root: Any = when {
+            term.startsWith("config") -> SkyHanniMod.feature
+            term.startsWith("playerSpecific") -> ProfileStorageData.playerSpecific ?: onError("§cplayerSpecific is null!")
+            term.startsWith("profileSpecific") -> ProfileStorageData.profileSpecific ?: onError("§cprofileSpecific is null!")
+            else -> onError("§cUnknown config location!")
+        }
+        return Shimmy(root, term.split(".").drop(1)) ?: onError("§cCould not change config element '$term', not found!")
     }
 
     private fun saveCommand(): String {
