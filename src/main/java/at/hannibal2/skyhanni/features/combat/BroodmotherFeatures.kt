@@ -160,7 +160,7 @@ object BroodmotherFeatures {
 
     @HandleEvent
     private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
-        event.move(150, "combat.broodmother.stages", "combat.broodmother.slainMessage") { stages ->
+        event.move(149, "combat.broodmother.stages", "combat.broodmother.slainMessage") { stages ->
             JsonPrimitive((stages as? JsonArray)?.contains(JsonPrimitive("SLAIN")) == true)
         }
     }
