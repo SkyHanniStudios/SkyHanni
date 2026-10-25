@@ -271,7 +271,6 @@ Everyone is still welcome to leave comments and feedback on any PR.
   two months later, and note that date in a TODO comment above it.
 - Future JSON data objects should be made in Kotlin.
 - Config files should be made in **Kotlin**.
-    - There may be legacy config files left as Java files; however, they will all be ported eventually.
 - Please use the existing event system, or expand on it.
     - Custom SkyHanni events are located in the `events` package, organized into subpackages by category.
       When creating a new event, place it in the appropriate subpackage. Thematically related events can be placed together in a single
