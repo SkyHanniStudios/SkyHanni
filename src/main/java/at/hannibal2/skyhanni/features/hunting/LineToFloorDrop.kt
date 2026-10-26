@@ -2,7 +2,7 @@ package at.hannibal2.skyhanni.features.hunting
 
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.config.features.hunting.HuntingConfig.FloorDropIsland
+import at.hannibal2.skyhanni.config.features.hunting.LineToFloorDropConfig.FloorDropIsland
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.events.BlockClickEvent
 import at.hannibal2.skyhanni.events.entity.EntityClickEvent
@@ -26,7 +26,7 @@ import kotlin.time.Duration.Companion.seconds
 @SkyHanniModule
 object LineToFloorDrop {
 
-    private val config get() = SkyHanniMod.feature.hunting
+    private val config get() = SkyHanniMod.feature.hunting.lineToFloorDrop
 
     private val dropTimeout = 5.seconds
 
@@ -61,7 +61,7 @@ object LineToFloorDrop {
         val lowerY = playerLocation.y - VERTICAL_SEARCH_RANGE
         val upperY = playerLocation.y + VERTICAL_SEARCH_RANGE
 
-        val displays = getEntitiesNearby<Display.ItemDisplay>(config.floorDropScanRadius.toDouble()) { display ->
+        val displays = getEntitiesNearby<Display.ItemDisplay>(config.scanRadius.toDouble()) { display ->
             val y = display.blockPosition().y.toDouble()
             y in lowerY..upperY && display.itemStack.itemType == dropItem
         }
@@ -98,9 +98,9 @@ object LineToFloorDrop {
         if (!isEnabled()) return
         val playerEye = event.exactPlayerEyeLocation()
         val nearest = floorDrops.minByOrNull { it.distanceSq(playerEye) } ?: return
-        val maxDistance = config.floorDropMaxDistance.toDouble()
+        val maxDistance = config.maxDistance.toDouble()
         if (nearest.distanceSq(playerEye) <= maxDistance * maxDistance) {
-            event.drawLineToCrosshair(nearest.add(x = 0.5, y = 0.25, z = 0.5), color, config.floorDropLineWidth, false)
+            event.drawLineToCrosshair(nearest.add(x = 0.5, y = 0.25, z = 0.5), color, config.lineWidth, false)
         }
     }
 
@@ -112,12 +112,12 @@ object LineToFloorDrop {
         }
     }
 
-    private fun isEnabled() = config.lineToFloorDrop && isSelectedIsland()
+    private fun isEnabled() = config.enabled && isSelectedIsland()
 
     private fun isSelectedIsland(): Boolean = when (SkyBlockUtils.currentIsland) {
-        IslandType.GALATEA -> FloorDropIsland.MOONGLADE_MARSH in config.floorDropIslands
-        IslandType.TORRHUS_CANYON -> FloorDropIsland.TORRHUS_CANYON in config.floorDropIslands
-        IslandType.SAFARI -> FloorDropIsland.CRITTER_SAFARI in config.floorDropIslands
+        IslandType.GALATEA -> FloorDropIsland.MOONGLADE_MARSH in config.islands
+        IslandType.TORRHUS_CANYON -> FloorDropIsland.TORRHUS_CANYON in config.islands
+        IslandType.SAFARI -> FloorDropIsland.CRITTER_SAFARI in config.islands
         else -> false
     }
 }
