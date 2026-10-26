@@ -19,6 +19,7 @@ import at.hannibal2.skyhanni.features.misc.update.UpdateManager
 import at.hannibal2.skyhanni.features.pets.PetDisplayConfigGuiManager
 import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.ConfigUtils
+import at.hannibal2.skyhanni.utils.DelayedRun
 import at.hannibal2.skyhanni.utils.IdentityCharacteristics
 import at.hannibal2.skyhanni.utils.OSUtils
 import at.hannibal2.skyhanni.utils.ReflectionUtils.makeAccessible
@@ -224,7 +225,7 @@ class ConfigManager {
         }
     }
 
-    private fun writeConfig(fileType: ConfigFileType, reason: String) {
+    private fun writeConfig(fileType: ConfigFileType, reason: String) = DelayedRun.runOrNextTick {
         val json = jsonHolder[fileType] ?: error("Could not find json object for $fileType")
         saveFile(fileType.file, fileType.fileName, json, reason)
         saveFile(fileType.backupFile, fileType.fileName, json, reason)
