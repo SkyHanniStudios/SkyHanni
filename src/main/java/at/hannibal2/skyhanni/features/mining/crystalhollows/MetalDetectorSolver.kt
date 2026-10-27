@@ -227,7 +227,7 @@ object MetalDetectorSolver {
         for (i in -50 until 50) {
             for (j in 30 downTo -30) {
                 for (k in -50 until 50) {
-                    val blockPosition = player.add(i.toDouble(), j.toDouble(), k.toDouble()).floor()
+                    val blockPosition = player.add(i, j, k).floor()
                     val nextBlockPosition = blockPosition.up(13)
                     if (blockPosition.getBlockAt() == Blocks.QUARTZ_STAIRS && nextBlockPosition.getBlockAt() == Blocks.BARRIER) {
                         baseCoordinates = getBaseCoordinates(nextBlockPosition)
