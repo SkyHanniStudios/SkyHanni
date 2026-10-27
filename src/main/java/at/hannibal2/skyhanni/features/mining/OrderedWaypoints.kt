@@ -349,7 +349,7 @@ object OrderedWaypoints {
     }
 
     private fun add(number: Int) {
-        val pos = LocationUtils.playerLocation().add(0, -1, 0).roundToBlock()
+        val pos = LocationUtils.playerLocation().down().floor()
 
         if (number < 1 || number > orderedWaypointsList.size + 1) {
             return ChatUtils.userError("$number is not between 1 and ${orderedWaypointsList.size + 1}.")

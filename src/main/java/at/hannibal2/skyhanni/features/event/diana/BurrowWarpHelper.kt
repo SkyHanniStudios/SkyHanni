@@ -19,7 +19,6 @@ import at.hannibal2.skyhanni.utils.DelayedRun
 import at.hannibal2.skyhanni.utils.HypixelCommands
 import at.hannibal2.skyhanni.utils.KeyboardManager
 import at.hannibal2.skyhanni.utils.LocationUtils
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NumberUtil.roundTo
 import at.hannibal2.skyhanni.utils.RenderUtils
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderable
@@ -28,6 +27,8 @@ import at.hannibal2.skyhanni.utils.collection.CollectionUtils.sorted
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorFormat.formatRounded
 import com.google.gson.JsonArray
 import org.lwjgl.glfw.GLFW
 import kotlin.time.Duration
@@ -144,10 +145,10 @@ object BurrowWarpHelper {
         event.addData(list)
     }
 
-    fun shouldUseWarps(target: LorenzVec, debug: MutableList<String>? = null) {
-        debug?.add("target: ${target.printWithAccuracy(1)}")
+    fun shouldUseWarps(target: SkyHanniVector, debug: MutableList<String>? = null) {
+        debug?.add("target: ${target.formatRounded(1)}")
         val playerLocation = LocationUtils.playerLocation()
-        debug?.add("playerLocation: ${playerLocation.printWithAccuracy(1)}")
+        debug?.add("playerLocation: ${playerLocation.formatRounded(1)}")
         val warpPoint = getNearestWarpPoint(target) ?: run {
             debug?.add("no nearest warp point found (everything disabled/not unlocked with tp scrolls)")
             return
@@ -165,7 +166,7 @@ object BurrowWarpHelper {
         currentWarp = if (setWarpPoint) warpPoint else null
     }
 
-    private fun getNearestWarpPoint(location: LorenzVec): WarpPoint? =
+    private fun getNearestWarpPoint(location: SkyHanniVector): WarpPoint? =
         WarpPoint.entries.filter { it.unlocked && !it.ignored() }.map { it to it.distance(location) }
             .sorted().firstOrNull()?.first
 
@@ -242,12 +243,12 @@ object BurrowWarpHelper {
                 ErrorManager.skyHanniError("repo invalid for diana warp")
             }
 
-        val location: LorenzVec
+        val location: SkyHanniVector
             get() {
                 val locationData = warpLocationData ?: ErrorManager.skyHanniError("repo invalid for diana warp")
                 for (entry in locationData) {
                     if (entry.key.equals(this.name, true)) {
-                        return LorenzVec(entry.value.x, entry.value.y, entry.value.z)
+                        return SkyHanniVector(entry.value.x, entry.value.y, entry.value.z)
                     }
                 }
                 ErrorManager.skyHanniError("repo invalid for diana warp")
@@ -264,7 +265,7 @@ object BurrowWarpHelper {
                 ErrorManager.skyHanniError("repo invalid for diana warp")
             }
 
-        fun distance(other: LorenzVec): Double = other.distance(location) + extraBlocks
+        fun distance(other: SkyHanniVector): Double = other.distance(location) + extraBlocks
 
         fun ignored(): Boolean = config.ignoredWarpsList.contains(this)
     }
