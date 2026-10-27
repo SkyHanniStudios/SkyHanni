@@ -5,7 +5,7 @@ import at.hannibal2.skyhanni.events.BlockClickEvent
 import at.hannibal2.skyhanni.events.ItemClickEvent
 import at.hannibal2.skyhanni.events.entity.EntityClickEvent
 import at.hannibal2.skyhanni.utils.InventoryUtils
-import at.hannibal2.skyhanni.utils.toLorenzVec
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.toSkyHanniVector
 import net.minecraft.core.BlockPos
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
@@ -44,7 +44,7 @@ object MinecraftInputHook {
 
         return BlockClickEvent(
             InteractClickType.LEFT_CLICK,
-            position.toLorenzVec(),
+            position.toSkyHanniVector(),
             InventoryUtils.getItemInHand(),
         ).also {
             if (clickCancelled) it.cancel()
@@ -70,7 +70,7 @@ object MinecraftInputHook {
                 val pos = (hitResult as BlockHitResult).blockPos
                 BlockClickEvent(
                     clickType,
-                    pos.toLorenzVec(),
+                    pos.toSkyHanniVector(),
                     itemInHand,
                 ).also {
                     if (clickCancelled) it.cancel()

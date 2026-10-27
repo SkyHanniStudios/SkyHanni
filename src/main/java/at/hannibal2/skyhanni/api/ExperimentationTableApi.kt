@@ -45,8 +45,8 @@ import at.hannibal2.skyhanni.utils.SkullTextureHolder
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.addOrPut
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.subtract
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.takeIfNotEmpty
-import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.world.entity.decoration.ArmorStand
 import kotlin.math.abs
 import kotlin.time.Duration.Companion.milliseconds
@@ -477,7 +477,7 @@ object ExperimentationTableApi {
         val tableEntity = EntityUtils.getEntitiesNearby<ArmorStand>(20.0) {
             it.wearingSkullTexture(EXPERIMENTATION_TABLE_SKULL)
         }.firstOrNull() ?: return
-        storage.tablePos = tableEntity.getLorenzVec()
+        storage.tablePos = tableEntity.positionVector()
     }
 
     private fun InventoryOpenEvent.tryProcessExperimentOver() {

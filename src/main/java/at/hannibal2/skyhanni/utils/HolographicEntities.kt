@@ -12,6 +12,7 @@ import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.TimeUtils.inWholeTicks
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.associateNotNull
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.client.renderer.entity.state.EntityRenderState
@@ -62,7 +63,7 @@ object HolographicEntities {
     private fun spawnDebugHologram(transparency: Float = 1f) {
         val player = MinecraftCompat.localPlayerOrNull ?: return
         val yaw = Math.toRadians(player.yRot.toDouble())
-        val pos = LorenzVec(
+        val pos = SkyHanniVector(
             player.x - sin(yaw) * 5,
             player.y,
             player.z + cos(yaw) * 5,
@@ -89,11 +90,11 @@ object HolographicEntities {
      */
     class HolographicEntity<T : LivingEntity> internal constructor(
         val entity: T,
-        var position: LorenzVec,
+        var position: SkyHanniVector,
         var yaw: Float,
     ) {
         var isChild: Boolean = false
-        var lastPosition: LorenzVec = position
+        var lastPosition: SkyHanniVector = position
         var lastYaw: Float = yaw
         val createdAt = SimpleTimeMark.now()
         internal var cachedRenderState: EntityRenderState? = null
@@ -103,7 +104,7 @@ object HolographicEntities {
         /**
          * Should be called exactly once per tick or never over the lifetime of this [HolographicEntity].
          */
-        fun moveTo(position: LorenzVec, yaw: Float, isTeleport: Boolean = false) {
+        fun moveTo(position: SkyHanniVector, yaw: Float, isTeleport: Boolean = false) {
             if (isTeleport) {
                 this.lastYaw = yaw
                 this.lastPosition = position
@@ -115,8 +116,8 @@ object HolographicEntities {
             this.yaw = yaw
         }
 
-        fun interpolatedPosition(partialTicks: Float): LorenzVec =
-            lastPosition.slope(position, partialTicks.toDouble())
+        fun interpolatedPosition(partialTicks: Float): SkyHanniVector =
+            lastPosition.lerp(position, partialTicks.toDouble())
 
         fun interpolatedYaw(partialTicks: Float): Float =
             interpolateRotation(lastYaw, yaw, partialTicks)
@@ -128,7 +129,7 @@ object HolographicEntities {
      * being instantiated.
      */
     class HolographicBase<T : LivingEntity> internal constructor(internal val entityType: EntityType<T>) {
-        fun instance(position: LorenzVec, yaw: Float): HolographicEntity<T>? {
+        fun instance(position: SkyHanniVector, yaw: Float): HolographicEntity<T>? {
             val level = Minecraft.getInstance().level ?: return null
             val entity = entityType.create(level, EntitySpawnReason.COMMAND) ?: return null
             //? if >= 26.2

@@ -8,21 +8,20 @@ import at.hannibal2.skyhanni.utils.ColorUtils.addAlpha
 import at.hannibal2.skyhanni.utils.ColorUtils.getFirstColorCode
 import at.hannibal2.skyhanni.utils.ColorUtils.rgb
 import at.hannibal2.skyhanni.utils.ColorUtils.toColor
-import at.hannibal2.skyhanni.utils.LocationUtils.getCornersAtHeight
 import at.hannibal2.skyhanni.utils.LocationUtils.union
 import at.hannibal2.skyhanni.utils.LorenzColor
 import at.hannibal2.skyhanni.utils.LorenzColor.Companion.toLorenzColor
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.chat.TextHelper.asComponent
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.compat.createResourceLocation
 import at.hannibal2.skyhanni.utils.compat.deceased
 import at.hannibal2.skyhanni.utils.compat.position
 import at.hannibal2.skyhanni.utils.compat.rotation
-import at.hannibal2.skyhanni.utils.getLorenzVec
-import at.hannibal2.skyhanni.utils.toLorenzVec
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorBounds.cornersAtHeight
 import at.hannibal2.skyhanni.utils.vector.VectorBounds.inflate
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.toSkyHanniVector
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
 import io.github.notenoughupdates.moulconfig.ChromaColour
@@ -161,11 +160,11 @@ object WorldRenderUtils {
         crossinline render: (PoseStack.Pose, VertexConsumer) -> Unit,
     ) = submitNodeCollector.submitCustomGeometry(matrices, layer) { pose, buf -> render(pose, buf) }
 
-    fun SkyHanniRenderWorldEvent.renderBeaconBeam(vec: LorenzVec, rgb: Int) {
+    fun SkyHanniRenderWorldEvent.renderBeaconBeam(vec: SkyHanniVector, rgb: Int) {
         this.renderBeaconBeam(vec.x, vec.y, vec.z, rgb)
     }
 
-    fun SkyHanniRenderWorldEvent.renderBeaconBeam(vec: LorenzVec, color: Color) {
+    fun SkyHanniRenderWorldEvent.renderBeaconBeam(vec: SkyHanniVector, color: Color) {
         this.renderBeaconBeam(vec.x, vec.y, vec.z, color.rgb)
     }
 
@@ -193,7 +192,7 @@ object WorldRenderUtils {
     }
 
     fun SkyHanniRenderWorldEvent.drawColor(
-        location: LorenzVec,
+        location: SkyHanniVector,
         color: ChromaColour,
         beacon: Boolean = false,
         alpha: Float = -1f,
@@ -222,7 +221,7 @@ object WorldRenderUtils {
     }
 
     fun SkyHanniRenderWorldEvent.drawWaypointFilled(
-        location: LorenzVec,
+        location: SkyHanniVector,
         color: Color,
         seeThroughBlocks: Boolean = false,
         beacon: Boolean = false,
@@ -316,7 +315,7 @@ object WorldRenderUtils {
     }
 
     fun SkyHanniRenderWorldEvent.drawString(
-        location: LorenzVec,
+        location: SkyHanniVector,
         text: String,
         seeThroughBlocks: Boolean = false,
         color: Color? = null,
@@ -331,7 +330,7 @@ object WorldRenderUtils {
     ) = drawString(location, text.asComponent(), seeThroughBlocks, color, scale, shadow, yOffset, backgroundColor)
 
     fun SkyHanniRenderWorldEvent.drawString(
-        location: LorenzVec,
+        location: SkyHanniVector,
         text: Component,
         seeThroughBlocks: Boolean = false,
         color: Color? = null,
@@ -389,7 +388,7 @@ object WorldRenderUtils {
         drawCircleWireframe(exactLocation(entity), rad, color)
     }
 
-    fun SkyHanniRenderWorldEvent.drawCircleWireframe(location: LorenzVec, rad: Double, color: Color) {
+    fun SkyHanniRenderWorldEvent.drawCircleWireframe(location: SkyHanniVector, rad: Double, color: Color) {
         val x = location.x
         val y = location.y
         val z = location.z
@@ -406,7 +405,7 @@ object WorldRenderUtils {
                 val x2 = x + rad * cos(theta2)
                 val z2 = z + rad * sin(theta2)
 
-                draw3DLine(LorenzVec(x1, y, z1), LorenzVec(x2, y, z2), color)
+                draw3DLine(SkyHanniVector(x1, y, z1), SkyHanniVector(x2, y, z2), color)
             }
         }
     }
@@ -452,7 +451,7 @@ object WorldRenderUtils {
 
     fun SkyHanniRenderWorldEvent.drawCylinderInWorld(
         color: Color,
-        location: LorenzVec,
+        location: SkyHanniVector,
         radius: Float,
         height: Float,
     ) {
@@ -502,9 +501,9 @@ object WorldRenderUtils {
     }
 
     fun SkyHanniRenderWorldEvent.drawPyramid(
-        topPoint: LorenzVec,
-        baseCenterPoint: LorenzVec,
-        baseEdgePoint: LorenzVec,
+        topPoint: SkyHanniVector,
+        baseCenterPoint: SkyHanniVector,
+        baseEdgePoint: SkyHanniVector,
         color: Color,
         depth: Boolean = true,
     ) {
@@ -523,13 +522,13 @@ object WorldRenderUtils {
             val baseEdge = baseEdgePoint - viewerPos
 
             val edgeVec = baseEdge - baseCenter
-            val topVecNorm = (newTop - baseCenter).normalize()
+            val topVecNorm = (newTop - baseCenter).normalized()
             val corner1 = baseEdge
-            val corner2 = topVecNorm.crossProduct(edgeVec).normalize() * edgeVec.length() + baseCenter
+            val corner2 = (topVecNorm cross edgeVec).normalized() * edgeVec.length() + baseCenter
             val corner3 = baseCenter - edgeVec
-            val corner4 = edgeVec.crossProduct(topVecNorm).normalize() * edgeVec.length() + baseCenter
+            val corner4 = (edgeVec cross topVecNorm).normalized() * edgeVec.length() + baseCenter
 
-            fun tri(a: LorenzVec, b: LorenzVec, c: LorenzVec) {
+            fun tri(a: SkyHanniVector, b: SkyHanniVector, c: SkyHanniVector) {
                 buf.addVertex(a.x.toFloat(), a.y.toFloat(), a.z.toFloat()).setColor(color.red, color.green, color.blue, color.alpha)
                 buf.addVertex(b.x.toFloat(), b.y.toFloat(), b.z.toFloat()).setColor(color.red, color.green, color.blue, color.alpha)
                 buf.addVertex(c.x.toFloat(), c.y.toFloat(), c.z.toFloat()).setColor(color.red, color.green, color.blue, color.alpha)
@@ -549,7 +548,7 @@ object WorldRenderUtils {
 
     fun SkyHanniRenderWorldEvent.drawSphereInWorld(
         color: Color,
-        location: LorenzVec,
+        location: SkyHanniVector,
         radius: Float,
         segments: Int = 32,
     ) {
@@ -608,7 +607,7 @@ object WorldRenderUtils {
 
     fun SkyHanniRenderWorldEvent.drawSphereWireframeInWorld(
         color: Color,
-        location: LorenzVec,
+        location: SkyHanniVector,
         radius: Float,
         segments: Int = 32,
     ) {
@@ -642,10 +641,10 @@ object WorldRenderUtils {
                     val y4 = y + radius * cos(Math.PI * phi / segments)
                     val z4 = z + radius * sin(Math.PI * phi / segments) * sin(2.0 * Math.PI * (theta + 1) / (segments * 2))
 
-                    val p1 = LorenzVec(x1, y1, z1)
-                    val p2 = LorenzVec(x2, y2, z2)
-                    val p3 = LorenzVec(x3, y3, z3)
-                    val p4 = LorenzVec(x4, y4, z4)
+                    val p1 = SkyHanniVector(x1, y1, z1)
+                    val p2 = SkyHanniVector(x2, y2, z2)
+                    val p3 = SkyHanniVector(x3, y3, z3)
+                    val p4 = SkyHanniVector(x4, y4, z4)
                     drawPath(listOf(p1, p2, p3, p4), color, -1.0)
                 }
             }
@@ -653,7 +652,7 @@ object WorldRenderUtils {
     }
 
     fun SkyHanniRenderWorldEvent.drawDynamicText(
-        location: LorenzVec,
+        location: SkyHanniVector,
         text: String,
         scaleMultiplier: Double,
         yOff: Float = 0f,
@@ -675,7 +674,7 @@ object WorldRenderUtils {
     )
 
     fun SkyHanniRenderWorldEvent.drawDynamicText(
-        location: LorenzVec,
+        location: SkyHanniVector,
         text: Component,
         scaleMultiplier: Double,
         /**
@@ -721,21 +720,21 @@ object WorldRenderUtils {
             (y + 20 * distToPlayer / 300 - (viewerY + eyeHeight)) / (distToPlayer / distRender)
         val resultZ = viewerZ + (z + 0.5 - viewerZ) / (distToPlayer / distRender)
 
-        val renderLocation = LorenzVec(resultX, resultY, resultZ)
+        val renderLocation = SkyHanniVector(resultX, resultY, resultZ)
 
         drawString(renderLocation, text, seeThroughBlocks, null, scale, true, yOff, 0)
     }
 
     // TODO add chroma color support
-    fun SkyHanniRenderWorldEvent.drawEdges(location: LorenzVec, color: Color, lineWidth: Int, depth: Boolean) {
+    fun SkyHanniRenderWorldEvent.drawEdges(location: SkyHanniVector, color: Color, lineWidth: Int, depth: Boolean) {
         LineDrawer.draw3D(this, lineWidth, depth) {
             drawEdges(location, color)
         }
     }
 
     fun SkyHanniRenderWorldEvent.draw3DLine(
-        p1: LorenzVec,
-        p2: LorenzVec,
+        p1: SkyHanniVector,
+        p2: SkyHanniVector,
         color: ChromaColour,
         lineWidth: Int,
         depth: Boolean,
@@ -744,8 +743,8 @@ object WorldRenderUtils {
     }
 
     fun SkyHanniRenderWorldEvent.draw3DLine(
-        p1: LorenzVec,
-        p2: LorenzVec,
+        p1: SkyHanniVector,
+        p2: SkyHanniVector,
         color: Color,
         lineWidth: Int,
         depth: Boolean,
@@ -754,9 +753,9 @@ object WorldRenderUtils {
     }
 
     fun SkyHanniRenderWorldEvent.draw3DBezier2(
-        p1: LorenzVec,
-        control: LorenzVec,
-        p3: LorenzVec,
+        p1: SkyHanniVector,
+        control: SkyHanniVector,
+        p3: SkyHanniVector,
         color: Color,
         lineWidth: Int,
         depth: Boolean,
@@ -772,7 +771,7 @@ object WorldRenderUtils {
         color: Color,
         depth: Boolean,
     ) {
-        val (cornerOne, cornerTwo, cornerThree, cornerFour) = boundingBox.getCornersAtHeight(boundingBox.maxY)
+        val (cornerOne, cornerTwo, cornerThree, cornerFour) = boundingBox.cornersAtHeight(boundingBox.maxY)
         draw3DLine(cornerOne, cornerTwo, color, lineWidth, depth)
         draw3DLine(cornerTwo, cornerThree, color, lineWidth, depth)
         draw3DLine(cornerThree, cornerFour, color, lineWidth, depth)
@@ -786,8 +785,8 @@ object WorldRenderUtils {
         lineWidth: Int = 3,
         depth: Boolean = true,
     ) {
-        val cornersTop = boundingBox.getCornersAtHeight(boundingBox.maxY)
-        val cornersBottom = boundingBox.getCornersAtHeight(boundingBox.minY)
+        val cornersTop = boundingBox.cornersAtHeight(boundingBox.maxY)
+        val cornersBottom = boundingBox.cornersAtHeight(boundingBox.minY)
 
         // Draw lines for the top and bottom faces
         for (i in 0..3) {
@@ -801,16 +800,16 @@ object WorldRenderUtils {
         }
     }
 
-    fun SkyHanniRenderWorldEvent.drawLineToCrosshair(location: LorenzVec, color: ChromaColour, lineWidth: Int, depth: Boolean) {
+    fun SkyHanniRenderWorldEvent.drawLineToCrosshair(location: SkyHanniVector, color: ChromaColour, lineWidth: Int, depth: Boolean) {
         drawLineToCrosshair(location, color.toColor(), lineWidth, depth)
     }
 
     @Deprecated("use drawLineToCrosshair", ReplaceWith("drawLineToCrosshair(location, color, lineWidth, depth)"))
-    fun SkyHanniRenderWorldEvent.drawLineToEye(location: LorenzVec, color: ChromaColour, lineWidth: Int, depth: Boolean) {
+    fun SkyHanniRenderWorldEvent.drawLineToEye(location: SkyHanniVector, color: ChromaColour, lineWidth: Int, depth: Boolean) {
         drawLineToCrosshair(location, color, lineWidth, depth)
     }
 
-    fun SkyHanniRenderWorldEvent.drawLineToCrosshair(location: LorenzVec, color: Color, lineWidth: Int, depth: Boolean) {
+    fun SkyHanniRenderWorldEvent.drawLineToCrosshair(location: SkyHanniVector, color: Color, lineWidth: Int, depth: Boolean) {
         draw3DLine(
             exactPlayerCrosshairLocation(),
             location,
@@ -857,35 +856,35 @@ object WorldRenderUtils {
         }
     }
 
-    fun AABB.getFaceCorners(face: Direction): List<LorenzVec> = when (face) {
-        Direction.UP -> getCornersAtHeight(maxY)
-        Direction.DOWN -> getCornersAtHeight(minY).asReversed()
+    fun AABB.getFaceCorners(face: Direction): List<SkyHanniVector> = when (face) {
+        Direction.UP -> cornersAtHeight(maxY)
+        Direction.DOWN -> cornersAtHeight(minY).asReversed()
         Direction.NORTH -> listOf(
-            LorenzVec(minX, minY, minZ),
-            LorenzVec(maxX, minY, minZ),
-            LorenzVec(maxX, maxY, minZ),
-            LorenzVec(minX, maxY, minZ),
+            SkyHanniVector(minX, minY, minZ),
+            SkyHanniVector(maxX, minY, minZ),
+            SkyHanniVector(maxX, maxY, minZ),
+            SkyHanniVector(minX, maxY, minZ),
         )
 
         Direction.SOUTH -> listOf(
-            LorenzVec(maxX, minY, maxZ),
-            LorenzVec(minX, minY, maxZ),
-            LorenzVec(minX, maxY, maxZ),
-            LorenzVec(maxX, maxY, maxZ),
+            SkyHanniVector(maxX, minY, maxZ),
+            SkyHanniVector(minX, minY, maxZ),
+            SkyHanniVector(minX, maxY, maxZ),
+            SkyHanniVector(maxX, maxY, maxZ),
         )
 
         Direction.WEST -> listOf(
-            LorenzVec(minX, minY, maxZ),
-            LorenzVec(minX, minY, minZ),
-            LorenzVec(minX, maxY, minZ),
-            LorenzVec(minX, maxY, maxZ),
+            SkyHanniVector(minX, minY, maxZ),
+            SkyHanniVector(minX, minY, minZ),
+            SkyHanniVector(minX, maxY, minZ),
+            SkyHanniVector(minX, maxY, maxZ),
         )
 
         Direction.EAST -> listOf(
-            LorenzVec(maxX, minY, minZ),
-            LorenzVec(maxX, minY, maxZ),
-            LorenzVec(maxX, maxY, maxZ),
-            LorenzVec(maxX, maxY, minZ),
+            SkyHanniVector(maxX, minY, minZ),
+            SkyHanniVector(maxX, minY, maxZ),
+            SkyHanniVector(maxX, maxY, maxZ),
+            SkyHanniVector(maxX, maxY, minZ),
         )
     }
 
@@ -914,13 +913,13 @@ object WorldRenderUtils {
     }
 
     fun SkyHanniRenderWorldEvent.drawFaceRayWorld(
-        origin: LorenzVec,
+        origin: SkyHanniVector,
         face: Direction,
         color: Color,
         length: Double = 0.5,
         thickness: Double = 0.02,
     ) {
-        val dir = LorenzVec(face.stepX.toDouble(), face.stepY.toDouble(), face.stepZ.toDouble())
+        val dir = SkyHanniVector(face.stepX.toDouble(), face.stepY.toDouble(), face.stepZ.toDouble())
         val end = origin + dir * length
         val minX = minOf(origin.x, end.x) - thickness
         val minY = minOf(origin.y, end.y) - thickness
@@ -947,37 +946,37 @@ object WorldRenderUtils {
     fun AABB.expandBlock(n: Int = 1) = inflate(EXPAND_VECTOR * n)
     fun AABB.inflateBlock(n: Int = 1) = inflate(EXPAND_VECTOR * -n)
 
-    fun exactLocation(entity: Entity, partialTicks: Float): LorenzVec {
-        if (!entity.isAlive) return entity.getLorenzVec()
+    fun exactLocation(entity: Entity, partialTicks: Float): SkyHanniVector {
+        if (!entity.isAlive) return entity.positionVector()
         val x = entity.xOld + (entity.x - entity.xOld) * partialTicks
         val y = entity.yOld + (entity.y - entity.yOld) * partialTicks
         val z = entity.zOld + (entity.z - entity.zOld) * partialTicks
-        return LorenzVec(x, y, z)
+        return SkyHanniVector(x, y, z)
     }
 
     fun SkyHanniRenderWorldEvent.exactLocation(mob: Mob) = exactLocation(mob.baseEntity)
 
-    fun exactLocation(camera: Camera): LorenzVec {
+    fun exactLocation(camera: Camera): SkyHanniVector {
         val pos = camera.position
-        return LorenzVec(pos.x, pos.y, pos.z)
+        return SkyHanniVector(pos.x, pos.y, pos.z)
     }
 
     fun SkyHanniRenderWorldEvent.exactLocation(entity: Entity) = exactLocation(entity, partialTicks)
 
-    internal fun SkyHanniRenderWorldEvent.exactPlayerEyeLocation(): LorenzVec {
+    internal fun SkyHanniRenderWorldEvent.exactPlayerEyeLocation(): SkyHanniVector {
         val player = MinecraftCompat.localPlayerOrThrow
         val eyeHeight = player.eyeHeight.toDouble()
         return exactLocation(player).add(y = eyeHeight)
     }
 
-    internal fun SkyHanniRenderWorldEvent.exactPlayerCrosshairLocation(): LorenzVec {
+    internal fun SkyHanniRenderWorldEvent.exactPlayerCrosshairLocation(): SkyHanniVector {
         val look = Vector3f(0f, 0f, -1f).rotate(camera.rotation())
-        return camera.position.toLorenzVec() + LorenzVec(look.x.toDouble(), look.y.toDouble(), look.z.toDouble()).times(2)
+        return camera.position.toSkyHanniVector() + SkyHanniVector(look.x.toDouble(), look.y.toDouble(), look.z.toDouble()).times(2)
     }
 
     fun SkyHanniRenderWorldEvent.exactBoundingBox(entity: Entity): AABB {
         if (entity.deceased) return entity.boundingBox
-        val offset = exactLocation(entity) - entity.getLorenzVec()
+        val offset = exactLocation(entity) - entity.positionVector()
         return entity.boundingBox.move(offset.x, offset.y, offset.z)
     }
 
@@ -989,7 +988,7 @@ object WorldRenderUtils {
     }
 
     fun SkyHanniRenderWorldEvent.drawColorOrOutline(
-        location: LorenzVec,
+        location: SkyHanniVector,
         color: ChromaColour,
         beacon: Boolean = false,
         width: Int = 1,
@@ -1012,7 +1011,7 @@ object WorldRenderUtils {
         override fun toString(): String = this.displayName
     }
 
-    fun SkyHanniRenderWorldEvent.exactPlayerEyeLocation(player: Entity): LorenzVec =
+    fun SkyHanniRenderWorldEvent.exactPlayerEyeLocation(player: Entity): SkyHanniVector =
         exactLocation(player).up(player.getEyeHeight(player.pose))
 
     /**

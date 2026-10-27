@@ -96,7 +96,6 @@
     <ID>MultilineLoop:JsonUtils.kt:it.add(entry.key, entry.value.shDeepCopy())</ID>
     <ID>MultilineLoop:SkyblockStat.kt:SkyblockStat.Companion$for (entry in entries) { val matchResult = pattern(entry).matchMatcher(line) { groupOrNull("value")?.replace("[,%]".toRegex(), "")?.toDouble() } ?: continue entry.lastKnownValue = matchResult entry.lastSource = type entry.lastAssignment = SimpleTimeMark.now() break // Exit the inner loop once a match is found }</ID>
     <ID>MultilineLoop:TabWidget.kt:TabWidget.Companion$when { PLAYER_LIST.pattern.matches(header) -&gt; if (playerListFound) removeIndexes.add(index - removeIndexes.size) else playerListFound = true INFO.pattern.matches(header) -&gt; if (infoFound) removeIndexes.add(index - removeIndexes.size) else infoFound = true }</ID>
-    <ID>NoLorenzVec:AbstractHighlightedBlock.kt:AbstractHighlightedBlock$LorenzVec</ID>
     <ID>NoLorenzVec:ArachneSpawnTimer.kt:ArachneSpawnTimer$LorenzVec</ID>
     <ID>NoLorenzVec:AreaMiniBossFeatures.kt:AreaMiniBossFeatures.AreaMiniBossType$LorenzVec</ID>
     <ID>NoLorenzVec:ArrowGuessBurrow.kt:ArrowGuessBurrow$LorenzVec</ID>
@@ -105,24 +104,17 @@
     <ID>NoLorenzVec:AtomHitBox.kt:AtomHitBox$LorenzVec</ID>
     <ID>NoLorenzVec:BarnFishingTimer.kt:BarnFishingTimer$LorenzVec</ID>
     <ID>NoLorenzVec:BeachBallCatchHelper.kt:BeachBallCatchHelper$LorenzVec</ID>
-    <ID>NoLorenzVec:BlockClickEvent.kt:BlockClickEvent$LorenzVec</ID>
-    <ID>NoLorenzVec:BlockUtils.kt:BlockUtils$LorenzVec</ID>
     <ID>NoLorenzVec:BurrowApi.kt:BurrowApi$LorenzVec</ID>
-    <ID>NoLorenzVec:BurrowDetectEvent.kt:BurrowDetectEvent$LorenzVec</ID>
-    <ID>NoLorenzVec:BurrowDugEvent.kt:BurrowDugEvent$LorenzVec</ID>
     <ID>NoLorenzVec:BurrowWarpHelper.kt:BurrowWarpHelper$LorenzVec</ID>
     <ID>NoLorenzVec:CarnivalFruitDigging.kt:CarnivalFruitDigging.GameGrid$LorenzVec</ID>
     <ID>NoLorenzVec:CarnivalZombieShootout.kt:CarnivalZombieShootout.ShootoutLamp$LorenzVec</ID>
     <ID>NoLorenzVec:CocoonAPI.kt:CocoonAPI.CocoonMob$LorenzVec</ID>
-    <ID>NoLorenzVec:ColeweightWaypointFormat.kt:ColeweightWaypointFormat$LorenzVec</ID>
-    <ID>NoLorenzVec:CorpseEvents.kt:CorpseFoundEvent$LorenzVec</ID>
     <ID>NoLorenzVec:CorpseSharing.kt:CorpseSharing$LorenzVec</ID>
     <ID>NoLorenzVec:CosmeticFollowingLine.kt:CosmeticFollowingLine$LorenzVec</ID>
     <ID>NoLorenzVec:CraftRoomHolographicMob.kt:CraftRoomHolographicMob$LorenzVec</ID>
     <ID>NoLorenzVec:CrimsonIsleReputationHelper.kt:CrimsonIsleReputationHelper$LorenzVec</ID>
     <ID>NoLorenzVec:CrimsonMiniBoss.kt:CrimsonMiniBoss$LorenzVec</ID>
     <ID>NoLorenzVec:CrimsonMinibossRespawnTimer.kt:CrimsonMinibossRespawnTimer.MiniBoss.BLADESOUL$LorenzVec</ID>
-    <ID>NoLorenzVec:CropClickEvent.kt:CropClickEvent$LorenzVec</ID>
     <ID>NoLorenzVec:CropType.kt:CropType.Companion$LorenzVec</ID>
     <ID>NoLorenzVec:CrystalHollowsNamesInCore.kt:CrystalHollowsNamesInCore$LorenzVec</ID>
     <ID>NoLorenzVec:CrystalHollowsWalls.kt:CrystalHollowsWalls$LorenzVec</ID>
@@ -130,10 +122,7 @@
     <ID>NoLorenzVec:DamageIndicatorEntityData.kt:DamageIndicatorEntityData$LorenzVec</ID>
     <ID>NoLorenzVec:DamageIndicatorManager.kt:DamageIndicatorManager$LorenzVec</ID>
     <ID>NoLorenzVec:DarkMonolithFeatures.kt:DarkMonolithFeatures.DarkMonolithData$LorenzVec</ID>
-    <ID>NoLorenzVec:DeferredDrawer.kt:DeferredDrawer$LorenzVec</ID>
-    <ID>NoLorenzVec:DisplayEntityUtils.kt:DisplayEntityUtils$LorenzVec</ID>
     <ID>NoLorenzVec:DojoQuest.kt:DojoQuest$LorenzVec</ID>
-    <ID>NoLorenzVec:DungeonBlockClickEvent.kt:DungeonBlockClickEvent$LorenzVec</ID>
     <ID>NoLorenzVec:DungeonHighlightClickedBlocks.kt:DungeonHighlightClickedBlocks$LorenzVec</ID>
     <ID>NoLorenzVec:DungeonLividFinder.kt:DungeonLividFinder$LorenzVec</ID>
     <ID>NoLorenzVec:DungeonSecretTrackerLocator.kt:DungeonSecretTrackerLocator$LorenzVec</ID>
@@ -142,12 +131,7 @@
     <ID>NoLorenzVec:EndermanSlayerFeatures.kt:EndermanSlayerFeatures$LorenzVec</ID>
     <ID>NoLorenzVec:EnigmaRoseFlowerpot.kt:EnigmaRoseFlowerpot$LorenzVec</ID>
     <ID>NoLorenzVec:EnigmaSoulWaypoints.kt:EnigmaSoulWaypoints$LorenzVec</ID>
-    <ID>NoLorenzVec:EnigmaSoulsJson.kt:EnigmaPosition$LorenzVec</ID>
-    <ID>NoLorenzVec:EntityMoveEvent.kt:EntityMoveEvent$LorenzVec</ID>
-    <ID>NoLorenzVec:EntityMovementData.kt:EntityMovementData$LorenzVec</ID>
-    <ID>NoLorenzVec:EntityUtils.kt:EntityUtils$LorenzVec</ID>
     <ID>NoLorenzVec:EventWaypoint.kt:EventWaypoint$LorenzVec</ID>
-    <ID>NoLorenzVec:EventWaypointsJson.kt:EventWaypointData$LorenzVec</ID>
     <ID>NoLorenzVec:FallenStarCultTimer.kt:FallenStarCultTimer$LorenzVec</ID>
     <ID>NoLorenzVec:FarmingLaneApi.kt:FarmingLaneApi$LorenzVec</ID>
     <ID>NoLorenzVec:FarmingLaneCreator.kt:FarmingLaneCreator$LorenzVec</ID>
@@ -161,19 +145,15 @@
     <ID>NoLorenzVec:FlareDisplay.kt:FlareDisplay.Flare$LorenzVec</ID>
     <ID>NoLorenzVec:ForagingTutorialQuest.kt:ForagingTutorialQuest.Quest$LorenzVec</ID>
     <ID>NoLorenzVec:GardenApi.kt:GardenApi$LorenzVec</ID>
-    <ID>NoLorenzVec:GardenJson.kt:GardenVisitor$LorenzVec</ID>
     <ID>NoLorenzVec:GardenPlot.kt:GardenPlot$LorenzVec</ID>
     <ID>NoLorenzVec:GardenPlotApi.kt:GardenPlotApi$LorenzVec</ID>
     <ID>NoLorenzVec:GeyserFishing.kt:GeyserFishing$LorenzVec</ID>
-    <ID>NoLorenzVec:Graph.kt:Graph$LorenzVec</ID>
     <ID>NoLorenzVec:GraphEditorHistory.kt:GraphEditorHistory.HistoryEntry$LorenzVec</ID>
     <ID>NoLorenzVec:GraphEditorInput.kt:GraphEditorInput$LorenzVec</ID>
     <ID>NoLorenzVec:GraphEditorNodeFinder.kt:GraphEditorNodeFinder$LorenzVec</ID>
     <ID>NoLorenzVec:GraphEditorRenderer.kt:GraphEditorRenderer$LorenzVec</ID>
-    <ID>NoLorenzVec:GraphNode.kt:GraphNode$LorenzVec</ID>
     <ID>NoLorenzVec:GraphNodeEditor.kt:GraphNodeEditor$LorenzVec</ID>
     <ID>NoLorenzVec:GraphParkour.kt:GraphParkour$LorenzVec</ID>
-    <ID>NoLorenzVec:GraphUtils.kt:GraphUtils$LorenzVec</ID>
     <ID>NoLorenzVec:GraphingNode.kt:GraphingNode$LorenzVec</ID>
     <ID>NoLorenzVec:GriffinBurrowHelper.kt:GriffinBurrowHelper$LorenzVec</ID>
     <ID>NoLorenzVec:GriffinBurrowParticleFinder.kt:GriffinBurrowParticleFinder$LorenzVec</ID>
@@ -181,99 +161,65 @@
     <ID>NoLorenzVec:HideSlayerSpawnParticles.kt:HideSlayerSpawnParticles$LorenzVec</ID>
     <ID>NoLorenzVec:HideyhoFinder.kt:HideyhoFinder$LorenzVec</ID>
     <ID>NoLorenzVec:HighlightVisitorsOutsideOfGarden.kt:HighlightVisitorsOutsideOfGarden$LorenzVec</ID>
-    <ID>NoLorenzVec:HighlightedBlock.kt:HighlightedBlock$LorenzVec</ID>
-    <ID>NoLorenzVec:HolographicEntities.kt:HolographicEntities$LorenzVec</ID>
     <ID>NoLorenzVec:HoneyhiveReminder.kt:HoneyhiveReminder$LorenzVec</ID>
     <ID>NoLorenzVec:HoppityEggLocations.kt:HoppityEggLocations$LorenzVec</ID>
-    <ID>NoLorenzVec:HoppityEggLocationsJson.kt:HoppityEggLocationsJson$LorenzVec</ID>
     <ID>NoLorenzVec:HoppityEggLocator.kt:HoppityEggLocator$LorenzVec</ID>
     <ID>NoLorenzVec:HoppityEggsShared.kt:HoppityEggsShared$LorenzVec</ID>
     <ID>NoLorenzVec:InvisibugHighlighter.kt:InvisibugHighlighter$LorenzVec</ID>
     <ID>NoLorenzVec:IsFishingDetection.kt:IsFishingDetection$LorenzVec</ID>
     <ID>NoLorenzVec:IsGiftingDetection.kt:IsGiftingDetection$LorenzVec</ID>
-    <ID>NoLorenzVec:IslandGraphs.kt:IslandGraphs$LorenzVec</ID>
-    <ID>NoLorenzVec:IslandType.kt:IslandType$LorenzVec</ID>
     <ID>NoLorenzVec:JoinCrystalHollows.kt:JoinCrystalHollows$LorenzVec</ID>
     <ID>NoLorenzVec:KingTalismanHelper.kt:KingTalismanHelper$LorenzVec</ID>
     <ID>NoLorenzVec:KloonTerminal.kt:KloonTerminal$LorenzVec</ID>
     <ID>NoLorenzVec:KuudraTier.kt:KuudraTier$LorenzVec</ID>
-    <ID>NoLorenzVec:LineDrawer.kt:LineDrawer$LorenzVec</ID>
     <ID>NoLorenzVec:LivingCaveDefenseBlocks.kt:LivingCaveDefenseBlocks.DefenseBlock$LorenzVec</ID>
     <ID>NoLorenzVec:LivingCaveLivingMetalHelper.kt:LivingCaveLivingMetalHelper$LorenzVec</ID>
     <ID>NoLorenzVec:LivingCaveSnake.kt:LivingCaveSnake$LorenzVec</ID>
     <ID>NoLorenzVec:LivingCaveSnakeFeatures.kt:LivingCaveSnakeFeatures$LorenzVec</ID>
     <ID>NoLorenzVec:LivingSeaCreatureData.kt:LivingSeaCreatureData$LorenzVec</ID>
-    <ID>NoLorenzVec:LocationFixJson.kt:LocationFix$LorenzVec</ID>
-    <ID>NoLorenzVec:LocationUtils.kt:LocationUtils$LorenzVec</ID>
-    <ID>NoLorenzVec:LootshareUtils.kt:LootshareUtils.Sphere$LorenzVec</ID>
     <ID>NoLorenzVec:MatriarchHelper.kt:MatriarchHelper$LorenzVec</ID>
-    <ID>NoLorenzVec:MetalDetectorChestsJson.kt:MetalDetectorChestsJson$LorenzVec</ID>
     <ID>NoLorenzVec:MetalDetectorSolver.kt:MetalDetectorSolver$LorenzVec</ID>
     <ID>NoLorenzVec:MineshaftWaypoint.kt:MineshaftWaypoint$LorenzVec</ID>
     <ID>NoLorenzVec:MineshaftWaypointManager.kt:MineshaftWaypointManager$LorenzVec</ID>
-    <ID>NoLorenzVec:MiningApi.kt:MiningApi$LorenzVec</ID>
     <ID>NoLorenzVec:MinionFeatures.kt:MinionFeatures$LorenzVec</ID>
-    <ID>NoLorenzVec:MinionOpenEvent.kt:MinionStorageOpenEvent$LorenzVec</ID>
     <ID>NoLorenzVec:MinionXP.kt:MinionXP.MinionStorage$LorenzVec</ID>
     <ID>NoLorenzVec:MobFinder.kt:MobFinder$LorenzVec</ID>
-    <ID>NoLorenzVec:MobUtils.kt:MobUtils$LorenzVec</ID>
     <ID>NoLorenzVec:MovementSpeedDisplay.kt:MovementSpeedDisplay$LorenzVec</ID>
     <ID>NoLorenzVec:NavigateAllApi.kt:NavigateAllApi$LorenzVec</ID>
     <ID>NoLorenzVec:NavigateClipboardCommand.kt:NavigateClipboardCommand.ParsedLocations$LorenzVec</ID>
-    <ID>NoLorenzVec:NavigationUtils.kt:NavigationUtils$LorenzVec</ID>
     <ID>NoLorenzVec:NucleusBarriersBox.kt:NucleusBarriersBox.Crystal.AMBER$LorenzVec</ID>
     <ID>NoLorenzVec:OdgerWaypoint.kt:OdgerWaypoint$LorenzVec</ID>
     <ID>NoLorenzVec:PacketTest.kt:PacketTest$LorenzVec</ID>
-    <ID>NoLorenzVec:ParkourHelper.kt:ParkourHelper$LorenzVec</ID>
-    <ID>NoLorenzVec:ParkourJson.kt:ParkourJson$LorenzVec</ID>
     <ID>NoLorenzVec:ParkourWaypointSaver.kt:ParkourWaypointSaver$LorenzVec</ID>
-    <ID>NoLorenzVec:ParticleEvent.kt:ParticleEvent$LorenzVec</ID>
-    <ID>NoLorenzVec:PathRenderer.kt:LorenzVec</ID>
     <ID>NoLorenzVec:PestFinder.kt:PestFinder$LorenzVec</ID>
     <ID>NoLorenzVec:PestParticleWaypoint.kt:PestParticleWaypoint$LorenzVec</ID>
     <ID>NoLorenzVec:PhantomleafSolver.kt:PhantomleafSolver$LorenzVec</ID>
     <ID>NoLorenzVec:PigFeaturesApi.kt:PigFeaturesApi.ShinyOrbData$LorenzVec</ID>
-    <ID>NoLorenzVec:PlaySoundEvent.kt:PlaySoundEvent$LorenzVec</ID>
-    <ID>NoLorenzVec:PlayerPosData.kt:PlayerPosData.TimedPos$LorenzVec</ID>
-    <ID>NoLorenzVec:PolynomialFitter.kt:BezierFitter$LorenzVec</ID>
     <ID>NoLorenzVec:PowderChestTimer.kt:PowderChestTimer$LorenzVec</ID>
     <ID>NoLorenzVec:PreciseGuessBurrow.kt:PreciseGuessBurrow$LorenzVec</ID>
-    <ID>NoLorenzVec:ProfileSpecificStorage.kt:ProfileSpecificStorage.CFStorage$LorenzVec</ID>
     <ID>NoLorenzVec:ProgressQuest.kt:ProgressQuest$LorenzVec</ID>
-    <ID>NoLorenzVec:QuadDrawer.kt:QuadDrawer$LorenzVec</ID>
     <ID>NoLorenzVec:Quest.kt:Quest$LorenzVec</ID>
     <ID>NoLorenzVec:RareMobWaypointShare.kt:RareMobWaypointShare.SharedRareMob$LorenzVec</ID>
-    <ID>NoLorenzVec:RaycastUtils.kt:RaycastUtils.Ray$LorenzVec</ID>
-    <ID>NoLorenzVec:RegexUtils.kt:RegexUtils$LorenzVec</ID>
     <ID>NoLorenzVec:Relay.kt:Relay$LorenzVec</ID>
     <ID>NoLorenzVec:RescueMissionQuest.kt:RescueMissionQuest$LorenzVec</ID>
     <ID>NoLorenzVec:RescueMissionWaypoints.kt:RescueMissionWaypoints$LorenzVec</ID>
-    <ID>NoLorenzVec:RescueParkourJson.kt:RescueParkourJson$LorenzVec</ID>
     <ID>NoLorenzVec:RiftAgaricusCap.kt:RiftAgaricusCap$LorenzVec</ID>
     <ID>NoLorenzVec:RiftBloodEffigies.kt:RiftBloodEffigies$LorenzVec</ID>
-    <ID>NoLorenzVec:RiftEffigiesJson.kt:RiftEffigiesJson$LorenzVec</ID>
     <ID>NoLorenzVec:RiftMotesOrb.kt:RiftMotesOrb.MotesOrb$LorenzVec</ID>
     <ID>NoLorenzVec:RiftWiltedBerberisHelper.kt:RiftWiltedBerberisHelper$LorenzVec</ID>
-    <ID>NoLorenzVec:RiftWoodenButtonsJson.kt:ButtonSpots$LorenzVec</ID>
     <ID>NoLorenzVec:SafariNamesInCenter.kt:SafariNamesInCenter$LorenzVec</ID>
     <ID>NoLorenzVec:SeaCreatureDetectionApi.kt:SeaCreatureDetectionApi$LorenzVec</ID>
     <ID>NoLorenzVec:SendCoordinates.kt:SendCoordinates$LorenzVec</ID>
     <ID>NoLorenzVec:ShulkerFinder.kt:ShulkerFinder$LorenzVec</ID>
     <ID>NoLorenzVec:SkyHanniDebugsAndTests.kt:SkyHanniDebugsAndTests$LorenzVec</ID>
-    <ID>NoLorenzVec:SkyHanniInventoryContainer.kt:SkyHanniInventoryContainer$LorenzVec</ID>
-    <ID>NoLorenzVec:SkyHanniWaypoint.kt:SkyHanniWaypoint$LorenzVec</ID>
-    <ID>NoLorenzVec:SkytilsWaypointFormat.kt:SkytilsWaypointFormat$LorenzVec</ID>
     <ID>NoLorenzVec:SpiderDenRelicPathfinder.kt:SpiderDenRelicPathfinder.Data$LorenzVec</ID>
     <ID>NoLorenzVec:SplatterHearts.kt:SplatterHearts$LorenzVec</ID>
-    <ID>NoLorenzVec:Storage.kt:Storage$LorenzVec</ID>
-    <ID>NoLorenzVec:StorageApi.kt:StorageApi$LorenzVec</ID>
     <ID>NoLorenzVec:SulphurSkitterBox.kt:SulphurSkitterBox$LorenzVec</ID>
     <ID>NoLorenzVec:SummoningSoulsName.kt:SummoningSoulsName$LorenzVec</ID>
     <ID>NoLorenzVec:TalbotCircles.kt:TalbotCircles.Circle$LorenzVec</ID>
     <ID>NoLorenzVec:TerminalInfo.kt:TerminalInfo$LorenzVec</ID>
     <ID>NoLorenzVec:TestCanSeeFace.kt:TestCanSeeFace.FaceCheckContext$LorenzVec</ID>
     <ID>NoLorenzVec:TiaRelayWaypoints.kt:TiaRelayWaypoints$LorenzVec</ID>
-    <ID>NoLorenzVec:TimedHighlightBlock.kt:TimedHighlightBlock$LorenzVec</ID>
     <ID>NoLorenzVec:TimiteHelper.kt:TimiteHelper$LorenzVec</ID>
     <ID>NoLorenzVec:TotemOfCorruption.kt:Totem$LorenzVec</ID>
     <ID>NoLorenzVec:TrackWorldCommand.kt:TrackWorldCommand$LorenzVec</ID>
@@ -282,16 +228,11 @@
     <ID>NoLorenzVec:TrevorFeatures.kt:TrevorFeatures$LorenzVec</ID>
     <ID>NoLorenzVec:TrevorSolver.kt:TrevorSolver$LorenzVec</ID>
     <ID>NoLorenzVec:TrophyFishQuest.kt:TrophyFishQuest$LorenzVec</ID>
-    <ID>NoLorenzVec:VanquisherApi.kt:VanquisherApi$LorenzVec</ID>
     <ID>NoLorenzVec:VanquisherWaypointShare.kt:VanquisherWaypointShare.SharedVanquisher$LorenzVec</ID>
-    <ID>NoLorenzVec:VisitorRenderEvent.kt:VisitorRenderEvent$LorenzVec</ID>
     <ID>NoLorenzVec:WarpMenuUniques.kt:WarpMenuUniques$LorenzVec</ID>
     <ID>NoLorenzVec:WikiNpcComparator.kt:WikiNpcComparator$LorenzVec</ID>
     <ID>NoLorenzVec:WikiNpcParser.kt:WikiNpcParser$LorenzVec</ID>
-    <ID>NoLorenzVec:WiltedBerberisLocationsJson.kt:FieldCenter$LorenzVec</ID>
     <ID>NoLorenzVec:WoodenButtonsHelper.kt:WoodenButtonsHelper$LorenzVec</ID>
-    <ID>NoLorenzVec:WorldEvents.kt:WorldEvent$LorenzVec</ID>
-    <ID>NoLorenzVec:WorldRenderUtils.kt:WorldRenderUtils$LorenzVec</ID>
     <ID>NoLorenzVec:WormholeFinder.kt:WormholeFinder$LorenzVec</ID>
     <ID>NoNameShadowing:ChatManager.kt:ChatManager$reason</ID>
     <ID>NoNameShadowing:CommandUtils.kt:CommandUtils$start</ID>
