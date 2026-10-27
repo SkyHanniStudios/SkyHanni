@@ -2,6 +2,7 @@ package at.hannibal2.skyhanni.utils
 
 import at.hannibal2.skyhanni.utils.NumberUtil.formatDoubleOrNull
 import at.hannibal2.skyhanni.utils.chat.TextHelper
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import net.minecraft.network.chat.Component
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -102,16 +103,20 @@ object RegexUtils {
 
     fun Matcher.hasGroup(groupName: String): Boolean = groupOrNull(groupName) != null
 
-    fun Matcher.toLorenzVec(
+    fun Matcher.toSkyHanniVector(
         xGroup: String = "x",
         yGroup: String = "y",
         zGroup: String = "z",
-    ): LorenzVec? {
+    ): SkyHanniVector? {
         val x = groupOrNull(xGroup)?.trim()?.formatDoubleOrNull() ?: return null
         val y = groupOrNull(yGroup)?.trim()?.formatDoubleOrNull() ?: return null
         val z = groupOrNull(zGroup)?.trim()?.formatDoubleOrNull() ?: return null
-        return LorenzVec(x, y, z)
+        return SkyHanniVector(x, y, z)
     }
+
+    @Deprecated("Use toSkyHanniVector", ReplaceWith("toSkyHanniVector(xGroup, yGroup, zGroup)"))
+    fun Matcher.toLorenzVec(xGroup: String = "x", yGroup: String = "y", zGroup: String = "z") =
+        toSkyHanniVector(xGroup, yGroup, zGroup)
 
     fun Pattern.indexOfFirstMatch(list: List<String>): Int? {
         for ((index, line) in list.withIndex()) {

@@ -1,7 +1,7 @@
 package at.hannibal2.skyhanni.data.jsonobjects.repo
 
 import at.hannibal2.skyhanni.data.IslandType
-import at.hannibal2.skyhanni.utils.LorenzVec
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import java.util.TreeSet
@@ -38,7 +38,7 @@ data class HoppityEggLocationsJson(
     val residentLocations: Map<IslandType, List<String>>,
     @Expose
     @SerializedName(value = "api_egg_locations", alternate = ["apiEggLocations"])
-    val apiEggLocations: Map<IslandType, Map<String, LorenzVec>>,
+    val apiEggLocations: Map<IslandType, Map<String, SkyHanniVector>>,
     @Expose @SerializedName(value = "special_rabbits", alternate = ["specialRabbits"]) val specialRabbits: List<String>,
 )
 

@@ -1,10 +1,9 @@
 package at.hannibal2.skyhanni.utils.render
 
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
-import at.hannibal2.skyhanni.utils.LocationUtils.calculateEdges
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.zipWithNext3
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.submitCustomGeometry
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import at.hannibal2.skyhanni.utils.vector.VectorBounds.blockBox
 import at.hannibal2.skyhanni.utils.vector.VectorBounds.edges
 import net.minecraft.world.phys.AABB
@@ -24,7 +23,7 @@ class LineDrawer @PublishedApi internal constructor(
         val layer = SkyHanniRenderLayers.getLines(!depth)
         val lines = queuedLines.toList()
         event.submitCustomGeometry(layer) { pose, buf ->
-            fun QueuedLine.addVertexForPoint(point: LorenzVec) {
+            fun QueuedLine.addVertexForPoint(point: SkyHanniVector) {
                 buf.addVertex(pose.pose(), point.x.toFloat(), point.y.toFloat(), point.z.toFloat())
                     .setNormal(pose, normal.x.toFloat(), normal.y.toFloat(), normal.z.toFloat())
                     .setColor(color.red, color.green, color.blue, color.alpha)
@@ -40,7 +39,7 @@ class LineDrawer @PublishedApi internal constructor(
         queuedLines.clear()
     }
 
-    private fun addQueuedLine(p1: LorenzVec, p2: LorenzVec, color: Color) {
+    private fun addQueuedLine(p1: SkyHanniVector, p2: SkyHanniVector, color: Color) {
         val last = queuedLines.lastOrNull()
 
         if (last == null) {
@@ -55,7 +54,7 @@ class LineDrawer @PublishedApi internal constructor(
         queuedLines.add(QueuedLine(p1, p2, color))
     }
 
-    fun drawPath(path: List<LorenzVec>, color: Color, bezierPoint: Double = 1.0) {
+    fun drawPath(path: List<SkyHanniVector>, color: Color, bezierPoint: Double = 1.0) {
         if (bezierPoint < 0) {
             path.zipWithNext().forEach {
                 draw3DLine(it.first, it.second, color)
@@ -63,7 +62,7 @@ class LineDrawer @PublishedApi internal constructor(
         } else {
             val pathLines = path.zipWithNext()
             pathLines.forEachIndexed { index, pathLine ->
-                val reduce = pathLine.second.minus(pathLine.first).normalize().times(bezierPoint)
+                val reduce = pathLine.second.minus(pathLine.first).normalized().times(bezierPoint)
                 draw3DLine(
                     if (index != 0) pathLine.first + reduce else pathLine.first,
                     if (index != pathLines.lastIndex) pathLine.second - reduce else pathLine.second,
@@ -71,15 +70,15 @@ class LineDrawer @PublishedApi internal constructor(
                 )
             }
             path.zipWithNext3().forEach {
-                val p1 = it.second.minus(it.second.minus(it.first).normalize().times(bezierPoint))
-                val p3 = it.second.minus(it.second.minus(it.third).normalize().times(bezierPoint))
+                val p1 = it.second.minus(it.second.minus(it.first).normalized().times(bezierPoint))
+                val p3 = it.second.minus(it.second.minus(it.third).normalized().times(bezierPoint))
                 val p2 = it.second
                 drawBezier2(p1, p2, p3, color)
             }
         }
     }
 
-    fun drawEdges(location: LorenzVec, color: Color) {
+    fun drawEdges(location: SkyHanniVector, color: Color) {
         for ((p1, p2) in location.blockBox().inflate(EDGE_OUTLINE_INFLATION).edges()) {
             draw3DLine(p1, p2, color)
         }
@@ -87,19 +86,19 @@ class LineDrawer @PublishedApi internal constructor(
 
     fun drawEdges(axisAlignedBB: AABB, color: Color) {
         // TODO add cache. maybe on the caller site, since we can't add a lazy member in AxisAlignedBB
-        for ((p1, p2) in axisAlignedBB.calculateEdges()) {
+        for ((p1, p2) in axisAlignedBB.edges()) {
             draw3DLine(p1, p2, color)
         }
     }
 
-    fun draw3DLine(p1: LorenzVec, p2: LorenzVec, color: Color) {
+    fun draw3DLine(p1: SkyHanniVector, p2: SkyHanniVector, color: Color) {
         addQueuedLine(p1, p2, color)
     }
 
     fun drawBezier2(
-        p1: LorenzVec,
-        p2: LorenzVec,
-        p3: LorenzVec,
+        p1: SkyHanniVector,
+        p2: SkyHanniVector,
+        p3: SkyHanniVector,
         color: Color,
         segments: Int = 30,
     ) {
@@ -114,7 +113,7 @@ class LineDrawer @PublishedApi internal constructor(
         }
     }
 
-    private fun calculateBezierPoint(t: Float, p1: LorenzVec, p2: LorenzVec, p3: LorenzVec): LorenzVec {
+    private fun calculateBezierPoint(t: Float, p1: SkyHanniVector, p2: SkyHanniVector, p3: SkyHanniVector): SkyHanniVector {
         val u = 1 - t
         val tt = t * t
         val uu = u * u
@@ -123,7 +122,7 @@ class LineDrawer @PublishedApi internal constructor(
         val y = uu * p1.y + 2 * u * t * p2.y + tt * p3.y
         val z = uu * p1.z + 2 * u * t * p2.z + tt * p3.z
 
-        return LorenzVec(x, y, z)
+        return SkyHanniVector(x, y, z)
     }
 
     companion object {
@@ -137,7 +136,7 @@ class LineDrawer @PublishedApi internal constructor(
         ) {
             event.matrices.pushPose()
 
-            val inverseView = WorldRenderUtils.getViewerPos().negated()
+            val inverseView = -WorldRenderUtils.getViewerPos()
             event.matrices.translate(inverseView.x, inverseView.y, inverseView.z)
 
             val lineDrawer = LineDrawer(event, lineWidth, depth)
@@ -150,9 +149,9 @@ class LineDrawer @PublishedApi internal constructor(
 }
 
 private data class QueuedLine(
-    val p1: LorenzVec,
-    val p2: LorenzVec,
+    val p1: SkyHanniVector,
+    val p2: SkyHanniVector,
     val color: Color,
 ) {
-    val normal = p2.minus(p1).normalize()
+    val normal = p2.minus(p1).normalized()
 }

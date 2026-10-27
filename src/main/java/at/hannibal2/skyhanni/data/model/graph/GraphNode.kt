@@ -3,15 +3,15 @@ package at.hannibal2.skyhanni.data.model.graph
 import at.hannibal2.skyhanni.features.misc.pathfind.NavigationHelper
 import at.hannibal2.skyhanni.test.graph.GraphEditor
 import at.hannibal2.skyhanni.utils.GraphUtils
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.StringUtils.removeColor
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 
 /**
  * The object we work with in code with features that work wiith navigation or area detetion
  */
 class GraphNode(
     val id: Int,
-    override val position: LorenzVec,
+    override val position: SkyHanniVector,
     val name: String? = null,
     val tagNames: List<String> = emptyList(),
     val extraWeight: Int = 0,

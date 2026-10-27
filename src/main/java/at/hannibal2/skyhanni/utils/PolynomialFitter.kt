@@ -1,5 +1,6 @@
 package at.hannibal2.skyhanni.utils
 
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import at.hannibal2.skyhanni.utils.vector.VectorFormat.toSkyHanniVector
 import kotlin.math.pow
 import kotlin.time.Duration.Companion.seconds
@@ -31,9 +32,9 @@ class PolynomialFitter(private val degree: Int) {
 }
 
 open class BezierFitter(private val degree: Int) {
-    val points: MutableList<LorenzVec> = mutableListOf()
+    val points: MutableList<SkyHanniVector> = mutableListOf()
     private val fitters = arrayOf(PolynomialFitter(degree), PolynomialFitter(degree), PolynomialFitter(degree))
-    fun addPoint(point: LorenzVec) {
+    fun addPoint(point: SkyHanniVector) {
         require(point.x.isFinite() && point.y.isFinite() && point.z.isFinite()) { "Points may not contain NaN!" }
         val locationArray = point.toDoubleArray()
         for ((i, fitter) in fitters.withIndex()) {
@@ -43,7 +44,7 @@ open class BezierFitter(private val degree: Int) {
         lastCurve = null
     }
 
-    fun getLastPoint(): LorenzVec? {
+    fun getLastPoint(): SkyHanniVector? {
         return points.lastOrNull()
     }
 
@@ -74,11 +75,11 @@ open class BezierFitter(private val degree: Int) {
 
     @Suppress("ReturnCount")
     fun tryAdd(
-        location: LorenzVec,
+        location: SkyHanniVector,
         maxDistanceToLast: Double,
         lastAbilityUse: SimpleTimeMark? = null,
-        emptyCondition: (LorenzVec) -> Boolean = { false },
-        endCondition: (LorenzVec) -> Boolean = { false },
+        emptyCondition: (SkyHanniVector) -> Boolean = { false },
+        endCondition: (SkyHanniVector) -> Boolean = { false },
     ): Boolean {
         lastAbilityUse?.let {
             if (it.passedSince() > 1.seconds) return false
@@ -104,7 +105,7 @@ open class BezierFitter(private val degree: Int) {
      * distorts the derivative at the start that [ParticlePathBezierFitter.solve] extrapolates from. With degree 3
      * the result can land thousands of blocks away.
      */
-    private fun isAlreadyUsed(location: LorenzVec) = points.any { it.distanceSq(location) < REPEAT_TOLERANCE_SQ }
+    private fun isAlreadyUsed(location: SkyHanniVector) = points.any { it.distanceSq(location) < REPEAT_TOLERANCE_SQ }
 
     companion object {
         /** 0.01 blocks, squared. */
@@ -113,7 +114,7 @@ open class BezierFitter(private val degree: Int) {
 }
 
 class ParticlePathBezierFitter(degree: Int) : BezierFitter(degree) {
-    fun solve(): LorenzVec? {
+    fun solve(): SkyHanniVector? {
         val bezierCurve = fit() ?: return null
 
         val startPointDerivative = bezierCurve.derivativeAt(0.0)
@@ -132,7 +133,7 @@ class BezierCurve(private val coefficients: List<DoubleArray>) {
         require(coefficients.size == 3) { "Coefficients must be for a 3d curve!" }
     }
 
-    fun derivativeAt(t: Double): LorenzVec = coefficients.map {
+    fun derivativeAt(t: Double): SkyHanniVector = coefficients.map {
         var result = 0.0
         val reversed = it.reversedArray().dropLast(1)
         for ((i, coefficient) in reversed.withIndex()) {
@@ -141,7 +142,7 @@ class BezierCurve(private val coefficients: List<DoubleArray>) {
         result
     }.toSkyHanniVector()
 
-    fun at(t: Double): LorenzVec = coefficients.map {
+    fun at(t: Double): SkyHanniVector = coefficients.map {
         var result = 0.0
         val reversed = it.reversed()
         for (coefficient in reversed) {
