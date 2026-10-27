@@ -55,8 +55,7 @@ object SendCoordinates {
 
                 split.first().toFloat()
             } else end.toFloat()
-            val location = SkyHanniVector(x.toDouble(), y.toDouble(), z.toDouble())
-            waypoints.add(SharedWaypoint(location, description, System.currentTimeMillis() / 1000))
+            waypoints.add(SharedWaypoint(SkyHanniVector(x, y, z), description, System.currentTimeMillis() / 1000))
             logger.log("got waypoint coords and username")
         }
     }
