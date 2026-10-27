@@ -8,9 +8,9 @@ import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.LocationUtils.isPlayerInside
 import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import net.minecraft.world.phys.AABB
 
 @SkyHanniModule
@@ -18,7 +18,7 @@ object EnigmaRoseFlowerpot {
     private val config get() = SkyHanniMod.feature.rift.area.mountaintop
 
     private val area = AABB(25.0, 165.0, 90.0, 52.0, 185.0, 120.0)
-    private val dropLocation = LorenzVec(40, 161, 116)
+    private val dropLocation = SkyHanniVector(40, 161, 116)
     private var inArea = false
 
     @HandleEvent

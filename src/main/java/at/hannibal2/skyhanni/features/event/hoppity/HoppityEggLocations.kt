@@ -16,19 +16,19 @@ import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.LocationUtils
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceSqToPlayer
 import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.StringUtils
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawColor
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 
 @SkyHanniModule
 object HoppityEggLocations {
 
-    private val collectedEggStorage: MutableMap<IslandType, MutableSet<LorenzVec>>
+    private val collectedEggStorage: MutableMap<IslandType, MutableSet<SkyHanniVector>>
         get() = CFApi.profileStorage?.collectedEggLocations ?: mutableMapOf()
 
-    var apiEggLocations: Map<IslandType, Map<String, LorenzVec>> = mapOf()
+    var apiEggLocations: Map<IslandType, Map<String, SkyHanniVector>> = mapOf()
 
     val islandLocations
         get() = apiEggLocations[SkyBlockUtils.currentIsland]?.values?.toSet().orEmpty()
@@ -36,7 +36,7 @@ object HoppityEggLocations {
     val islandCollectedLocations
         get() = collectedEggStorage[SkyBlockUtils.currentIsland]?.toSet().orEmpty()
 
-    fun getEggsIn(islandType: IslandType): Set<LorenzVec> {
+    fun getEggsIn(islandType: IslandType): Set<SkyHanniVector> {
         return collectedEggStorage[islandType].orEmpty()
     }
 
@@ -52,7 +52,7 @@ object HoppityEggLocations {
         foundAllOnThisIsland = false
     }
 
-    fun hasCollectedEgg(location: LorenzVec): Boolean = islandCollectedLocations.contains(location)
+    fun hasCollectedEgg(location: SkyHanniVector): Boolean = islandCollectedLocations.contains(location)
 
     @HandleEvent
     fun onRepoReload(event: RepositoryReloadEvent) {
@@ -76,7 +76,7 @@ object HoppityEggLocations {
         saveEggLocation(SkyBlockUtils.currentIsland, location)
     }
 
-    private fun saveEggLocation(island: IslandType, location: LorenzVec) {
+    private fun saveEggLocation(island: IslandType, location: SkyHanniVector) {
         val locations = collectedEggStorage.getOrPut(island) { mutableSetOf() }
         locations += location
     }
@@ -97,7 +97,7 @@ object HoppityEggLocations {
 
         val apiCollectedLocations = rawLocations.values.flatten()
 
-        val collectedEggsApiData = mutableMapOf<IslandType, MutableSet<LorenzVec>>()
+        val collectedEggsApiData = mutableMapOf<IslandType, MutableSet<SkyHanniVector>>()
 
         for ((island, locationNameToCoords) in apiEggLocations) {
             val coords = apiCollectedLocations.mapNotNull { locationNameToCoords[it] }
@@ -122,7 +122,7 @@ object HoppityEggLocations {
         )
     }
 
-    private fun loadApiCollectedEggs(locations: Map<IslandType, Set<LorenzVec>>) {
+    private fun loadApiCollectedEggs(locations: Map<IslandType, Set<SkyHanniVector>>) {
         for ((island, coordinates) in locations.entries) {
             coordinates.forEach { saveEggLocation(island, it) }
         }

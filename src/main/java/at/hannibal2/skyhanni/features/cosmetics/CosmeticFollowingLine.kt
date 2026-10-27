@@ -9,12 +9,12 @@ import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ColorUtils.toColor
 import at.hannibal2.skyhanni.utils.LocationUtils
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.PlayerUtils
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.draw3DLine
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.exactLocation
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import java.awt.Color
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -24,8 +24,8 @@ object CosmeticFollowingLine {
 
     private val config get() = SkyHanniMod.feature.gui.cosmetic.followingLine
 
-    private var locations = LinkedHashMap<LorenzVec, LocationSpot>()
-    private val latestLocations = LinkedHashMap<LorenzVec, LocationSpot>()
+    private var locations = LinkedHashMap<SkyHanniVector, LocationSpot>()
+    private val latestLocations = LinkedHashMap<SkyHanniVector, LocationSpot>()
 
     class LocationSpot(val time: SimpleTimeMark, val onGround: Boolean)
 

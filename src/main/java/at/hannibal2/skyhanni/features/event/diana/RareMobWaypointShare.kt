@@ -16,13 +16,12 @@ import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.EntityUtils
 import at.hannibal2.skyhanni.utils.HypixelCommands
 import at.hannibal2.skyhanni.utils.KeyboardManager
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.PlayerUtils
 import at.hannibal2.skyhanni.utils.RegexUtils.hasGroup
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatchers
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
-import at.hannibal2.skyhanni.utils.RegexUtils.toLorenzVec
+import at.hannibal2.skyhanni.utils.RegexUtils.toSkyHanniVector
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SoundUtils
 import at.hannibal2.skyhanni.utils.SoundUtils.playSound
@@ -31,8 +30,9 @@ import at.hannibal2.skyhanni.utils.StringUtils.cleanPlayerName
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.removeIf
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.compat.deceased
-import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.client.player.RemotePlayer
 import java.util.concurrent.ConcurrentHashMap
 import java.util.regex.Matcher
@@ -88,7 +88,7 @@ object RareMobWaypointShare {
     class SharedRareMob(
         val fromPlayer: String,
         val playerDisplayName: String,
-        val location: LorenzVec,
+        val location: SkyHanniVector,
         val spawnTime: SimpleTimeMark,
         val mobName: String,
     )
@@ -243,7 +243,7 @@ object RareMobWaypointShare {
             ChatUtils.chat("§cRare Mob is dead")
             return
         }
-        val location = rareMob.getLorenzVec().toChatFormat()
+        val location = rareMob.positionVector().toChatFormat()
         val mobName = rareMob.name.string
         if (!isMobShareEnabled(mobName)) return
         lastShareTime = SimpleTimeMark.now()
@@ -256,7 +256,7 @@ object RareMobWaypointShare {
     private fun Matcher.detectFromChat(): Boolean {
         if (block()) return false
         val rawPlayerName = group("playerName")
-        val location = toLorenzVec() ?: return false
+        val location = toSkyHanniVector() ?: return false
 
         val rawMobName = if (hasGroup("mobName")) group("mobName").replace(" | ", "").trim().lowercase() else "Rare Mob"
         var mobName = "Rare Mob"

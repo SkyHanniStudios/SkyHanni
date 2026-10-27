@@ -11,7 +11,6 @@ import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ColorUtils.toColor
 import at.hannibal2.skyhanni.utils.ItemUtils.getSkullTexture
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NumberUtil.formatPercentage
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
@@ -24,7 +23,8 @@ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
-import at.hannibal2.skyhanni.utils.toLorenzVec
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.toSkyHanniVector
 import net.minecraft.core.BlockPos
 import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.entity.item.ItemEntity
@@ -191,8 +191,8 @@ object CarnivalFruitDigging {
 
         operator fun get(pos: GamePos): Cell = cells[pos.row][pos.col]
 
-        operator fun get(vec: LorenzVec): Cell? {
-            val pos = GamePos.fromLorenzVec(vec) ?: return null
+        operator fun get(vec: SkyHanniVector): Cell? {
+            val pos = GamePos.fromVector(vec) ?: return null
             return this[pos]
         }
 
@@ -281,7 +281,7 @@ object CarnivalFruitDigging {
                 }
 
                 if (label.isEmpty()) continue
-                val textPos = pos.toLorenzVec().add(0.5, 1.1, 0.5)
+                val textPos = pos.toVector().add(0.5, 1.1, 0.5)
                 val yOffsetStart = -5f * (label.size - 1)
                 label.forEachIndexed { i, (text, color) ->
                     event.drawString(textPos, text, seeThroughBlocks = true, yOffset = yOffsetStart + i * 10, color = color, scale = .3)
@@ -294,7 +294,7 @@ object CarnivalFruitDigging {
             recommendation?.let { rec ->
                 val pos = GamePos(rec.targetRow, rec.targetCol)
                 if (gameGrid[pos].isDiggable) {
-                    val vec = pos.toLorenzVec()
+                    val vec = pos.toVector()
                     event.drawWaypointFilled(vec, config.bestDigColor.toColor(), seeThroughBlocks = true, minimumAlpha = 0.35f)
                     event.drawDynamicText(
                         vec.add(0.5, 1.35, 0.5),
@@ -326,7 +326,7 @@ object CarnivalFruitDigging {
         val blockNew = event.newState
 
         if (blockOld.block != Blocks.SAND) return
-        val pos = GamePos.fromLorenzVec(event.location) ?: return
+        val pos = GamePos.fromVector(event.location) ?: return
         val cell = gameGrid[pos]
         cell.isDiggable = false
 
@@ -346,7 +346,7 @@ object CarnivalFruitDigging {
     }
 
     private fun handleAnchor(entity: ItemEntity) {
-        val solvedPos = GamePos.fromLorenzVec(entity.position().toLorenzVec()) ?: return
+        val solvedPos = GamePos.fromVector(entity.position().toSkyHanniVector()) ?: return
         val solvedCell = gameGrid[solvedPos]
         val dugCell = lastSquareDug?.let { gameGrid[it] } ?: return
 
@@ -377,8 +377,8 @@ object CarnivalFruitDigging {
         val name = event.cleanName ?: return
         if (name.isBlank()) return
 
-        val pos = entity.blockPosition().toLorenzVec()
-        val gamePos = GamePos.fromLorenzVec(pos) ?: return
+        val pos = entity.blockPosition().toSkyHanniVector()
+        val gamePos = GamePos.fromVector(pos) ?: return
 
         revealFruitPattern.matchMatcher(name) {
             val fruitName = group("name")
@@ -481,7 +481,7 @@ object CarnivalFruitDigging {
 
         fun label() = "${'A' + row}${col + 1}"
 
-        fun toLorenzVec() = LorenzVec(START_X + col, GRID_Y, START_Z + row)
+        fun toVector() = SkyHanniVector(START_X + col, GRID_Y, START_Z + row)
 
         fun toBlockPos() = BlockPos((START_X + col).toInt(), GRID_Y.toInt(), (START_Z + row).toInt())
 
@@ -490,7 +490,7 @@ object CarnivalFruitDigging {
             const val START_Z = 19.0
             const val GRID_Y = 72.0
 
-            fun fromLorenzVec(vec: LorenzVec): GamePos? {
+            fun fromVector(vec: SkyHanniVector): GamePos? {
                 val col = (vec.x - START_X).toInt()
                 val row = (vec.z - START_Z).toInt()
                 return GamePos(row, col).takeIf { it.isValid() }

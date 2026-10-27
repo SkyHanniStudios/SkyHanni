@@ -21,7 +21,6 @@ import at.hannibal2.skyhanni.utils.HypixelCommands
 import at.hannibal2.skyhanni.utils.LocationUtils
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
 import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NumberUtil.roundTo
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
@@ -32,6 +31,7 @@ import at.hannibal2.skyhanni.utils.chat.TextHelper.send
 import at.hannibal2.skyhanni.utils.coroutines.CoroutineSettings
 import at.hannibal2.skyhanni.utils.navigation.NavigationUtils
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 
 @SkyHanniModule
 object SpiderDenRelicPathfinder {
@@ -62,9 +62,9 @@ object SpiderDenRelicPathfinder {
     private class Data(
         var found: Int,
         val total: Int,
-        val route: MutableList<LorenzVec>,
-        val allRelics: Set<LorenzVec>,
-        var foundButNotClickedRelic: LorenzVec? = null,
+        val route: MutableList<SkyHanniVector>,
+        val allRelics: Set<SkyHanniVector>,
+        var foundButNotClickedRelic: SkyHanniVector? = null,
     ) {
         var disabled = total > 0 && found == total
         var debugState: String? = null
@@ -77,12 +77,12 @@ object SpiderDenRelicPathfinder {
             pathToNext()
         }
 
-        private fun getNearestRelic(): LorenzVec? {
+        private fun getNearestRelic(): SkyHanniVector? {
             val playerLocation = LocationUtils.playerLocation()
             return allRelics.filter { it.distanceToPlayer() < 10 }.minByOrNull { it.distanceSq(playerLocation) }
         }
 
-        private fun markFound(relic: LorenzVec) {
+        private fun markFound(relic: SkyHanniVector) {
             if (route.remove(relic)) found++
             foundRelicsStore().add(relic)
         }
@@ -107,7 +107,7 @@ object SpiderDenRelicPathfinder {
             }
         }
 
-        private fun pathTo(loc: LorenzVec) {
+        private fun pathTo(loc: SkyHanniVector) {
             val percentage = (found.toDouble() / total) * 100
             val percentageLabel = "§8(§b${percentage.roundTo(1)}%§8)"
             IslandGraphs.pathFind(
@@ -276,7 +276,7 @@ object SpiderDenRelicPathfinder {
     private fun getRelicNodes(nodes: List<GraphNode>): List<GraphNode> =
         nodes.filter { it.hasTag(GraphNodeTag.SPIDER_RELIC) }
 
-    private fun foundRelicsStore(): MutableSet<LorenzVec> =
+    private fun foundRelicsStore(): MutableSet<SkyHanniVector> =
         ProfileStorageData.profileSpecific?.spider?.relics?.found ?: mutableSetOf()
 
     private fun isDisabledCommand(): Boolean {

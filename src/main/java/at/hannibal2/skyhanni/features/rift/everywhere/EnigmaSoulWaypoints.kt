@@ -21,7 +21,6 @@ import at.hannibal2.skyhanni.utils.ItemUtils.cleanName
 import at.hannibal2.skyhanni.utils.ItemUtils.getCleanLore
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
 import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.NeuItems.getItemStack
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
@@ -31,6 +30,7 @@ import at.hannibal2.skyhanni.utils.itemType
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import net.minecraft.client.gui.screens.inventory.ContainerScreen
 import net.minecraft.world.SimpleContainer
 import net.minecraft.world.inventory.ChestMenu
@@ -39,7 +39,7 @@ import net.minecraft.world.inventory.ChestMenu
 object EnigmaSoulWaypoints {
     private val config get() = RiftApi.config.enigmaSoulWaypoints
     private var inInventory = false
-    var soulLocations = mapOf<String, Map<String, LorenzVec>>()
+    var soulLocations = mapOf<String, Map<String, SkyHanniVector>>()
     private val trackedSouls = mutableMapOf<String, MutableList<String>>()
     private val inventoryUnfound = mutableListOf<String>()
     private var adding = true
