@@ -20,7 +20,6 @@ import at.hannibal2.skyhanni.utils.LocationUtils
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceSqToPlayer
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
 import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.NumberUtil.formatDoubleOrNull
 import at.hannibal2.skyhanni.utils.NumberUtil.roundTo
@@ -37,6 +36,7 @@ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawLineToCrosshair
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawString
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import net.minecraft.ChatFormatting
 import net.minecraft.world.level.block.Blocks
 import kotlin.time.Duration.Companion.milliseconds
@@ -65,12 +65,12 @@ object MetalDetectorSolver {
 
     private val config get() = SkyHanniMod.feature.mining.metalDetector
 
-    private var chestLocations: List<LorenzVec> = listOf()
-    private val predictedChestLocations: MutableList<LorenzVec> = mutableListOf()
-    private var baseCoordinates: LorenzVec? = null
-    private var ignoreLocation: LorenzVec? = null
+    private var chestLocations: List<SkyHanniVector> = listOf()
+    private val predictedChestLocations: MutableList<SkyHanniVector> = mutableListOf()
+    private var baseCoordinates: SkyHanniVector? = null
+    private var ignoreLocation: SkyHanniVector? = null
     private var lastSearchedForBase: SimpleTimeMark = SimpleTimeMark.farPast()
-    private var lastLoc: LorenzVec? = null
+    private var lastLoc: SkyHanniVector? = null
     private var playedPling = false
     private var lastTreasureFound = SimpleTimeMark.farPast()
     private val DWARVEN_LAPIS_SWORD = "DWARVEN_LAPIS_SWORD".toInternalName()
@@ -118,13 +118,13 @@ object MetalDetectorSolver {
 
             predictedChestLocations.clear()
             chestLocations.forEach {
-                val loc = baseCoordinatesNonNull.plus(it.negated())
+                val loc = baseCoordinatesNonNull - it
 
                 if (loc == ignoreLocation) {
                     ignoreLocation = null
                     return
                 }
-                if (loc.add(0, 1, 0).distanceToPlayer().roundTo(1) == distance) {
+                if (loc.up().distanceToPlayer().roundTo(1) == distance) {
                     if (predictedChestLocations.isEmpty() && !playedPling) {
                         SoundUtils.plingSound.playSound()
                         playedPling = true
@@ -222,13 +222,13 @@ object MetalDetectorSolver {
     private fun findBaseCoordinates() {
         if (lastSearchedForBase.passedSince() < 15.seconds) return
         lastSearchedForBase = SimpleTimeMark.now()
-        val player = LocationUtils.playerLocation().roundToBlock()
+        val player = LocationUtils.playerLocation().floor()
 
         for (i in -50 until 50) {
             for (j in 30 downTo -30) {
                 for (k in -50 until 50) {
-                    val blockPosition = player.add(i, j, k).roundToBlock()
-                    val nextBlockPosition = blockPosition.add(0, 13, 0)
+                    val blockPosition = player.add(i.toDouble(), j.toDouble(), k.toDouble()).floor()
+                    val nextBlockPosition = blockPosition.up(13)
                     if (blockPosition.getBlockAt() == Blocks.QUARTZ_STAIRS && nextBlockPosition.getBlockAt() == Blocks.BARRIER) {
                         baseCoordinates = getBaseCoordinates(nextBlockPosition)
                         return
@@ -239,22 +239,22 @@ object MetalDetectorSolver {
     }
 
     // Finds the barrier block near the Jade crystal (middle of Mines of Divan) with the highest x, y, z values (chest locations are offset from this point).
-    private fun getBaseCoordinates(blockPosition: LorenzVec): LorenzVec {
+    private fun getBaseCoordinates(blockPosition: SkyHanniVector): SkyHanniVector {
         var changed = true
         var currentPosition = blockPosition
         while (changed) {
             changed = false
-            if (currentPosition.add(1, 0, 0).getBlockAt() == Blocks.BARRIER) {
+            if (currentPosition.add(x = 1.0).getBlockAt() == Blocks.BARRIER) {
                 changed = true
-                currentPosition = currentPosition.add(1, 0, 0)
+                currentPosition = currentPosition.add(x = 1.0)
             }
-            if (currentPosition.add(0, 1, 0).getBlockAt() == Blocks.BARRIER) {
+            if (currentPosition.up().getBlockAt() == Blocks.BARRIER) {
                 changed = true
-                currentPosition = currentPosition.add(0, 1, 0)
+                currentPosition = currentPosition.up()
             }
-            if (currentPosition.add(0, 0, 1).getBlockAt() == Blocks.BARRIER) {
+            if (currentPosition.add(z = 1.0).getBlockAt() == Blocks.BARRIER) {
                 changed = true
-                currentPosition = currentPosition.add(0, 0, 1)
+                currentPosition = currentPosition.add(z = 1.0)
             }
         }
         return currentPosition

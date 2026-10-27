@@ -11,8 +11,8 @@ import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ColorUtils.addAlpha
 import at.hannibal2.skyhanni.utils.PlayerUtils
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
-import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.world.entity.Mob
 
 @SkyHanniModule
@@ -36,7 +36,7 @@ object HellionShieldHelper {
         event.addIrrelevant {
             add("hellionShieldMobs: ${hellionShieldMobs.size}")
             for ((entity, type) in hellionShieldMobs) {
-                add("${entity.getLorenzVec()} - $type")
+                add("${entity.positionVector()} - $type")
             }
         }
     }
@@ -46,7 +46,7 @@ object HellionShieldHelper {
         if (!SkyBlockUtils.debug || !PlayerUtils.isSneaking()) return
 
         for ((entity, type) in hellionShieldMobs) {
-            event.drawDynamicText(entity.getLorenzVec().add(y = 2), type.cleanName, 1.5, seeThroughBlocks = false)
+            event.drawDynamicText(entity.positionVector().up(2), type.cleanName, 1.5, seeThroughBlocks = false)
         }
     }
 

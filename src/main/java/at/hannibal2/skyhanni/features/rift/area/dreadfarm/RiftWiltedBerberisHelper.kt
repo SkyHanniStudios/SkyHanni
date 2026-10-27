@@ -22,13 +22,14 @@ import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.ItemUtils.getInternalName
 import at.hannibal2.skyhanni.utils.LocationUtils
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.PlayerUtils
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.draw3DLine
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawFilledBoundingBox
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.expandBlock
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorBounds.boxFromOrigin
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.world.level.block.Blocks
 import java.awt.Color
@@ -50,24 +51,24 @@ object RiftWiltedBerberisHelper {
     private var hasFarmingToolInHand = false
 
     // Maps each field's center position to the number of Wilted Berberis in that field.
-    private var fieldCenters = mapOf<LorenzVec, Int>()
-    private var fieldSequences = mapOf<LorenzVec, BerberisSequence>()
+    private var fieldCenters = mapOf<SkyHanniVector, Int>()
+    private var fieldSequences = mapOf<SkyHanniVector, BerberisSequence>()
 
-    data class WiltedBerberis(var currentParticles: LorenzVec) {
-        var previous: LorenzVec? = null
+    data class WiltedBerberis(var currentParticles: SkyHanniVector) {
+        var previous: SkyHanniVector? = null
         var moving = true
         var y = 0.0
         var lastTime = SimpleTimeMark.now()
     }
 
-    private class BerberisSequence(fieldCenter: LorenzVec) {
+    private class BerberisSequence(fieldCenter: SkyHanniVector) {
         val expectedCount: Int = fieldCenters.getValue(fieldCenter)
-        val sequence = mutableListOf<LorenzVec>()
+        val sequence = mutableListOf<SkyHanniVector>()
         var isValid = false
         var isRendering = false
         var isAway = false
         var currentIndex = 0
-        var previousTarget: LorenzVec? = null
+        var previousTarget: SkyHanniVector? = null
         var lastParticleTime = SimpleTimeMark.farPast()
 
         fun reset() {
@@ -106,8 +107,8 @@ object RiftWiltedBerberisHelper {
         val nextTarget get() = sequence.getOrNull(currentIndex + 1)
         val thirdTarget get() = sequence.getOrNull(currentIndex + 2)
 
-        fun isAtCurrent(location: LorenzVec) =
-            currentTarget?.roundToBlock() == location.roundToBlock()
+        fun isAtCurrent(location: SkyHanniVector) =
+            currentTarget?.floor() == location.floor()
     }
 
     @HandleEvent
@@ -139,7 +140,7 @@ object RiftWiltedBerberisHelper {
         }
     }
 
-    private fun updateFieldProximity(center: LorenzVec, seq: BerberisSequence) {
+    private fun updateFieldProximity(center: SkyHanniVector, seq: BerberisSequence) {
         val dist = center.distanceIgnoreY(LocationUtils.playerLocation())
         if (dist > 20.0) {
             seq.isAway = true
@@ -151,11 +152,11 @@ object RiftWiltedBerberisHelper {
         }
     }
 
-    private fun nearestBerberis(location: LorenzVec): WiltedBerberis? =
+    private fun nearestBerberis(location: SkyHanniVector): WiltedBerberis? =
         list.filter { it.currentParticles.distanceSq(location) < 8 }
             .minByOrNull { it.currentParticles.distanceSq(location) }
 
-    private fun nearestFieldCenter(location: LorenzVec, maxDistance: Double = 50.0): LorenzVec? =
+    private fun nearestFieldCenter(location: SkyHanniVector, maxDistance: Double = 50.0): SkyHanniVector? =
         fieldCenters.keys
             .filter { it.distanceIgnoreY(location) < maxDistance }
             .minByOrNull { it.distanceIgnoreY(location) }
@@ -192,7 +193,7 @@ object RiftWiltedBerberisHelper {
         berberis.updateParticlePosition(location)
     }
 
-    private fun WiltedBerberis.updateParticlePosition(location: LorenzVec) {
+    private fun WiltedBerberis.updateParticlePosition(location: SkyHanniVector) {
         val isMoving = currentParticles != location
         if (isMoving) {
             if (currentParticles.distance(location) > 3) {
@@ -212,11 +213,11 @@ object RiftWiltedBerberisHelper {
         lastTime = SimpleTimeMark.now()
     }
 
-    private fun handleRespawnParticle(location: LorenzVec) {
+    private fun handleRespawnParticle(location: SkyHanniVector) {
         if (!config.respawnSequence) return
 
-        val roundedLocation = location.roundToBlock()
-        if (roundedLocation.add(y = -1).getBlockAt() != Blocks.FARMLAND) return
+        val roundedLocation = location.floor()
+        if (roundedLocation.down().getBlockAt() != Blocks.FARMLAND) return
 
         val center = nearestFieldCenter(roundedLocation) ?: return
         val seq = fieldSequences[center] ?: return
@@ -316,7 +317,7 @@ object RiftWiltedBerberisHelper {
         }
     }
 
-    private fun SkyHanniRenderWorldEvent.renderSequenceWaypoints(seq: BerberisSequence, current: LorenzVec) {
+    private fun SkyHanniRenderWorldEvent.renderSequenceWaypoints(seq: BerberisSequence, current: SkyHanniVector) {
         val next = seq.nextTarget
         val third = seq.thirdTarget
         val previous = seq.previousTarget
@@ -329,7 +330,7 @@ object RiftWiltedBerberisHelper {
     }
 
     // Line from the last harvested position to the current target
-    private fun SkyHanniRenderWorldEvent.drawPreviousTargetLine(previous: LorenzVec?, current: LorenzVec) {
+    private fun SkyHanniRenderWorldEvent.drawPreviousTargetLine(previous: SkyHanniVector?, current: SkyHanniVector) {
         if (previous == null) return
         draw3DLine(
             previous.add(0.5, 0.5, 0.5),
@@ -341,9 +342,9 @@ object RiftWiltedBerberisHelper {
     }
 
     private fun SkyHanniRenderWorldEvent.drawNextTargets(
-        next: LorenzVec?,
-        current: LorenzVec,
-        third: LorenzVec?,
+        next: SkyHanniVector?,
+        current: SkyHanniVector,
+        third: SkyHanniVector?,
     ) {
         if (next == null) return
         drawFilledBoundingBox(axisAlignedBB(next), Color.YELLOW.toChromaColor(), 0.5f)
@@ -401,13 +402,13 @@ object RiftWiltedBerberisHelper {
         }
     }
 
-    private fun axisAlignedBB(loc: LorenzVec) = loc.add(0.1, -0.1, 0.1).boundingToOffset(0.8, 1.0, 0.8).expandBlock()
+    private fun axisAlignedBB(loc: SkyHanniVector) = loc.add(0.1, -0.1, 0.1).boxFromOrigin(0.8, 1.0, 0.8).expandBlock()
 
-    private fun LorenzVec.fixLocation(wiltedBerberis: WiltedBerberis): LorenzVec {
+    private fun SkyHanniVector.fixLocation(wiltedBerberis: WiltedBerberis): SkyHanniVector {
         val x = x - 0.5
         val y = wiltedBerberis.y
         val z = z - 0.5
-        return LorenzVec(x, y, z)
+        return SkyHanniVector(x, y, z)
     }
 
     private fun isEnabled() = RiftApi.inDreadfarm() && config.enabled
