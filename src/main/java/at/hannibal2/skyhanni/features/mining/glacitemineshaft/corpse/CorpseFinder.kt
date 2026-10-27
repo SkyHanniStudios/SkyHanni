@@ -14,8 +14,8 @@ import at.hannibal2.skyhanni.utils.ItemUtils.getInternalName
 import at.hannibal2.skyhanni.utils.LocationUtils.canBeSeen
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.addOrPut
-import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.decoration.ArmorStand
@@ -65,7 +65,7 @@ object CorpseFinder {
         for ((entity, canBeSeenTicks) in corpseEntities) {
             if (canBeSeenTicks >= MARK_AS_FOUND_TICKS_THRESHOLD) continue
 
-            if (!entity.getLorenzVec().canBeSeen(-1..3)) {
+            if (!entity.positionVector().canBeSeen(-1..3)) {
                 corpseEntities[entity] = 0
                 continue
             }
@@ -74,11 +74,11 @@ object CorpseFinder {
                 "Got CorpseType of null for entity in corpseEntities",
                 "event" to "EntityMoveEvent<LocalPlayer>",
                 "helmet" to entity.equipment.get(EquipmentSlot.HEAD).getInternalName(),
-                "location" to entity.getLorenzVec(),
+                "location" to entity.positionVector(),
             )
 
             if (corpseEntities.addOrPut(entity, 1) >= MARK_AS_FOUND_TICKS_THRESHOLD) {
-                CorpseFoundEvent(corpseType, entity.getLorenzVec().up(), areAllCorpsesFound()).post()
+                CorpseFoundEvent(corpseType, entity.positionVector().up(), areAllCorpsesFound()).post()
             }
         }
     }
@@ -94,11 +94,11 @@ object CorpseFinder {
             "Got CorpseType of null for entity in corpseEntities",
             "event" to "EntityClickEvent",
             "helmet" to entity.equipment.get(EquipmentSlot.HEAD).getInternalName(),
-            "location" to entity.getLorenzVec(),
+            "location" to entity.positionVector(),
         )
 
         corpseEntities[entity] = MARK_AS_FOUND_TICKS_THRESHOLD
-        CorpseFoundEvent(corpseType, entity.getLorenzVec().up(), areAllCorpsesFound()).post()
+        CorpseFoundEvent(corpseType, entity.positionVector().up(), areAllCorpsesFound()).post()
     }
 
     @HandleEvent(onlyOnIsland = IslandType.MINESHAFT)

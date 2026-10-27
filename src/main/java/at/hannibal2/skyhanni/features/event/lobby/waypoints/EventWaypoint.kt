@@ -1,11 +1,11 @@
 package at.hannibal2.skyhanni.features.event.lobby.waypoints
 
 import at.hannibal2.skyhanni.data.jsonobjects.repo.EventWaypointData
-import at.hannibal2.skyhanni.utils.LorenzVec
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 
 data class EventWaypoint(
     val name: String = "",
-    val position: LorenzVec,
+    val position: SkyHanniVector,
     var isFound: Boolean = false,
 )
 

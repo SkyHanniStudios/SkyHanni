@@ -7,18 +7,18 @@ import at.hannibal2.skyhanni.events.skyblock.GraphAreaChangeEvent
 import at.hannibal2.skyhanni.features.misc.pathfind.AreaNode
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceSqToPlayer
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 
 @SkyHanniModule
 object SafariNamesInCenter {
 
     private val config get() = SkyHanniMod.feature.hunting.safari
     private val areaLocations = mapOf(
-        LorenzVec(-27.1, 66.0, 22.8) to SafariBiome.FOREST,
-        LorenzVec(-25.5, 66.0, -23.2) to SafariBiome.HAUNTED,
-        LorenzVec(-73.3, 65.0, -23.4) to SafariBiome.ICY,
-        LorenzVec(-72.6, 65.5, 23.9) to SafariBiome.CAVERN,
+        SkyHanniVector(-27.1, 66.0, 22.8) to SafariBiome.FOREST,
+        SkyHanniVector(-25.5, 66.0, -23.2) to SafariBiome.HAUNTED,
+        SkyHanniVector(-73.3, 65.0, -23.4) to SafariBiome.ICY,
+        SkyHanniVector(-72.6, 65.5, 23.9) to SafariBiome.CAVERN,
     )
 
     private var showWaypoints = false

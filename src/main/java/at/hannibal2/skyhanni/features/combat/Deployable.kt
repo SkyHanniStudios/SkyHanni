@@ -4,8 +4,8 @@ import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.compat.deceased
-import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.world.entity.LivingEntity
 
 enum class Deployable(
@@ -40,13 +40,13 @@ enum class Deployable(
     )
 
     fun isInRange(entity: LivingEntity): Boolean {
-        return hasShaftBuff() || range > entity.getLorenzVec().distanceToPlayer()
+        return hasShaftBuff() || range > entity.positionVector().distanceToPlayer()
     }
 
     fun isInRange(): Boolean {
         if (hasShaftBuff()) return true
         val entity = entity ?: return false
-        return range > entity.getLorenzVec().distanceToPlayer()
+        return range > entity.positionVector().distanceToPlayer()
     }
 
     fun hasShaftBuff(): Boolean {

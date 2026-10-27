@@ -9,10 +9,10 @@ import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.LocationUtils
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.RegexUtils.find
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import java.awt.Color
 import kotlin.math.abs
 import kotlin.math.hypot
@@ -32,8 +32,8 @@ object PhantomleafSolver {
 
     private var isSearching = false
 
-    private var lastPos: LorenzVec? = null
-    private val candidates = mutableListOf<LorenzVec>()
+    private var lastPos: SkyHanniVector? = null
+    private val candidates = mutableListOf<SkyHanniVector>()
 
     private val patternGroup = RepoPattern.group("garden.greenhouse.phantomleaf")
 
@@ -96,7 +96,7 @@ object PhantomleafSolver {
      * Given a center position and a radius from that center, find all candidate blocks
      * near the center with that exact distance from the center (within 0.001 tolerance)
      */
-    private fun updateCandidates(center: LorenzVec, radius: Double) {
+    private fun updateCandidates(center: SkyHanniVector, radius: Double) {
         candidates.clear()
         val rounded = center.blockCenter()
         for (dx in SEARCH_RANGE) {
@@ -104,7 +104,7 @@ object PhantomleafSolver {
                 // calculate distance from candidate (rounded.x + dx, rounded.z + dz) to center
                 val d = hypot(rounded.x + dx - center.x, rounded.z + dz - center.z)
                 if (abs(d - radius) < 0.001) {
-                    candidates.add(LorenzVec(rounded.x + dx, MUTATION_Y_LEVEL, rounded.z + dz).roundToBlock())
+                    candidates.add(SkyHanniVector(rounded.x + dx, MUTATION_Y_LEVEL, rounded.z + dz).floor())
                 }
             }
         }

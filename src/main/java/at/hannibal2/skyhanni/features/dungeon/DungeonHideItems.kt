@@ -19,7 +19,7 @@ import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SkullTextureHolder
 import at.hannibal2.skyhanni.utils.compat.EntityCompat.getStandHelmet
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLessResets
-import at.hannibal2.skyhanni.utils.getLorenzVec
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.decoration.ArmorStand
@@ -157,7 +157,7 @@ object DungeonHideItems {
 
         val packetLocation = event.location
         for (armorStand in hideParticles.filterValues { it.passedSince() < 100.milliseconds }.keys) {
-            val distance = packetLocation.distance(armorStand.getLorenzVec())
+            val distance = packetLocation.distance(armorStand.positionVector())
             if (distance < 2) {
                 if (event.type == ParticleTypes.FIREWORK) {
                     event.cancel()

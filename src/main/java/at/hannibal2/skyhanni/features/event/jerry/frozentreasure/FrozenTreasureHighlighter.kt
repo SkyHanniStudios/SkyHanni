@@ -13,7 +13,7 @@ import at.hannibal2.skyhanni.utils.compat.EntityCompat.getInventoryItems
 import at.hannibal2.skyhanni.utils.compat.EntityCompat.getStandHelmet
 import at.hannibal2.skyhanni.utils.compat.InventoryCompat.isNotEmpty
 import at.hannibal2.skyhanni.utils.compat.InventoryCompat.orNull
-import at.hannibal2.skyhanni.utils.toLorenzVec
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.toSkyHanniVector
 import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.level.block.Blocks
 
@@ -44,7 +44,7 @@ object FrozenTreasureHighlighter {
             val standHelmet = armorStand.getStandHelmet().orNull() ?: continue
             if (standHelmet.isSkull() && standHelmet.hoverName.string.endsWith("Head")) continue
 
-            val treasureLocation = armorStand.blockPosition().toLorenzVec().up(yOffset)
+            val treasureLocation = armorStand.blockPosition().toSkyHanniVector().up(yOffset)
             blockHighlighter.addBlock(TimedHighlightBlock(treasureLocation))
         }
     }

@@ -11,7 +11,6 @@ import at.hannibal2.skyhanni.utils.ColorUtils.toColor
 import at.hannibal2.skyhanni.utils.LocationUtils
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
 import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.SkyHanniLogger
@@ -19,6 +18,7 @@ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawColor
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawString
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 
 @SkyHanniModule
 object SendCoordinates {
@@ -55,7 +55,8 @@ object SendCoordinates {
 
                 split.first().toFloat()
             } else end.toFloat()
-            waypoints.add(SharedWaypoint(LorenzVec(x, y, z), description, System.currentTimeMillis() / 1000))
+            val location = SkyHanniVector(x.toDouble(), y.toDouble(), z.toDouble())
+            waypoints.add(SharedWaypoint(location, description, System.currentTimeMillis() / 1000))
             logger.log("got waypoint coords and username")
         }
     }
@@ -94,7 +95,7 @@ object SendCoordinates {
         logger.log("Reset everything (world change)")
     }
 
-    data class SharedWaypoint(val location: LorenzVec, val name: String, val time: Long)
+    data class SharedWaypoint(val location: SkyHanniVector, val name: String, val time: Long)
 
     @HandleEvent
     fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {

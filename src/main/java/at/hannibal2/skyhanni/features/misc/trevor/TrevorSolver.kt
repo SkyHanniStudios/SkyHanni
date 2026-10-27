@@ -10,12 +10,12 @@ import at.hannibal2.skyhanni.utils.EntityUtils
 import at.hannibal2.skyhanni.utils.EntityUtils.baseMaxHealth
 import at.hannibal2.skyhanni.utils.EntityUtils.canBeSeen
 import at.hannibal2.skyhanni.utils.LocationUtils
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.compat.EffectsCompat
 import at.hannibal2.skyhanni.utils.compat.EffectsCompat.Companion.hasPotionEffect
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLessResets
-import at.hannibal2.skyhanni.utils.toLorenzVec
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.toSkyHanniVector
 import net.minecraft.client.player.RemotePlayer
 import net.minecraft.world.entity.LivingEntity
 
@@ -27,7 +27,7 @@ object TrevorSolver {
     private var maxHeight: Double = 0.0
     private var minHeight: Double = 0.0
     private var foundID = -1
-    var mobCoordinates = LorenzVec(0.0, 0.0, 0.0)
+    var mobCoordinates = SkyHanniVector(0.0, 0.0, 0.0)
     var mobLocation = TrapperMobArea.NONE
     var averageHeight = (minHeight + maxHeight) / 2
 
@@ -81,7 +81,7 @@ object TrevorSolver {
                             TrevorFeatures.lastTitle = TitleManager.sendTitle("§2Saw ${currentMob.mobName}!")
                         }
                         mobLocation = TrapperMobArea.FOUND
-                        mobCoordinates = entity.blockPosition().toLorenzVec()
+                        mobCoordinates = entity.blockPosition().toSkyHanniVector()
                     }
                 } else {
                     foundID = entity.id
@@ -90,7 +90,7 @@ object TrevorSolver {
             }
         }
         if (foundID != -1) {
-            mobCoordinates = LorenzVec(0.0, 0.0, 0.0)
+            mobCoordinates = SkyHanniVector(0.0, 0.0, 0.0)
             foundID = -1
         }
     }
@@ -103,6 +103,6 @@ object TrevorSolver {
         minHeight = 0.0
         averageHeight = (minHeight + maxHeight) / 2
         foundID = -1
-        mobCoordinates = LorenzVec(0.0, 0.0, 0.0)
+        mobCoordinates = SkyHanniVector(0.0, 0.0, 0.0)
     }
 }

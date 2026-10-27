@@ -12,8 +12,8 @@ import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.ClipboardUtils
 import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.StringUtils
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 
 @SkyHanniModule
 object NavigateClipboardCommand {
@@ -28,9 +28,9 @@ object NavigateClipboardCommand {
         OPTIMIZED,
     }
 
-    private class ParsedLocations(val locations: List<LorenzVec>, val unreadableLines: Int, val format: String?)
+    private class ParsedLocations(val locations: List<SkyHanniVector>, val unreadableLines: Int, val format: String?)
 
-    private class SnappedLocations(val byNode: Map<GraphNode, LorenzVec>, val tooFar: Int, val merged: Int)
+    private class SnappedLocations(val byNode: Map<GraphNode, SkyHanniVector>, val tooFar: Int, val merged: Int)
 
     /**
      * Navigate to all locations read from the clipboard.
@@ -108,15 +108,15 @@ object NavigateClipboardCommand {
         return ParsedLocations(locations, unreadableLines = lines.size - locations.size, format = null)
     }
 
-    private fun parseLocationOrNull(line: String): LorenzVec? {
+    private fun parseLocationOrNull(line: String): SkyHanniVector? {
         val parts = line.split(":")
         if (parts.size != 3) return null
         val (x, y, z) = parts.map { it.trim().toDoubleOrNull() ?: return null }
-        return LorenzVec(x, y, z)
+        return SkyHanniVector(x, y, z)
     }
 
-    private fun snapToNodes(graph: Graph, locations: List<LorenzVec>): SnappedLocations {
-        val snapped = LinkedHashMap<GraphNode, LorenzVec>()
+    private fun snapToNodes(graph: Graph, locations: List<SkyHanniVector>): SnappedLocations {
+        val snapped = LinkedHashMap<GraphNode, SkyHanniVector>()
         var tooFar = 0
         var merged = 0
 

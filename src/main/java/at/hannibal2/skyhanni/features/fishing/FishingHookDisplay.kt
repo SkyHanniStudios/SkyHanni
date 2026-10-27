@@ -8,14 +8,14 @@ import at.hannibal2.skyhanni.events.CheckRenderEntityEvent
 import at.hannibal2.skyhanni.events.entity.EntityCustomNameUpdateEvent
 import at.hannibal2.skyhanni.events.entity.EntityLeaveWorldEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.RegexUtils.groupOrNull
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderable
-import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.world.entity.decoration.ArmorStand
 
 @SkyHanniModule
@@ -26,7 +26,7 @@ object FishingHookDisplay {
     private data class TimerDisplay(
         val id: Int,
         val renderable: Renderable,
-        val position: LorenzVec,
+        val position: SkyHanniVector,
     )
 
     private var timerDisplay: TimerDisplay? = null
@@ -71,12 +71,12 @@ object FishingHookDisplay {
             }
         } ?: return
 
-        val position = event.entity.getLorenzVec()
+        val position = event.entity.positionVector()
 
         val current = timerDisplay
         if (current != null && current.id != event.entity.id) {
             // Prefer the closest entity to the bobber if there are multiple
-            val bobberPosition = bobber.getLorenzVec()
+            val bobberPosition = bobber.positionVector()
             if (current.position.distance(bobberPosition) < position.distance(bobberPosition)) return
         }
 
