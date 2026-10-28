@@ -157,7 +157,7 @@ object DungeonHideItems {
 
         val packetLocation = event.location
         for (armorStand in hideParticles.filterValues { it.passedSince() < 100.milliseconds }.keys) {
-            val distance = packetLocation.distance(armorStand.positionVector())
+            val distance = packetLocation.distanceTo(armorStand.positionVector())
             if (distance < 2) {
                 if (event.type == ParticleTypes.FIREWORK) {
                     event.cancel()

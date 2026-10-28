@@ -79,7 +79,7 @@ object SpiderDenRelicPathfinder {
 
         private fun getNearestRelic(): SkyHanniVector? {
             val playerLocation = LocationUtils.playerLocation()
-            return allRelics.filter { it.distanceToPlayer() < 10 }.minByOrNull { it.distanceSq(playerLocation) }
+            return allRelics.filter { it.distanceToPlayer() < 10 }.minByOrNull { it.distanceToSqr(playerLocation) }
         }
 
         private fun markFound(relic: SkyHanniVector) {

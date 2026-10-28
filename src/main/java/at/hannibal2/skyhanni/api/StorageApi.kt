@@ -215,7 +215,7 @@ object StorageApi {
         if (otherChest == null) {
             lastChestClicked = event.position
             doubleChestCord = null
-        } else if (otherChest.lengthSquared() > event.position.lengthSquared()) {
+        } else if (otherChest.lengthSqr() > event.position.lengthSqr()) {
             lastChestClicked = event.position
             doubleChestCord = otherChest
         } else {

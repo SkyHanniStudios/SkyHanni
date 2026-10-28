@@ -13,6 +13,7 @@ import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLessResets
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import at.hannibal2.skyhanni.utils.vector.VectorConversions.toSkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.plus
 import net.minecraft.client.resources.language.I18n
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
@@ -81,7 +82,7 @@ object MobUtils {
         raycastForMobs(entity, partialTicks, offset)?.firstOrNull()
 
     fun raycastForMobs(entity: Entity, partialTicks: Float, offset: SkyHanniVector = SkyHanniVector.ZERO): List<Mob>? {
-        val look = entity.lookAngle.toSkyHanniVector().normalized()
+        val look = entity.lookAngle.normalize().toSkyHanniVector()
         val pos = entity.eyePosition.toSkyHanniVector() + offset
         val possibleEntities = MobData.entityToMob.filterKeys {
             it !is ArmorStand &&

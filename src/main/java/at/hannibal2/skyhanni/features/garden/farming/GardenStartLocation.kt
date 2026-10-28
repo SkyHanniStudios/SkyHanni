@@ -14,6 +14,7 @@ import at.hannibal2.skyhanni.utils.LocationUtils.distanceSqToPlayer
 import at.hannibal2.skyhanni.utils.LorenzColor
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
+import at.hannibal2.skyhanni.utils.vector.VectorMath.floor
 
 @SkyHanniModule
 object GardenStartLocation {

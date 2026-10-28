@@ -122,7 +122,7 @@ object NavigateClipboardCommand {
 
         for (location in locations) {
             val node = graph.getNearestNode(location)
-            if (node.position.distance(location) > MAX_SNAP_DISTANCE) {
+            if (node.position.distanceTo(location) > MAX_SNAP_DISTANCE) {
                 tooFar++
                 continue
             }

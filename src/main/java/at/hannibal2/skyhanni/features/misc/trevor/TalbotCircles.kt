@@ -4,6 +4,7 @@ import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.utils.LocationUtils
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawCircleWireframe
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorMath.roundTo
 import java.awt.Color
 import kotlin.math.absoluteValue
 import kotlin.math.tan

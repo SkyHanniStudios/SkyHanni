@@ -43,6 +43,7 @@ import at.hannibal2.skyhanni.utils.compat.normalizeAsArray
 import at.hannibal2.skyhanni.utils.coroutines.CoroutineSettings
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorFormat.toLocalFormat
 import net.minecraft.client.player.LocalPlayer
 import java.awt.Color
 import kotlin.time.Duration.Companion.milliseconds
@@ -118,7 +119,7 @@ object IslandGraphs {
 
     fun disableNodes(reason: String, center: SkyHanniVector, radius: Double) {
         disabledNodesReason = reason
-        for (node in getGraph().filter { it.position.distance(center) < radius }) {
+        for (node in getGraph().filter { it.position.distanceTo(center) < radius }) {
             node.enabled = false
         }
     }
@@ -566,7 +567,7 @@ object IslandGraphs {
         this.onFound = onFound
         this.onManualCancel = onManualCancel
         this.activeCondition = condition
-        goal = getGraph().minByActive { it.position.distance(currentTarget!!) }
+        goal = getGraph().minByActive { it.position.distanceTo(currentTarget!!) }
         updateNavigationProgress()
     }
 
@@ -602,7 +603,7 @@ object IslandGraphs {
         radius: Double = DEFAULT_NODE_SEARCH_RADIUS,
     ): GraphNode? {
         val found = getGraph().getNearestNode(location, condition)
-        return found.takeIf { it.position.distance(location) < radius }
+        return found.takeIf { it.position.distanceTo(location) < radius }
     }
 
     @HandleEvent

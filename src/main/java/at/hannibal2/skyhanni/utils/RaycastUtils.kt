@@ -3,6 +3,11 @@ package at.hannibal2.skyhanni.utils
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import at.hannibal2.skyhanni.utils.vector.VectorConversions.toSkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorMath.isNormalized
+import at.hannibal2.skyhanni.utils.vector.VectorMath.toDoubleArray
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.minus
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.plus
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.times
 import net.minecraft.world.phys.AABB
 import kotlin.math.abs
 import kotlin.math.max
@@ -53,7 +58,7 @@ object RaycastUtils {
     fun intersectPlaneWithRay(plane: Plane, ray: Ray): SkyHanniVector {
 //         require(plane.normal.dotProduct(ray.direction).absoluteValue != 0.0)
         val intersectionPointDistanceAlongRay =
-            ((plane.normal dot plane.origin) - (plane.normal dot ray.origin)) / (plane.normal dot ray.direction)
+            (plane.normal.dot(plane.origin) - plane.normal.dot(ray.origin)) / plane.normal.dot(ray.direction)
         return ray.origin + ray.direction * intersectionPointDistanceAlongRay
     }
 
@@ -64,8 +69,8 @@ object RaycastUtils {
     fun findDistanceToRay(ray: Ray, point: SkyHanniVector): Double {
         val plane = createOrthogonalPlaneToRayAtPoint(ray, point)
         val intersectionPoint = intersectPlaneWithRay(plane, ray)
-        if ((intersectionPoint - ray.origin) dot ray.direction < 0) return Double.MAX_VALUE
-        return intersectionPoint.distance(point)
+        if ((intersectionPoint - ray.origin).dot(ray.direction) < 0) return Double.MAX_VALUE
+        return intersectionPoint.distanceTo(point)
     }
 
     inline fun <T> createDistanceToRayEstimator(ray: Ray, crossinline position: (T) -> SkyHanniVector): (T) -> Double {

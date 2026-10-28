@@ -15,8 +15,12 @@ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.draw3DLine
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.exactPlayerEyeLocation
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
-import at.hannibal2.skyhanni.utils.vector.VectorBounds.nearestPointOnSegment
 import at.hannibal2.skyhanni.utils.vector.VectorConversions.toSkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorMath.addHalf
+import at.hannibal2.skyhanni.utils.vector.VectorMath.nearestPointOnSegment
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.minus
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.plus
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.times
 import java.awt.Color
 
 /**
@@ -96,9 +100,9 @@ class PathRenderer(val path: Graph, private val color: Color, private val target
         val walkPositions: List<SkyHanniVector> = listOf(startPos) + pathPoints.drop(nextPathIdx).map { it.pos }
         val curveEnd = findBezierEnd(walkPositions, nextPathIdx) ?: return
 
-        val dirToCurve = (curveEnd.pos - eyePos).normalized()
+        val dirToCurve = (curveEnd.pos - eyePos).normalize()
         val anchor = lineStartPos + dirToCurve * ANCHOR_FORWARD_DIST
-        val scale = anchor.distance(curveEnd.pos) * CONTROL_POINT_SCALE
+        val scale = anchor.distanceTo(curveEnd.pos) * CONTROL_POINT_SCALE
         val controlPoint = curveEnd.pos - curveEnd.tangent * scale
         val bezierDepth = !WorldRenderUtils.isRenderingUnderwater()
         event.draw3DBezier2(anchor, controlPoint, curveEnd.pos, color, NEAR_LINE_WIDTH, bezierDepth)
@@ -120,9 +124,9 @@ class PathRenderer(val path: Graph, private val color: Color, private val target
         point: PathPoint,
     ) {
         val nodePos = point.pos
-        val dirToNode = (nodePos - eyePos).normalized()
+        val dirToNode = (nodePos - eyePos).normalize()
         val anchor = lineStartPos + dirToNode * ANCHOR_FORWARD_DIST
-        val scale = anchor.distance(nodePos) * CONTROL_POINT_SCALE
+        val scale = anchor.distanceTo(nodePos) * CONTROL_POINT_SCALE
         val controlPoint = nodePos - dirToNode * scale
         event.draw3DBezier2(
             p1 = anchor,
@@ -139,15 +143,15 @@ class PathRenderer(val path: Graph, private val color: Color, private val target
         var prev = startPos
         for (i in startSegIdx until walkPositions.size) {
             val next = walkPositions[i]
-            val d = prev.distance(next)
+            val d = prev.distanceTo(next)
             if (d >= remaining) {
-                return (prev + (next - prev).normalized() * remaining - startPos).normalized()
+                return (prev + (next - prev).normalize() * remaining - startPos).normalize().toSkyHanniVector()
             }
             remaining -= d
             prev = next
         }
-        return if (prev.distanceSq(startPos) > 0.0001) (prev - startPos).normalized()
-        else (walkPositions.last() - walkPositions[walkPositions.lastIndex - 1]).normalized()
+        return if (prev.distanceToSqr(startPos) > 0.0001) (prev - startPos).normalize().toSkyHanniVector()
+        else (walkPositions.last() - walkPositions[walkPositions.lastIndex - 1]).normalize().toSkyHanniVector()
     }
 
     private fun findBezierEnd(walkPositions: List<SkyHanniVector>, nextPathIdx: Int): CurveEnd? {
@@ -156,14 +160,14 @@ class PathRenderer(val path: Graph, private val color: Color, private val target
         for (i in 1..walkPositions.lastIndex) {
             val segStart = walkPositions[i - 1]
             val segEnd = walkPositions[i]
-            val segLen = segStart.distance(segEnd)
+            val segLen = segStart.distanceTo(segEnd)
             val remaining = nearCurveLength - totalDist
             if (segLen >= remaining) {
-                val endPos = segStart + (segEnd - segStart).normalized() * remaining
+                val endPos = segStart + (segEnd - segStart).normalize() * remaining
                 return CurveEnd(endPos, walkTangent(walkPositions, i, endPos), nextPathIdx + i - 1)
             }
             totalDist += segLen
-            result = CurveEnd(segEnd, (segEnd - segStart).normalized(), nextPathIdx + i - 1)
+            result = CurveEnd(segEnd, (segEnd - segStart).normalize().toSkyHanniVector(), nextPathIdx + i - 1)
         }
         return result
     }
@@ -174,7 +178,7 @@ class PathRenderer(val path: Graph, private val color: Color, private val target
         var bestNextIdx = 1
         for (i in 0 until pathPoints.lastIndex) {
             val proj = eyePos.nearestPointOnSegment(pathPoints[i].pos, pathPoints[i + 1].pos)
-            val distSq = eyePos.distanceSq(proj)
+            val distSq = eyePos.distanceToSqr(proj)
             if (distSq < bestDistSq) {
                 bestDistSq = distSq
                 bestPos = proj
@@ -192,7 +196,7 @@ class PathRenderer(val path: Graph, private val color: Color, private val target
         var totalDist = 0.0
         for (i in (closestIdx + 1)..pathPoints.lastIndex) {
             if (!pathPoints[i].pos.canBeSeen()) break
-            totalDist += pathPoints[i - 1].pos.distance(pathPoints[i].pos)
+            totalDist += pathPoints[i - 1].pos.distanceTo(pathPoints[i].pos)
             if (totalDist >= CURVE_RADIUS) {
                 totalDist = CURVE_RADIUS
                 break
@@ -210,16 +214,16 @@ class PathRenderer(val path: Graph, private val color: Color, private val target
     }
 
     private fun calculateDistance(closestIdx: Int): Double {
-        var distance = pathPoints[closestIdx].pos.distance(playerPosition)
+        var distance = pathPoints[closestIdx].pos.distanceTo(playerPosition)
         for (i in closestIdx until pathPoints.lastIndex) {
-            distance += pathPoints[i].pos.distance(pathPoints[i + 1].pos)
+            distance += pathPoints[i].pos.distanceTo(pathPoints[i + 1].pos)
         }
-        return distance + pathPoints.last().pos.distance(targetLocation.addHalf())
+        return distance + pathPoints.last().pos.distanceTo(targetLocation.addHalf())
     }
 
     fun nearestPathDistanceSq(): Double {
         if (pathPoints.isEmpty()) return Double.MAX_VALUE
-        return pathPoints.minOf { it.pos.distanceSq(playerPosition) }
+        return pathPoints.minOf { it.pos.distanceToSqr(playerPosition) }
     }
 
     private fun catmullRomPoint(p0: SkyHanniVector, p1: SkyHanniVector, p2: SkyHanniVector, p3: SkyHanniVector, t: Double): SkyHanniVector {
@@ -241,7 +245,7 @@ class PathRenderer(val path: Graph, private val color: Color, private val target
             val p1 = positions[i]
             val p2 = positions[i + 1]
             val p3 = positions.getOrElse(i + 2) { positions[i + 1] }
-            val steps = (p1.distance(p2) / SUBDIVISION_STEP).toInt().coerceAtLeast(1)
+            val steps = (p1.distanceTo(p2) / SUBDIVISION_STEP).toInt().coerceAtLeast(1)
             for (step in 1..steps) {
                 result.add(catmullRomPoint(p0, p1, p2, p3, step.toDouble() / steps))
             }
@@ -250,7 +254,7 @@ class PathRenderer(val path: Graph, private val color: Color, private val target
     }
 
     private fun findClosestIndex(positions: List<PathPoint>, referencePos: SkyHanniVector): Int =
-        positions.indices.minBy { positions[it].pos.distance(referencePos) }
+        positions.indices.minBy { positions[it].pos.distanceTo(referencePos) }
 
     companion object {
         private val config get() = SkyHanniMod.feature.misc.navigation.pathfinding

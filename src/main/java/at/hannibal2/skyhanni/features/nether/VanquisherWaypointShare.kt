@@ -28,6 +28,7 @@ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.renderBeaconBeam
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
+import at.hannibal2.skyhanni.utils.vector.VectorMath.toDoubleArray
 import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.component1

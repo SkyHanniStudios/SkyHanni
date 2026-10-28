@@ -11,10 +11,10 @@ import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.graph.GraphEditor.isEnabled
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.OSUtils
 import at.hannibal2.skyhanni.utils.coroutines.CoroutineSettings
-import at.hannibal2.skyhanni.utils.toLorenzVec
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorFormat.toSkyHanniVector
 
 @SkyHanniModule
 object GraphParkour {
@@ -52,7 +52,7 @@ object GraphParkour {
         ChatUtils.chat("Saved graph as parkour to clipboard!")
     }
 
-    private fun graphToList(graph: Graph): List<LorenzVec>? {
+    private fun graphToList(graph: Graph): List<SkyHanniVector>? {
         val start = validateStartNode(graph) ?: return null
         validateEndNode(graph) ?: return null
         return validatePath(graph, start)
@@ -96,7 +96,7 @@ object GraphParkour {
         return ends.first()
     }
 
-    fun validatePath(graph: Graph, start: GraphNode): List<LorenzVec>? {
+    fun validatePath(graph: Graph, start: GraphNode): List<SkyHanniVector>? {
         val startNeighbors = start.neighbors.entries.first()
         val list = mutableListOf<GraphNode>()
         list.add(start)
@@ -136,7 +136,7 @@ object GraphParkour {
         return list.map { it.position }
     }
 
-    private fun showErrorAt(vec: LorenzVec) {
+    private fun showErrorAt(vec: SkyHanniVector) {
         IslandGraphs.pathFind(vec, "Node error", LorenzColor.RED.toColor(), condition = ::isEnabled)
     }
 
@@ -154,15 +154,15 @@ object GraphParkour {
         ChatUtils.chat("Graph Editor loaded a parkour from clipboard!")
     }
 
-    private fun readListFromClipboard(): List<LorenzVec>? {
+    private fun readListFromClipboard(): List<SkyHanniVector>? {
         val clipboard = OSUtils.readFromClipboard() ?: return null
         return clipboard.split("\n").map { line ->
             val raw = line.replace("\"", "").replace(",", "")
-            raw.split(":").map { it.toDouble() }.toLorenzVec()
+            raw.split(":").map { it.toDouble() }.toSkyHanniVector()
         }
     }
 
-    private fun listToGraph(locations: List<LorenzVec>): Graph {
+    private fun listToGraph(locations: List<SkyHanniVector>): Graph {
         val nodes = locations.mapIndexed { index, location ->
             val name = when (index) {
                 0 -> "start"
@@ -176,12 +176,12 @@ object GraphParkour {
 
         for (node in nodes) {
             nodes.getOrNull(node.id - 1)?.let { previous ->
-                val distance = previous.position.distance(node.position)
+                val distance = previous.position.distanceTo(node.position)
                 addNeighbor(node, previous, distance)
                 addNeighbor(previous, node, distance)
             }
             nodes.getOrNull(node.id + 1)?.let { next ->
-                val distance = next.position.distance(node.position)
+                val distance = next.position.distanceTo(node.position)
                 addNeighbor(node, next, distance)
                 addNeighbor(next, node, distance)
             }

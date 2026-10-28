@@ -33,6 +33,8 @@ import at.hannibal2.skyhanni.utils.compat.deceased
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
+import at.hannibal2.skyhanni.utils.vector.VectorFormat.toChatFormat
+import at.hannibal2.skyhanni.utils.vector.VectorFormat.toLocalFormat
 import net.minecraft.client.player.RemotePlayer
 import java.util.concurrent.ConcurrentHashMap
 import java.util.regex.Matcher

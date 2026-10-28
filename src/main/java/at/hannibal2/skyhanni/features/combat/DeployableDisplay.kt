@@ -14,6 +14,7 @@ import at.hannibal2.skyhanni.utils.TimeUtils.format
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
 import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
+import at.hannibal2.skyhanni.utils.vector.VectorMath.equalsIgnoreY
 import net.minecraft.world.entity.decoration.ArmorStand
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration

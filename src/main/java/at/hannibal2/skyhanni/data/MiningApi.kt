@@ -32,6 +32,8 @@ import at.hannibal2.skyhanni.utils.collection.CollectionUtils.countBy
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.removeIf
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorFormat.toCleanString
+import at.hannibal2.skyhanni.utils.vector.VectorMath.floor
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
 import java.util.concurrent.ConcurrentHashMap
@@ -421,7 +423,7 @@ object MiningApi {
     private fun tryHandlePickobulusBlock(pos: SkyHanniVector, oldState: BlockState): Boolean {
         if (!pickobulusActive || !pickobulusWaitingForBlock) return false
         val explosionPos = pickobulusExplosionPos ?: return true
-        if (explosionPos.distance(pos) > 15) return true
+        if (explosionPos.distanceTo(pos) > 15) return true
         val ore = OreBlock.getByStateOrNull(oldState) ?: return true
         if (pickobulusMinedBlocks.any { it.first == pos }) return true
         pickobulusMinedBlocks += pos to ore

@@ -33,6 +33,8 @@ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.toBlockPos
+import at.hannibal2.skyhanni.utils.vector.VectorMath.blockCenter
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.entity.ChestBlockEntity
 import java.awt.Color

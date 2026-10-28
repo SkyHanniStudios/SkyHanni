@@ -27,6 +27,7 @@ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.draw3DLine
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import at.hannibal2.skyhanni.utils.vector.VectorBounds.boxTo
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.copy
 import com.google.gson.annotations.Expose
 import net.minecraft.client.player.LocalPlayer
 import java.awt.Color
@@ -233,7 +234,7 @@ object GardenPlotApi {
                 val maxY = ((y - 2) * 96 + 48).toDouble()
                 val a = SkyHanniVector(minX, 0.0, minY)
                 val b = SkyHanniVector(maxX, 256.0, maxY)
-                val middle = a.midpoint(b).copy(y = 10.0)
+                val middle = a.lerp(b, 0.5).copy(y = 10.0)
                 val box = a.boxTo(b).inflate(0.0001, 0.0, 0.0001)
                 list.add(GardenPlot(id, slot, box, middle))
                 slot++

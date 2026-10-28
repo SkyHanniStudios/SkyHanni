@@ -26,6 +26,11 @@ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawString
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import at.hannibal2.skyhanni.utils.vector.VectorBounds.boxFromOrigin
 import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
+import at.hannibal2.skyhanni.utils.vector.VectorMath.distanceSqIgnoreY
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.copy
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.minus
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.plus
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.times
 import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.phys.AABB
 import java.awt.Color
@@ -109,7 +114,7 @@ object BeachBallCatchHelper {
     }
 
     private fun SkyHanniRenderWorldEvent.renderBlock(location: SkyHanniVector, player: SkyHanniVector, predictor: Predictor) {
-        val distance = location.distance(player)
+        val distance = location.distanceTo(player)
         drawFilledBoundingBox(
             location.getAABB(predictor.variant),
             // TODO add chroma color support via config
@@ -187,7 +192,7 @@ object BeachBallCatchHelper {
             private set
 
         private fun updateDirection(newPosition: SkyHanniVector) {
-            if (lastPosition.distance(newPosition) < 0.3) return
+            if (lastPosition.distanceTo(newPosition) < 0.3) return
             if (lastChange.passedSince() < 800.milliseconds) return
             val diff = (newPosition - lastPosition).y
             val isPositive = diff > 0

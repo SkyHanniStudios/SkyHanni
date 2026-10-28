@@ -45,15 +45,15 @@ object PlayerPosData {
     /** Returns how long the player has been within [distance] of [pos], or null if not currently there. */
     fun timeAtPos(pos: SkyHanniVector, distance: Double): Duration? {
         val first = positions.firstOrNull() ?: return null
-        if (first.pos.distance(pos) > distance) return null
-        val timedPos = positions.firstOrNull { it.pos.distance(pos) > distance }
+        if (first.pos.distanceTo(pos) > distance) return null
+        val timedPos = positions.firstOrNull { it.pos.distanceTo(pos) > distance }
             ?: return positions.last().time.passedSince()
         return timedPos.time.passedSince()
     }
 
     /** Returns how long ago the player was last within [distance] of [pos], or null if never tracked. */
     fun timeSinceLastAt(pos: SkyHanniVector, distance: Double): Duration? =
-        positions.firstOrNull { it.pos.distance(pos) <= distance }?.time?.passedSince()
+        positions.firstOrNull { it.pos.distanceTo(pos) <= distance }?.time?.passedSince()
 
     @HandleEvent
     fun debug(event: DebugDataCollectEvent) {

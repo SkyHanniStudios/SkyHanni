@@ -25,6 +25,7 @@ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.minus
 import net.minecraft.world.entity.Display
 import kotlin.time.Duration.Companion.seconds
 
@@ -81,8 +82,8 @@ object WormholeFinder {
             .filter { it.hasTag(GraphNodeTag.FISHING_WORMHOLE) }
             .map { node ->
                 val delta = node.position - origin
-                val horizontal = SkyHanniVector(delta.x, 0.0, delta.z).normalized()
-                node to (forward dot horizontal)
+                val horizontal = SkyHanniVector(delta.x, 0.0, delta.z).normalize()
+                node to forward.dot(horizontal)
             }
             .filter { (_, score) -> score >= DIRECTION_TOLERANCE }
             .maxByOrNull { (_, score) -> score }

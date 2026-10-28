@@ -81,7 +81,7 @@ object RiftBloodEffigies {
     )
 
     private fun getIndex(entity: ArmorStand): Int? =
-        locations.minByOrNull { it.distanceSq(entity.positionVector()) }?.let { locations.indexOf(it) }
+        locations.minByOrNull { it.distanceToSqr(entity.positionVector()) }?.let { locations.indexOf(it) }
 
     @HandleEvent
     fun onWorldChange() {

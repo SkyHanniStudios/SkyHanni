@@ -22,6 +22,9 @@ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import at.hannibal2.skyhanni.utils.vector.VectorConversions.toSkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorFormat.toChatFormat
+import at.hannibal2.skyhanni.utils.vector.VectorFormat.toLocalFormat
+import at.hannibal2.skyhanni.utils.vector.VectorMath.floor
 import net.minecraft.core.Direction
 import net.minecraft.core.Vec3i
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket

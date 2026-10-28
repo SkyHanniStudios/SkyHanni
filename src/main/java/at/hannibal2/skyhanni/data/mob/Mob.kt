@@ -292,9 +292,6 @@ class Mob(
     val isAlive: Boolean get() = baseEntity.isAlive
 
     fun positionVector() = baseEntity.positionVector()
-
-    @Deprecated("Use positionVector", ReplaceWith("positionVector()"))
-    fun getLorenzVec() = positionVector()
 }
 
 enum class MobCategory {

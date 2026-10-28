@@ -19,8 +19,9 @@ import at.hannibal2.skyhanni.utils.render.LineDrawer
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawColor
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawString
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
-import at.hannibal2.skyhanni.utils.vector.VectorBlocks
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.plus
 import io.github.notenoughupdates.moulconfig.ChromaColour
+import net.minecraft.core.Direction
 import net.minecraft.world.level.block.Blocks
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -49,7 +50,7 @@ class LivingCaveSnake(
     }
 
     fun invalidShape(): Boolean = blocks.isEmpty() || blocks.zipWithNext().any { (a, b) ->
-        a.distance(b) > 3
+        a.distanceTo(b) > 3
     }
 
     private fun invalidHeadRightNow(): Boolean = head.getBlockAt() != Blocks.LAPIS_BLOCK
@@ -59,7 +60,7 @@ class LivingCaveSnake(
     private fun isNotTouchingAir(): Boolean = blocks.any { it.isNotTouchingAir() }
 
     private fun SkyHanniVector.isNotTouchingAir(): Boolean =
-        VectorBlocks.AXIS_DIRECTIONS.none { plus(it.toVector()).getBlockAt() == Blocks.AIR }
+        Direction.entries.none { plus(it.unitVec3).getBlockAt() == Blocks.AIR }
 
     private fun isSelected() = LivingCaveSnakeFeatures.selectedSnake == this
 

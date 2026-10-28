@@ -16,6 +16,7 @@ import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLessResets
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import at.hannibal2.skyhanni.utils.vector.VectorConversions.toSkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorMath.roundTo
 import net.minecraft.client.player.RemotePlayer
 import net.minecraft.world.entity.LivingEntity
 

@@ -56,7 +56,7 @@ value class Graph(
     fun getNearestNode(
         location: SkyHanniVector = GraphUtils.playerPosition,
         condition: (GraphNode) -> Boolean = { true },
-    ): GraphNode = filterByActive(condition).minBy { it.position.distanceSq(location) }
+    ): GraphNode = filterByActive(condition).minBy { it.position.distanceToSqr(location) }
     fun toPositionsList() = map { it.position }
     fun toJson(): String = gson.toJson(this)
 

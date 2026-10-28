@@ -11,11 +11,12 @@ import at.hannibal2.skyhanni.data.model.graph.GraphNodeTag
 import at.hannibal2.skyhanni.data.repo.SkyHanniRepoManager
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NumberUtil.roundTo
 import at.hannibal2.skyhanni.utils.OSUtils
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.removeIf
 import at.hannibal2.skyhanni.utils.coroutines.CoroutineSettings
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorFormat.toChatFormat
 
 @SkyHanniModule
 object WikiNpcComparator {
@@ -36,8 +37,8 @@ object WikiNpcComparator {
         }
     }
 
-    private fun customRules(raw: MutableMap<IslandType, MutableMap<String, LorenzVec>>?):
-        MutableMap<IslandType, MutableMap<String, LorenzVec>>? {
+    private fun customRules(raw: MutableMap<IslandType, MutableMap<String, SkyHanniVector>>?):
+        MutableMap<IslandType, MutableMap<String, SkyHanniVector>>? {
         if (raw == null) return null
         for ((_, names) in raw) {
             for ((name, location) in names.toMutableMap()) {
@@ -52,7 +53,7 @@ object WikiNpcComparator {
         return raw
     }
 
-    private fun loadWiki(result: MutableList<String>): MutableMap<IslandType, MutableMap<String, LorenzVec>>? {
+    private fun loadWiki(result: MutableList<String>): MutableMap<IslandType, MutableMap<String, SkyHanniVector>>? {
         val clipboard = OSUtils.readFromClipboard() ?: run {
             ChatUtils.userError("clipboard does not contain a string")
             return null
@@ -73,8 +74,8 @@ object WikiNpcComparator {
     }
 
     // TODO do this once on skyblock join, then store until repo reload.
-    private suspend fun loadShNpcs(result: MutableList<String>): MutableMap<IslandType, MutableMap<String, LorenzVec>>? {
-        val shNpcs = mutableMapOf<IslandType, MutableMap<String, LorenzVec>>()
+    private suspend fun loadShNpcs(result: MutableList<String>): MutableMap<IslandType, MutableMap<String, SkyHanniVector>>? {
+        val shNpcs = mutableMapOf<IslandType, MutableMap<String, SkyHanniVector>>()
 
         val islands = mutableMapOf<String, IslandType>()
         for (islandType in IslandType.entries) {
@@ -93,7 +94,7 @@ object WikiNpcComparator {
                 continue
             }
 
-            val npcs = mutableMapOf<String, LorenzVec>()
+            val npcs = mutableMapOf<String, SkyHanniVector>()
             for (node in graph) {
                 if (node.hasTag(GraphNodeTag.NPC)) {
                     val name = node.name ?: error("name is null for npc node at ${node.position} in island $name")
@@ -116,8 +117,8 @@ object WikiNpcComparator {
 
     private fun compare(
         result: MutableList<String>,
-        shNpcs: Map<IslandType, Map<String, LorenzVec>>,
-        wikiNpcs: Map<IslandType, Map<String, LorenzVec>>,
+        shNpcs: Map<IslandType, Map<String, SkyHanniVector>>,
+        wikiNpcs: Map<IslandType, Map<String, SkyHanniVector>>,
     ) {
         val allIslands = (shNpcs.keys + wikiNpcs.keys).sorted()
 
@@ -146,7 +147,7 @@ object WikiNpcComparator {
                     shPos == null && wikiPos != null -> onlyInWiki.add("$name: ${wikiPos.toChatFormat()}")
 
                     shPos != null && wikiPos != null -> {
-                        val dist = shPos.distance(wikiPos)
+                        val dist = shPos.distanceTo(wikiPos)
                         /*
                          * this cant be a precise check.
                          * the wiki uses the block location the npc stands on,

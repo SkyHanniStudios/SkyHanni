@@ -6,6 +6,7 @@ import at.hannibal2.skyhanni.data.model.graph.Graph
 import at.hannibal2.skyhanni.data.model.graph.GraphNode
 import at.hannibal2.skyhanni.data.model.graph.findPathToDestination
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorMath.floor
 import java.util.PriorityQueue
 import java.util.Stack
 
@@ -175,9 +176,9 @@ object GraphUtils {
         playerPosition = LocationUtils.playerEyeLocation().floor()
     }
 
-    fun GenericNode.distanceToPlayer(): Double = position.distance(playerPosition)
-    fun GenericNode.distanceSqToPlayer(): Double = position.distanceSq(playerPosition)
-    fun distanceSqToPlayer(location: SkyHanniVector) = location.distanceSq(playerPosition)
+    fun GenericNode.distanceToPlayer(): Double = position.distanceTo(playerPosition)
+    fun GenericNode.distanceSqToPlayer(): Double = position.distanceToSqr(playerPosition)
+    fun distanceSqToPlayer(location: SkyHanniVector) = location.distanceToSqr(playerPosition)
 
     interface GenericNode {
         val position: SkyHanniVector
@@ -188,12 +189,12 @@ object GraphUtils {
         condition: (N) -> Boolean = { true },
     ): N = asSequence()
         .filter(condition)
-        .minBy { it.position.distanceSq(location) }
+        .minBy { it.position.distanceToSqr(location) }
 
     fun <T : List<SkyHanniVector>> T.getNearestToPlayer(
         location: SkyHanniVector = playerPosition,
         condition: (SkyHanniVector) -> Boolean = { true },
     ): SkyHanniVector = asSequence()
         .filter(condition)
-        .minBy { it.distanceSq(location) }
+        .minBy { it.distanceToSqr(location) }
 }

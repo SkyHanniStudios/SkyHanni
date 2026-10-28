@@ -17,6 +17,12 @@ import at.hannibal2.skyhanni.utils.RaycastUtils
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.collection.TimeLimitedSet
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.toSkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorMath.floor
+import at.hannibal2.skyhanni.utils.vector.VectorMath.toDoubleArray
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.minus
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.plus
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.times
 import net.minecraft.core.particles.ParticleTypes
 import kotlin.math.abs
 import kotlin.math.sign
@@ -142,7 +148,7 @@ object ArrowGuessBurrow {
             val blockCenter = candidateBlock.add(0.5, 0.5, 0.5)
             val distanceToRay = RaycastUtils.findDistanceToRay(ray, blockCenter)
 
-            val distanceFromOrigin = candidatePoint.distance(ray.origin)
+            val distanceFromOrigin = candidatePoint.distanceTo(ray.origin)
 
             // take the ratio to account for errors
             val scaledDistance = (distanceToRay * 500000 / distanceFromOrigin)
@@ -196,7 +202,7 @@ object ArrowGuessBurrow {
         val adjustedBase = base.down(1.5) // this is always an exact multiple of 0.5
         val adjustedTip = tip.down(1.5)
 
-        val ray = RaycastUtils.Ray(adjustedBase, adjustedTip.minus(adjustedBase).normalized())
+        val ray = RaycastUtils.Ray(adjustedBase, adjustedTip.minus(adjustedBase).normalize().toSkyHanniVector())
         if (recentFoundArrows.add(ray)) return null
         points.clear()
 
@@ -218,7 +224,7 @@ object ArrowGuessBurrow {
         maxDist: Double,
     ): Int {
         val maxDistSq = maxDist * maxDist
-        return points.count { it != origin && it.distanceSq(origin) <= maxDistSq }
+        return points.count { it != origin && it.distanceToSqr(origin) <= maxDistSq }
     }
 
     private fun findLine(points: Iterable<SkyHanniVector>, shaftLength: Int, maxDist: Double): List<SkyHanniVector> {
@@ -249,7 +255,7 @@ object ArrowGuessBurrow {
 
         for (point in points) {
             if (visited.contains(point)) continue
-            val dist = line.last().distance(point)
+            val dist = line.last().distanceTo(point)
             if (dist > maxDist) continue
 
             // must be collinear with all existing points
@@ -279,8 +285,7 @@ object ArrowGuessBurrow {
     private fun isCollinear(a: SkyHanniVector, b: SkyHanniVector, c: SkyHanniVector): Boolean {
         val ab = b.minus(a)
         val ac = c.minus(a)
-        val cross = ab cross ac
-        return cross.lengthSquared() < EPSILON
+        return ab.cross(ac).lengthSqr() < EPSILON
     }
 
     private fun isEnabled() = DianaApi.isDoingDiana() && config.guess && config.guessFromArrow

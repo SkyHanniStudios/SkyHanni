@@ -24,6 +24,7 @@ import at.hannibal2.skyhanni.utils.chat.TextHelper.send
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.sorted
 import at.hannibal2.skyhanni.utils.compat.hover
 import at.hannibal2.skyhanni.utils.coroutines.CoroutineSettings
+import at.hannibal2.skyhanni.utils.vector.VectorFormat.toLocalFormat
 
 @SkyHanniModule
 object NavigationHelper {

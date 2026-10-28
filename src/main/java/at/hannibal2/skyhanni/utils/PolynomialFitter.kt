@@ -2,6 +2,7 @@ package at.hannibal2.skyhanni.utils
 
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import at.hannibal2.skyhanni.utils.vector.VectorFormat.toSkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorMath.toDoubleArray
 import kotlin.math.pow
 import kotlin.time.Duration.Companion.seconds
 
@@ -89,7 +90,7 @@ open class BezierFitter(private val degree: Int) {
             addPoint(location)
             return false
         }
-        val distToLast = getLastPoint()?.distance(location) ?: return false
+        val distToLast = getLastPoint()?.distanceTo(location) ?: return false
         if (distToLast > maxDistanceToLast) return false
         if (isAlreadyUsed(location)) return false
         if (endCondition(location)) return false
@@ -105,7 +106,7 @@ open class BezierFitter(private val degree: Int) {
      * distorts the derivative at the start that [ParticlePathBezierFitter.solve] extrapolates from. With degree 3
      * the result can land thousands of blocks away.
      */
-    private fun isAlreadyUsed(location: SkyHanniVector) = points.any { it.distanceSq(location) < REPEAT_TOLERANCE_SQ }
+    private fun isAlreadyUsed(location: SkyHanniVector) = points.any { it.distanceToSqr(location) < REPEAT_TOLERANCE_SQ }
 
     companion object {
         /** 0.01 blocks, squared. */

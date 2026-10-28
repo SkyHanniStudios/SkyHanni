@@ -9,7 +9,6 @@ import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.test.graph.GraphEditor
 import at.hannibal2.skyhanni.utils.LocationUtils
 import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.OSUtils
 import at.hannibal2.skyhanni.utils.ParkourHelper
 import at.hannibal2.skyhanni.utils.PlayerUtils
@@ -18,7 +17,9 @@ import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawFilledBoundingBox
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.expandBlock
-import at.hannibal2.skyhanni.utils.toLorenzVec
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorBounds.blockBox
+import at.hannibal2.skyhanni.utils.vector.VectorFormat.toSkyHanniVector
 import kotlin.time.Duration.Companion.milliseconds
 
 @SkyHanniModule
@@ -26,7 +27,7 @@ object ParkourWaypointSaver {
 
     private val config get() = DevApi.config.waypoint
     private var timeLastSaved = SimpleTimeMark.farPast()
-    private var locations = mutableListOf<LorenzVec>()
+    private var locations = mutableListOf<SkyHanniVector>()
     private var parkourHelper: ParkourHelper? = null
 
     @HandleEvent
@@ -72,7 +73,7 @@ object ParkourWaypointSaver {
             try {
                 locations = clipboard.split("\n").map { line ->
                     val raw = line.replace("\"", "").replace(",", "")
-                    raw.split(":").map { it.toDouble() }.toLorenzVec()
+                    raw.split(":").map { it.toDouble() }.toSkyHanniVector()
                 }.toMutableList()
             } catch (e: NumberFormatException) {
                 ErrorManager.logErrorWithData(
@@ -93,7 +94,7 @@ object ParkourWaypointSaver {
         }
     }
 
-    private fun MutableList<LorenzVec>.copyLocations() {
+    private fun MutableList<SkyHanniVector>.copyLocations() {
         val resultList = mutableListOf<String>()
         timeLastSaved = SimpleTimeMark.now()
         for (location in this) {
@@ -114,7 +115,7 @@ object ParkourWaypointSaver {
             parkourHelper?.render(event)
         } else {
             for (location in locations) {
-                val aabb = location.boundingToOffset(1.0, 1.0, 1.0).expandBlock()
+                val aabb = location.blockBox().expandBlock()
                 // TODO add chroma color support via config
                 event.drawFilledBoundingBox(aabb, LorenzColor.GREEN.toChromaColor(), 1f)
             }

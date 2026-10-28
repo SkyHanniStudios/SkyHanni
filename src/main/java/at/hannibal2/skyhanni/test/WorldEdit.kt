@@ -17,6 +17,7 @@ import at.hannibal2.skyhanni.utils.SkyBlockItemModifierUtils.getItemId
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawFilledBoundingBox
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawHitbox
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.expandBlock
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.toBlockPos
 import net.minecraft.core.BlockPos
 import net.minecraft.world.phys.AABB
 import java.awt.Color

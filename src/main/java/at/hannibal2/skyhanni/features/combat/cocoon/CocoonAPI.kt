@@ -32,6 +32,7 @@ import at.hannibal2.skyhanni.utils.collection.TimeLimitedSet
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
+import at.hannibal2.skyhanni.utils.vector.VectorMath.distanceSqIgnoreY
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.world.entity.decoration.ArmorStand
 import kotlin.time.Duration.Companion.seconds
@@ -160,12 +161,12 @@ object CocoonAPI {
     }
 
     private fun getCocoonMob(cocoonVector: SkyHanniVector): Mob? {
-        val nearbyMobs = skyblockMobs.filter { mob -> mob.baseEntity.positionVector().distanceSq(cocoonVector) < 4.0 }
+        val nearbyMobs = skyblockMobs.filter { mob -> mob.baseEntity.positionVector().distanceToSqr(cocoonVector) < 4.0 }
         // Jawbus spawns Jawbus Followers, and they are often killed before being detected as Skyblock Mobs.
         // this, should prevent a downstream feature from sending fake "My Lord Jawbus Was Cocooned" Messages.
         val filteredMobs = nearbyMobs.filter { mob -> !(mob.name == "Lord Jawbus" && mob.health < 10_000_000) }
         val mob = filteredMobs.minByOrNull {
-            it.baseEntity.positionVector().distance(cocoonVector)
+            it.baseEntity.positionVector().distanceTo(cocoonVector)
         }
         return mob
     }

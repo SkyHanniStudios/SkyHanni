@@ -73,7 +73,7 @@ object CrystalHollowsWalls {
         val position = WorldRenderUtils.getViewerPos()
         when {
             position.y < HEAT_HEIGHT + yViewOffset -> drawHeat(event)
-            nucleusBBOffsetY.contains(position.toVec3()) -> {
+            nucleusBBOffsetY.contains(position) -> {
                 if (!config.nucleus) return
                 drawNucleus(event)
             }

@@ -35,6 +35,7 @@ import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import at.hannibal2.skyhanni.utils.vector.VectorBounds.boxFromOrigin
 import at.hannibal2.skyhanni.utils.vector.VectorBounds.maxCorner
 import at.hannibal2.skyhanni.utils.vector.VectorBounds.minCorner
+import at.hannibal2.skyhanni.utils.vector.VectorMath.floor
 import com.google.gson.annotations.Expose
 import net.minecraft.core.Direction
 import net.minecraft.world.level.block.Blocks.DRAGON_EGG

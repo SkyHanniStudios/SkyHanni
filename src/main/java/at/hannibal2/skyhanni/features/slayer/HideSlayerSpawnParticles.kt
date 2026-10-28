@@ -45,5 +45,5 @@ object HideSlayerSpawnParticles {
         mobRecentDeaths[event.entity.positionVector()] = SimpleTimeMark.now()
     }
 
-    private fun SkyHanniVector.distanceToNearestDeadMob() = mobRecentDeaths.minOfOrNull { it.key.distanceSq(this) }
+    private fun SkyHanniVector.distanceToNearestDeadMob() = mobRecentDeaths.minOfOrNull { it.key.distanceToSqr(this) }
 }

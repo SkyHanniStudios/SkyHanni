@@ -385,7 +385,7 @@ object FishingApi {
         if (name == "§5Frosty the Snow Blaster") return true
 
         if (name == "Frosty") {
-            if (entity.positionVector().distance(frostyNpcLocation) < 1) {
+            if (entity.positionVector().distanceTo(frostyNpcLocation) < 1) {
                 return true
             }
         }

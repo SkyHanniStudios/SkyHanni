@@ -99,14 +99,14 @@ object FastFairySoulsPathfinder {
 
         private fun getNearestSoul(): SkyHanniVector? {
             val playerLocation = LocationUtils.playerLocation()
-            val nearest = allSouls.minByOrNull { it.distanceSq(playerLocation) } ?: return null
+            val nearest = allSouls.minByOrNull { it.distanceToSqr(playerLocation) } ?: return null
             if (nearest.distanceToPlayer() < 10) return nearest
 
             val inAir = PlayerUtils.inAir()
             if (inAir) {
                 val abovePlayer = playerLocation.up(10)
-                val aboveNearest = allSouls.minByOrNull { it.distanceSq(abovePlayer) } ?: return null
-                if (aboveNearest.distance(abovePlayer) < 10) return aboveNearest
+                val aboveNearest = allSouls.minByOrNull { it.distanceToSqr(abovePlayer) } ?: return null
+                if (aboveNearest.distanceTo(abovePlayer) < 10) return aboveNearest
             }
 
             IslandGraphs.reportLocation(

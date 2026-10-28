@@ -114,10 +114,6 @@ object RegexUtils {
         return SkyHanniVector(x, y, z)
     }
 
-    @Deprecated("Use toSkyHanniVector", ReplaceWith("toSkyHanniVector(xGroup, yGroup, zGroup)"))
-    fun Matcher.toLorenzVec(xGroup: String = "x", yGroup: String = "y", zGroup: String = "z") =
-        toSkyHanniVector(xGroup, yGroup, zGroup)
-
     fun Pattern.indexOfFirstMatch(list: List<String>): Int? {
         for ((index, line) in list.withIndex()) {
             matcher(line).let { if (it.matches()) return index }

@@ -55,7 +55,7 @@ object LivingCaveLivingMetalHelper {
         if (event.new != "lapis_ore") return
 
         lastClicked?.let {
-            val distance = location.distance(it)
+            val distance = location.distanceTo(it)
             if (distance < 2) {
                 pair = Pair(it, location)
                 animationStartTime = SimpleTimeMark.now()
@@ -84,7 +84,7 @@ object LivingCaveLivingMetalHelper {
         if (!config.hideParticles) return
 
         pair?.let {
-            if (it.second.distance(event.location) < 3) {
+            if (it.second.distanceTo(event.location) < 3) {
                 event.cancel()
             }
         }

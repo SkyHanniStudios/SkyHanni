@@ -17,6 +17,7 @@ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawColor
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawString
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorMath.blockCenter
 import io.github.notenoughupdates.moulconfig.ChromaColour
 import net.minecraft.network.chat.Component
 import kotlin.time.Duration.Companion.seconds

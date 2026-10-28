@@ -332,7 +332,7 @@ object ExperimentationTableApi {
 
     fun inDistanceToTable(max: Double): Boolean {
         val vec = LocationUtils.getBlockBelowPlayer()
-        return storage?.tablePos?.let { it.distance(vec) <= max } ?: false
+        return storage?.tablePos?.let { it.distanceTo(vec) <= max } ?: false
     }
 
     private fun ExperimentationMessages.isSelected() = config.experimentsProfitTracker.hideMessages.contains(this)

@@ -32,6 +32,7 @@ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.exactPlayerEyeLocation
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.copy
 import kotlin.time.Duration.Companion.seconds
 
 @SkyHanniModule

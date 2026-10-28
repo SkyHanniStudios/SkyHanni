@@ -35,7 +35,7 @@ object MovementSpeedDisplay {
             val newPos = SkyHanniVector(position().x, position().y, position().z)
 
             // Distance from previous tick, multiplied by TPS
-            oldPos.distance(newPos) * 20
+            oldPos.distanceTo(newPos) * 20
         }
 
         if (!isEnabled()) return

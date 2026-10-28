@@ -15,6 +15,9 @@ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.expandBlock
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.outlineTopFace
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import at.hannibal2.skyhanni.utils.vector.VectorBounds.boxFromOrigin
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.toSkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.minus
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.plus
 import io.github.notenoughupdates.moulconfig.ChromaColour
 import java.awt.Color
 
@@ -113,7 +116,7 @@ class ParkourHelper(
                 val from = locations[shortCut.from].offsetCenter()
                 val to = locations[shortCut.to].offsetCenter()
                 draw3DLine(from, to, Color.RED, 3, false)
-                val textLocation = from + (to - from).normalized()
+                val textLocation = from + (to - from).normalize()
                 drawDynamicText(textLocation.add(-0.5, 1.0, -0.5), "§cShortcut", 1.8)
 
                 val aabb = axisAlignedBB(locations[shortCut.to])
@@ -153,10 +156,10 @@ class ParkourHelper(
         val lookAheadStart = locations[current + lookAhead - 1]
         val lookAheadEnd = locations[current + lookAhead]
 
-        if (LocationUtils.playerLocation().distance(nextPosition) > currentPosition.distance(nextPosition)) return null
+        if (LocationUtils.playerLocation().distanceTo(nextPosition) > currentPosition.distanceTo(nextPosition)) return null
 
-        val factor = LocationUtils.playerLocation().distance(currentPosition) / currentPosition.distance(nextPosition)
-        val slopeLocation = lookAheadStart.lerp(lookAheadEnd, factor)
+        val factor = LocationUtils.playerLocation().distanceTo(currentPosition) / currentPosition.distanceTo(nextPosition)
+        val slopeLocation = lookAheadStart.lerp(lookAheadEnd, factor).toSkyHanniVector()
         return Pair(
             IndexedValue(current + lookAhead - 1, lookAheadStart),
             IndexedValue(current + lookAhead, slopeLocation),

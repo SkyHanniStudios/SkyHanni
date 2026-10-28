@@ -89,7 +89,7 @@ object VampireSlayerFeatures {
         val start = LocationUtils.playerLocation()
         if (configOwnBoss.highlight || configOtherBoss.highlight || configCoopBoss.highlight) {
             for (player in EntityUtils.getEntities<RemotePlayer>()) {
-                val distance = start.distance(player.blockPosition().toSkyHanniVector())
+                val distance = start.distanceTo(player.blockPosition().toSkyHanniVector())
                 if (distance <= 15)
                     player.process()
             }
@@ -97,7 +97,7 @@ object VampireSlayerFeatures {
         if (configBloodIchor.highlight || configKillerSpring.highlight) {
             for (stand in EntityUtils.getEntities<ArmorStand>()) {
                 val vec = stand.blockPosition().toSkyHanniVector()
-                val distance = start.distance(vec)
+                val distance = start.distanceTo(vec)
                 val isIchor = stand.hasSkullTexture(BLOOD_ICHOR_TEXTURE)
                 if (!isIchor && !stand.hasSkullTexture(KILLER_SPRING_TEXTURE)) continue
                 val chromaColour = if (isIchor) configBloodIchor.color else configKillerSpring.color

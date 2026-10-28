@@ -12,6 +12,7 @@ import at.hannibal2.skyhanni.utils.RegexUtils.toSkyHanniVector
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.StringUtils.removeColor
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorFormat.toChatFormat
 
 @SkyHanniModule
 object HoppityEggsShared {
@@ -49,7 +50,7 @@ object HoppityEggsShared {
     fun shareNearbyEggLocation(playerLocation: SkyHanniVector, meal: HoppityEggType, note: String) {
         if (!isEnabled()) return
         val islandEggsLocations = HoppityEggLocations.islandLocations
-        val closestEgg = islandEggsLocations.minByOrNull { it.distance(playerLocation) } ?: return
+        val closestEgg = islandEggsLocations.minByOrNull { it.distanceTo(playerLocation) } ?: return
 
         val location = closestEgg.toChatFormat()
 
