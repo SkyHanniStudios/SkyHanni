@@ -1,43 +1,27 @@
 package at.hannibal2.skyhanni.utils.vector
 
-import net.minecraft.core.Direction
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.div
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.minus
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.plus
 import net.minecraft.world.phys.AABB
+import net.minecraft.world.phys.Vec3
 
 object VectorBounds {
 
-    operator fun Vector3<*>.get(axis: Direction.Axis): Double = axis.choose(x, y, z)
-
-    fun <V : Vector3<V>> Vector3<V>.with(axis: Direction.Axis, value: Double) = when (axis) {
-        Direction.Axis.X -> of(value, y, z)
-        Direction.Axis.Y -> of(x, value, z)
-        Direction.Axis.Z -> of(x, y, value)
+    fun Vec3.blockBox() = boxFromOrigin(1, 1, 1)
+    fun Vec3.boxAround(radius: Number) = radius.toDouble().let {
+        AABB(x - it, y - it, z - it, x + it, y + it, z + it)
     }
-
-    fun Vector3<*>.boxAround(radius: Double) = AABB(x - radius, y - radius, z - radius, x + radius, y + radius, z + radius)
-
-    fun Vector3<*>.boxTo(other: Vector3<*>) = AABB(x, y, z, other.x, other.y, other.z)
-
-    fun Vector3<*>.boxFromOrigin(sizeX: Double, sizeY: Double, sizeZ: Double) =
-        AABB(x, y, z, x + sizeX, y + sizeY, z + sizeZ)
-
-    fun Vector3<*>.blockBox() = boxFromOrigin(1.0, 1.0, 1.0)
-
-    fun SkyHanniBlockVector.box() = toVector().blockBox()
+    fun Vec3.boxTo(other: Vec3) =
+        AABB(x, y, z, other.x, other.y, other.z)
+    fun Vec3.boxFromOrigin(sizeX: Number, sizeY: Number, sizeZ: Number) =
+        AABB(x, y, z, x + sizeX.toDouble(), y + sizeY.toDouble(), z + sizeZ.toDouble())
 
     fun AABB.minCorner() = SkyHanniVector(minX, minY, minZ)
-
     fun AABB.maxCorner() = SkyHanniVector(maxX, maxY, maxZ)
-
-    fun AABB.edgeLengths() = maxCorner() - minCorner()
-
-    fun AABB.center() = minCorner().midpoint(maxCorner())
-
+    fun AABB.center() = (minCorner() + maxCorner()) / 2
     fun AABB.topCenter() = center().up((maxY - minY) / 2)
-
-    fun AABB.contains(vector: Vector3<*>) = contains(vector.x, vector.y, vector.z)
-
-    fun AABB.inflate(vector: Vector3<*>): AABB = inflate(vector.x, vector.y, vector.z)
-
+    fun AABB.inflate(vector: Vec3): AABB = inflate(vector.x, vector.y, vector.z)
     fun AABB.cornersAtHeight(y: Double) = listOf(
         SkyHanniVector(minX, y, minZ),
         SkyHanniVector(minX, y, maxZ),
@@ -50,13 +34,5 @@ object VectorBounds {
         val top = cornersAtHeight(maxY)
         val ring = { corners: List<SkyHanniVector> -> corners.indices.map { corners[it] to corners[(it + 1) % corners.size] } }
         return (ring(bottom) + ring(top) + bottom.zip(top)).toSet()
-    }
-
-    fun <V : VectorMetrics<V>> VectorMetrics<V>.nearestPointOnSegment(start: V, end: V): V {
-        val direction = end - start
-        val lengthSquared = direction.lengthSquared()
-        if (lengthSquared == 0.0) return start
-        val t = ((self - start) dot direction / lengthSquared).coerceIn(0.0, 1.0)
-        return start + direction * t
     }
 }
