@@ -1680,15 +1680,6 @@
     <ID>PrivateEventListener:HolographicEntities.kt:HolographicEntities$@HandleEvent fun onRenderWorld</ID>
     <ID>PrivateEventListener:HoppityAchievements.kt:HoppityAchievements$@HandleEvent fun onAchievementRegistration</ID>
     <ID>PrivateEventListener:HoppityAchievements.kt:HoppityAchievements$@HandleEvent(onlyOnSkyblock = true) fun onInventoryFullyOpened</ID>
-    <ID>PrivateEventListener:HoppityApi.kt:HoppityApi$@HandleEvent fun onInventoryFullyOpened</ID>
-    <ID>PrivateEventListener:HoppityApi.kt:HoppityApi$@HandleEvent fun onInventoryUpdated</ID>
-    <ID>PrivateEventListener:HoppityApi.kt:HoppityApi$@HandleEvent fun onRepoReload</ID>
-    <ID>PrivateEventListener:HoppityApi.kt:HoppityApi$@HandleEvent(InventoryCloseEvent::class) fun onInventoryClose</ID>
-    <ID>PrivateEventListener:HoppityApi.kt:HoppityApi$@HandleEvent(IslandChangeEvent::class) fun onIslandChange</ID>
-    <ID>PrivateEventListener:HoppityApi.kt:HoppityApi$@HandleEvent(onlyOnSkyblock = true) fun onDialogueResponseSent</ID>
-    <ID>PrivateEventListener:HoppityApi.kt:HoppityApi$@HandleEvent(onlyOnSkyblock = true, priority = HandleEvent.HIGH) fun onChat</ID>
-    <ID>PrivateEventListener:HoppityApi.kt:HoppityApi$@HandleEvent(priority = HIGHEST) fun onEggFound</ID>
-    <ID>PrivateEventListener:HoppityApi.kt:HoppityApi$@HandleEvent(priority = HandleEvent.HIGH) fun onSlotClick</ID>
     <ID>PrivateEventListener:HoppityCallWarning.kt:HoppityCallWarning$@HandleEvent fun onConfigLoad</ID>
     <ID>PrivateEventListener:HoppityCallWarning.kt:HoppityCallWarning$@HandleEvent fun onGuiRenderOverlay</ID>
     <ID>PrivateEventListener:HoppityCallWarning.kt:HoppityCallWarning$@HandleEvent fun onSecondPassed</ID>

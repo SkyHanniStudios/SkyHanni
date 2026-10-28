@@ -14,12 +14,12 @@ import java.util.Optional
 
 @SkyHanniModule
 object NpcApi {
-    val patternGroup = RepoPattern.group("npc-api")
+    private val patternGroup = RepoPattern.group("npc-api")
 
     /**
      * REGEX-TEST: skyblock:dialogue_response
      */
-    val dialogueResponseIdPattern by patternGroup.pattern(
+    private val dialogueResponseIdPattern by patternGroup.pattern(
         "dialogue.response",
         "skyblock:dialogue_response"
     )
