@@ -3,7 +3,11 @@ package at.hannibal2.skyhanni.utils
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.compat.addRedstoneOres
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.toBlockPos
 import at.hannibal2.skyhanni.utils.vector.VectorConversions.toSkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorMath.floor
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.plus
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.times
 import net.minecraft.client.Minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.ClipContext
@@ -40,7 +44,7 @@ object BlockUtils {
     }
 
     private fun raycast(start: SkyHanniVector, direction: SkyHanniVector, distance: Double = 50.0): SkyHanniVector {
-        val target = start + direction.normalized() * distance
+        val target = start + direction.normalize() * distance
         val result = raycast(start, target)
 
         return result.location.toSkyHanniVector()
@@ -48,8 +52,8 @@ object BlockUtils {
 
     fun raycast(start: SkyHanniVector, end: SkyHanniVector): BlockHitResult = world.clip(
         ClipContext(
-            start.toVec3(),
-            end.toVec3(),
+            start,
+            end,
             ClipContext.Block.COLLIDER,
             ClipContext.Fluid.NONE,
             MinecraftCompat.localPlayerOrThrow,
@@ -81,7 +85,7 @@ object BlockUtils {
     ): Map<SkyHanniVector, BlockState> = nearbyBlocks(center, distance).mapNotNull {
         val loc = it.toSkyHanniVector()
         val state = loc.getBlockStateAt()
-        if (condition(state) && center.distance(loc) <= radius) {
+        if (condition(state) && center.distanceTo(loc) <= radius) {
             loc to state
         } else null
     }.toMap()

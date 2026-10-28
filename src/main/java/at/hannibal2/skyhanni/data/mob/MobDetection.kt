@@ -22,6 +22,8 @@ import at.hannibal2.skyhanni.utils.collection.CollectionUtils.refreshReference
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLessResets
 import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
+import at.hannibal2.skyhanni.utils.vector.VectorMath.distanceChebyshevIgnoreY
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.minus
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.protocol.game.ClientboundLoginPacket

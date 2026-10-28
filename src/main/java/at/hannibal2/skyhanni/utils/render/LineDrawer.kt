@@ -6,6 +6,10 @@ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.submitCustomGeometry
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import at.hannibal2.skyhanni.utils.vector.VectorBounds.blockBox
 import at.hannibal2.skyhanni.utils.vector.VectorBounds.edges
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.minus
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.plus
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.times
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.unaryMinus
 import net.minecraft.world.phys.AABB
 import java.awt.Color
 
@@ -62,7 +66,7 @@ class LineDrawer @PublishedApi internal constructor(
         } else {
             val pathLines = path.zipWithNext()
             pathLines.forEachIndexed { index, pathLine ->
-                val reduce = pathLine.second.minus(pathLine.first).normalized().times(bezierPoint)
+                val reduce = pathLine.second.minus(pathLine.first).normalize().times(bezierPoint)
                 draw3DLine(
                     if (index != 0) pathLine.first + reduce else pathLine.first,
                     if (index != pathLines.lastIndex) pathLine.second - reduce else pathLine.second,
@@ -70,8 +74,8 @@ class LineDrawer @PublishedApi internal constructor(
                 )
             }
             path.zipWithNext3().forEach {
-                val p1 = it.second.minus(it.second.minus(it.first).normalized().times(bezierPoint))
-                val p3 = it.second.minus(it.second.minus(it.third).normalized().times(bezierPoint))
+                val p1 = it.second.minus(it.second.minus(it.first).normalize().times(bezierPoint))
+                val p3 = it.second.minus(it.second.minus(it.third).normalize().times(bezierPoint))
                 val p2 = it.second
                 drawBezier2(p1, p2, p3, color)
             }
@@ -153,5 +157,5 @@ private data class QueuedLine(
     val p2: SkyHanniVector,
     val color: Color,
 ) {
-    val normal = p2.minus(p1).normalized()
+    val normal = p2.minus(p1).normalize()
 }

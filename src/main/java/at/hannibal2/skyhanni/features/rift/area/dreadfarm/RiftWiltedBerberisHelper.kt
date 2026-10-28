@@ -30,6 +30,8 @@ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawFilledBoundingBox
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.expandBlock
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import at.hannibal2.skyhanni.utils.vector.VectorBounds.boxFromOrigin
+import at.hannibal2.skyhanni.utils.vector.VectorMath.distanceIgnoreY
+import at.hannibal2.skyhanni.utils.vector.VectorMath.floor
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.world.level.block.Blocks
 import java.awt.Color
@@ -153,8 +155,8 @@ object RiftWiltedBerberisHelper {
     }
 
     private fun nearestBerberis(location: SkyHanniVector): WiltedBerberis? =
-        list.filter { it.currentParticles.distanceSq(location) < 8 }
-            .minByOrNull { it.currentParticles.distanceSq(location) }
+        list.filter { it.currentParticles.distanceToSqr(location) < 8 }
+            .minByOrNull { it.currentParticles.distanceToSqr(location) }
 
     private fun nearestFieldCenter(location: SkyHanniVector, maxDistance: Double = 50.0): SkyHanniVector? =
         fieldCenters.keys
@@ -196,7 +198,7 @@ object RiftWiltedBerberisHelper {
     private fun WiltedBerberis.updateParticlePosition(location: SkyHanniVector) {
         val isMoving = currentParticles != location
         if (isMoving) {
-            if (currentParticles.distance(location) > 3) {
+            if (currentParticles.distanceTo(location) > 3) {
                 previous = null
                 moving = true
             }

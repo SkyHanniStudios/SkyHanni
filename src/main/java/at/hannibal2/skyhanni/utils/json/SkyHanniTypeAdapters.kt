@@ -32,7 +32,6 @@ import at.hannibal2.skyhanni.utils.system.ModVersion
 import at.hannibal2.skyhanni.utils.tracker.SessionUptime
 import at.hannibal2.skyhanni.utils.tracker.SessionUptimeTypeAdapter
 import at.hannibal2.skyhanni.utils.tracker.SkyHanniTracker
-import at.hannibal2.skyhanni.utils.vector.SkyHanniBlockVector
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import at.hannibal2.skyhanni.utils.vector.VectorFormat
 import at.hannibal2.skyhanni.utils.vector.VectorFormat.asStoredString
@@ -71,10 +70,6 @@ enum class SkyHanniTypeAdapters(
     VEC(
         SkyHanniVector::class.java,
         SimpleStringTypeAdapter({ asStoredString() }, { VectorFormat.parseStored(this) }),
-    ),
-    BLOCK_VEC(
-        SkyHanniBlockVector::class.java,
-        SimpleStringTypeAdapter({ asStoredString() }, { VectorFormat.parseStoredBlock(this) }),
     ),
     TROPHY_RARITY(
         TrophyRarity::class.java,

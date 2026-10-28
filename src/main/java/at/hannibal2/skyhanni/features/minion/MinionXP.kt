@@ -25,6 +25,8 @@ import at.hannibal2.skyhanni.utils.collection.CollectionUtils.enumMapOf
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.itemType
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.toBlockPos
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.plus
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.block.ChestBlock
 import java.util.EnumMap
@@ -80,7 +82,7 @@ object MinionXP {
     ): Boolean {
         if (!getHasStorage(minionPosition)) return false
         val storage = minionStorages.firstOrNull {
-            it.position.distanceSq(minionPosition) <= 2.5 && it.timestamp.passedSince().inWholeMinutes < 20
+            it.position.distanceToSqr(minionPosition) <= 2.5 && it.timestamp.passedSince().inWholeMinutes < 20
         }
 
         return if (storage != null) {

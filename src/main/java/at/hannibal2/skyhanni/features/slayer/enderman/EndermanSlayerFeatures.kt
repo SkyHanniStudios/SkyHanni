@@ -213,7 +213,7 @@ object EndermanSlayerFeatures {
 
         val location = event.location
         if (event.new == "beacon") {
-            val armorStand = flyingBeacons.find { location.distance(it.positionVector()) < 3 }
+            val armorStand = flyingBeacons.find { location.distanceTo(it.positionVector()) < 3 }
             if (armorStand != null) {
                 flyingBeacons.remove(armorStand)
                 RenderLivingEntityHelper.removeEntityColor(armorStand)

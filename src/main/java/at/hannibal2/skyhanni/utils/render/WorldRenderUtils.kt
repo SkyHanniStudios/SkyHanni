@@ -22,6 +22,12 @@ import at.hannibal2.skyhanni.utils.vector.VectorBounds.cornersAtHeight
 import at.hannibal2.skyhanni.utils.vector.VectorBounds.inflate
 import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import at.hannibal2.skyhanni.utils.vector.VectorConversions.toSkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.component1
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.component2
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.component3
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.minus
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.plus
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.times
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
 import io.github.notenoughupdates.moulconfig.ChromaColour
@@ -522,11 +528,11 @@ object WorldRenderUtils {
             val baseEdge = baseEdgePoint - viewerPos
 
             val edgeVec = baseEdge - baseCenter
-            val topVecNorm = (newTop - baseCenter).normalized()
+            val topVecNorm = (newTop - baseCenter).normalize()
             val corner1 = baseEdge
-            val corner2 = (topVecNorm cross edgeVec).normalized() * edgeVec.length() + baseCenter
+            val corner2 = topVecNorm.cross(edgeVec).normalize() * edgeVec.length() + baseCenter
             val corner3 = baseCenter - edgeVec
-            val corner4 = (edgeVec cross topVecNorm).normalized() * edgeVec.length() + baseCenter
+            val corner4 = edgeVec.cross(topVecNorm).normalize() * edgeVec.length() + baseCenter
 
             fun tri(a: SkyHanniVector, b: SkyHanniVector, c: SkyHanniVector) {
                 buf.addVertex(a.x.toFloat(), a.y.toFloat(), a.z.toFloat()).setColor(color.red, color.green, color.blue, color.alpha)

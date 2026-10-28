@@ -13,6 +13,9 @@ import at.hannibal2.skyhanni.utils.RegexUtils.find
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorMath.blockCenter
+import at.hannibal2.skyhanni.utils.vector.VectorMath.equalsIgnoreY
+import at.hannibal2.skyhanni.utils.vector.VectorMath.floor
 import java.awt.Color
 import kotlin.math.abs
 import kotlin.math.hypot

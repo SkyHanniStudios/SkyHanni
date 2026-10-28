@@ -18,6 +18,7 @@ import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.compat.EntityCompat.getEntityHelmet
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLessResets
 import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
+import at.hannibal2.skyhanni.utils.vector.VectorMath.distanceChebyshevIgnoreY
 import net.minecraft.client.player.RemotePlayer
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.animal.feline.Ocelot

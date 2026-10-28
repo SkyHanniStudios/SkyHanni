@@ -1,6 +1,7 @@
 package at.hannibal2.skyhanni.utils.blockhighlight
 
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorMath.floor
 
 /**
  * An abstract class that represents a location to be highlighted by a [SkyHanniBlockHighlighter]

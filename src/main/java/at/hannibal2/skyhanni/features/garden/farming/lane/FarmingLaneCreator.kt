@@ -60,11 +60,11 @@ object FarmingLaneCreator {
             reset()
             return
         }
-        if (lastLocation.distance(location) < 0.5) return
+        if (lastLocation.distanceTo(location) < 0.5) return
 
         this.lastLocation = location
         val start = start ?: error("start can not be null")
-        val distance = start.distance(location)
+        val distance = start.distanceTo(location)
         if (distance > maxDistance) {
             maxDistance = distance
             potentialEnd = null
@@ -73,7 +73,7 @@ object FarmingLaneCreator {
                 potentialEnd = location
                 return
             }
-            if (potentialEnd.distance(location) > 2) {
+            if (potentialEnd.distanceTo(location) > 2) {
                 val crop = crop ?: error("crop can not be null")
                 saveLane(start, potentialEnd, crop)
             }

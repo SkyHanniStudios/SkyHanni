@@ -93,9 +93,9 @@ object BlazeSlayerDaggerHelper {
 
         val playerLocation = LocationUtils.playerLocation()
         return HellionShieldHelper.hellionShieldMobs
-            .filter { !it.key.deceased && it.key.positionVector().distance(playerLocation) < 10 && it.key.findHealthReal() > 0 }
+            .filter { !it.key.deceased && it.key.positionVector().distanceTo(playerLocation) < 10 && it.key.findHealthReal() > 0 }
             .toSortedMap { a, b ->
-                if (a.positionVector().distance(playerLocation) > b.positionVector().distance(playerLocation)) 1 else 0
+                if (a.positionVector().distanceTo(playerLocation) > b.positionVector().distanceTo(playerLocation)) 1 else 0
             }.firstNotNullOfOrNull { it.value }
     }
 

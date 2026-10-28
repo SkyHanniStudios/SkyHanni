@@ -37,6 +37,8 @@ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawString
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorMath.floor
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.minus
 import net.minecraft.ChatFormatting
 import net.minecraft.world.level.block.Blocks
 import kotlin.time.Duration.Companion.milliseconds

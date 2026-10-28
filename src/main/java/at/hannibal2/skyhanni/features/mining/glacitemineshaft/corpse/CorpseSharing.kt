@@ -15,6 +15,7 @@ import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.toSkyHanniVector
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorFormat.toChatFormat
 
 @SkyHanniModule
 object CorpseSharing {
@@ -65,7 +66,7 @@ object CorpseSharing {
             val location = toSkyHanniVector() ?: return
 
             // Return if someone had already sent a location nearby
-            if (sharedWaypoints.any { it.distance(location) <= 5 }) return
+            if (sharedWaypoints.any { it.distanceTo(location) <= 5 }) return
             sharedWaypoints.add(location)
         }
     }
@@ -73,7 +74,7 @@ object CorpseSharing {
     private fun shareCorpse() {
         val closestCorpse = MineshaftWaypointManager.waypoints.filter { it.isCorpse && !it.isShared }
             .filterNot { corpse ->
-                sharedWaypoints.any { corpse.location.distance(it) <= 5 }
+                sharedWaypoints.any { corpse.location.distanceTo(it) <= 5 }
             }
             .filter { it.location.distanceToPlayer() <= 5 }
             .minByOrNull { it.location.distanceToPlayer() } ?: return

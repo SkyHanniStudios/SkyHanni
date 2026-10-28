@@ -53,7 +53,7 @@ object NpcVisitorFix {
 
         val location = entity.positionVector()
         storage.npcVisitorLocations[name]?.let {
-            if (it.distance(location) < 1) return
+            if (it.distanceTo(location) < 1) return
         }
 
         storage.npcVisitorLocations[name] = location

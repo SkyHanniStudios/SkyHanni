@@ -152,8 +152,8 @@ object LivingCaveSnakeFeatures {
 
     // sqrt(3) =~ 1.73
     private fun findNearbySnakeHeads(location: SkyHanniVector): List<LivingCaveSnake> =
-        snakes.filter { it.blocks.isNotEmpty() && it.head.distance(location) < 1.74 }
-            .sortedBy { it.head.distance(location) }
+        snakes.filter { it.blocks.isNotEmpty() && it.head.distanceTo(location) < 1.74 }
+            .sortedBy { it.head.distanceTo(location) }
 
     private fun fixCollisions(found: List<LivingCaveSnake>): LivingCaveSnake? {
         if (found.size <= 1) return found.firstOrNull()

@@ -88,7 +88,7 @@ object HideyhoFinder {
         val startLocation = startLocation ?: return
         val graph = IslandGraphs.currentIslandGraph ?: return
         val locations = graph.getNodesWithTags(GraphNodeTag.HIDEYHO_LOCATION).toMutableList()
-        val current = locations.minByOrNull { it.position.distance(startLocation) }
+        val current = locations.minByOrNull { it.position.distanceTo(startLocation) }
 
         locations.remove(current)
         if (locations.isEmpty()) return

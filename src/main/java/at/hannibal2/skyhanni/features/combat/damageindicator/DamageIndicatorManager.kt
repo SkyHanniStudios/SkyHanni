@@ -132,7 +132,7 @@ object DamageIndicatorManager {
 
     fun getDistanceTo(vararg types: BossType): Double {
         val playerLocation = LocationUtils.playerLocation()
-        return data.values.filter { it.bossType in types }.map { it.entity.positionVector().distance(playerLocation) }.let { list ->
+        return data.values.filter { it.bossType in types }.map { it.entity.positionVector().distanceTo(playerLocation) }.let { list ->
             if (list.isEmpty()) Double.MAX_VALUE else list.minOf { it }
         }
     }
@@ -140,7 +140,7 @@ object DamageIndicatorManager {
     fun getAllMobs(): Collection<LivingEntity> = data.values.map { it.entity }
 
     fun getNearestDistanceTo(location: SkyHanniVector): Double {
-        return data.values.map { it.entity.positionVector() }.minOfOrNull { it.distance(location) } ?: Double.MAX_VALUE
+        return data.values.map { it.entity.positionVector() }.minOfOrNull { it.distanceTo(location) } ?: Double.MAX_VALUE
     }
 
     fun removeDamageIndicator(type: BossType) {
@@ -1012,7 +1012,7 @@ object DamageIndicatorManager {
         val entity = event.entity
 
         val entityData = data.values.find {
-            val distance = it.entity.positionVector().distance(entity.positionVector())
+            val distance = it.entity.positionVector().distanceTo(entity.positionVector())
             distance < 4.5
         } ?: return
 

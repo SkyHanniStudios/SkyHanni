@@ -102,7 +102,7 @@ object TotemOfCorruption {
 
         for (totem in allTotems) {
             if (event.type == ParticleTypes.WITCH && event.speed == 0f) {
-                if (totem.location.distance(event.location) < 4.0) {
+                if (totem.location.distanceTo(event.location) < 4.0) {
                     event.cancel()
                 }
             }

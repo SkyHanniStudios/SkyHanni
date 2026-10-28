@@ -19,6 +19,8 @@ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawString
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorMath.blockCenter
+import at.hannibal2.skyhanni.utils.vector.VectorMath.distanceIgnoreY
 
 @SkyHanniModule
 object SendCoordinates {

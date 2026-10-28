@@ -155,7 +155,7 @@ object BurrowWarpHelper {
         }
         debug?.add("warpPoint: ${warpPoint.displayName}")
 
-        val playerDistance = playerLocation.distance(target)
+        val playerDistance = playerLocation.distanceTo(target)
         debug?.add("playerDistance: ${playerDistance.roundTo(1)}")
         val warpDistance = warpPoint.distance(target)
         debug?.add("warpDistance: ${warpDistance.roundTo(1)}")
@@ -265,7 +265,7 @@ object BurrowWarpHelper {
                 ErrorManager.skyHanniError("repo invalid for diana warp")
             }
 
-        fun distance(other: SkyHanniVector): Double = other.distance(location) + extraBlocks
+        fun distance(other: SkyHanniVector): Double = other.distanceTo(location) + extraBlocks
 
         fun ignored(): Boolean = config.ignoredWarpsList.contains(this)
     }

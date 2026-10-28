@@ -127,7 +127,7 @@ object GraphEditorNetworks {
                 for (j in i + 1 until clusters.size) {
                     for (nodeA in clusters[i]) {
                         for (nodeB in clusters[j]) {
-                            val distSq = nodeA.position.distanceSq(nodeB.position)
+                            val distSq = nodeA.position.distanceToSqr(nodeB.position)
                             if (distSq < bestDistanceSq) {
                                 bestDistanceSq = distSq
                                 bestNodeA = nodeA
@@ -142,7 +142,7 @@ object GraphEditorNetworks {
 
             val nodeA = bestNodeA ?: break
             val nodeB = bestNodeB ?: break
-            val distance = nodeA.position.distance(nodeB.position)
+            val distance = nodeA.position.distanceTo(nodeB.position)
 
             nodeA.neighbors += (nodeB to distance)
             nodeB.neighbors += (nodeA to distance)

@@ -96,7 +96,7 @@ object CosmeticFollowingLine {
 
         if (event.isMod(2)) {
             val playerLocation = LocationUtils.playerLocation().up(0.3)
-            if (locations.keys.lastOrNull()?.distance(playerLocation)?.let { it < 0.1 } == true) return
+            if (locations.keys.lastOrNull()?.distanceTo(playerLocation)?.let { it < 0.1 } == true) return
             locations[playerLocation] = LocationSpot(SimpleTimeMark.now(), PlayerUtils.onGround())
         }
     }

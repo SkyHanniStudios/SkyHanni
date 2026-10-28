@@ -13,6 +13,8 @@ import at.hannibal2.skyhanni.utils.TimeUtils.inWholeTicks
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.associateNotNull
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.toBlockPos
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.toSkyHanniVector
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.client.renderer.entity.state.EntityRenderState
@@ -117,7 +119,7 @@ object HolographicEntities {
         }
 
         fun interpolatedPosition(partialTicks: Float): SkyHanniVector =
-            lastPosition.lerp(position, partialTicks.toDouble())
+            lastPosition.lerp(position, partialTicks.toDouble()).toSkyHanniVector()
 
         fun interpolatedYaw(partialTicks: Float): Float =
             interpolateRotation(lastYaw, yaw, partialTicks)

@@ -34,6 +34,7 @@ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawLineToCrosshair
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorMath.blockCenter
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.world.entity.projectile.FishingHook
 import kotlin.time.Duration.Companion.seconds
@@ -211,9 +212,9 @@ object HoppityEggLocator {
         val guessLocation = bezierFitter.solve() ?: return null
         if (!SkyBlockUtils.currentIsland.isInBounds(guessLocation)) return null
 
-        val closestEgg = HoppityEggLocations.islandLocations.minByOrNull { it.distanceSq(guessLocation) }
+        val closestEgg = HoppityEggLocations.islandLocations.minByOrNull { it.distanceToSqr(guessLocation) }
 
-        return closestEgg?.takeIf { it.distance(guessLocation) <= MAX_GUESS_DISTANCE }
+        return closestEgg?.takeIf { it.distanceTo(guessLocation) <= MAX_GUESS_DISTANCE }
     }
 
     private fun trySendingGraph() {
@@ -225,7 +226,7 @@ object HoppityEggLocator {
     }
 
     fun isValidEggLocation(location: SkyHanniVector): Boolean = HoppityEggLocations.islandLocations.any {
-        it.distance(location) < 5.0
+        it.distanceTo(location) < 5.0
     }
 
     private fun ParticleEvent.isVillagerParticle() = type == ParticleTypes.HAPPY_VILLAGER && speed == 0f && count == 1

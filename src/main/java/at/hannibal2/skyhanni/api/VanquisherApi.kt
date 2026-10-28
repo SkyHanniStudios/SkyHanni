@@ -108,7 +108,7 @@ object VanquisherApi {
         if (now - lastSoundTime > vanquisherShortTimeout) return
         if (now - lastSpawnEntityTime > vanquisherShortTimeout) return
         if (now - lastOwnTime > vanquisherShortTimeout) return
-        if (soundPos.distance(entityPos) > 3) return
+        if (soundPos.distanceTo(entityPos) > 3) return
         spawnEntity = entity
         lastSpawnEntityPos = null
         lastSoundPos = null

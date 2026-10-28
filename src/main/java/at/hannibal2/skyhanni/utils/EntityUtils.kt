@@ -28,6 +28,7 @@ import at.hannibal2.skyhanni.utils.vector.VectorBounds.boxAround
 import at.hannibal2.skyhanni.utils.vector.VectorBounds.boxTo
 import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import at.hannibal2.skyhanni.utils.vector.VectorFormat.formatRounded
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.minus
 import net.minecraft.client.Minecraft
 import net.minecraft.client.player.RemotePlayer
 import net.minecraft.world.entity.Entity

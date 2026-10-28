@@ -96,7 +96,7 @@ object EntityMovementData {
 
             val newLocation = entity.positionVector()
             val oldLocation = entityLocation[entity]!!
-            val distance = newLocation.distance(oldLocation)
+            val distance = newLocation.distanceTo(oldLocation)
             if (distance > 0.01) {
                 entityLocation[entity] = newLocation
                 EntityMoveEvent(entity, oldLocation, newLocation, distance).post()

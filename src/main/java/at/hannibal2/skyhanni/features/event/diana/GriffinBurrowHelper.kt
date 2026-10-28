@@ -50,6 +50,9 @@ import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import at.hannibal2.skyhanni.utils.vector.VectorConversions.toSkyHanniVector
 import at.hannibal2.skyhanni.utils.vector.VectorFormat.formatRounded
+import at.hannibal2.skyhanni.utils.vector.VectorMath.blockCenter
+import at.hannibal2.skyhanni.utils.vector.VectorMath.floor
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.minus
 import io.github.notenoughupdates.moulconfig.ChromaColour
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.world.level.block.Blocks
@@ -184,7 +187,7 @@ object GriffinBurrowHelper {
             val lookAngle = player.lookAngle.toSkyHanniVector()
             val toTarget = item.getCurrent().minus(eyePos)
 
-            val angle = Math.toDegrees(acos(lookAngle dot toTarget.normalized()))
+            val angle = Math.toDegrees(acos(lookAngle.dot(toTarget.normalize())))
             if (angle < 2.0 && toTarget.length() < 80) toDelete.add(item)
         }
         removeGuess(toDelete, "clicked inaccurate guess")
@@ -273,7 +276,7 @@ object GriffinBurrowHelper {
         val newLocation = event.guess.getCurrent()
         val playerLocation = LocationUtils.playerLocation()
 
-        if (newLocation.distance(playerLocation) < 6) return
+        if (newLocation.distanceTo(playerLocation) < 6) return
         if (!IslandType.HUB.isInBounds(newLocation)) return
 
         addGuess(event.guess, "burrow guess from ${event.source}")
@@ -292,7 +295,7 @@ object GriffinBurrowHelper {
 
         val toDelete = mutableSetOf<GuessEntry>()
         allGuesses.filter { it.spadeGuess }.forEach {
-            if (it.getCurrent().distanceSq(burrowLocation) < 2000) {
+            if (it.getCurrent().distanceToSqr(burrowLocation) < 2000) {
                 toDelete.add(it)
             }
         }
@@ -311,7 +314,7 @@ object GriffinBurrowHelper {
 
         // finished chain
         if (event.current == event.max && config.warnOnChainComp) {
-            val nearby = allGuesses.filter { it.getCurrent().distanceSq(location) < 10 }.toSet()
+            val nearby = allGuesses.filter { it.getCurrent().distanceToSqr(location) < 10 }.toSet()
             removeGuess(nearby, "chain finished with leftover burrow within 3 blocks")
             if (config.warnOnChainComp) {
                 val anyClose = allGuesses.filter { it.getCurrent().distanceSqToPlayer() < 8100 }
@@ -480,7 +483,7 @@ object GriffinBurrowHelper {
         } else {
             val target = getGuess(targetLocation) ?: return
             val location = target.getCurrent()
-            val distance = location.distance(playerLocation)
+            val distance = location.distanceTo(playerLocation)
             val text = when (target.burrowType) {
                 BurrowType.UNKNOWN -> "${if (currentWarp != null) "§b" else "§f"}Guess".asComponent()
                 else -> target.burrowType.getBurrowText()
@@ -501,7 +504,7 @@ object GriffinBurrowHelper {
             val location = rareMob.location
             // TODO add chroma color support via config
             event.drawColor(location, LorenzColor.LIGHT_PURPLE.toChromaColor())
-            val distance = location.distance(playerLocation)
+            val distance = location.distanceTo(playerLocation)
             if (distance > 10) {
                 // TODO use round(1)
                 val formattedDistance = distance.toInt().addSeparators()
@@ -525,7 +528,7 @@ object GriffinBurrowHelper {
     private fun renderAllGuesses(event: SkyHanniRenderWorldEvent, playerLocation: SkyHanniVector) {
         for (guess in allGuesses.toList()) {
             val location = guess.getCurrent()
-            val distance = location.distance(playerLocation)
+            val distance = location.distanceTo(playerLocation)
             val burrowType = guess.burrowType
             var text = burrowType.getBurrowText()
 
@@ -630,7 +633,7 @@ object GriffinBurrowHelper {
         }
 
         EntityMovementData.addToTrack(MinecraftCompat.localPlayerOrThrow)
-        val location = LocationUtils.playerLocation().roundLocation()
+        val location = LocationUtils.playerLocation().floor().down()
         addGuess(GuessEntry(listOf(location), burrowType = type), "added test burrow from command")
         update()
     }

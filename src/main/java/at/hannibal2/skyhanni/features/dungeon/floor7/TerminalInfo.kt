@@ -61,7 +61,7 @@ enum class TerminalInfo(val location: SkyHanniVector, val phase: BossPhase, val 
         fun resetTerminals() = entries.forEach { it.highlight = true }
 
         fun getClosestTerminal(input: SkyHanniVector): TerminalInfo? {
-            return entries.filter { it.highlight }.minByOrNull { it.location.distance(input) }
+            return entries.filter { it.highlight }.minByOrNull { it.location.distanceTo(input) }
         }
     }
 }

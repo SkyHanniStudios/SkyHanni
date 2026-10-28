@@ -44,7 +44,7 @@ object SeaCreatureLootshareSphere {
 
             for (lootshareSphere in spherePositions) {
                 val position = lootshareSphere.position
-                if (position.distance(pos) < 10) otherNearbySpheres++
+                if (position.distanceTo(pos) < 10) otherNearbySpheres++
             }
             if (otherNearbySpheres < 2) {
                 spherePositions.add(LootshareUtils.Sphere(pos, color))

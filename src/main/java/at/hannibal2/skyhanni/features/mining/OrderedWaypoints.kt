@@ -34,6 +34,8 @@ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawEdges
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawLineToCrosshair
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawString
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
+import at.hannibal2.skyhanni.utils.vector.VectorFormat.toCleanString
+import at.hannibal2.skyhanni.utils.vector.VectorMath.floor
 import java.util.Locale
 import kotlinx.coroutines.Job
 

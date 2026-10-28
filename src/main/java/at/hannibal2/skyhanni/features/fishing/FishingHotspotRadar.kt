@@ -104,7 +104,7 @@ object FishingHotspotRadar {
     @HandleEvent(onlyOnSkyblock = true)
     fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         val location = hotspotLocation ?: return
-        val distance = location.distance(event.exactPlayerEyeLocation())
+        val distance = location.distanceTo(event.exactPlayerEyeLocation())
         if (config.lineToHotspot) {
             event.drawLineToCrosshair(location, LorenzColor.LIGHT_PURPLE.toChromaColor(), lineWidth = 3, depth = false)
         }

@@ -418,7 +418,7 @@ object MinionFeatures {
             if (location.distanceToPlayer() > 50) continue
 
             val lastEmptied = minion.value.lastClicked
-            if (playerLocation.distance(location) >= config.emptiedTime.distance) continue
+            if (playerLocation.distanceTo(location) >= config.emptiedTime.distance) continue
 
             if (config.nameDisplay) {
                 val displayName = minion.value.displayName
@@ -447,7 +447,7 @@ object MinionFeatures {
         val minions = minions ?: return
 
         val loc = entity.positionVector()
-        if (minions.any { it.key.distance(loc) < 5 }) {
+        if (minions.any { it.key.distanceTo(loc) < 5 }) {
             event.cancel()
         }
     }

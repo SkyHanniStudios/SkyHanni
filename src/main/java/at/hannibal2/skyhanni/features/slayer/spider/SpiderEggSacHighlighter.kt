@@ -50,7 +50,7 @@ object SpiderEggSacHighlighter {
 
         val currentEggSacs = timerStands
             .filter { timer ->
-                shootMeStands.any { it.positionVector().distance(timer.positionVector()) < 2.5 }
+                shootMeStands.any { it.positionVector().distanceTo(timer.positionVector()) < 2.5 }
             }
             .flatMap { it.getEggSacParts(armorStands) }
             .toSet()
@@ -67,7 +67,7 @@ object SpiderEggSacHighlighter {
     private fun ArmorStand.getEggSacParts(armorStands: List<ArmorStand>): List<ArmorStand> {
         val location = positionVector()
         return listOf(this) + armorStands.filter {
-            it.cleanName == "Armor Stand" && it.positionVector().distance(location) < 1.2
+            it.cleanName == "Armor Stand" && it.positionVector().distanceTo(location) < 1.2
         }
     }
 

@@ -209,7 +209,7 @@ object FlareDisplay {
         if (!config.hideParticles) return
 
         val location = event.location
-        val distance = flares.minOfOrNull { it.location.distance(location) } ?: return
+        val distance = flares.minOfOrNull { it.location.distanceTo(location) } ?: return
         if (distance < 2.5) {
             if (event.type == ParticleTypes.FLAME) {
                 event.cancel()

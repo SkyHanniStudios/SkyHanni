@@ -49,7 +49,7 @@ object SummoningSoulsName {
 
             val map = mutableMapOf<Int, Double>()
             for ((mob, loc) in mobsLastLocation) {
-                val distance = loc.distance(soulLocation)
+                val distance = loc.distanceTo(soulLocation)
                 map[mob] = distance
             }
             val nearestMob = map.sorted().firstNotNullOfOrNull { it.key }

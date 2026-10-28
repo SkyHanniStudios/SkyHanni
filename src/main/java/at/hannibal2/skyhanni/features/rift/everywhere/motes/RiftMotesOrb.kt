@@ -52,7 +52,7 @@ object RiftMotesOrb {
 
         if (event.type != ParticleTypes.ENTITY_EFFECT) return
         val orb =
-            motesOrbs.find { it.location.distance(location) < 3 } ?: MotesOrb(location).also {
+            motesOrbs.find { it.location.distanceTo(location) < 3 } ?: MotesOrb(location).also {
                 motesOrbs = motesOrbs.editCopy { add(it) }
             }
 

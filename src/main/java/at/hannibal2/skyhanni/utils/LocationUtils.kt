@@ -4,13 +4,21 @@ import at.hannibal2.skyhanni.utils.collection.TimeLimitedSet
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import at.hannibal2.skyhanni.utils.vector.VectorBounds.center
-import at.hannibal2.skyhanni.utils.vector.VectorBounds.cornersAtHeight
-import at.hannibal2.skyhanni.utils.vector.VectorBounds.edgeLengths
-import at.hannibal2.skyhanni.utils.vector.VectorBounds.edges
 import at.hannibal2.skyhanni.utils.vector.VectorBounds.maxCorner
 import at.hannibal2.skyhanni.utils.vector.VectorBounds.minCorner
-import at.hannibal2.skyhanni.utils.vector.VectorBounds.topCenter
 import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.toSkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorMath.distanceIgnoreY
+import at.hannibal2.skyhanni.utils.vector.VectorMath.distanceSqIgnoreY
+import at.hannibal2.skyhanni.utils.vector.VectorMath.elementwiseMax
+import at.hannibal2.skyhanni.utils.vector.VectorMath.elementwiseMin
+import at.hannibal2.skyhanni.utils.vector.VectorMath.floor
+import at.hannibal2.skyhanni.utils.vector.VectorMath.maxComponent
+import at.hannibal2.skyhanni.utils.vector.VectorMath.minComponent
+import at.hannibal2.skyhanni.utils.vector.VectorMath.reciprocal
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.minus
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.plus
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.times
 import net.minecraft.core.Direction
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.phys.AABB
@@ -52,19 +60,19 @@ object LocationUtils {
     // Block heights are multiples of 1/16, so we subtract 1/16 to find the right block
     fun getBlockBelowPlayer() = playerLocation().add(0.0, -1.0 / 16.0, 0.0).floor()
 
-    fun SkyHanniVector.distanceToPlayer() = distance(playerLocation())
+    fun SkyHanniVector.distanceToPlayer() = distanceTo(playerLocation())
 
     fun SkyHanniVector.distanceToPlayerIgnoreY() = distanceIgnoreY(playerLocation())
 
-    fun SkyHanniVector.distanceSqToPlayer() = distanceSq(playerLocation())
+    fun SkyHanniVector.distanceSqToPlayer() = distanceToSqr(playerLocation())
 
     fun SkyHanniVector.distanceToPlayerSqIgnoreY() = distanceSqIgnoreY(playerLocation())
 
     fun Entity.distanceToPlayer() = positionVector().distanceToPlayer()
     fun Entity.distanceSqToPlayer() = positionVector().distanceSqToPlayer()
 
-    fun Entity.distanceTo(location: SkyHanniVector) = positionVector().distance(location)
-    fun Entity.distanceTo(other: Entity) = positionVector().distance(other.positionVector())
+    fun Entity.distanceTo(location: SkyHanniVector) = positionVector().distanceTo(location)
+    fun Entity.distanceTo(other: Entity) = positionVector().distanceTo(other.positionVector())
 
     fun Entity.distanceToIgnoreY(location: SkyHanniVector) = positionVector().distanceIgnoreY(location)
 
@@ -74,7 +82,7 @@ object LocationUtils {
         return vec.up(player.eyeHeight.toDouble())
     }
 
-    fun AABB.isInside(vec: SkyHanniVector) = contains(vec.toVec3())
+    fun AABB.isInside(vec: SkyHanniVector) = contains(vec)
 
     fun AABB.isPlayerInside() = isInside(playerLocation())
 
@@ -142,7 +150,7 @@ object LocationUtils {
         val center = aabb.center()
         val faceCenter = face.getCenterPos(center, aabb)
 
-        if (eye.distance(faceCenter) > viewDistance.toDouble()) return false
+        if (eye.distanceTo(faceCenter) > viewDistance.toDouble()) return false
         val wrappedSuccess = pointFill.wrapCanSee(face, eye, faceCenter, offset, resultLifespan)
 
         return if (wrappedSuccess && pointFill == null) true
@@ -182,7 +190,7 @@ object LocationUtils {
             stepLoop@for (step in 1..stepCount) {
                 val frac = step.toDouble() / (stepCount + 1)
                 val testPoint = faceCenter + dirVec * (boundaryDist * frac)
-                if (eye.distance(testPoint) > viewDistance.toDouble()) continue@stepLoop
+                if (eye.distanceTo(testPoint) > viewDistance.toDouble()) continue@stepLoop
                 val wrappedSuccess = pointFill.wrapCanSee(this, eye, testPoint, offset, resultLifespan)
                 if (wrappedSuccess && pointFill == null) return true
             }
@@ -254,19 +262,13 @@ object LocationUtils {
     fun SkyHanniVector.canBeSeen(viewDistance: Number = 150.0, offset: Double? = null): Boolean {
         val a = playerEyeLocation()
         val b = this
-        return a.distance(b) < viewDistance.toDouble() && canSee(a, b, offset)
+        return a.distanceTo(b) < viewDistance.toDouble() && canSee(a, b, offset)
     }
 
     fun SkyHanniVector.canBeSeen(yOffsetRange: IntRange, radius: Double = 150.0): Boolean =
         yOffsetRange.any { offset ->
             up(offset).canBeSeen(radius)
         }
-
-    @Deprecated("Use minCorner from VectorBounds", ReplaceWith("minCorner()", "at.hannibal2.skyhanni.utils.vector.VectorBounds.minCorner"))
-    fun AABB.minBox() = minCorner()
-
-    @Deprecated("Use maxCorner from VectorBounds", ReplaceWith("maxCorner()", "at.hannibal2.skyhanni.utils.vector.VectorBounds.maxCorner"))
-    fun AABB.maxBox() = maxCorner()
 
     fun AABB.rayIntersects(origin: SkyHanniVector, direction: SkyHanniVector): Boolean {
         // Reference for Algorithm https://tavianator.com/2011/ray_box.html
@@ -302,18 +304,6 @@ object LocationUtils {
 
         return AABB(minX, minY, minZ, maxX, maxY, maxZ)
     }
-
-    @Deprecated(
-        "Use edgeLengths from VectorBounds",
-        ReplaceWith("edgeLengths()", "at.hannibal2.skyhanni.utils.vector.VectorBounds.edgeLengths"),
-    )
-    fun AABB.getEdgeLengths() = edgeLengths()
-
-    @Deprecated("Use center from VectorBounds", ReplaceWith("center()", "at.hannibal2.skyhanni.utils.vector.VectorBounds.center"))
-    fun AABB.getBoxCenter() = center()
-
-    @Deprecated("Use topCenter from VectorBounds", ReplaceWith("topCenter()", "at.hannibal2.skyhanni.utils.vector.VectorBounds.topCenter"))
-    fun AABB.getTopCenter() = topCenter()
 
     fun AABB.clampTo(other: AABB): AABB {
         val minX = max(this.minX, other.minX)
@@ -357,13 +347,10 @@ object LocationUtils {
         val diff = now - startTime
         val location = if (diff < maxTime) {
             val percentage = diff / maxTime
-            from.lerp(to, percentage)
+            from.lerp(to, percentage).toSkyHanniVector()
         } else to
         return location
     }
-
-    @Deprecated("Use edges from VectorBounds", ReplaceWith("edges()", "at.hannibal2.skyhanni.utils.vector.VectorBounds.edges"))
-    fun AABB.calculateEdges() = edges()
 
     fun computePitchWeight(derivative: SkyHanniVector) = sqrt(24 * sin(getPitchFromDerivative(derivative) - PI) + 25)
 
@@ -388,10 +375,4 @@ object LocationUtils {
         }
         return guessPitch
     }
-
-    @Deprecated(
-        "Use cornersAtHeight from VectorBounds",
-        ReplaceWith("cornersAtHeight(y)", "at.hannibal2.skyhanni.utils.vector.VectorBounds.cornersAtHeight"),
-    )
-    fun AABB.getCornersAtHeight(y: Double) = cornersAtHeight(y)
 }

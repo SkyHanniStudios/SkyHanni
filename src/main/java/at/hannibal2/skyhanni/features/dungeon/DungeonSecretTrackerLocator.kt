@@ -70,7 +70,7 @@ object DungeonSecretTrackerLocator {
     fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!isEnabled()) return
         val location = secretLocation ?: return
-        val distance = location.distance(event.exactPlayerEyeLocation())
+        val distance = location.distanceTo(event.exactPlayerEyeLocation())
 
         if (distance > 3) {
             val formattedDistance = distance.toInt().addSeparators()

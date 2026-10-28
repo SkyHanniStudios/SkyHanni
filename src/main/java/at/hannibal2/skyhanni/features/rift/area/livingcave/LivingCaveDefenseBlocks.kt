@@ -23,6 +23,7 @@ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawLineToCrosshair
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.exactLocation
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorMath.blockCenter
 import net.minecraft.client.player.RemotePlayer
 import net.minecraft.core.particles.ParticleTypes
 
@@ -47,19 +48,19 @@ object LivingCaveDefenseBlocks {
 
         movingBlocks = movingBlocks.editCopy {
             values.removeIf { System.currentTimeMillis() > it + 2000 }
-            keys.removeIf { staticBlocks.any { others -> others.location.distance(it.location) < 1.5 } }
+            keys.removeIf { staticBlocks.any { others -> others.location.distanceTo(it.location) < 1.5 } }
         }
 
         val location = event.location.add(-0.5, 0.0, -0.5)
 
         // Ignore particles around blocks
-        if (staticBlocks.any { it.location.distance(location) < 3 }) {
+        if (staticBlocks.any { it.location.distanceTo(location) < 3 }) {
             if (config.hideParticles) {
                 event.cancel()
             }
             return
         }
-        if (config.hideParticles && movingBlocks.keys.any { it.location.distance(location) < 3 }) {
+        if (config.hideParticles && movingBlocks.keys.any { it.location.distanceTo(location) < 3 }) {
             event.cancel()
         }
 
@@ -68,7 +69,7 @@ object LivingCaveDefenseBlocks {
 
             // read old entity data
             getNearestMovingDefenseBlock(location)?.let {
-                if (it.location.distance(location) < 0.5) {
+                if (it.location.distanceTo(location) < 0.5) {
                     movingBlocks = movingBlocks.editCopy {
                         it.hidden = true
                     }
@@ -133,11 +134,11 @@ object LivingCaveDefenseBlocks {
     }
 
     private fun getNearestMovingDefenseBlock(location: SkyHanniVector) =
-        movingBlocks.keys.filter { it.location.distance(location) < 15 }
-            .minByOrNull { it.location.distance(location) }
+        movingBlocks.keys.filter { it.location.distanceTo(location) < 15 }
+            .minByOrNull { it.location.distanceTo(location) }
 
     private fun getNearestStaticDefenseBlock(location: SkyHanniVector) =
-        staticBlocks.filter { it.location.distance(location) < 15 }.minByOrNull { it.location.distance(location) }
+        staticBlocks.filter { it.location.distanceTo(location) < 15 }.minByOrNull { it.location.distanceTo(location) }
 
     @HandleEvent
     fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
