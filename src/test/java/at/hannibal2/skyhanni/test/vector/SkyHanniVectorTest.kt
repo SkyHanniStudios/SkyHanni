@@ -1,14 +1,18 @@
 package at.hannibal2.skyhanni.test.vector
 
 import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
-import at.hannibal2.skyhanni.utils.vector.VectorBlocks.blockCenter
-import at.hannibal2.skyhanni.utils.vector.VectorBlocks.floorToBlock
 import at.hannibal2.skyhanni.utils.vector.VectorFormat.formatRounded
 import at.hannibal2.skyhanni.utils.vector.VectorFormat.toChatFormat
 import at.hannibal2.skyhanni.utils.vector.VectorFormat.toLocalFormat
+import at.hannibal2.skyhanni.utils.vector.VectorMath.blockCenter
+import at.hannibal2.skyhanni.utils.vector.VectorMath.distanceChebyshevIgnoreY
+import at.hannibal2.skyhanni.utils.vector.VectorMath.distanceIgnoreY
+import at.hannibal2.skyhanni.utils.vector.VectorMath.floor
+import net.minecraft.world.phys.Vec3
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import kotlin.math.PI
 
 class SkyHanniVectorTest {
 
@@ -17,16 +21,19 @@ class SkyHanniVectorTest {
         val negative = SkyHanniVector(-0.0, -0.0, -0.0)
         assertEquals(SkyHanniVector.ZERO, negative)
         assertEquals(SkyHanniVector.ZERO.hashCode(), negative.hashCode())
+        assertTrue(setOf(SkyHanniVector.ZERO).contains(negative))
+    }
+
+    @Test
+    fun `equals a plain Vec3 with the same components in both directions`() {
+        assertEquals(SkyHanniVector(1, 2, 3), Vec3(1.0, 2.0, 3.0))
+        assertEquals(Vec3(1.0, 2.0, 3.0), SkyHanniVector(1, 2, 3))
+        assertNotEquals(SkyHanniVector(1, 2, 3), Vec3(1.0, 2.0, 4.0))
     }
 
     @Test
     fun `cross product is right handed`() {
-        assertEquals(SkyHanniVector.Z_AXIS, SkyHanniVector.X_AXIS cross SkyHanniVector.Y_AXIS)
-    }
-
-    @Test
-    fun `rotateAroundY turns x into negative z`() {
-        assertEquals(SkyHanniVector(0.0, 0.0, -1.0), SkyHanniVector.X_AXIS.rotateAroundY(PI / 2).roundTo(6))
+        assertEquals(SkyHanniVector(0, 0, 1), SkyHanniVector(Vec3.X_AXIS).cross(Vec3.Y_AXIS))
     }
 
     @Test
@@ -39,7 +46,7 @@ class SkyHanniVectorTest {
     @Test
     fun `block helpers floor toward negative infinity`() {
         val v = SkyHanniVector(1.7, -2.3, 3.0)
-        assertEquals(SkyHanniVector(1.0, -3.0, 3.0), v.floorToBlock().toVector())
+        assertEquals(SkyHanniVector(1.0, -3.0, 3.0), v.floor())
         assertEquals(SkyHanniVector(1.5, -2.5, 3.5), v.blockCenter())
     }
 

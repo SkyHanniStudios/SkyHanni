@@ -4,7 +4,6 @@
     <ID>MayBeConst:MutationsWebsite.kt$MutationsWebsite$private val link = "https://skymutations.eu/"</ID>
   </ManuallySuppressedIssues>
   <CurrentIssues>
-    <ID>ArrayPrimitive:LorenzVec.kt:Array&lt;Double&gt;</ID>
     <ID>BackingPropertyNaming:DiscordIPC.kt:DiscordIPC$@Volatile private var _connected = false</ID>
     <ID>BackingPropertyNaming:HolographicEntities.kt:HolographicEntities$private var _internalEntityHoloBases: Map&lt;KClass&lt;out LivingEntity&gt;, HolographicBase&lt;out LivingEntity&gt;&gt;? = null</ID>
     <ID>BackingPropertyNaming:LazyVar.kt:LazyVar$private var _value: T? = null</ID>
@@ -24,7 +23,6 @@
     <ID>EnumWrapping:DungeonLividFinder.kt:DungeonLividFinder$LividColorHighlight</ID>
     <ID>EnumWrapping:EliteItemResourceJson.kt:EliteRequirementType</ID>
     <ID>EnumWrapping:SessionUptime.kt:NormalSession</ID>
-    <ID>FunctionNaming:LorenzVec.kt:@Deprecated("Use SkyHanniVector.ZERO", ReplaceWith("SkyHanniVector.ZERO", "at.hannibal2.skyhanni.utils.vector.SkyHanniVector")) fun LorenzVec</ID>
     <ID>ImplicitDefaultLocale:BloodTimer.kt:BloodTimer$"%.2f".format(it)</ID>
     <ID>ImplicitDefaultLocale:CakeTracker.kt:CakeTracker$"%.2f".format(data.ownedCakes.size * 100.0 / currentYear)</ID>
     <ID>ImplicitDefaultLocale:DanceRoomHelper.kt:DanceRoomHelper$"%s%01d:%03d".format( config.danceRoomFormatting.color.countdown.formatColor(), totalMilliseconds / 1000, totalMilliseconds % 1000, )</ID>
@@ -96,20 +94,6 @@
     <ID>MultilineLoop:JsonUtils.kt:it.add(entry.key, entry.value.shDeepCopy())</ID>
     <ID>MultilineLoop:SkyblockStat.kt:SkyblockStat.Companion$for (entry in entries) { val matchResult = pattern(entry).matchMatcher(line) { groupOrNull("value")?.replace("[,%]".toRegex(), "")?.toDouble() } ?: continue entry.lastKnownValue = matchResult entry.lastSource = type entry.lastAssignment = SimpleTimeMark.now() break // Exit the inner loop once a match is found }</ID>
     <ID>MultilineLoop:TabWidget.kt:TabWidget.Companion$when { PLAYER_LIST.pattern.matches(header) -&gt; if (playerListFound) removeIndexes.add(index - removeIndexes.size) else playerListFound = true INFO.pattern.matches(header) -&gt; if (infoFound) removeIndexes.add(index - removeIndexes.size) else infoFound = true }</ID>
-    <ID>NoLorenzVec:GraphEditorHistory.kt:GraphEditorHistory.HistoryEntry$LorenzVec</ID>
-    <ID>NoLorenzVec:GraphEditorInput.kt:GraphEditorInput$LorenzVec</ID>
-    <ID>NoLorenzVec:GraphEditorNodeFinder.kt:GraphEditorNodeFinder$LorenzVec</ID>
-    <ID>NoLorenzVec:GraphEditorRenderer.kt:GraphEditorRenderer$LorenzVec</ID>
-    <ID>NoLorenzVec:GraphNodeEditor.kt:GraphNodeEditor$LorenzVec</ID>
-    <ID>NoLorenzVec:GraphParkour.kt:GraphParkour$LorenzVec</ID>
-    <ID>NoLorenzVec:GraphingNode.kt:GraphingNode$LorenzVec</ID>
-    <ID>NoLorenzVec:PacketTest.kt:PacketTest$LorenzVec</ID>
-    <ID>NoLorenzVec:ParkourWaypointSaver.kt:ParkourWaypointSaver$LorenzVec</ID>
-    <ID>NoLorenzVec:SkyHanniDebugsAndTests.kt:SkyHanniDebugsAndTests$LorenzVec</ID>
-    <ID>NoLorenzVec:TestCanSeeFace.kt:TestCanSeeFace.FaceCheckContext$LorenzVec</ID>
-    <ID>NoLorenzVec:TrackWorldCommand.kt:TrackWorldCommand$LorenzVec</ID>
-    <ID>NoLorenzVec:WikiNpcComparator.kt:WikiNpcComparator$LorenzVec</ID>
-    <ID>NoLorenzVec:WikiNpcParser.kt:WikiNpcParser$LorenzVec</ID>
     <ID>NoNameShadowing:ChatManager.kt:ChatManager$reason</ID>
     <ID>NoNameShadowing:CommandUtils.kt:CommandUtils$start</ID>
     <ID>NoNameShadowing:FarmingWeightData.kt:FarmingWeightData$type</ID>
