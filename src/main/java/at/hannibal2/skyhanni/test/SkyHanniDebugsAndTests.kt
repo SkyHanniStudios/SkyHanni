@@ -217,9 +217,9 @@ object SkyHanniDebugsAndTests {
 
     private fun resetConfig() {
         // saving old config state
-        SkyHanniMod.configManager.saveConfig(ConfigFileType.FEATURES, "reload config manager")
-        SkyHanniMod.configManager.saveConfig(ConfigFileType.SACKS, "reload config manager")
-        SkyHanniMod.configManager.saveConfig(ConfigFileType.PETS, "reload config manager")
+        SkyHanniMod.configManager.saveConfig(ConfigFileType.FEATURES, "reload config manager", now = true)
+        SkyHanniMod.configManager.saveConfig(ConfigFileType.SACKS, "reload config manager", now = true)
+        SkyHanniMod.configManager.saveConfig(ConfigFileType.PETS, "reload config manager", now = true)
         Thread {
             Thread.sleep(500)
             SkyHanniMod.configManager.disableSaving()
