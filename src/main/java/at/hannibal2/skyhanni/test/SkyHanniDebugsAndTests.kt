@@ -391,8 +391,11 @@ object SkyHanniDebugsAndTests {
     private fun onKeyDown(event: KeyDownEvent) {
         val area = HypixelData.skyBlockArea ?: return
         if (event.keyCode != debugConfig.copySubLocation || MinecraftCompat.screen != null) return
-        OSUtils.copyToClipboard(area)
-        ChatUtils.chat("§eCopied sub-location §7$area §eto the clipboard!")
+
+        CoroutineSettings("copy sub-location to clipboard").launchCoroutine {
+            OSUtils.copyToClipboardAsync(area)
+            ChatUtils.chat("§eCopied sub-location §7$area §eto the clipboard!")
+        }
     }
 
     @HandleEvent(onlyOnSkyblock = true)
