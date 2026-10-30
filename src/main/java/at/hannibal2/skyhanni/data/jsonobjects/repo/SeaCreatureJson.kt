@@ -25,4 +25,5 @@ data class SeaCreatureInfo(
     @SerializedName(value = "lootshare_sphere_override", alternate = ["lootshareSphereOverride"])
     val lootshareSphereOverride: Boolean? = null,
     @Expose @SerializedName("old_names") val oldNames: List<String>?,
+    @Expose @SerializedName("rgb_color") val rgbColor: Int?,
 )

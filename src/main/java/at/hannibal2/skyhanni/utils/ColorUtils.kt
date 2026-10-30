@@ -2,7 +2,9 @@ package at.hannibal2.skyhanni.utils
 
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.test.command.ErrorManager
+import at.hannibal2.skyhanni.utils.LorenzColor.Companion.toLorenzColor
 import io.github.notenoughupdates.moulconfig.ChromaColour
+import net.minecraft.ChatFormatting
 import java.awt.Color
 import kotlin.random.Random
 
@@ -117,4 +119,6 @@ object ColorUtils {
         val luminance = 1.0f
         return Color.getHSBColor(hue, saturation, luminance)
     }
+
+    fun ChatFormatting.toRGB(): Int = this.toLorenzColor().toColor().rgb
 }
