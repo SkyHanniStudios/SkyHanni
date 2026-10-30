@@ -58,14 +58,14 @@ object CrystalHollowsWalls {
 
     private val nucleusBBOffsetY get() = nucleusBB.move(0.0, yViewOffset, 0.0)
 
-    private fun Double.shiftPX() = this + LorenzVec.expandVector.x * EXPAND_TIMES
-    private fun Double.shiftNX() = this - LorenzVec.expandVector.x * EXPAND_TIMES
+    private fun Double.shiftPX() = this + WorldRenderUtils.EXPAND_VECTOR.x * EXPAND_TIMES
+    private fun Double.shiftNX() = this - WorldRenderUtils.EXPAND_VECTOR.x * EXPAND_TIMES
 
-    private fun Double.shiftPY() = this + LorenzVec.expandVector.y * EXPAND_TIMES
-    private fun Double.shiftNY() = this - LorenzVec.expandVector.y * EXPAND_TIMES
+    private fun Double.shiftPY() = this + WorldRenderUtils.EXPAND_VECTOR.y * EXPAND_TIMES
+    private fun Double.shiftNY() = this - WorldRenderUtils.EXPAND_VECTOR.y * EXPAND_TIMES
 
-    private fun Double.shiftPZ() = this + LorenzVec.expandVector.z * EXPAND_TIMES
-    private fun Double.shiftNZ() = this - LorenzVec.expandVector.z * EXPAND_TIMES
+    private fun Double.shiftPZ() = this + WorldRenderUtils.EXPAND_VECTOR.z * EXPAND_TIMES
+    private fun Double.shiftNZ() = this - WorldRenderUtils.EXPAND_VECTOR.z * EXPAND_TIMES
 
     @HandleEvent
     fun onRenderWorld(event: SkyHanniRenderWorldEvent) {

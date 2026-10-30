@@ -1,13 +1,13 @@
 package at.hannibal2.skyhanni.data.model
 
 import at.hannibal2.skyhanni.utils.ItemUtils.repoItemName
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.StringUtils.removeColor
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.container.RenderableInventory.fakeInventory
 import at.hannibal2.skyhanni.utils.renderables.container.VerticalContainerRenderable.Companion.vertical
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import com.google.gson.annotations.Expose
 
 class SkyHanniInventoryContainer(
@@ -15,8 +15,8 @@ class SkyHanniInventoryContainer(
     @Expose val rowSize: Int,
     @Expose var items: List<SafeItemStack?>,
     @Expose var displayName: String = internalName,
-    @Expose val primaryCords: LorenzVec? = null,
-    @Expose val secondaryCords: LorenzVec? = null,
+    @Expose val primaryCords: SkyHanniVector? = null,
+    @Expose val secondaryCords: SkyHanniVector? = null,
 ) {
     fun toRenderable(scale: Double = 1.0): Renderable = with(Renderable) {
         vertical(

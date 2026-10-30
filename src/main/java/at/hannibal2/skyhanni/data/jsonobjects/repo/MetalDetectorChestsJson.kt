@@ -1,8 +1,8 @@
 package at.hannibal2.skyhanni.data.jsonobjects.repo
 
-import at.hannibal2.skyhanni.utils.LorenzVec
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import com.google.gson.annotations.Expose
 
 data class MetalDetectorChestsJson(
-    @Expose val locations: List<LorenzVec>,
+    @Expose val locations: List<SkyHanniVector>,
 )

@@ -10,6 +10,9 @@ import at.hannibal2.skyhanni.utils.LocationUtils.rayIntersects
 import at.hannibal2.skyhanni.utils.compat.EntityCompat.getInventoryItems
 import at.hannibal2.skyhanni.utils.compat.InventoryCompat.isNotEmpty
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLessResets
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.toSkyHanniVector
 import net.minecraft.client.resources.language.I18n
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
@@ -27,7 +30,7 @@ object MobUtils {
     fun getNextEntity(entity: Entity, offset: Int): Entity? = EntityUtils.getEntityByID(entity.id + offset)
 
     fun getArmorStandByRangeAll(entity: Entity, range: Double) =
-        entity.getLorenzVec().getEntitiesNearby<ArmorStand>(range)
+        entity.positionVector().getEntitiesNearby<ArmorStand>(range)
 
     fun getClosestArmorStand(entity: Entity, range: Double) =
         getArmorStandByRangeAll(entity, range).minByOrNull { it.distanceTo(entity) }
@@ -60,26 +63,26 @@ object MobUtils {
         entity: Entity,
         distance: Double,
         partialTicks: Float,
-        offset: LorenzVec = LorenzVec(),
+        offset: SkyHanniVector = SkyHanniVector.ZERO,
     ) = raycastForMob(entity, partialTicks, offset)?.takeIf {
-        it.baseEntity.distanceTo(entity.getLorenzVec()) <= distance
+        it.baseEntity.distanceTo(entity.positionVector()) <= distance
     }
 
     fun raycastForMobs(
         entity: Entity,
         distance: Double,
         partialTicks: Float,
-        offset: LorenzVec = LorenzVec(),
+        offset: SkyHanniVector = SkyHanniVector.ZERO,
     ) = raycastForMobs(entity, partialTicks, offset)?.filter {
-        it.baseEntity.distanceTo(entity.getLorenzVec()) <= distance
+        it.baseEntity.distanceTo(entity.positionVector()) <= distance
     }.takeIf { it?.isNotEmpty() ?: false }
 
-    fun raycastForMob(entity: Entity, partialTicks: Float, offset: LorenzVec = LorenzVec()) =
+    fun raycastForMob(entity: Entity, partialTicks: Float, offset: SkyHanniVector = SkyHanniVector.ZERO) =
         raycastForMobs(entity, partialTicks, offset)?.firstOrNull()
 
-    fun raycastForMobs(entity: Entity, partialTicks: Float, offset: LorenzVec = LorenzVec()): List<Mob>? {
-        val look = entity.lookAngle.toLorenzVec().normalize()
-        val pos = entity.eyePosition.toLorenzVec() + offset
+    fun raycastForMobs(entity: Entity, partialTicks: Float, offset: SkyHanniVector = SkyHanniVector.ZERO): List<Mob>? {
+        val look = entity.lookAngle.toSkyHanniVector().normalized()
+        val pos = entity.eyePosition.toSkyHanniVector() + offset
         val possibleEntities = MobData.entityToMob.filterKeys {
             it !is ArmorStand &&
                 it.boundingBox.rayIntersects(

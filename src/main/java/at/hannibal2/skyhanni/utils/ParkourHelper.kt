@@ -13,11 +13,13 @@ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawFilledBoundingBox
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawString
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.expandBlock
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.outlineTopFace
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorBounds.boxFromOrigin
 import io.github.notenoughupdates.moulconfig.ChromaColour
 import java.awt.Color
 
 class ParkourHelper(
-    private val locations: List<LorenzVec>,
+    private val locations: List<SkyHanniVector>,
     private val shortCuts: List<ParkourShortCut>,
     val platformSize: Double = 1.0,
     val detectionRange: Double = 1.0,
@@ -37,7 +39,7 @@ class ParkourHelper(
 
     fun inParkour() = current != -1
 
-    fun getStartLocation(): LorenzVec = locations.first()
+    fun getStartLocation(): SkyHanniVector = locations.first()
 
     fun reset() {
         current = -1
@@ -111,7 +113,7 @@ class ParkourHelper(
                 val from = locations[shortCut.from].offsetCenter()
                 val to = locations[shortCut.to].offsetCenter()
                 draw3DLine(from, to, Color.RED, 3, false)
-                val textLocation = from + (to - from).normalize()
+                val textLocation = from + (to - from).normalized()
                 drawDynamicText(textLocation.add(-0.5, 1.0, -0.5), "§cShortcut", 1.8)
 
                 val aabb = axisAlignedBB(locations[shortCut.to])
@@ -122,7 +124,7 @@ class ParkourHelper(
     }
 
     private fun SkyHanniRenderWorldEvent.renderSteps(
-        inProgressVec: List<Pair<IndexedValue<LorenzVec>, IndexedValue<LorenzVec>>>,
+        inProgressVec: List<Pair<IndexedValue<SkyHanniVector>, IndexedValue<SkyHanniVector>>>,
     ) {
         for ((index, location) in locations.asSequence().withIndex().drop(current)
             .take(lookAhead) + inProgressVec.map { it.second }) {
@@ -142,9 +144,9 @@ class ParkourHelper(
         }
     }
 
-    private fun LorenzVec.offsetCenter() = add(platformSize / 2, 1.0, platformSize / 2)
+    private fun SkyHanniVector.offsetCenter() = add(platformSize / 2, 1.0, platformSize / 2)
 
-    private fun getInProgressPair(): Pair<IndexedValue<LorenzVec>, IndexedValue<LorenzVec>>? {
+    private fun getInProgressPair(): Pair<IndexedValue<SkyHanniVector>, IndexedValue<SkyHanniVector>>? {
         if (current < 0 || current + lookAhead >= locations.size) return null
         val currentPosition = locations[current].offsetCenter()
         val nextPosition = locations[current + 1].offsetCenter()
@@ -154,14 +156,14 @@ class ParkourHelper(
         if (LocationUtils.playerLocation().distance(nextPosition) > currentPosition.distance(nextPosition)) return null
 
         val factor = LocationUtils.playerLocation().distance(currentPosition) / currentPosition.distance(nextPosition)
-        val slopeLocation = lookAheadStart.slope(lookAheadEnd, factor)
+        val slopeLocation = lookAheadStart.lerp(lookAheadEnd, factor)
         return Pair(
             IndexedValue(current + lookAhead - 1, lookAheadStart),
             IndexedValue(current + lookAhead, slopeLocation),
         )
     }
 
-    private fun axisAlignedBB(loc: LorenzVec) = loc.boundingToOffset(platformSize, 1.0, platformSize).expandBlock()
+    private fun axisAlignedBB(loc: SkyHanniVector) = loc.boxFromOrigin(platformSize, 1.0, platformSize).expandBlock()
 
     private fun colorForIndex(index: Int) = if (rainbowColor) {
         val hueOffset = (-index / 12f).mod(1f)

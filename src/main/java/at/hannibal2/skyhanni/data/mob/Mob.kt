@@ -11,7 +11,6 @@ import at.hannibal2.skyhanni.utils.EntityUtils.canBeSeen
 import at.hannibal2.skyhanni.utils.EntityUtils.cleanName
 import at.hannibal2.skyhanni.utils.EntityUtils.isCorrupted
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
-import at.hannibal2.skyhanni.utils.LocationUtils.getBoxCenter
 import at.hannibal2.skyhanni.utils.LocationUtils.union
 import at.hannibal2.skyhanni.utils.MobUtils
 import at.hannibal2.skyhanni.utils.MobUtils.mob
@@ -21,7 +20,8 @@ import at.hannibal2.skyhanni.utils.collection.CollectionUtils.toSingletonListOrE
 import at.hannibal2.skyhanni.utils.compat.EntityCompat.findHealthReal
 import at.hannibal2.skyhanni.utils.compat.EntityCompat.getAllEquipment
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLessResets
-import at.hannibal2.skyhanni.utils.getLorenzVec
+import at.hannibal2.skyhanni.utils.vector.VectorBounds.center
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import io.github.notenoughupdates.moulconfig.ChromaColour
 import io.github.notenoughupdates.moulconfig.observer.Property
 import net.minecraft.world.entity.Entity
@@ -265,7 +265,7 @@ class Mob(
         internalHighlight()
     }
 
-    val centerCords get() = boundingBox.getBoxCenter()
+    val centerCords get() = boundingBox.center()
 
     override fun hashCode() = uniqueId.hashCode()
 
@@ -291,7 +291,7 @@ class Mob(
 
     val isAlive: Boolean get() = baseEntity.isAlive
 
-    fun getLorenzVec() = baseEntity.getLorenzVec()
+    fun getLorenzVec() = baseEntity.positionVector()
 }
 
 enum class MobCategory {
