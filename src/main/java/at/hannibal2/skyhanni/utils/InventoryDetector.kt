@@ -33,7 +33,9 @@ class InventoryDetector(
     )
 
     init {
-        detectors.add(this)
+        DelayedRun.runOrNextTick {
+            detectors.add(this)
+        }
     }
 
     private var inInventory = false
@@ -48,7 +50,7 @@ class InventoryDetector(
         private val detectors = mutableListOf<InventoryDetector>()
 
         @HandleEvent(priority = HandleEvent.HIGHEST)
-        fun onInventoryClose(event: InventoryCloseEvent) {
+        private fun onInventoryClose(event: InventoryCloseEvent) {
             detectors.forEach {
                 it.inInventory = false
                 it.onCloseInventory(event)
@@ -56,7 +58,7 @@ class InventoryDetector(
         }
 
         @HandleEvent(priority = HandleEvent.HIGHEST)
-        fun onInventoryOpen(event: InventoryFullyOpenedEvent) {
+        private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
             detectors.forEach { it.updateInventoryState(event) }
         }
     }
