@@ -12,7 +12,6 @@ import at.hannibal2.skyhanni.events.fishing.SeaCreatureEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderable
 import at.hannibal2.skyhanni.utils.ServerTimeMark
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
@@ -22,6 +21,7 @@ import at.hannibal2.skyhanni.utils.TimeUtils.format
 import at.hannibal2.skyhanni.utils.compat.withColor
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import net.minecraft.ChatFormatting
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.network.chat.Component
@@ -36,7 +36,7 @@ object BarnFishingTimer {
     private const val GLOBAL_CAP = 60
     private const val PERSONAL_CAP = 10
     private val warningDelay = 5.seconds
-    private val hubBarnFishingLocation = LorenzVec(108, 89, -252)
+    private val hubBarnFishingLocation = SkyHanniVector(108, 89, -252)
 
     private enum class AlertReason(val title: String, val message: String) {
         TIME(

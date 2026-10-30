@@ -10,13 +10,13 @@ import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.EntityUtils
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NumberUtil.roundTo
 import at.hannibal2.skyhanni.utils.ReflectionUtils.getPrivateFieldValue
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat.isLocalPlayer
-import at.hannibal2.skyhanni.utils.getLorenzVec
-import at.hannibal2.skyhanni.utils.toLorenzVec
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.toSkyHanniVector
 import net.minecraft.network.protocol.Packet
 import net.minecraft.network.protocol.common.ClientboundKeepAlivePacket
 import net.minecraft.network.protocol.common.ServerboundKeepAlivePacket
@@ -203,28 +203,28 @@ object PacketTest {
         }.let { println(it) }
     }
 
-    private fun getDistance(location: LorenzVec?): Double {
+    private fun getDistance(location: SkyHanniVector?): Double {
         return location?.distanceToPlayer()?.roundTo(1) ?: 0.0
     }
 
-    private fun getLocation(packet: Packet<*>, entity: Entity?): LorenzVec? {
+    private fun getLocation(packet: Packet<*>, entity: Entity?): SkyHanniVector? {
         if (packet is ClientboundLevelParticlesPacket) {
-            return LorenzVec(packet.x, packet.y, packet.z)
+            return SkyHanniVector(packet.x, packet.y, packet.z)
         }
 
         if (packet is ClientboundAddEntityPacket) {
-            return LorenzVec(packet.x, packet.y, packet.z)
+            return SkyHanniVector(packet.x, packet.y, packet.z)
         }
 
         if (packet is ServerboundMovePlayerPacket) {
-            return LorenzVec(packet.getX(0.0), packet.getY(0.0), packet.getZ(0.0))
+            return SkyHanniVector(packet.getX(0.0), packet.getY(0.0), packet.getZ(0.0))
         }
         if (packet is ClientboundLevelEventPacket) {
-            return packet.pos.toLorenzVec()
+            return packet.pos.toSkyHanniVector()
         }
 
         if (entity != null) {
-            return entity.getLorenzVec()
+            return entity.positionVector()
         }
 
         return null

@@ -13,9 +13,9 @@ import at.hannibal2.skyhanni.utils.collection.CollectionUtils.removeIfKey
 import at.hannibal2.skyhanni.utils.compat.DamageSourceCompat
 import at.hannibal2.skyhanni.utils.compat.deceased
 import at.hannibal2.skyhanni.utils.compat.findHealthReal
-import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.monster.cubemob.Slime
 import java.awt.Color
@@ -60,7 +60,7 @@ object TentacleWaypoint {
         tentacleHits.removeIfKey { it.deceased || it.findHealthReal() == 0f }
 
         for ((tentacle, hits) in tentacleHits) {
-            val location = tentacle.getLorenzVec()
+            val location = tentacle.positionVector()
             event.drawWaypointFilled(
                 location.add(-0.5, 0.0, -0.5),
                 Color.RED,

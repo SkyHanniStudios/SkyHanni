@@ -2,7 +2,7 @@ package at.hannibal2.skyhanni.data.model.waypoints
 
 import at.hannibal2.skyhanni.config.ConfigManager
 import at.hannibal2.skyhanni.utils.ChatUtils
-import at.hannibal2.skyhanni.utils.LorenzVec
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import com.google.auto.service.AutoService
 import com.google.gson.annotations.Expose
 import com.google.gson.reflect.TypeToken
@@ -32,7 +32,7 @@ class SkytilsWaypointFormat : WaypointFormat {
             val waypoints = list.mapIndexed { index, wp ->
                 val number = index + 1
                 SkyHanniWaypoint(
-                    LorenzVec(wp.x, wp.y, wp.z),
+                    SkyHanniVector(wp.x, wp.y, wp.z),
                     number,
                     mutableMapOf("name" to wp.name),
                 )

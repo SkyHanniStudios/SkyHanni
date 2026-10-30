@@ -13,6 +13,7 @@ import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 import at.hannibal2.skyhanni.utils.OSUtils
 import at.hannibal2.skyhanni.utils.SimpleTimeMark.Companion.fromNow
 import at.hannibal2.skyhanni.utils.coroutines.CoroutineSettings
+import at.hannibal2.skyhanni.utils.vector.VectorMath.roundTo
 import kotlin.time.Duration.Companion.seconds
 
 @SkyHanniModule
@@ -56,7 +57,7 @@ object GraphEditorIO {
                 val otherNode = edge.getOther(node)
                 val compiledOther = compiledNodeMap[otherNode.id]
                     ?: error("Invalid node ID ${otherNode.id} referenced in edge")
-                val distance = node.position.distance(otherNode.position)
+                val distance = node.position.distanceTo(otherNode.position)
                 val extraWeight = node.extraWeight + otherNode.extraWeight
                 compiledOther to distance + extraWeight
             }.sortedBy { it.second }.toMap()
@@ -104,7 +105,7 @@ object GraphEditorIO {
 
     private fun showStats(networkCount: Int) {
         if (!GraphEditor.config.showsStats) return
-        val length = edges.sumOf { it.node1.position.distance(it.node2.position) }.toInt().addSeparators()
+        val length = edges.sumOf { it.node1.position.distanceTo(it.node2.position) }.toInt().addSeparators()
         val namedNodes = nodes.count { it.name != null }.addSeparators()
         ChatUtils.chat(
             "§lStats\n" +

@@ -17,7 +17,7 @@ import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalNames
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
-import at.hannibal2.skyhanni.utils.getLorenzVec
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.world.entity.LivingEntity
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -83,7 +83,7 @@ object SlayerQuestWarning {
     @HandleEvent(onlyOnSkyblock = true)
     fun onEntityHealthUpdate(event: EntityHealthUpdateEvent) {
         val entity = event.entity
-        if (entity.getLorenzVec().distanceToPlayer() < 6 && isSlayerMob(entity)) {
+        if (entity.positionVector().distanceToPlayer() < 6 && isSlayerMob(entity)) {
             tryWarn()
         }
     }

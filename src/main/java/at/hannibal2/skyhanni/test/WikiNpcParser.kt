@@ -1,7 +1,7 @@
 package at.hannibal2.skyhanni.test
 
 import at.hannibal2.skyhanni.data.IslandType
-import at.hannibal2.skyhanni.utils.LorenzVec
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 
 /**
  * This parses the npc locations of the hypixel wiki.
@@ -33,8 +33,8 @@ object WikiNpcParser {
         "Rift Dimension" to IslandType.THE_RIFT,
     )
 
-    fun parse(text: String): MutableMap<IslandType, MutableMap<String, LorenzVec>> {
-        val result = mutableMapOf<IslandType, MutableMap<String, LorenzVec>>()
+    fun parse(text: String): MutableMap<IslandType, MutableMap<String, SkyHanniVector>> {
+        val result = mutableMapOf<IslandType, MutableMap<String, SkyHanniVector>>()
         var currentIsland: IslandType? = null
 
         for (line in text.lines()) {
@@ -66,7 +66,7 @@ object WikiNpcParser {
     private fun parseLine(
         line: String,
         currentIsland: IslandType,
-        result: MutableMap<IslandType, MutableMap<String, LorenzVec>>,
+        result: MutableMap<IslandType, MutableMap<String, SkyHanniVector>>,
     ) {
         if (!line.startsWith("\t")) return
 
@@ -82,12 +82,12 @@ object WikiNpcParser {
         result.getOrPut(currentIsland) { mutableMapOf() }[name] = coords
     }
 
-    private fun findCoordinateTriple(fields: List<String>): LorenzVec? {
+    private fun findCoordinateTriple(fields: List<String>): SkyHanniVector? {
         for (i in 2..fields.size - 3) {
             val x = parseCoordinate(fields[i]) ?: continue
             val y = parseCoordinate(fields[i + 1]) ?: continue
             val z = parseCoordinate(fields[i + 2]) ?: continue
-            return LorenzVec(x, y, z)
+            return SkyHanniVector(x, y, z)
         }
         return null
     }

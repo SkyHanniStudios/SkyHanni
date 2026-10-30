@@ -3,9 +3,9 @@ package at.hannibal2.skyhanni.features.garden
 import at.hannibal2.skyhanni.events.BlockClickEvent
 import at.hannibal2.skyhanni.utils.ItemUtils.overrideId
 import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import net.minecraft.world.item.Items
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
@@ -149,7 +149,7 @@ enum class CropType(
 
         fun getByName(name: String) = getByNameOrNull(name) ?: error("No valid crop type '$name'")
 
-        fun BlockState.getCropType(pos: LorenzVec): CropType? {
+        fun BlockState.getCropType(pos: SkyHanniVector): CropType? {
             return when (block) {
                 Blocks.WHEAT -> WHEAT
                 Blocks.CARROTS -> CARROT

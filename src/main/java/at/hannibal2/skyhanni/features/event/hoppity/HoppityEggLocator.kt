@@ -23,7 +23,6 @@ import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.ItemUtils.getInternalName
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
 import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.ParticlePathBezierFitter
 import at.hannibal2.skyhanni.utils.RecalculatingValue
@@ -34,6 +33,8 @@ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawColor
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawLineToCrosshair
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorMath.blockCenter
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.world.entity.projectile.FishingHook
 import kotlin.time.Duration.Companion.seconds
@@ -53,8 +54,8 @@ object HoppityEggLocator {
     @Volatile
     private var warningPending = false
 
-    var sharedEggLocation: LorenzVec? = null
-    var possibleEggLocations = listOf<LorenzVec>()
+    var sharedEggLocation: SkyHanniVector? = null
+    var possibleEggLocations = listOf<SkyHanniVector>()
     var currentEggType: HoppityEggType? = null
     var currentEggNote: String? = null
 
@@ -128,7 +129,7 @@ object HoppityEggLocator {
         }
     }
 
-    private fun SkyHanniRenderWorldEvent.drawDuplicateEggs(islandEggsLocations: Set<LorenzVec>) {
+    private fun SkyHanniRenderWorldEvent.drawDuplicateEggs(islandEggsLocations: Set<SkyHanniVector>) {
         if (!waypointsConfig.highlightDuplicates) return
         if (!waypointsConfig.showNearbyDuplicates) return
         if (HoppityEggLocations.foundAllOnThisIsland) return
@@ -145,7 +146,7 @@ object HoppityEggLocator {
         }
     }
 
-    private fun SkyHanniRenderWorldEvent.drawEggWaypoint(location: LorenzVec, label: String) {
+    private fun SkyHanniRenderWorldEvent.drawEggWaypoint(location: SkyHanniVector, label: String) {
         val shouldMarkDuplicate =
             waypointsConfig.highlightDuplicates &&
                 HoppityEggLocations.hasCollectedEgg(location) &&
@@ -171,7 +172,7 @@ object HoppityEggLocator {
         if (!event.isVillagerParticle()) return
         if (lastClick.passedSince() > 5.seconds) return
 
-        val endCondition: (LorenzVec) -> Boolean = { it.getEntitiesNearby<FishingHook>(0.3).any() }
+        val endCondition: (SkyHanniVector) -> Boolean = { it.getEntitiesNearby<FishingHook>(0.3).any() }
         if (!bezierFitter.tryAdd(event.location, maxDistanceToLast = 3.0, endCondition = endCondition)) return
 
         val guess = guessEggLocation() ?: return
@@ -207,13 +208,13 @@ object HoppityEggLocator {
         ChatUtils.chat("Egglocator result was unreliable, please use it again!")
     }
 
-    private fun guessEggLocation(): LorenzVec? {
+    private fun guessEggLocation(): SkyHanniVector? {
         val guessLocation = bezierFitter.solve() ?: return null
         if (!SkyBlockUtils.currentIsland.isInBounds(guessLocation)) return null
 
-        val closestEgg = HoppityEggLocations.islandLocations.minByOrNull { it.distanceSq(guessLocation) }
+        val closestEgg = HoppityEggLocations.islandLocations.minByOrNull { it.distanceToSqr(guessLocation) }
 
-        return closestEgg?.takeIf { it.distance(guessLocation) <= MAX_GUESS_DISTANCE }
+        return closestEgg?.takeIf { it.distanceTo(guessLocation) <= MAX_GUESS_DISTANCE }
     }
 
     private fun trySendingGraph() {
@@ -224,8 +225,8 @@ object HoppityEggLocator {
         IslandGraphs.pathFind(location, "Hoppity Egg", color, condition = { waypointsConfig.showPathFinder })
     }
 
-    fun isValidEggLocation(location: LorenzVec): Boolean = HoppityEggLocations.islandLocations.any {
-        it.distance(location) < 5.0
+    fun isValidEggLocation(location: SkyHanniVector): Boolean = HoppityEggLocations.islandLocations.any {
+        it.distanceTo(location) < 5.0
     }
 
     private fun ParticleEvent.isVillagerParticle() = type == ParticleTypes.HAPPY_VILLAGER && speed == 0f && count == 1

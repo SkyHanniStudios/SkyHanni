@@ -17,7 +17,6 @@ import at.hannibal2.skyhanni.utils.KeyboardManager.isKeyHeld
 import at.hannibal2.skyhanni.utils.LocationUtils
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceSqToPlayer
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.OSUtils
 import at.hannibal2.skyhanni.utils.RaycastUtils
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
@@ -25,8 +24,12 @@ import at.hannibal2.skyhanni.utils.SimpleTimeMark.Companion.fromNow
 import at.hannibal2.skyhanni.utils.TimeUtils.ticks
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.coroutines.CoroutineSettings
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorMath.floor
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.plus
 import net.minecraft.client.KeyMapping
 import net.minecraft.client.player.LocalPlayer
+import net.minecraft.world.phys.Vec3
 import org.lwjgl.glfw.GLFW
 
 @SkyHanniModule
@@ -119,7 +122,7 @@ object GraphEditorInput {
     private fun handleSplit(selectedEdge: GraphingEdge) {
         if (!config.splitKey.isKeyClicked()) return
         GraphEditor.feedback("Split Edge into a Node and two edges.")
-        val middle = selectedEdge.node1.position.middle(selectedEdge.node2.position).roundToBlock()
+        val middle = selectedEdge.node1.position.lerp(selectedEdge.node2.position, 0.5).floor()
         val node = GraphingNode(state.id++, middle)
         GraphEditorHistory.save("split node")
         nodes.add(node)
@@ -262,7 +265,7 @@ object GraphEditorInput {
         }
     }
 
-    private var moveToStart: LorenzVec? = null
+    private var moveToStart: SkyHanniVector? = null
 
     @HandleEvent(onlyOnSkyblock = true)
     fun onPlayerMove(event: EntityMoveEvent<LocalPlayer>) {
@@ -299,15 +302,15 @@ object GraphEditorInput {
     private fun nodeMoveClicks() {
         val vector = LocationUtils.calculatePlayerFacingDirection()
         KeyboardManager.WasdInputMatrix.w.handleEditClicks(vector)
-        KeyboardManager.WasdInputMatrix.a.handleEditClicks(vector.rotateXZ(Math.toRadians(90.0)))
-        KeyboardManager.WasdInputMatrix.s.handleEditClicks(vector.rotateXZ(Math.toRadians(180.0)))
-        KeyboardManager.WasdInputMatrix.d.handleEditClicks(vector.rotateXZ(Math.toRadians(270.0)))
+        KeyboardManager.WasdInputMatrix.a.handleEditClicks(vector.yRot(Math.toRadians(90.0).toFloat()))
+        KeyboardManager.WasdInputMatrix.s.handleEditClicks(vector.yRot(Math.toRadians(180.0).toFloat()))
+        KeyboardManager.WasdInputMatrix.d.handleEditClicks(vector.yRot(Math.toRadians(270.0).toFloat()))
 
-        KeyboardManager.WasdInputMatrix.up.handleEditClicks(LorenzVec(0, 1, 0))
-        KeyboardManager.WasdInputMatrix.down.handleEditClicks(LorenzVec(0, -1, 0))
+        KeyboardManager.WasdInputMatrix.up.handleEditClicks(SkyHanniVector(0, 1, 0))
+        KeyboardManager.WasdInputMatrix.down.handleEditClicks(SkyHanniVector(0, -1, 0))
     }
 
-    private fun KeyMapping.handleEditClicks(vector: LorenzVec) {
+    private fun KeyMapping.handleEditClicks(vector: Vec3) {
         if (!this.key.value.isKeyClicked()) return
         GraphEditorHistory.save("moved node")
         state.activeNode?.let {

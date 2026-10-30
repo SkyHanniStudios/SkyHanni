@@ -3,7 +3,6 @@ package at.hannibal2.skyhanni.utils.render.item
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
-import at.hannibal2.skyhanni.utils.VectorUtils.isEqualTo
 import at.hannibal2.skyhanni.utils.render.item.atlas.SkyHanniItemAtlas
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.ProjectionMatrixBuffer
@@ -97,7 +96,7 @@ internal object SkyHanniItemRenderCoordinator {
                 SettleEntry(state.rotationVector, state.adjustedScale, 0, frameNumber)
             }
             settle.lastSeenFrame = frameNumber
-            val stable = settle.rotationVec.isEqualTo(state.rotationVector) &&
+            val stable = settle.rotationVec == state.rotationVector &&
                 abs(settle.lastScale - state.adjustedScale) < 0.01f
             if (stable) settle.framesStable++
             else {

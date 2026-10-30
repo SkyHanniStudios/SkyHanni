@@ -11,10 +11,10 @@ import at.hannibal2.skyhanni.utils.BlockUtils
 import at.hannibal2.skyhanni.utils.BlockUtils.getBlockAt
 import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.ItemUtils.getInternalName
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.TimeUtils.format
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import net.minecraft.world.level.block.Blocks
 
 @SkyHanniModule
@@ -22,7 +22,7 @@ object RiftAgaricusCap {
 
     private val config get() = RiftApi.config.area.dreadfarm
     private var startTime = SimpleTimeMark.farPast()
-    private var location: LorenzVec? = null
+    private var location: SkyHanniVector? = null
     private var inArea: Boolean = false
 
     @HandleEvent
@@ -37,7 +37,7 @@ object RiftAgaricusCap {
         inArea = event.area == "Dreadfarm" || event.area == "West Village"
     }
 
-    private fun updateLocation(): LorenzVec? {
+    private fun updateLocation(): SkyHanniVector? {
         if (InventoryUtils.getItemInHand()?.getInternalName() != RiftApi.farmingTool) return null
         val currentLocation = BlockUtils.getTargetedBlock() ?: return null
 

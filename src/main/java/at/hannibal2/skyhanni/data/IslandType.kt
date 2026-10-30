@@ -6,9 +6,9 @@ import at.hannibal2.skyhanni.data.jsonobjects.repo.IslandTypeJson
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.LocationUtils.isInside
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.coroutines.CoroutineSettings
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import net.minecraft.world.phys.AABB
 
 enum class IslandType(private val nameFallback: String, private val apiNameFallback: String?) {
@@ -88,7 +88,7 @@ enum class IslandType(private val nameFallback: String, private val apiNameFallb
 
     val apiName: String? get() = islandData?.apiName ?: apiNameFallback
 
-    fun isInBounds(vec: LorenzVec): Boolean = islandData?.boundingBox?.isInside(vec) ?: true
+    fun isInBounds(vec: SkyHanniVector): Boolean = islandData?.boundingBox?.isInside(vec) ?: true
 
     @SkyHanniModule
     companion object {

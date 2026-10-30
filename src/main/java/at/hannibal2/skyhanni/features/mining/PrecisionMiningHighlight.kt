@@ -12,6 +12,7 @@ import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SimpleTimeMark.Companion.fromNow
 import at.hannibal2.skyhanni.utils.TimeUtils.ticks
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawFilledBoundingBox
+import at.hannibal2.skyhanni.utils.vector.VectorBounds.boxTo
 import net.minecraft.client.Minecraft
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.world.phys.AABB
@@ -34,10 +35,10 @@ object PrecisionMiningHighlight {
         ) return
 
         val particleBoundingBox = event.location.add(-0.12, -0.12, -0.12)
-            .axisAlignedTo(event.location.clone().add(0.12, 0.12, 0.12))
+            .boxTo(event.location.add(0.12, 0.12, 0.12))
 
         val blockBoundingBox = BlockUtils.getTargetedBlock()?.let {
-            it.axisAlignedTo(it.add(1.0, 1.0, 1.0))
+            it.boxTo(it.add(1.0, 1.0, 1.0))
         } ?: return
         if (!blockBoundingBox.intersects(particleBoundingBox)) return
 

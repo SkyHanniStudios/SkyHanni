@@ -10,7 +10,6 @@ import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.EntityUtils
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.RenderUtils
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderable
@@ -19,7 +18,6 @@ import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.compat.EntityCompat.findHealthReal
 import at.hannibal2.skyhanni.utils.compat.EntityCompat.getEntityHelmet
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLeadingWhiteLessResets
-import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.itemType
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawHitbox
@@ -31,6 +29,8 @@ import at.hannibal2.skyhanni.utils.renderables.primitives.ItemStackRenderable.Co
 import at.hannibal2.skyhanni.utils.renderables.primitives.empty
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.world.entity.monster.zombie.Zombie
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.Items
@@ -46,7 +46,7 @@ object CarnivalZombieShootout {
 
     private val config get() = SkyHanniMod.feature.event.carnival.zombieShootout
 
-    private data class ShootoutLamp(var pos: LorenzVec, var time: SimpleTimeMark)
+    private data class ShootoutLamp(var pos: SkyHanniVector, var time: SimpleTimeMark)
     private data class ShootoutZombie(val entity: Zombie, val type: ZombieType)
 
     private var content = Renderable.empty()
@@ -108,7 +108,7 @@ object CarnivalZombieShootout {
                 val height = if (isSmall) entity.bbHeight / 2 else entity.bbHeight
 
                 drawDynamicText(
-                    entity.getLorenzVec().add(-0.5, height + 0.5, -0.5),
+                    entity.positionVector().add(-0.5, height + 0.5, -0.5),
                     "$prefix${timer.toString(DurationUnit.SECONDS, 1)}",
                     scaleMultiplier = 1.25,
                 )

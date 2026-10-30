@@ -1,7 +1,7 @@
 package at.hannibal2.skyhanni.events
 
 import at.hannibal2.skyhanni.api.event.SkyHanniEvent
-import at.hannibal2.skyhanni.utils.LorenzVec
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 
 /**
  * Base class for world-related events.
@@ -13,7 +13,7 @@ abstract class WorldEvent : SkyHanniEvent() {
     /**
      * The location of this event.
      */
-    abstract val location: LorenzVec
+    abstract val location: SkyHanniVector
 }
 
 /**

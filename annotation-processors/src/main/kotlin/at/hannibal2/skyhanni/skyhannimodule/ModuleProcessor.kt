@@ -136,7 +136,7 @@ class ModuleProcessor(
         isDirty: Boolean,
         primaryFunctionNames: Set<String>,
     ): KSClassDeclaration? {
-        if (!symbol.validate()) {
+        if (!symbol.validate(enableNewFeatures = false)) {
             logger.warn("Symbol is not valid: $symbol")
             return null
         }

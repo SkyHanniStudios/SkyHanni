@@ -4,6 +4,8 @@ import at.hannibal2.skyhanni.events.ParticleChangeEvent
 import at.hannibal2.skyhanni.events.ParticleEvent
 import at.hannibal2.skyhanni.mixins.hooks.ParticleSuppressionStore.Companion.shouldSuppress
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.offsetVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.toSkyHanniVector
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.core.particles.ParticleOptions
@@ -25,10 +27,10 @@ object ParticleUtils {
         if (!MinecraftCompat.localPlayerExists) return
         if (ParticleEvent(
                 type = packet.particle.type,
-                location = packet.toLorenzVec(),
+                location = packet.toSkyHanniVector(),
                 count = packet.count,
                 speed = packet.maxSpeed,
-                offset = packet.toOffset(),
+                offset = packet.offsetVector(),
                 longDistance = packet.isOverrideLimiter,
             ).post().isCancelled
         ) {

@@ -2,8 +2,8 @@ package at.hannibal2.skyhanni.test.command.track
 
 import at.hannibal2.skyhanni.events.WorldEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 
 /**
  * Abstract class for world-tracking commands, extending [TrackCommand] with world rendering support.
@@ -23,9 +23,9 @@ abstract class TrackWorldCommand<T : WorldEvent, K>(
 
     abstract fun T.formatForWorldRender(): String
 
-    private var worldTracked: Map<LorenzVec, List<T>> = emptyMap()
+    private var worldTracked: Map<SkyHanniVector, List<T>> = emptyMap()
 
-    private fun SkyHanniRenderWorldEvent.drawSingleInWorld(vec: LorenzVec, event: T) {
+    private fun SkyHanniRenderWorldEvent.drawSingleInWorld(vec: SkyHanniVector, event: T) {
         drawDynamicText(vec, "§7§l${event.getTypeIdentifier()}", 0.8)
         drawDynamicText(
             vec.down(0.2),
@@ -34,7 +34,7 @@ abstract class TrackWorldCommand<T : WorldEvent, K>(
         )
     }
 
-    private fun SkyHanniRenderWorldEvent.drawMultipleInWorld(vec: LorenzVec, events: List<T>) {
+    private fun SkyHanniRenderWorldEvent.drawMultipleInWorld(vec: SkyHanniVector, events: List<T>) {
         drawDynamicText(vec, "§e${events.size} $commonNamePlural", 0.8)
         var offset = 0.2
         events.groupBy { it.getTypeIdentifier() }.forEach { (groupName, groupEvents) ->
