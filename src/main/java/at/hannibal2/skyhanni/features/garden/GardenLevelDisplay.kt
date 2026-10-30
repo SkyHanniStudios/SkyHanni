@@ -2,6 +2,9 @@ package at.hannibal2.skyhanni.features.garden
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
+import at.hannibal2.skyhanni.config.commands.CommandCategory
+import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
+import at.hannibal2.skyhanni.config.commands.brigadier.BrigadierArguments
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.ProfileStorageData
 import at.hannibal2.skyhanni.events.ConfigLoadEvent
@@ -124,16 +127,24 @@ object GardenLevelDisplay {
         val newLevel = GardenApi.getGardenLevel()
         if (newLevel != oldLevel + 1 || newLevel <= 15) return
         DelayedRun.runDelayed(50.milliseconds) {
-            // TODO utils function that is shared with Crop Milestone Display
-            ChatUtils.clickableChat(
-                " \n§b§lGARDEN LEVEL UP §8$oldLevel ➜ §b$newLevel\n" +
-                    " §8+§aRespect from Elite Farmers and SkyHanni members :)\n ",
-                onClick = { HypixelCommands.gardenLevels() },
-                "§eClick to view your Garden Level progress and rewards!",
-                prefix = false,
-            )
-
+            sendOverflowLevelUp(oldLevel, newLevel)
         }
+    }
+
+    private fun sendOverflowLevelUp(oldLevel: Int, newLevel: Int) {
+
+        // TODO utils function that is shared with Crop Milestone Display
+        ChatUtils.clickableChat(
+            listOf(
+                "",
+                " §b§lGARDEN LEVEL UP §8$oldLevel ➜ §b$newLevel",
+                " §8+§aRespect from Elite Farmers and SkyHanni members :)",
+                "",
+            ),
+            onClick = { HypixelCommands.gardenLevels() },
+            "§eClick to view your Garden Level progress and rewards!",
+            prefix = false,
+        )
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
@@ -250,5 +261,20 @@ object GardenLevelDisplay {
     fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(3, "garden.gardenLevelDisplay", "garden.gardenLevels.display")
         event.move(3, "garden.gardenLevelPos", "garden.gardenLevels.pos")
+    }
+
+    @HandleEvent
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
+        event.registerBrigadier("shfakegardenoverflowmessage") {
+            description = "sends an overflow garden levelup message"
+            category = CommandCategory.DEVELOPER_TEST
+            arg("previouslevel", BrigadierArguments.integer()) { previousLevel ->
+                arg("newlevel", BrigadierArguments.integer()) { newLevel ->
+                    callback {
+                        sendOverflowLevelUp(getArg(previousLevel), getArg(newLevel))
+                    }
+                }
+            }
+        }
     }
 }
