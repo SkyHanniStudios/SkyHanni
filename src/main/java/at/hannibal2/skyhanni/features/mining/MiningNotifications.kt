@@ -10,7 +10,6 @@ import at.hannibal2.skyhanni.data.MiningApi.lastColdReset
 import at.hannibal2.skyhanni.data.model.TabWidget
 import at.hannibal2.skyhanni.data.title.TitleManager
 import at.hannibal2.skyhanni.events.ColdUpdateEvent
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
 import at.hannibal2.skyhanni.events.WidgetUpdateEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -95,7 +94,7 @@ object MiningNotifications {
     private var pickaxeWidgetOnCooldown = false
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!IslandTypeTag.MINING.isInIsland()) return
         if (!config.enabled) return
         val message = event.message
@@ -111,7 +110,7 @@ object MiningNotifications {
     }
 
     @HandleEvent(onlyOnIslandTypeTag = [IslandTypeTag.MINING])
-    private fun onPickaxeAbilityWidget(event: WidgetUpdateEvent) {
+    private fun onWidgetUpdate(event: WidgetUpdateEvent) {
         if (!config.enabled) return
         if (!event.isWidget(TabWidget.PICKAXE_COOLDOWN)) return
         if (event.isClear()) return
@@ -134,7 +133,7 @@ object MiningNotifications {
     }
 
     @HandleEvent
-    fun onColdUpdate(event: ColdUpdateEvent) {
+    private fun onColdUpdate(event: ColdUpdateEvent) {
         if (!inGlaciteArea()) return
         if (!config.enabled) return
         if (lastColdReset.passedSince() < 1.seconds) return
@@ -152,7 +151,7 @@ object MiningNotifications {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         hasSentCold = false
         hasSentAscensionRope = false
         pickaxeReadyArmed = false
@@ -160,7 +159,7 @@ object MiningNotifications {
     }
 
     @HandleEvent
-    fun onConfigLoad(event: ConfigLoadEvent) {
+    private fun onConfigLoad() {
         ConditionalUtils.onToggle(config.coldThreshold) {
             if (MiningApi.cold != config.coldThreshold.get()) hasSentCold = false
         }
