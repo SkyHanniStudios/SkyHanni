@@ -335,6 +335,9 @@ Use `/sh` or `/skyhanni` to open the SkyHanni config in game.
     + Hold the keybind to mark every item in your inventory that can be crafted into another item.
     + Click a marked item to grab the number of items missing for that craft from your sacks.
     + Items that cannot be used show the reason in their tooltip.
++ Added Stonks Auction features. - RemainingDelta (https://github.com/SkyHanniStudios/SkyHanni/pull/6304)
+    + A One Minute Warning and a New Round Alert.
+    + A Countdown showing the time left in the round and your bid status.
 
 ### Bazaar
 

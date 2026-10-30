@@ -146,6 +146,8 @@ CI. Do not manually edit `docs/CHANGELOG.md` or `docs/FEATURES.md`. These files 
   the changelog, "fixed an inverted discount calculation" belongs in the **What** section.
 - Refer to a feature by its name and capitalize it, along with every SkyBlock proper noun. This includes the
   names that read like ordinary words, such as Hunting Box or Instance Chest Profit.
+- The builder removes double quotes from the main line of an entry, while extra info lines keep them. Write
+  feature names in the main line without quotes, and put a quoted chat message into an extra info line.
 
 Here is an explanation of which changes belong to each category:
 
@@ -256,7 +258,7 @@ Everyone is still welcome to leave comments and feedback on any PR.
 - New features should be made in Kotlin objects unless there is a specific reason for it not to.
     - If the feature needs to register Fabric events, uses SkyHanni events or creates repo patterns, annotate the feature class with
       `@SkyHanniModule`
-    - This will automatically register all events to the respective event bus, and loads the repo patterns.
+    - This will automatically register all events to the respective event bus and load the repo patterns.
     - Until the project is compiled for the first time, the IDE will show a red error in `SkyHanniMod.kt`. This is expected and resolves
       after the first build.
 - All functions and properties must be defined inside a class or object. Top-level Kotlin functions and properties are not
@@ -269,9 +271,8 @@ Everyone is still welcome to leave comments and feedback on any PR.
   name instead of deleting it right away. Open pull requests that still use the old name then keep
   compiling and their authors get time to react. Remove the alias in a separate pull request one or
   two months later, and note that date in a TODO comment above it.
-- Future JSON data objects should be made in kotlin.
+- Future JSON data objects should be made in Kotlin.
 - Config files should be made in **Kotlin**.
-    - There may be legacy config files left as Java files, however they will all be ported eventually.
 - Please use the existing event system, or expand on it.
     - Custom SkyHanni events are located in the `events` package, organized into subpackages by category.
       When creating a new event, place it in the appropriate subpackage. Thematically related events can be placed together in a single
@@ -331,8 +332,8 @@ Everyone is still welcome to leave comments and feedback on any PR.
 - Do not use `fixedRateTimer` when possible and instead use `SecondPassedEvent` to safely execute the repeating event on
   the main thread.
 - When updating a config option variable, use the `ConfigUpdaterMigrator.ConfigFixEvent` with event.move() when moving a value, and
-  event.transform() when updating a
-  value. [For Example](https://github.com/SkyHanniStudios/SkyHanni/blob/beta/src/main/java/at/hannibal2/skyhanni/features/gui/customscoreboard/CustomScoreboard.kt#L276).
+  event.transform() when updating a value. For an example, see `onConfigFix` in
+  [BroodmotherFeatures.kt](https://github.com/SkyHanniStudios/SkyHanni/blob/beta/src/main/java/at/hannibal2/skyhanni/features/combat/BroodmotherFeatures.kt).
 - Use American English spelling conventions (e.g., "color" not "colour").
 - When creating/updating a command, move it out of the `Commands.kt` class, if it isn't already, into the class that it belongs to.
 - Avoid direct function imports. Always access functions or members through their respective namespaces or parent classes to improve
@@ -352,7 +353,7 @@ Everyone is still welcome to leave comments and feedback on any PR.
 - Follow Kotlin conventions for acronym naming:
     - Use all-uppercase for two-letter acronyms (e.g., `XP`).
     - Treat three or more letter acronyms as regular words with only the first letter capitalized (e.g., `Api`).
-- Always combine title messages with chat message.
+- Always combine title messages with a chat message.
     - This way users know what feature and what mod sends the title, if they want to disable it.
     - Also, we can include more information on why the title just showed up, as the title should not be too long.
 
@@ -447,7 +448,7 @@ its [privacy policy](https://eliteskyblock.com/privacy).
 A system to inject code into the original Minecraft code.
 Mixin is bundled with the Fabric Loader and does not need to be included as a runtime dependency.
 
-It allows to easily modify methods in Minecraft itself, without conflicting with other mods.
+It allows developers to easily modify methods in Minecraft itself, without conflicting with other mods.
 
 For more information, see https://github.com/SpongePowered/Mixin
 or [our existing mixins](https://github.com/SkyHanniStudios/SkyHanni/tree/beta/src/main/java/at/hannibal2/skyhanni/mixins/transformers).
@@ -495,7 +496,8 @@ a [Discord Bot](https://github.com/SkyHanniStudios/DiscordBot) that helps with s
 ### Automated GitHub Workflows
 
 Several GitHub Actions workflows run automatically on pull requests to enforce code quality and keep PR metadata up to date.
-All workflows use `.github/scripts/pr_review.main.kts` as the shared review script, invoked with a `MODE` parameter.
+All of them except Remove All Labels use `.github/scripts/pr_review.main.kts` as the shared review script, invoked with a `MODE`
+parameter.
 
 When a PR is updated, any existing comment posted by a workflow is collapsed into a `<details>` spoiler. What follows depends on the
 workflow. The Detekt, Build Failure, Merge Conflict and Changelog Check comments only ever announce that something is wrong: a new comment
@@ -512,8 +514,8 @@ Most workflows use a two-workflow split to allow write-operations on fork PRs wi
 The first workflow is triggered by `pull_request`, runs with limited permissions, and uploads results as an artifact. The second is
 triggered by `workflow_run` on completion of the first, always uses the base branch version, carries write access (`issues: write`,
 `pull-requests: write`, `actions: read`), and runs the review script against the artifact. The PR number is resolved at runtime from
-the head branch of the triggering workflow run. The Merge Conflict Comment, Dependency Label and Description Keyword Labels sections
-do not use this split.
+the head branch of the triggering workflow run, except for the Partially Approved Label, which passes it in the artifact. The Merge
+Conflict Comment, Dependency Label, Description Keyword Labels and Remove All Labels sections do not use this split.
 
 #### Automated Detekt Review
 
@@ -636,6 +638,44 @@ a different capitalization all prevent the keyword from being recognized.
 The check runs on every `opened`, `edited`, `reopened`, and `synchronize` event via `pull_request_target`.
 
 Relevant files: `.github/workflows/keyword-labels.yml`, `.github/scripts/pr_review.main.kts` (invoked with `MODE=keyword_labels`).
+
+#### Remove All Labels
+
+Closing a pull request, merged or not, removes every label from it.
+
+- `.github/workflows/remove-labels-on-pr-close.yml`: Triggered by `pull_request_target` on `closed`. Runs the third party action
+  [label-remover](https://github.com/marketplace/actions/label-remover) with `pull-requests: write` and `issues: write`. It does not
+  use the review script.
+
+#### Partially Approved Label
+
+Once a person with write access or higher approves a pull request, the `Partially Approved` label is added. It shows that a reviewer has
+started looking at the pull request. No comment is posted, and no workflow removes the label while the pull request is open.
+
+- A label removed by hand stays removed until the next approval.
+- Drafts and closed or merged pull requests never get the label. An approval given while the pull request was a draft counts once it
+  is marked ready for review.
+- Closing a pull request removes all labels, this one included. If the pull request is reopened, the label comes back when it was still
+  there at closing time.
+- A pull request is evaluated when an approval is submitted, when it is reopened or marked ready for review, and when new commits are
+  pushed. There is no run over all open pull requests, so an approval from before this workflow existed only counts once one of these
+  events happens.
+
+Known limitation: when a push dismisses earlier approvals, an approval followed by a push within about a minute may not add the label.
+The next approval adds it.
+
+Relevant files:
+
+- `.github/workflows/partially-approved.yml`: Triggered by `pull_request_review` on `submitted`, where only an approval continues, and by
+  `pull_request` on `reopened`, `ready_for_review` and `synchronize`. Skips drafts, closed pull requests and pull requests that already
+  carry the label. Only uploads the PR number as an artifact, a fork pull request gets a read-only token for these events.
+- `.github/workflows/partially-approved-review.yml`: Triggered by `workflow_run` on completion of the first one. Always uses base branch
+  code, runs with `issues: write`, `pull-requests: write` and `actions: read`, and reads the PR number from that artifact. It accepts
+  digits only and executes nothing from it.
+- `.github/scripts/pr_review.main.kts` (invoked with `MODE=partially_approved`): Decides from the API alone, since a fork can change the
+  triggering workflow and the PR number, so a forged number only leads to a correct evaluation of another pull request. It reads the
+  reviews, the history of the label and the permission of each approving reviewer, and checks right before adding the label that the
+  pull request is still open and not a draft.
 
 ## Access Wideners
 

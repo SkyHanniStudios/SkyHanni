@@ -12,7 +12,7 @@ class StonksAuctionConfig {
     @ConfigOption(name = "Countdown", desc = "Display a countdown until the current Stonks Auction round ends.")
     @ConfigEditorBoolean
     @FeatureToggle
-    var countdown: Boolean = true
+    var countdown: Boolean = false
 
     @Expose
     @ConfigOption(
