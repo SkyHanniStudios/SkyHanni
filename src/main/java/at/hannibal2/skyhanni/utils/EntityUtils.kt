@@ -23,6 +23,11 @@ import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLessResets
 import at.hannibal2.skyhanni.utils.compat.normalizeAsArray
 import at.hannibal2.skyhanni.utils.render.FrustumUtils
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorBounds.boxAround
+import at.hannibal2.skyhanni.utils.vector.VectorBounds.boxTo
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
+import at.hannibal2.skyhanni.utils.vector.VectorFormat.formatRounded
 import net.minecraft.client.Minecraft
 import net.minecraft.client.player.RemotePlayer
 import net.minecraft.world.entity.Entity
@@ -71,7 +76,7 @@ object EntityUtils {
     fun LivingEntity.getAllNameTagsInRadiusWith(
         contains: String,
         radius: Double = 3.0,
-    ): List<ArmorStand> = getArmorStandsInRadius(getLorenzVec().up(3), radius).filter {
+    ): List<ArmorStand> = getArmorStandsInRadius(positionVector().up(3), radius).filter {
         it.name.string.contains(contains)
     }
 
@@ -92,25 +97,25 @@ object EntityUtils {
         inaccuracy: Double = 1.6,
         debugWrongEntity: Boolean = false,
     ): List<ArmorStand> {
-        val center = getLorenzVec().up(y)
+        val center = positionVector().up(y)
         return getArmorStandsInRadius(center, inaccuracy).filter {
             val result = it.name.formattedTextCompatLessResets().contains(contains)
             if (debugWrongEntity && !result) {
                 ChatUtils.consoleLog("wrong entity in aabb: '" + it.name.formattedTextCompatLessResets() + "'")
             }
             if (debugRightEntity && result) {
-                ChatUtils.consoleLog("mob: " + center.printWithAccuracy(2))
-                ChatUtils.consoleLog("nametag: " + it.getLorenzVec().printWithAccuracy(2))
-                ChatUtils.consoleLog("accuracy: " + (it.getLorenzVec() - center).printWithAccuracy(3))
+                ChatUtils.consoleLog("mob: " + center.formatRounded(2))
+                ChatUtils.consoleLog("nametag: " + it.positionVector().formatRounded(2))
+                ChatUtils.consoleLog("accuracy: " + (it.positionVector() - center).formatRounded(3))
             }
             result
         }
     }
 
-    private fun getArmorStandsInRadius(center: LorenzVec, radius: Double): List<ArmorStand> {
+    private fun getArmorStandsInRadius(center: SkyHanniVector, radius: Double): List<ArmorStand> {
         val a = center.add(-radius, -radius - 3, -radius)
         val b = center.add(radius, radius + 3, radius)
-        val alignedBB = a.axisAlignedTo(b)
+        val alignedBB = a.boxTo(b)
         return getEntitiesInBoundingBox<ArmorStand>(alignedBB)
     }
 
@@ -143,7 +148,7 @@ object EntityUtils {
         LocationUtils.playerLocation().getEntitiesNearby<T>(radius, predicate)
 
     // First filters for a bounding box because it's faster, and then filters based on distance
-    inline fun <reified T : Entity> LorenzVec.getEntitiesNearby(
+    inline fun <reified T : Entity> SkyHanniVector.getEntitiesNearby(
         radius: Double,
         noinline predicate: (T) -> Boolean = ALWAYS,
     ): List<T> {
@@ -151,7 +156,7 @@ object EntityUtils {
     }
 
     @AllEntitiesGetter
-    inline fun <reified T : Entity> getEntitiesNearbyIgnoreY(location: LorenzVec, radius: Double): Sequence<T> =
+    inline fun <reified T : Entity> getEntitiesNearbyIgnoreY(location: SkyHanniVector, radius: Double): Sequence<T> =
         getEntities<T>().filter { it.distanceToIgnoreY(location) < radius }
 
     fun LivingEntity.isAtFullHealth() = baseMaxHealth == findHealthReal().toInt()
@@ -184,8 +189,12 @@ object EntityUtils {
     @AllEntitiesGetter
     inline fun <reified R : Entity> getEntities(): Sequence<R> = getAllEntities().filterIsInstance<R>()
 
-    inline fun <reified E : Entity> getEntitiesInBox(pos: LorenzVec, radius: Double, noinline predicate: (E) -> Boolean = ALWAYS): List<E> {
-        return getEntitiesInBoundingBox(pos.boundingCenter(radius), predicate)
+    inline fun <reified E : Entity> getEntitiesInBox(
+        pos: SkyHanniVector,
+        radius: Double,
+        noinline predicate: (E) -> Boolean = ALWAYS,
+    ): List<E> {
+        return getEntitiesInBoundingBox(pos.boxAround(radius), predicate)
     }
 
     // More efficient than filtering by type, and then for distance, as Minecraft already first filters the chunks that contain the aabb,
@@ -220,7 +229,7 @@ object EntityUtils {
         if (deceased) return false
         // TODO add cache that only updates e.g. 10 times a second
         if (!ignoreFrustum && !FrustumUtils.isVisible(boundingBox)) return false
-        return getLorenzVec().up(vecYOffset).canBeSeen(viewDistance)
+        return positionVector().up(vecYOffset).canBeSeen(viewDistance)
     }
 
     fun getEntityByID(entityId: Int): Entity? = MinecraftCompat.localPlayerOrNull?.getEntityLevel()?.getEntity(entityId)

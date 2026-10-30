@@ -3,12 +3,12 @@ package at.hannibal2.skyhanni.features.garden.plot
 import at.hannibal2.skyhanni.features.garden.GardenApi
 import at.hannibal2.skyhanni.features.garden.pests.SprayType
 import at.hannibal2.skyhanni.utils.HypixelCommands
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import net.minecraft.world.phys.AABB
 import kotlin.time.Duration
 
-class GardenPlot(val id: Int, var inventorySlot: Int, val box: AABB, val middle: LorenzVec) {
+class GardenPlot(val id: Int, var inventorySlot: Int, val box: AABB, val middle: SkyHanniVector) {
 
     var name: String
         get() = getData()?.name ?: "$id"

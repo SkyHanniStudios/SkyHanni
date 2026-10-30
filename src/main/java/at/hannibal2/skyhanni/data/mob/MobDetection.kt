@@ -21,7 +21,7 @@ import at.hannibal2.skyhanni.utils.collection.CollectionUtils.put
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.refreshReference
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLessResets
-import at.hannibal2.skyhanni.utils.getLorenzVec
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.protocol.game.ClientboundLoginPacket
@@ -319,11 +319,11 @@ object MobDetection {
                 MobData.logger.log(
                     "`${retry.entity.name.formattedTextCompatLessResets()}`${retry.entity.id} missed {\n " +
                         "is already Found: ${MobData.entityToMob[retry.entity] != null})." +
-                        "\n Position: ${retry.entity.getLorenzVec()}\n " +
+                        "\n Position: ${retry.entity.positionVector()}\n " +
                         "DistanceC: ${
-                            entity.getLorenzVec().distanceChebyshevIgnoreY(LocationUtils.playerLocation())
+                            entity.positionVector().distanceChebyshevIgnoreY(LocationUtils.playerLocation())
                         }\n" +
-                        "Relative Position: ${entity.getLorenzVec() - LocationUtils.playerLocation()}\n " +
+                        "Relative Position: ${entity.positionVector() - LocationUtils.playerLocation()}\n " +
                         "}",
                 )
                 // Uncomment this to make it closed a loop

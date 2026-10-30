@@ -8,12 +8,11 @@ import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.EntityUtils
 import at.hannibal2.skyhanni.utils.EntityUtils.getWornSkullTexture
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.SkullTextureHolder
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.removeIfKey
-import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawHitbox
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawString
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.world.entity.decoration.ArmorStand
 import java.awt.Color
 
@@ -30,7 +29,7 @@ object AtomHitBox {
         for ((entity, atom) in atomsList) {
             if (entity.distanceToPlayer() > 50) continue
             event.drawHitbox(entity.boundingBox, atom.color)
-            event.drawString(entity.getLorenzVec() - LorenzVec(0, 1, 0), atom.displayName)
+            event.drawString(entity.positionVector().down(), atom.displayName)
         }
     }
 

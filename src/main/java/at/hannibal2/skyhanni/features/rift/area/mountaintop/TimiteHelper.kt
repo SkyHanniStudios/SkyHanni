@@ -15,7 +15,6 @@ import at.hannibal2.skyhanni.utils.BlockUtils.getBlockStateAt
 import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.LocationUtils
 import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderable
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
@@ -26,6 +25,7 @@ import at.hannibal2.skyhanni.utils.compat.ColoredBlockCompat.Companion.isStained
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
 import kotlin.time.Duration.Companion.milliseconds
@@ -40,7 +40,7 @@ object TimiteHelper {
     // TODO reform to data class, use Resettable
     private var holdingClick = SimpleTimeMark.farPast()
     private var lastClick = SimpleTimeMark.farPast()
-    private var currentPos: LorenzVec? = null
+    private var currentPos: SkyHanniVector? = null
     private var currentBlockState: BlockState? = null
     private var doubleTimeShooting = false
 
@@ -96,7 +96,7 @@ object TimiteHelper {
         }
     }
 
-    private val locations = mutableMapOf<LorenzVec, SimpleTimeMark>()
+    private val locations = mutableMapOf<SkyHanniVector, SimpleTimeMark>()
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
     fun onSecondPassed(event: SecondPassedEvent) {

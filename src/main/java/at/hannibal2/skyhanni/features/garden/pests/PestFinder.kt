@@ -20,7 +20,6 @@ import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.ConfigUtils
 import at.hannibal2.skyhanni.utils.HypixelCommands
 import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.RenderDisplayHelper
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderables
@@ -32,6 +31,7 @@ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.exactPlayerEyeLocation
 import at.hannibal2.skyhanni.utils.renderables.Renderable
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import kotlin.time.Duration.Companion.seconds
 
 @SkyHanniModule
@@ -189,7 +189,7 @@ object PestFinder {
 
     private fun drawName(
         plot: GardenPlot,
-        playerLocation: LorenzVec,
+        playerLocation: SkyHanniVector,
         event: SkyHanniRenderWorldEvent,
     ) {
         val pests = plot.pests

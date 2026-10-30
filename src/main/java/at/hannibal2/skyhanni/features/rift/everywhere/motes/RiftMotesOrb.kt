@@ -10,13 +10,13 @@ import at.hannibal2.skyhanni.features.rift.RiftApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
 import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NumberUtil.roundTo
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.editCopy
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import net.minecraft.core.particles.ParticleTypes
 
 @SkyHanniModule
@@ -37,7 +37,7 @@ object RiftMotesOrb {
     private var motesOrbs = emptyList<MotesOrb>()
 
     class MotesOrb(
-        var location: LorenzVec,
+        var location: SkyHanniVector,
         var counter: Int = 0,
         var startTime: Long = System.currentTimeMillis(),
         var lastTime: Long = System.currentTimeMillis(),

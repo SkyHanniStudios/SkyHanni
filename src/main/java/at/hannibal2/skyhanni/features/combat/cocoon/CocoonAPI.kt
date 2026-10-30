@@ -21,7 +21,6 @@ import at.hannibal2.skyhanni.utils.EntityUtils.canBeSeen
 import at.hannibal2.skyhanni.utils.EntityUtils.wearingSkullTexture
 import at.hannibal2.skyhanni.utils.ItemUtils.getInternalName
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.SafeItemStack
@@ -30,8 +29,9 @@ import at.hannibal2.skyhanni.utils.SkullTextureHolder
 import at.hannibal2.skyhanni.utils.SkyBlockItemModifierUtils.getReforgeModifier
 import at.hannibal2.skyhanni.utils.SkyHanniLogger
 import at.hannibal2.skyhanni.utils.collection.TimeLimitedSet
-import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.world.entity.decoration.ArmorStand
 import kotlin.time.Duration.Companion.seconds
@@ -76,7 +76,7 @@ object CocoonAPI {
     data class CocoonMob(
         val mob: Mob,
         val seaCreature: LivingSeaCreatureData?,
-        val coordinates: LorenzVec,
+        val coordinates: SkyHanniVector,
         val spawnTime: SimpleTimeMark,
         val cocoonID: Int,
         var hasBeenSeen: Boolean,
@@ -125,7 +125,7 @@ object CocoonAPI {
         if (IslandType.THE_RIFT.isInIsland()) return
         val entity = event.entity
         if (!entity.wearingSkullTexture(COCOON_SKULL_TEXTURE)) return
-        val position = entity.getLorenzVec()
+        val position = entity.positionVector()
         val id = entity.id
         if (isSameCocoonGroup(position, id)) return
         val mob = getCocoonMob(position) ?: return
@@ -159,13 +159,13 @@ object CocoonAPI {
         }
     }
 
-    private fun getCocoonMob(cocoonVector: LorenzVec): Mob? {
-        val nearbyMobs = skyblockMobs.filter { mob -> mob.baseEntity.getLorenzVec().distanceSq(cocoonVector) < 4.0 }
+    private fun getCocoonMob(cocoonVector: SkyHanniVector): Mob? {
+        val nearbyMobs = skyblockMobs.filter { mob -> mob.baseEntity.positionVector().distanceSq(cocoonVector) < 4.0 }
         // Jawbus spawns Jawbus Followers, and they are often killed before being detected as Skyblock Mobs.
         // this, should prevent a downstream feature from sending fake "My Lord Jawbus Was Cocooned" Messages.
         val filteredMobs = nearbyMobs.filter { mob -> !(mob.name == "Lord Jawbus" && mob.health < 10_000_000) }
         val mob = filteredMobs.minByOrNull {
-            it.baseEntity.getLorenzVec().distance(cocoonVector)
+            it.baseEntity.positionVector().distance(cocoonVector)
         }
         return mob
     }
@@ -174,7 +174,7 @@ object CocoonAPI {
         if (!cocoon.hasBeenSeen) cocoon.hasBeenSeen = cocoon.cocoonEntity.canBeSeen(COCOON_SIGHT_DISTANCE)
     }
 
-    private fun isSameCocoonGroup(currentPos: LorenzVec, currentID: Int): Boolean {
+    private fun isSameCocoonGroup(currentPos: SkyHanniVector, currentID: Int): Boolean {
         return existingCocoons.any { it.coordinates.distanceSqIgnoreY(currentPos) < 0.5 || it.cocoonID == currentID }
     }
 

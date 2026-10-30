@@ -18,13 +18,13 @@ import at.hannibal2.skyhanni.utils.BlockUtils.getBlockAt
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceSqToPlayer
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.RegexUtils.groupOrNull
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.StringUtils.subMapOfStringsStartingWith
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.removeIf
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import net.minecraft.world.level.block.ChestBlock
 import java.util.NavigableMap
 import java.util.TreeMap
@@ -197,11 +197,11 @@ object StorageApi {
         shouldSave = true
     }
 
-    private var lastChestClicked: LorenzVec? = null
-    private var doubleChestCord: LorenzVec? = null
+    private var lastChestClicked: SkyHanniVector? = null
+    private var doubleChestCord: SkyHanniVector? = null
 
-    private fun getNeighborBlocks(position: LorenzVec) =
-        listOf(position.add(x = 1), position.add(x = -1), position.add(z = 1), position.add(z = -1)).map {
+    private fun getNeighborBlocks(position: SkyHanniVector) =
+        listOf(position.add(x = 1.0), position.add(x = -1.0), position.add(z = 1.0), position.add(z = -1.0)).map {
             it to it.getBlockAt()
         }
 

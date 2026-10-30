@@ -15,7 +15,6 @@ import at.hannibal2.skyhanni.features.skillprogress.SkillType
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ItemUtils.getInternalName
 import at.hannibal2.skyhanni.utils.ItemUtils.getLore
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NeuInternalName
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
@@ -25,6 +24,7 @@ import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.enumMapOf
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.itemType
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import net.minecraft.world.item.Item
 import net.minecraft.world.level.block.ChestBlock
 import java.util.EnumMap
@@ -45,7 +45,7 @@ object MinionXP {
 
     data class XPInfo(val type: SkillType, val amount: Double)
 
-    private data class MinionStorage(val position: LorenzVec, val xpList: EnumMap<SkillType, Double>) {
+    private data class MinionStorage(val position: SkyHanniVector, val xpList: EnumMap<SkillType, Double>) {
         val timestamp: SimpleTimeMark = SimpleTimeMark.now()
     }
 
@@ -75,7 +75,7 @@ object MinionXP {
     }
 
     private fun getStorageXPAndUpdateTotal(
-        minionPosition: LorenzVec,
+        minionPosition: SkyHanniVector,
         xpTotal: EnumMap<SkillType, Double>,
     ): Boolean {
         if (!getHasStorage(minionPosition)) return false
@@ -133,10 +133,10 @@ object MinionXP {
     private fun collectMessage(type: SkillType, amount: Double) =
         "§7Collect to get: §b${amount.addSeparators()} §e${type.displayName} XP"
 
-    private fun getHasStorage(minionPosition: LorenzVec): Boolean {
+    private fun getHasStorage(minionPosition: SkyHanniVector): Boolean {
         val positionsToCheck = listOf(
-            LorenzVec(1, 0, 0), LorenzVec(0, 0, 1),
-            LorenzVec(-1, 0, 0), LorenzVec(0, 0, -1),
+            SkyHanniVector(1, 0, 0), SkyHanniVector(0, 0, 1),
+            SkyHanniVector(-1, 0, 0), SkyHanniVector(0, 0, -1),
         )
 
         return positionsToCheck.any { position ->

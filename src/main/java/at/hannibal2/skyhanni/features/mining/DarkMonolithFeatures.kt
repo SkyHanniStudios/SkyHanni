@@ -15,9 +15,6 @@ import at.hannibal2.skyhanni.utils.BlockUtils
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.ColorUtils.toColor
 import at.hannibal2.skyhanni.utils.LocationUtils
-import at.hannibal2.skyhanni.utils.LocationUtils.maxBox
-import at.hannibal2.skyhanni.utils.LocationUtils.minBox
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.NumberUtil.formatInt
 import at.hannibal2.skyhanni.utils.RegexUtils.groupOrNull
@@ -34,6 +31,10 @@ import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import at.hannibal2.skyhanni.utils.tracker.ItemTrackerData
 import at.hannibal2.skyhanni.utils.tracker.SessionUptime
 import at.hannibal2.skyhanni.utils.tracker.SkyHanniItemTracker
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorBounds.boxFromOrigin
+import at.hannibal2.skyhanni.utils.vector.VectorBounds.maxCorner
+import at.hannibal2.skyhanni.utils.vector.VectorBounds.minCorner
 import com.google.gson.annotations.Expose
 import net.minecraft.core.Direction
 import net.minecraft.world.level.block.Blocks.DRAGON_EGG
@@ -78,9 +79,9 @@ object DarkMonolithFeatures {
     )
 
     internal data class DarkMonolithData(
-        var knownEggs: Set<LorenzVec> = setOf(),
-        var foundEggVec: LorenzVec? = null,
-        var lastFoundEggVec: LorenzVec? = null,
+        var knownEggs: Set<SkyHanniVector> = setOf(),
+        var foundEggVec: SkyHanniVector? = null,
+        var lastFoundEggVec: SkyHanniVector? = null,
         var renderBox: AABB? = null,
         var nextBlockCheck: SimpleTimeMark = SimpleTimeMark.farPast(),
     ) : Resettable
@@ -142,15 +143,15 @@ object DarkMonolithFeatures {
         data.updateKnownEggs()
         val knownEggVec = data.foundEggVec ?: return
         with(WorldRenderUtils) {
-            data.renderBox = knownEggVec.boundingToOffset(1.0, 1.0, 1.0).expandBlock()
+            data.renderBox = knownEggVec.boxFromOrigin(1.0, 1.0, 1.0).expandBlock()
         }
     }
 
-    private fun canSeeFaces(vec: LorenzVec): Boolean {
-        val aabb = vec.floor().boundingToOffset(1.0, 1.0, 1.0)
+    private fun canSeeFaces(vec: SkyHanniVector): Boolean {
+        val aabb = vec.floor().boxFromOrigin(1.0, 1.0, 1.0)
         return LocationUtils.canSeeAnyFace(
-            min = aabb.minBox(),
-            max = aabb.maxBox(),
+            min = aabb.minCorner(),
+            max = aabb.maxCorner(),
             stepCount = 4,
             ignoreFaces = listOf(Direction.DOWN).toTypedArray(),
         )

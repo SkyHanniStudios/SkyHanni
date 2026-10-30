@@ -10,10 +10,11 @@ import at.hannibal2.skyhanni.events.diana.BurrowDetectEvent
 import at.hannibal2.skyhanni.events.diana.BurrowDugEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.DelayedRun
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorFormat.formatRounded
 import net.minecraft.core.particles.ParticleTypes
 import kotlin.time.Duration.Companion.seconds
 
@@ -22,9 +23,9 @@ object GriffinBurrowParticleFinder {
 
     private val config get() = SkyHanniMod.feature.event.diana
 
-    private val burrows = mutableMapOf<LorenzVec, Burrow>()
+    private val burrows = mutableMapOf<SkyHanniVector, Burrow>()
 
-    fun containsBurrow(location: LorenzVec): Boolean = burrows.containsKey(location)
+    fun containsBurrow(location: SkyHanniVector): Boolean = burrows.containsKey(location)
 
     private val patternGroup = RepoPattern.group("event.diana.mythological.burrows")
 
@@ -50,7 +51,7 @@ object GriffinBurrowParticleFinder {
             for (burrow in burrows.values) {
                 val location = burrow.location
                 val found = burrow.found
-                add(location.printWithAccuracy(1))
+                add(location.formatRounded(1))
                 add(" type: " + burrow.getType())
                 add(" found: $found")
                 add(" ")
@@ -66,7 +67,7 @@ object GriffinBurrowParticleFinder {
         val type = ParticleType.entries.firstOrNull { it.check(event) } ?: return
 
         // TODO the rounding is a workaround, may need to be removed once we know what is going on exactly and can fix this properly
-        val location = event.location.roundToBlock().down()
+        val location = event.location.floor().down()
 
         val burrow = burrows.getOrPut(location) { Burrow(location) }
         val oldBurrowType = burrow.type
@@ -102,18 +103,18 @@ object GriffinBurrowParticleFinder {
     // TODO remove the roundTo calls as they are only workarounds
     private enum class ParticleType(val check: ParticleEvent.() -> Boolean) {
         EMPTY(
-            { type == ParticleTypes.ENCHANTED_HIT && count == 4 && speed == 0.01f && offset.roundTo(2) == LorenzVec(0.5, 0.1, 0.5) },
+            { type == ParticleTypes.ENCHANTED_HIT && count == 4 && speed == 0.01f && offset.roundTo(2) == SkyHanniVector(0.5, 0.1, 0.5) },
         ),
         MOB(
-            { type == ParticleTypes.CRIT && count == 3 && speed == 0.01f && offset.roundTo(2) == LorenzVec(0.5, 0.1, 0.5) },
+            { type == ParticleTypes.CRIT && count == 3 && speed == 0.01f && offset.roundTo(2) == SkyHanniVector(0.5, 0.1, 0.5) },
         ),
         TREASURE(
-            { type == ParticleTypes.DRIPPING_LAVA && count == 2 && speed == 0.01f && offset.roundTo(2) == LorenzVec(0.35, 0.1, 0.35) },
+            { type == ParticleTypes.DRIPPING_LAVA && count == 2 && speed == 0.01f && offset.roundTo(2) == SkyHanniVector(0.35, 0.1, 0.35) },
         ),
         ENCHANT(
             {
                 type == ParticleTypes.ENCHANT && count == 5 && speed == 0.05f && offset.roundTo(2) ==
-                    LorenzVec(0.5, 0.4, 0.5)
+                    SkyHanniVector(0.5, 0.4, 0.5)
             },
         ),
     }
@@ -148,7 +149,7 @@ object GriffinBurrowParticleFinder {
     }
 
     class Burrow(
-        var location: LorenzVec,
+        var location: SkyHanniVector,
         var hasFootstep: Boolean = true,
         var hasEnchant: Boolean = false,
         var type: Int = -1,

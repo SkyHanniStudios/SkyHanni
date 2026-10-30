@@ -8,6 +8,7 @@ import at.hannibal2.skyhanni.utils.EntityUtils
 import at.hannibal2.skyhanni.utils.ItemUtils.getInternalName
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.collection.TimeLimitedSet
+import at.hannibal2.skyhanni.utils.vector.VectorBounds.boxAround
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.player.Player
 import kotlin.math.abs
@@ -48,7 +49,7 @@ object MuteStereoPants {
             return
         }
 
-        for (player in EntityUtils.getEntitiesInBoundingBox<Player>(event.location.boundingCenter(5.0))) {
+        for (player in EntityUtils.getEntitiesInBoundingBox<Player>(event.location.boxAround(5.0))) {
             if (player.getItemBySlot(EquipmentSlot.LEGS).getInternalName() == MUSIC_PANTS) {
                 playersWearingStereoPants.add(player)
                 event.cancel()

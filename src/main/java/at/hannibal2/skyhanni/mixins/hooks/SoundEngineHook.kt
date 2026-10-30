@@ -1,10 +1,21 @@
 package at.hannibal2.skyhanni.mixins.hooks
 
 import at.hannibal2.skyhanni.SkyHanniMod
+import at.hannibal2.skyhanni.events.PlaySoundEvent
 import at.hannibal2.skyhanni.utils.SkyHanniSoundInstance
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import net.minecraft.client.resources.sounds.SoundInstance
 
 object SoundEngineHook {
+
+    @JvmStatic
+    fun shouldCancel(soundInstance: SoundInstance): Boolean = PlaySoundEvent(
+        soundInstance.identifier.toString().removePrefix("minecraft:"),
+        SkyHanniVector(soundInstance.x, soundInstance.y, soundInstance.z),
+        soundInstance.pitch,
+        soundInstance.volume,
+    ).post().isCancelled
+
     /**
      * Makes SkyHanni's own warning sounds bypass the user's volume settings, without touching
      * the volume of any other sound or the sound engine's global volume state.

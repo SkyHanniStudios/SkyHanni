@@ -6,13 +6,13 @@ import at.hannibal2.skyhanni.config.enums.OutsideSBFeature
 import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NumberUtil.roundTo
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderable
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 
 @SkyHanniModule
 object MovementSpeedDisplay {
@@ -31,8 +31,8 @@ object MovementSpeedDisplay {
         if (!event.isMod(5)) return
 
         bpsMoveSpeed = with(MinecraftCompat.localPlayerOrThrow) {
-            val oldPos = LorenzVec(xOld, yOld, zOld)
-            val newPos = LorenzVec(position().x, position().y, position().z)
+            val oldPos = SkyHanniVector(xOld, yOld, zOld)
+            val newPos = SkyHanniVector(position().x, position().y, position().z)
 
             // Distance from previous tick, multiplied by TPS
             oldPos.distance(newPos) * 20

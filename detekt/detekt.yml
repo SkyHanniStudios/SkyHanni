@@ -44,6 +44,8 @@ SkyHanniStyle:
         active: true
     IsInIslandEarlyReturn:
         active: true
+    NoLorenzVec:
+        active: true
     OnlyOnIslandSpecificity:
         active: true
     PrivateEventListener:

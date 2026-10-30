@@ -6,12 +6,12 @@ import at.hannibal2.skyhanni.features.event.hoppity.HoppityEggType.Companion.get
 import at.hannibal2.skyhanni.features.inventory.chocolatefactory.CFApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.HypixelCommands
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.RegexUtils.groupOrNull
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
-import at.hannibal2.skyhanni.utils.RegexUtils.toLorenzVec
+import at.hannibal2.skyhanni.utils.RegexUtils.toSkyHanniVector
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.StringUtils.removeColor
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 
 @SkyHanniModule
 object HoppityEggsShared {
@@ -32,7 +32,7 @@ object HoppityEggsShared {
         if (!isEnabled()) return
 
         sharedEggPattern.matchMatcher(event.message.removeColor()) {
-            val eggLocation = toLorenzVec() ?: return
+            val eggLocation = toSkyHanniVector() ?: return
 
             val meal = getEggType(event)
             val note = groupOrNull("note")
@@ -46,7 +46,7 @@ object HoppityEggsShared {
         }
     }
 
-    fun shareNearbyEggLocation(playerLocation: LorenzVec, meal: HoppityEggType, note: String) {
+    fun shareNearbyEggLocation(playerLocation: SkyHanniVector, meal: HoppityEggType, note: String) {
         if (!isEnabled()) return
         val islandEggsLocations = HoppityEggLocations.islandLocations
         val closestEgg = islandEggsLocations.minByOrNull { it.distance(playerLocation) } ?: return

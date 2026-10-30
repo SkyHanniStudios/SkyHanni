@@ -5,6 +5,7 @@ import at.hannibal2.skyhanni.data.jsonobjects.repo.LocationFixJson
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.LocationUtils.isPlayerInside
+import at.hannibal2.skyhanni.utils.vector.VectorBounds.boxTo
 import net.minecraft.world.phys.AABB
 
 @SkyHanniModule
@@ -22,7 +23,7 @@ object LocationFixData {
 
         for (fix in data.locationFixes.values) {
             val island = IslandType.getByName(fix.islandName)
-            val area = fix.a.axisAlignedTo(fix.b)
+            val area = fix.a.boxTo(fix.b)
             val realLocation = fix.realLocation
 
             val list = locationFixes[island]

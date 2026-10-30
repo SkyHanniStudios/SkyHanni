@@ -11,7 +11,6 @@ import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.BezierFitter
 import at.hannibal2.skyhanni.utils.ItemUtils.getInternalNameOrNull
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 import at.hannibal2.skyhanni.utils.RegexUtils.findMatcher
@@ -21,6 +20,7 @@ import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.exactPlayerEyeLocation
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import net.minecraft.core.particles.ParticleTypes
 import kotlin.math.sqrt
 import kotlin.time.Duration.Companion.seconds
@@ -49,7 +49,7 @@ object DungeonSecretTrackerLocator {
     private var lastAbilityUse = SimpleTimeMark.farPast()
     private val bezierFitter = BezierFitter(1)
     private var secretDistance: Int? = null
-    private var secretLocation: LorenzVec? = null
+    private var secretLocation: SkyHanniVector? = null
     private val SECRET_COMPASS = "SECRET_TRACKER".toInternalName()
 
     @HandleEvent(receiveCancelled = true, onlyOnIsland = IslandType.CATACOMBS)

@@ -13,7 +13,6 @@ import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.DelayedRun
 import at.hannibal2.skyhanni.utils.ItemUtils.getInternalNameOrNull
 import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 import at.hannibal2.skyhanni.utils.ParticlePathBezierFitter
@@ -22,6 +21,7 @@ import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawLineToCrosshair
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.exactPlayerEyeLocation
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import net.minecraft.core.particles.ParticleTypes
 import kotlin.time.Duration.Companion.seconds
 
@@ -32,7 +32,7 @@ object FishingHotspotRadar {
     private var lastParticle = SimpleTimeMark.farPast()
     private var lastAbilityUse = SimpleTimeMark.farPast()
     private val bezierFitter = ParticlePathBezierFitter(3)
-    private var hotspotLocation: LorenzVec? = null
+    private var hotspotLocation: SkyHanniVector? = null
     private val HOTSPOT_RADAR = "HOTSPOT_RADAR".toInternalName()
     private var foundTime = SimpleTimeMark.farPast()
     private var lastUpdate = SimpleTimeMark.farPast()
@@ -63,7 +63,7 @@ object FishingHotspotRadar {
     }
 
     // Do NOT use IslandTypeTag.FISHING_HOTSPOT here. we want to solely depend on the repo data, not on hard coded enums
-    private fun pathFind(location: LorenzVec) {
+    private fun pathFind(location: SkyHanniVector) {
         if (!config.guessHotspotRadarPathFind) return
 
         foundTime = SimpleTimeMark.farFuture()

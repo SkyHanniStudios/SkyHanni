@@ -25,7 +25,6 @@ import at.hannibal2.skyhanni.utils.ItemUtils.getLoreComponent
 import at.hannibal2.skyhanni.utils.LocationUtils
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
 import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NumberUtil.roundTo
 import at.hannibal2.skyhanni.utils.PlayerUtils
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
@@ -38,6 +37,7 @@ import at.hannibal2.skyhanni.utils.chat.TextHelper.send
 import at.hannibal2.skyhanni.utils.coroutines.CoroutineSettings
 import at.hannibal2.skyhanni.utils.navigation.NavigationUtils
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 
 @Suppress("MemberVisibilityCanBePrivate")
 @SkyHanniModule
@@ -82,9 +82,9 @@ object FastFairySoulsPathfinder {
     private class Data(
         var found: Int,
         val total: Int,
-        val route: MutableList<LorenzVec>,
-        val allSouls: Set<LorenzVec>,
-        var foundButNotClickedSoul: LorenzVec? = null,
+        val route: MutableList<SkyHanniVector>,
+        val allSouls: Set<SkyHanniVector>,
+        var foundButNotClickedSoul: SkyHanniVector? = null,
     ) {
         var disabled = total > 0 && found == total
         var debugState: String? = null
@@ -97,7 +97,7 @@ object FastFairySoulsPathfinder {
             pathToNext()
         }
 
-        private fun getNearestSoul(): LorenzVec? {
+        private fun getNearestSoul(): SkyHanniVector? {
             val playerLocation = LocationUtils.playerLocation()
             val nearest = allSouls.minByOrNull { it.distanceSq(playerLocation) } ?: return null
             if (nearest.distanceToPlayer() < 10) return nearest
@@ -120,7 +120,7 @@ object FastFairySoulsPathfinder {
             return null
         }
 
-        private fun found(nearest: LorenzVec) {
+        private fun found(nearest: SkyHanniVector) {
             if (route.remove(nearest)) {
                 found++
             }
@@ -148,7 +148,7 @@ object FastFairySoulsPathfinder {
             }
         }
 
-        private fun pathTo(loc: LorenzVec) {
+        private fun pathTo(loc: SkyHanniVector) {
             val percentage = (found.toDouble() / total) * 100
             val percentageLabel = "§8(§b${percentage.roundTo(1)}%§8)"
             IslandGraphs.pathFind(
@@ -255,7 +255,7 @@ object FastFairySoulsPathfinder {
                 }
             } else {
                 val size = foundSouls.size
-                Data(found = size, total = size, route = emptyList<LorenzVec>().toMutableList(), allSouls = foundSouls).also {
+                Data(found = size, total = size, route = emptyList<SkyHanniVector>().toMutableList(), allSouls = foundSouls).also {
                     it.debugState = "found all souls on ${SkyBlockUtils.currentIsland}"
                 }
             }
@@ -282,9 +282,9 @@ object FastFairySoulsPathfinder {
     }
 
     private fun setData(
-        foundSouls: MutableSet<LorenzVec>,
+        foundSouls: MutableSet<SkyHanniVector>,
         allSouls: List<GraphNode>,
-        route: MutableList<LorenzVec>,
+        route: MutableList<SkyHanniVector>,
     ) {
         this.data = Data(
             found = foundSouls.size,
@@ -397,8 +397,8 @@ object FastFairySoulsPathfinder {
     fun amountFoundOnCurrentIsland(): Int = amountFoundOnIsland(SkyBlockUtils.currentIsland)
     fun amountFoundOnIsland(island: IslandType): Int = totalFound.getOrDefault(island, 0)
 
-    fun foundSoulsOnCurrentIsland(): MutableSet<LorenzVec> = foundSoulsOnIsland(SkyBlockUtils.currentIsland)
-    fun foundSoulsOnIsland(island: IslandType): MutableSet<LorenzVec> = foundSouls.getOrPut(island) { mutableSetOf() }
+    fun foundSoulsOnCurrentIsland(): MutableSet<SkyHanniVector> = foundSoulsOnIsland(SkyBlockUtils.currentIsland)
+    fun foundSoulsOnIsland(island: IslandType): MutableSet<SkyHanniVector> = foundSouls.getOrPut(island) { mutableSetOf() }
 
     private fun getTargetNodes(nodes: List<GraphNode>): List<GraphNode> = nodes.filter { it.hasTag(GraphNodeTag.FAIRY_SOUL) }
 

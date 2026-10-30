@@ -16,7 +16,6 @@ import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.DelayedRun
 import at.hannibal2.skyhanni.utils.ItemUtils.getLore
 import at.hannibal2.skyhanni.utils.LocationUtils.playerLocation
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.RegexUtils.firstMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.groupOrNull
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
@@ -26,6 +25,8 @@ import at.hannibal2.skyhanni.utils.TimeUtils.getTablistEndTime
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLeadingWhiteLessResets
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.draw3DLine
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorBounds.boxTo
 import com.google.gson.annotations.Expose
 import net.minecraft.client.player.LocalPlayer
 import java.awt.Color
@@ -208,7 +209,7 @@ object GardenPlotApi {
             (config.newSprayNotification && sprayExpiryTime >= SimpleTimeMark.now() + 1.minutes)
     }
 
-    fun getPlot(location: LorenzVec): GardenPlot? {
+    fun getPlot(location: SkyHanniVector): GardenPlot? {
         if (location.y !in 0.0..<256.0) return null
         val plotX = location.x.toPlotIndex() ?: return null
         val plotZ = location.z.toPlotIndex() ?: return null
@@ -230,10 +231,10 @@ object GardenPlotApi {
                 val minY = ((y - 2) * 96 - 48).toDouble()
                 val maxX = ((x - 2) * 96 + 48).toDouble()
                 val maxY = ((y - 2) * 96 + 48).toDouble()
-                val a = LorenzVec(minX, 0.0, minY)
-                val b = LorenzVec(maxX, 256.0, maxY)
-                val middle = a.middle(b).copy(y = 10.0)
-                val box = a.axisAlignedTo(b).inflate(0.0001, 0.0, 0.0001)
+                val a = SkyHanniVector(minX, 0.0, minY)
+                val b = SkyHanniVector(maxX, 256.0, maxY)
+                val middle = a.midpoint(b).copy(y = 10.0)
+                val box = a.boxTo(b).inflate(0.0001, 0.0, 0.0001)
                 list.add(GardenPlot(id, slot, box, middle))
                 slot++
             }
@@ -380,16 +381,16 @@ object GardenPlotApi {
         // Render 4 vertical corners
         for (i in 0..plotSize step plotSize) {
             for (j in 0..plotSize step plotSize) {
-                val start = LorenzVec(plotMinX + i, minHeight, plotMinZ + j)
-                val end = LorenzVec(plotMinX + i, maxHeight, plotMinZ + j)
+                val start = SkyHanniVector(plotMinX + i, minHeight, plotMinZ + j)
+                val end = SkyHanniVector(plotMinX + i, maxHeight, plotMinZ + j)
                 tryDraw3DLine(start, end, cornerColor, 3, true)
             }
         }
 
         // Render vertical on x-axis
         for (x in 4..<plotSize step 4) {
-            val start = LorenzVec(plotMinX + x, minHeight, plotMinZ)
-            val end = LorenzVec(plotMinX + x, maxHeight, plotMinZ)
+            val start = SkyHanniVector(plotMinX + x, minHeight, plotMinZ)
+            val end = SkyHanniVector(plotMinX + x, maxHeight, plotMinZ)
             // Front lines
             tryDraw3DLine(start, end, lineColor, 2, true)
             // Back lines
@@ -398,8 +399,8 @@ object GardenPlotApi {
 
         // Render vertical on z-axis
         for (z in 4..<plotSize step 4) {
-            val start = LorenzVec(plotMinX, minHeight, plotMinZ + z)
-            val end = LorenzVec(plotMinX, maxHeight, plotMinZ + z)
+            val start = SkyHanniVector(plotMinX, minHeight, plotMinZ + z)
+            val end = SkyHanniVector(plotMinX, maxHeight, plotMinZ + z)
             // Left lines
             tryDraw3DLine(start, end, lineColor, 2, true)
             // Right lines
@@ -414,7 +415,7 @@ object GardenPlotApi {
             minHeight..maxHeight step 4
         }
         for (y in iterable) {
-            val start = LorenzVec(plotMinX, y, plotMinZ)
+            val start = SkyHanniVector(plotMinX, y, plotMinZ)
             val isRedLine = y == buildLimit
             val color = if (isRedLine) Color.red else lineColor
             val depth = if (isRedLine) 3 else 2
@@ -430,8 +431,8 @@ object GardenPlotApi {
     }
 
     private fun SkyHanniRenderWorldEvent.tryDraw3DLine(
-        p1: LorenzVec,
-        p2: LorenzVec,
+        p1: SkyHanniVector,
+        p2: SkyHanniVector,
         color: Color,
         lineWidth: Int,
         depth: Boolean,
@@ -441,7 +442,7 @@ object GardenPlotApi {
         draw3DLine(p1, p2, color, lineWidth, depth)
     }
 
-    private fun isOutOfBorders(location: LorenzVec) = when {
+    private fun isOutOfBorders(location: SkyHanniVector) = when {
         location.x > 240 -> true
         location.x < -240 -> true
         location.z > 240 -> true

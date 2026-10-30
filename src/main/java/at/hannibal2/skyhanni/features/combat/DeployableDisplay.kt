@@ -11,9 +11,9 @@ import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderables
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.TimeUtils.format
-import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.world.entity.decoration.ArmorStand
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -46,7 +46,7 @@ object DeployableDisplay {
                 deployable.expiryTime = time
                 for (entry in knownDeployables) {
                     val entryEntity = entry.entity ?: continue
-                    if (entryEntity.getLorenzVec().equalsIgnoreY(entity.getLorenzVec())) return@matchMatcher
+                    if (entryEntity.positionVector().equalsIgnoreY(entity.positionVector())) return@matchMatcher
                 }
                 knownDeployables.add(deployable)
             }

@@ -16,12 +16,12 @@ import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.HypixelCommands
 import at.hannibal2.skyhanni.utils.LocationUtils
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
-import at.hannibal2.skyhanni.utils.toLorenzVec
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.toSkyHanniVector
 import net.minecraft.core.Direction
 import net.minecraft.core.Vec3i
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket
@@ -64,7 +64,7 @@ object MineshaftWaypointManager {
             is ClientboundPlayerPositionPacket -> {
                 if (event.packet.relatives.isNotEmpty()) return
 
-                val spawnLocation = event.packet.change.position.toLorenzVec().add(y = -1).roundToBlock()
+                val spawnLocation = event.packet.change.position.toSkyHanniVector().down().floor()
                 val direction = Direction.fromYRot(event.packet.change.yRot.toDouble()).unitVec3i
 
                 addEntranceWaypoints(spawnLocation, direction)
@@ -122,7 +122,7 @@ object MineshaftWaypointManager {
             }
     }
 
-    private fun addEntranceWaypoints(entranceLocation: LorenzVec, direction: Vec3i) {
+    private fun addEntranceWaypoints(entranceLocation: SkyHanniVector, direction: Vec3i) {
         waypoints.removeIf { it.type in listOf(MineshaftWaypoint.Type.ENTRANCE, MineshaftWaypoint.Type.LADDER) }
 
         val ladderLocation = entranceLocation

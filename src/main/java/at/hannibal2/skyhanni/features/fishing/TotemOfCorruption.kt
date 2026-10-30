@@ -13,7 +13,6 @@ import at.hannibal2.skyhanni.utils.ConditionalUtils.onToggle
 import at.hannibal2.skyhanni.utils.EntityUtils.cleanName
 import at.hannibal2.skyhanni.utils.EntityUtils.getEntitiesNearby
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.PlayerUtils
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
@@ -26,12 +25,13 @@ import at.hannibal2.skyhanni.utils.chat.TextHelper.asComponent
 import at.hannibal2.skyhanni.utils.collection.TimeLimitedSet
 import at.hannibal2.skyhanni.utils.compat.appendWithColor
 import at.hannibal2.skyhanni.utils.compat.componentBuilder
-import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawSphereInWorld
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawSphereWireframeInWorld
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.ChatFormatting
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.world.entity.decoration.ArmorStand
@@ -148,7 +148,7 @@ object TotemOfCorruption {
     }
 
     private fun getTimeRemaining(totem: ArmorStand): Duration? =
-        totem.getLorenzVec().getEntitiesNearby<ArmorStand>(2.0)
+        totem.positionVector().getEntitiesNearby<ArmorStand>(2.0)
             .firstNotNullOfOrNull { entity ->
                 timeRemainingPattern.matchMatcher(entity.cleanName) {
                     val minutes = group("min")?.toIntOrNull() ?: 0
@@ -158,7 +158,7 @@ object TotemOfCorruption {
             }
 
     private fun getOwner(totem: ArmorStand): String? =
-        totem.getLorenzVec().getEntitiesNearby<ArmorStand>(2.0)
+        totem.positionVector().getEntitiesNearby<ArmorStand>(2.0)
             .firstNotNullOfOrNull { entity ->
                 ownerPattern.matchMatcher(entity.cleanName) {
                     group("owner")
@@ -193,7 +193,7 @@ object TotemOfCorruption {
         .mapNotNull { totem ->
             val timeRemaining = getTimeRemaining(totem) ?: return@mapNotNull null
             val owner = getOwner(totem) ?: return@mapNotNull null
-            Totem(totem.uuid, totem.getLorenzVec(), timeRemaining, owner)
+            Totem(totem.uuid, totem.positionVector(), timeRemaining, owner)
         }
 
     private fun filterTotems(): List<Totem> = allTotems.filter { !config.ownTotemOnly || it.isOwn() }
@@ -212,7 +212,7 @@ object TotemOfCorruption {
 
 private class Totem(
     val uuid: UUID,
-    val location: LorenzVec,
+    val location: SkyHanniVector,
     val timeRemaining: Duration,
     val ownerName: String,
     val distance: Double = location.distanceToPlayer(),

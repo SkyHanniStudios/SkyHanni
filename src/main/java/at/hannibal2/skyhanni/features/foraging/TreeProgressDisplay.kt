@@ -12,15 +12,15 @@ import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.ItemCategory
 import at.hannibal2.skyhanni.utils.ItemUtils.getItemCategoryOrNull
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderable
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.compat.append
 import at.hannibal2.skyhanni.utils.compat.componentBuilder
-import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.network.chat.Component
 import net.minecraft.world.entity.decoration.ArmorStand
 
@@ -32,7 +32,7 @@ object TreeProgressDisplay {
     private data class TreeProgressDisplay(
         val id: Int,
         val renderable: Renderable,
-        val position: LorenzVec,
+        val position: SkyHanniVector,
     )
     private var progressDisplay: TreeProgressDisplay? = null
 
@@ -77,7 +77,7 @@ object TreeProgressDisplay {
         } ?: return
 
         val entity = event.entity
-        val position = entity.getLorenzVec()
+        val position = entity.positionVector()
 
         val current = progressDisplay
         if (current != null && current.id != entity.id) {

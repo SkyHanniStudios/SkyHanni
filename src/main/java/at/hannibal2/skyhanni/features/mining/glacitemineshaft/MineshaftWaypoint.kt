@@ -3,11 +3,11 @@ package at.hannibal2.skyhanni.features.mining.glacitemineshaft
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.features.mining.glacitemineshaft.corpse.CorpseType
 import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.LorenzVec
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 
 data class MineshaftWaypoint(
     var type: Type,
-    val location: LorenzVec,
+    val location: SkyHanniVector,
     val corpseType: CorpseType? = null,
     var isShared: Boolean = false,
 ) {

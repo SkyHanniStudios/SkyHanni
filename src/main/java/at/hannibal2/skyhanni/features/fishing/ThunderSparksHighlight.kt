@@ -15,9 +15,9 @@ import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
 import at.hannibal2.skyhanni.utils.SkullTextureHolder
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.compat.deceased
-import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawString
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.world.entity.decoration.ArmorStand
 
 @SkyHanniModule
@@ -47,7 +47,7 @@ object ThunderSparksHighlight {
 
         for (spark in sparks) {
             if (spark.deceased) continue
-            val sparkLocation = spark.getLorenzVec()
+            val sparkLocation = spark.positionVector()
             val block = sparkLocation.getBlockAt()
             val seeThroughBlocks = sparkLocation.distanceToPlayer() < 6 && (block in FishingApi.lavaBlocks)
             event.drawWaypointFilled(

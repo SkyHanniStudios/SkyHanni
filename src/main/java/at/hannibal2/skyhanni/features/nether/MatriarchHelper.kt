@@ -14,16 +14,16 @@ import at.hannibal2.skyhanni.utils.EntityUtils.getEntitiesInBoundingBox
 import at.hannibal2.skyhanni.utils.EntityUtils.wearingSkullTexture
 import at.hannibal2.skyhanni.utils.GraphUtils
 import at.hannibal2.skyhanni.utils.LocationUtils
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.SkullTextureHolder
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
-import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.navigation.NavigationUtils
 import at.hannibal2.skyhanni.utils.render.LineDrawer
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.draw3DLine
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawFilledBoundingBox
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.exactPlayerEyeLocation
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.expandBlock
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.entity.monster.cubemob.Slime
@@ -38,7 +38,7 @@ object MatriarchHelper {
     private const val AREA_NAME = "Belly of the Beast"
 
     private class Pearl(val armorStand: ArmorStand, val slime: Slime, val node: GraphNode) {
-        val location get() = slime.getLorenzVec().up(1.2)
+        val location get() = slime.positionVector().up(1.2)
     }
 
     // Armor stands wearing the pearl skull that have no associated slime (yet).
@@ -46,10 +46,10 @@ object MatriarchHelper {
     private val candidates = mutableSetOf<ArmorStand>()
     private val pearls = mutableListOf<Pearl>()
 
-    private val path = mutableListOf<LorenzVec>()
-    private val pearlWaypoints = mutableListOf<LorenzVec>()
+    private val path = mutableListOf<SkyHanniVector>()
+    private val pearlWaypoints = mutableListOf<SkyHanniVector>()
 
-    private var tspCache = emptyList<LorenzVec>()
+    private var tspCache = emptyList<SkyHanniVector>()
     private var lastTspPearls = -1
 
     private var exitNode: GraphNode? = null
@@ -99,7 +99,7 @@ object MatriarchHelper {
                 iterator.remove()
                 continue
             }
-            val location = slime.getLorenzVec().up(1.2)
+            val location = slime.positionVector().up(1.2)
             val node = IslandGraphs.findClosestNode(location, { true })
             if (node == null) {
                 ErrorManager.logErrorStateWithData(
@@ -123,7 +123,7 @@ object MatriarchHelper {
         }
     }
 
-    private fun accessPearls(): List<LorenzVec> = if (config.useShortestDistance) {
+    private fun accessPearls(): List<SkyHanniVector> = if (config.useShortestDistance) {
         if (pearls.size != lastTspPearls) {
             lastTspPearls = pearls.size
             tspCache = NavigationUtils.getRouteLocations(pearls.map { it.node }, maxIterations = 5)

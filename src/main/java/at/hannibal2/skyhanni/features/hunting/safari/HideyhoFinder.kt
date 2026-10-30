@@ -15,11 +15,11 @@ import at.hannibal2.skyhanni.utils.EntityUtils.canBeSeen
 import at.hannibal2.skyhanni.utils.EntityUtils.getEntitiesNearby
 import at.hannibal2.skyhanni.utils.EntityUtils.getSkinTexture
 import at.hannibal2.skyhanni.utils.LocationUtils
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.SkullTextureHolder
-import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.client.player.RemotePlayer
 import kotlin.time.Duration.Companion.seconds
 
@@ -45,7 +45,7 @@ object HideyhoFinder {
     private val SKIN_TEXTURE by SkullTextureHolder.texture("HIDEYHO")
 
     private var currentlyNavigating = false
-    private var startLocation: LorenzVec? = null
+    private var startLocation: SkyHanniVector? = null
     private var reportBug = false
 
     @HandleEvent(onlyOnIsland = IslandType.SAFARI)
@@ -127,11 +127,11 @@ object HideyhoFinder {
         NavigateAllApi.handleStop()
     }
 
-    private fun LorenzVec.nearbyLocation(radius: Double): LorenzVec? {
+    private fun SkyHanniVector.nearbyLocation(radius: Double): SkyHanniVector? {
         val nearbyEntities = this.getEntitiesNearby<RemotePlayer>(radius)
         return nearbyEntities.firstOrNull {
             it.getSkinTexture() == SKIN_TEXTURE && it.canBeSeen()
-        }?.getLorenzVec()
+        }?.positionVector()
     }
 
     @HandleEvent

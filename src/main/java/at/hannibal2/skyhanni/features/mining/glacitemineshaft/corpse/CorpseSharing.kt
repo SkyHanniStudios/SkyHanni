@@ -10,11 +10,11 @@ import at.hannibal2.skyhanni.features.mining.glacitemineshaft.MineshaftWaypointM
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.HypixelCommands
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.PlayerUtils
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
-import at.hannibal2.skyhanni.utils.RegexUtils.toLorenzVec
+import at.hannibal2.skyhanni.utils.RegexUtils.toSkyHanniVector
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 
 @SkyHanniModule
 object CorpseSharing {
@@ -33,7 +33,7 @@ object CorpseSharing {
 
     // This list keeps track of already shared waypoints by anyone in the chat.
     // They aren't rendered and are only intended to prevent a waypoint from being shared multiple times.
-    private val sharedWaypoints = mutableListOf<LorenzVec>()
+    private val sharedWaypoints = mutableListOf<SkyHanniVector>()
 
     @HandleEvent(onlyOnIsland = IslandType.MINESHAFT)
     private fun onSecondPassed() {
@@ -62,7 +62,7 @@ object CorpseSharing {
         if (PlayerUtils.getName() in author) return
 
         mineshaftCoordsPattern.matchMatcher(message) {
-            val location = toLorenzVec() ?: return
+            val location = toSkyHanniVector() ?: return
 
             // Return if someone had already sent a location nearby
             if (sharedWaypoints.any { it.distance(location) <= 5 }) return

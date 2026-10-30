@@ -7,9 +7,9 @@ import at.hannibal2.skyhanni.utils.EntityUtils
 import at.hannibal2.skyhanni.utils.LocationUtils
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
 import at.hannibal2.skyhanni.utils.LootshareUtils
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
-import at.hannibal2.skyhanni.utils.getLorenzVec
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.world.entity.decoration.ArmorStand
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -18,11 +18,11 @@ import kotlin.time.Duration.Companion.seconds
 object IsFishingDetection {
 
     var isFishing = false
-    private var lastRodCastLocation: LorenzVec? = null
+    private var lastRodCastLocation: SkyHanniVector? = null
     private var lastRodCastTime = SimpleTimeMark.farPast()
     private var lastInAreaTime = SimpleTimeMark.farPast()
 
-    private var lastSeaCreatureKillArea: LorenzVec? = null
+    private var lastSeaCreatureKillArea: SkyHanniVector? = null
     private var lastSeaCreatureKillAreaTime = SimpleTimeMark.farPast()
 
     @HandleEvent
@@ -87,6 +87,6 @@ object IsFishingDetection {
     private fun inLootshareOrHasOwn(): Boolean =
         SeaCreatureDetectionApi.getSeaCreatures().any { seaCreatureData ->
             val entity = seaCreatureData.entity
-            if (entity != null) LootshareUtils.isInRange(entity.getLorenzVec()) else seaCreatureData.isOwn
+            if (entity != null) LootshareUtils.isInRange(entity.positionVector()) else seaCreatureData.isOwn
         }
 }

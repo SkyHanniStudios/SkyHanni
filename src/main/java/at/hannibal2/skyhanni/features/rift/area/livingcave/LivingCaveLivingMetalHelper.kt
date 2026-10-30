@@ -13,9 +13,9 @@ import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ColorUtils.toColor
 import at.hannibal2.skyhanni.utils.LocationUtils
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
@@ -23,8 +23,8 @@ import kotlin.time.Duration.Companion.seconds
 object LivingCaveLivingMetalHelper {
 
     private val config get() = RiftApi.config.area.livingCave.livingMetal
-    private var lastClicked: LorenzVec? = null
-    private var pair: Pair<LorenzVec, LorenzVec>? = null
+    private var lastClicked: SkyHanniVector? = null
+    private var pair: Pair<SkyHanniVector, SkyHanniVector>? = null
     private var animationStartTime = SimpleTimeMark.farPast()
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)

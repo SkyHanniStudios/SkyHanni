@@ -16,12 +16,12 @@ import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.DelayedRun
 import at.hannibal2.skyhanni.utils.HypixelCommands
 import at.hannibal2.skyhanni.utils.LocationUtils
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SimpleTimeMark.Companion.fromNow
 import at.hannibal2.skyhanni.utils.StringUtils
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -98,7 +98,7 @@ object HoneyhiveReminder {
     }
 
     // If location is not null then we are excluding the closest hive to that location
-    private fun startHiveNavigation(startMessage: String, location: LorenzVec? = null) {
+    private fun startHiveNavigation(startMessage: String, location: SkyHanniVector? = null) {
         val storage = storage ?: return
 
         val graph = IslandGraphs.currentIslandGraph ?: return

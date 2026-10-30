@@ -1,6 +1,8 @@
 package at.hannibal2.skyhanni.utils
 
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.toSkyHanniVector
 import net.minecraft.world.phys.AABB
 import kotlin.math.abs
 import kotlin.math.max
@@ -11,8 +13,8 @@ object RaycastUtils {
     const val EPSILON = 1e-12
 
     data class Ray(
-        val origin: LorenzVec,
-        val direction: LorenzVec,
+        val origin: SkyHanniVector,
+        val direction: SkyHanniVector,
     ) {
         init {
             require(direction.isNormalized())
@@ -20,8 +22,8 @@ object RaycastUtils {
     }
 
     data class Plane(
-        val origin: LorenzVec,
-        val normal: LorenzVec,
+        val origin: SkyHanniVector,
+        val normal: SkyHanniVector,
     ) {
         init {
             require(normal.isNormalized())
@@ -31,7 +33,7 @@ object RaycastUtils {
     fun createPlayerLookDirectionRay(): Ray {
         return Ray(
             LocationUtils.playerEyeLocation(),
-            MinecraftCompat.localPlayerOrThrow.lookAngle.toLorenzVec()
+            MinecraftCompat.localPlayerOrThrow.lookAngle.toSkyHanniVector()
         )
     }
 
@@ -40,7 +42,7 @@ object RaycastUtils {
      */
     fun createOrthogonalPlaneToRayAtPoint(
         ray: Ray,
-        point: LorenzVec,
+        point: SkyHanniVector,
     ): Plane {
         return Plane(point, ray.direction)
     }
@@ -48,25 +50,25 @@ object RaycastUtils {
     /**
      * Intersect a plane (of any orientation) with a ray. The ray and plane may not be parallel to each other.
      */
-    fun intersectPlaneWithRay(plane: Plane, ray: Ray): LorenzVec {
+    fun intersectPlaneWithRay(plane: Plane, ray: Ray): SkyHanniVector {
 //         require(plane.normal.dotProduct(ray.direction).absoluteValue != 0.0)
         val intersectionPointDistanceAlongRay =
-            (plane.normal.dotProduct(plane.origin) - plane.normal.dotProduct(ray.origin)) / plane.normal.dotProduct(ray.direction)
-        return ray.origin + ray.direction.scale(intersectionPointDistanceAlongRay)
+            ((plane.normal dot plane.origin) - (plane.normal dot ray.origin)) / (plane.normal dot ray.direction)
+        return ray.origin + ray.direction * intersectionPointDistanceAlongRay
     }
 
     /**
      * Finds the distance between the given ray and the point. If the point is behind the ray origin (according to the ray's direction),
      * returns [Double.MAX_VALUE] instead.
      */
-    fun findDistanceToRay(ray: Ray, point: LorenzVec): Double {
+    fun findDistanceToRay(ray: Ray, point: SkyHanniVector): Double {
         val plane = createOrthogonalPlaneToRayAtPoint(ray, point)
         val intersectionPoint = intersectPlaneWithRay(plane, ray)
-        if ((intersectionPoint - ray.origin).dotProduct(ray.direction) < 0) return Double.MAX_VALUE
+        if ((intersectionPoint - ray.origin) dot ray.direction < 0) return Double.MAX_VALUE
         return intersectionPoint.distance(point)
     }
 
-    inline fun <T> createDistanceToRayEstimator(ray: Ray, crossinline position: (T) -> LorenzVec): (T) -> Double {
+    inline fun <T> createDistanceToRayEstimator(ray: Ray, crossinline position: (T) -> SkyHanniVector): (T) -> Double {
         return {
             findDistanceToRay(ray, position(it))
         }
@@ -74,13 +76,13 @@ object RaycastUtils {
 
     /**
      * Intersect an axis-aligned bounding box with a ray.
-     * Returns a pair of LorenzVec (entry point, exit point) if the ray hits the box.
+     * Returns a pair of SkyHanniVector (entry point, exit point) if the ray hits the box.
      * The entry point may be behind the ray origin if the ray starts inside the box.
      * Returns null if the ray points away from the box or misses it entirely.
      */
-    fun intersectAABBWithRay(aabb: AABB, ray: Ray): Pair<LorenzVec, LorenzVec>? {
-        val aabbMin = LorenzVec(aabb.minX, aabb.minY, aabb.minZ).toDoubleArray()
-        val aabbMax = LorenzVec(aabb.maxX, aabb.maxY, aabb.maxZ).toDoubleArray()
+    fun intersectAABBWithRay(aabb: AABB, ray: Ray): Pair<SkyHanniVector, SkyHanniVector>? {
+        val aabbMin = SkyHanniVector(aabb.minX, aabb.minY, aabb.minZ).toDoubleArray()
+        val aabbMax = SkyHanniVector(aabb.maxX, aabb.maxY, aabb.maxZ).toDoubleArray()
 
         val dirArray = ray.direction.toDoubleArray()
         val originArray = ray.origin.toDoubleArray()
@@ -121,7 +123,7 @@ object RaycastUtils {
      * Find the point on a ray where a specific axis has a given value.
      * Axis of 0, 1, 2 is x, y, z respectively
      */
-    fun findPointOnRay(ray: Ray, axis: Int, targetValue: Double): LorenzVec? {
+    fun findPointOnRay(ray: Ray, axis: Int, targetValue: Double): SkyHanniVector? {
         val originArray = ray.origin.toDoubleArray()
         val dirComponent = ray.direction.toDoubleArray()[axis]
 
@@ -142,7 +144,7 @@ object RaycastUtils {
     }
 
     // TODO make private or no longer generic
-    fun <T : Any> List<T>.findClosestPointToRay(ray: Ray, positionExtractor: (T) -> LorenzVec): T? {
+    fun <T : Any> List<T>.findClosestPointToRay(ray: Ray, positionExtractor: (T) -> SkyHanniVector): T? {
         return minByOrNull(createDistanceToRayEstimator(ray, positionExtractor))
     }
 

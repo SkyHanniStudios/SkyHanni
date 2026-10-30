@@ -11,13 +11,13 @@ import at.hannibal2.skyhanni.utils.HolographicEntities
 import at.hannibal2.skyhanni.utils.HolographicEntities.renderHolographicEntity
 import at.hannibal2.skyhanni.utils.LocationUtils.isInside
 import at.hannibal2.skyhanni.utils.LocationUtils.isPlayerInside
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NumberUtil.roundTo
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.filterNotClass
 import at.hannibal2.skyhanni.utils.compat.findHealthReal
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompat
-import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawString
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.client.player.RemotePlayer
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.monster.cubemob.Slime
@@ -57,14 +57,14 @@ object CraftRoomHolographicMob {
 
         for (entity in nonPlayerEntities) {
             val holographicBase = entityToHolographicEntity[entity::class] ?: continue
-            val currentLocation = entity.getLorenzVec()
+            val currentLocation = entity.positionVector()
             if (!craftRoomArea.isInside(currentLocation)) continue
 
             val existing = holograms[entity.id]
             val instance = if (existing != null) {
                 existing.first.also { it.moveTo(currentLocation.mirror(), 0f) }
             } else {
-                val previousLocation = LorenzVec(entity.xo, entity.yo, entity.zo)
+                val previousLocation = SkyHanniVector(entity.xo, entity.yo, entity.zo)
                 val new = holographicBase.instance(previousLocation.mirror(), 0f) ?: continue
                 new.isChild = entity.isBaby
                 new.moveTo(currentLocation.mirror(), 0f)
@@ -103,7 +103,7 @@ object CraftRoomHolographicMob {
     }
 
     private const val WALL_Z = -116.5
-    private fun LorenzVec.mirror(): LorenzVec {
+    private fun SkyHanniVector.mirror(): SkyHanniVector {
         require(z <= WALL_Z) { "mirror() assumes z <= WALL_Z, z was ${z.roundTo(1)} instead" }
         val dist = WALL_Z - z
         return add(z = dist * 2)

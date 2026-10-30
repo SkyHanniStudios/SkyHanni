@@ -15,8 +15,8 @@ import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.StringUtils.removeColor
-import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.world.entity.decoration.ArmorStand
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -51,7 +51,7 @@ object NpcVisitorFix {
 
         val storage = GardenApi.storage ?: return
 
-        val location = entity.getLorenzVec()
+        val location = entity.positionVector()
         storage.npcVisitorLocations[name]?.let {
             if (it.distance(location) < 1) return
         }

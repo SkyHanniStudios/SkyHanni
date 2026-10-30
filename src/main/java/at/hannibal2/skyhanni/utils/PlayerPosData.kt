@@ -5,6 +5,7 @@ import at.hannibal2.skyhanni.events.DebugDataCollectEvent
 import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.entity.EntityMoveEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import net.minecraft.client.player.LocalPlayer
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -18,7 +19,7 @@ object PlayerPosData {
 
     private val maxAge = 30.seconds
 
-    data class TimedPos(val pos: LorenzVec, val time: SimpleTimeMark = SimpleTimeMark.now())
+    data class TimedPos(val pos: SkyHanniVector, val time: SimpleTimeMark = SimpleTimeMark.now())
 
     private val positions = ArrayDeque<TimedPos>()
 
@@ -42,7 +43,7 @@ object PlayerPosData {
     }
 
     /** Returns how long the player has been within [distance] of [pos], or null if not currently there. */
-    fun timeAtPos(pos: LorenzVec, distance: Double): Duration? {
+    fun timeAtPos(pos: SkyHanniVector, distance: Double): Duration? {
         val first = positions.firstOrNull() ?: return null
         if (first.pos.distance(pos) > distance) return null
         val timedPos = positions.firstOrNull { it.pos.distance(pos) > distance }
@@ -51,7 +52,7 @@ object PlayerPosData {
     }
 
     /** Returns how long ago the player was last within [distance] of [pos], or null if never tracked. */
-    fun timeSinceLastAt(pos: LorenzVec, distance: Double): Duration? =
+    fun timeSinceLastAt(pos: SkyHanniVector, distance: Double): Duration? =
         positions.firstOrNull { it.pos.distance(pos) <= distance }?.time?.passedSince()
 
     @HandleEvent

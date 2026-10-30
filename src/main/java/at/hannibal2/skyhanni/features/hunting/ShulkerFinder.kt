@@ -11,17 +11,17 @@ import at.hannibal2.skyhanni.events.minecraft.KeyPressEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.EntityUtils.getEntitiesNearby
 import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.collection.CircularList
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.navigation.NavigationUtils
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import net.minecraft.world.entity.monster.Shulker
 
 @SkyHanniModule
 object ShulkerFinder {
     private val config get() = SkyHanniMod.feature.hunting
 
-    private var storedRoute: CircularList<LorenzVec>? = null
+    private var storedRoute: CircularList<SkyHanniVector>? = null
 
     private var navigating = false
 
@@ -65,7 +65,7 @@ object ShulkerFinder {
         storedRoute = null
     }
 
-    private fun calculateRoute(shulkerType: ShulkerType): CircularList<LorenzVec> {
+    private fun calculateRoute(shulkerType: ShulkerType): CircularList<SkyHanniVector> {
         val graph = IslandGraphs.currentIslandGraph ?: error("Current island graph is null and there is a mistake")
         val list = graph.getNodesWithTags(shulkerType.nodeTag)
 

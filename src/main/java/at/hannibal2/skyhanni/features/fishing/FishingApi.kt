@@ -29,7 +29,6 @@ import at.hannibal2.skyhanni.utils.ItemUtils.getInternalName
 import at.hannibal2.skyhanni.utils.ItemUtils.getInternalNameOrNull
 import at.hannibal2.skyhanni.utils.ItemUtils.getItemCategoryOrNull
 import at.hannibal2.skyhanni.utils.ItemUtils.getLoreComponent
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NeuInternalName
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalNames
@@ -47,8 +46,9 @@ import at.hannibal2.skyhanni.utils.compat.deceased
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLessResets
 import at.hannibal2.skyhanni.utils.compat.getCompoundOrDefault
 import at.hannibal2.skyhanni.utils.compat.getStringOrDefault
-import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.client.gui.screens.inventory.AbstractSignEditScreen
 import net.minecraft.client.gui.screens.inventory.InventoryScreen
@@ -374,7 +374,7 @@ object FishingApi {
         }
     }
 
-    private val frostyNpcLocation = LorenzVec(-1.5, 76.0, 92.5)
+    private val frostyNpcLocation = SkyHanniVector(-1.5, 76.0, 92.5)
 
     private fun countIsZero(entity: ArmorStand): Boolean {
         val name = entity.name.formattedTextCompatLessResets()
@@ -385,7 +385,7 @@ object FishingApi {
         if (name == "§5Frosty the Snow Blaster") return true
 
         if (name == "Frosty") {
-            if (entity.getLorenzVec().distance(frostyNpcLocation) < 1) {
+            if (entity.positionVector().distance(frostyNpcLocation) < 1) {
                 return true
             }
         }

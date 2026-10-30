@@ -5,10 +5,10 @@ import at.hannibal2.skyhanni.data.SlayerApi
 import at.hannibal2.skyhanni.events.ParticleEvent
 import at.hannibal2.skyhanni.events.entity.EntityHealthUpdateEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.collection.TimeLimitedCache
-import at.hannibal2.skyhanni.utils.getLorenzVec
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.core.particles.ParticleType
 import net.minecraft.core.particles.ParticleTypes
 import kotlin.time.Duration.Companion.seconds
@@ -18,7 +18,7 @@ object HideSlayerSpawnParticles {
 
     private val config get() = SlayerApi.config
 
-    private val mobRecentDeaths = TimeLimitedCache<LorenzVec, SimpleTimeMark>(3.seconds)
+    private val mobRecentDeaths = TimeLimitedCache<SkyHanniVector, SimpleTimeMark>(3.seconds)
 
     @HandleEvent(onlyOnSkyblock = true)
     fun onParticle(event: ParticleEvent) {
@@ -42,8 +42,8 @@ object HideSlayerSpawnParticles {
     @HandleEvent(onlyOnSkyblock = true)
     fun onEntityHealthUpdate(event: EntityHealthUpdateEvent) {
         if (event.health.toDouble() != 0.0) return
-        mobRecentDeaths[event.entity.getLorenzVec()] = SimpleTimeMark.now()
+        mobRecentDeaths[event.entity.positionVector()] = SimpleTimeMark.now()
     }
 
-    private fun LorenzVec.distanceToNearestDeadMob() = mobRecentDeaths.minOfOrNull { it.key.distanceSq(this) }
+    private fun SkyHanniVector.distanceToNearestDeadMob() = mobRecentDeaths.minOfOrNull { it.key.distanceSq(this) }
 }

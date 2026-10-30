@@ -13,8 +13,8 @@ import at.hannibal2.skyhanni.utils.EntityUtils.cleanName
 import at.hannibal2.skyhanni.utils.EntityUtils.getEntitiesNearby
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.compat.EntityCompat.deceased
-import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.world.entity.decoration.ArmorStand
 
 @SkyHanniModule
@@ -50,7 +50,7 @@ object SpiderEggSacHighlighter {
 
         val currentEggSacs = timerStands
             .filter { timer ->
-                shootMeStands.any { it.getLorenzVec().distance(timer.getLorenzVec()) < 2.5 }
+                shootMeStands.any { it.positionVector().distance(timer.positionVector()) < 2.5 }
             }
             .flatMap { it.getEggSacParts(armorStands) }
             .toSet()
@@ -65,9 +65,9 @@ object SpiderEggSacHighlighter {
     }
 
     private fun ArmorStand.getEggSacParts(armorStands: List<ArmorStand>): List<ArmorStand> {
-        val location = getLorenzVec()
+        val location = positionVector()
         return listOf(this) + armorStands.filter {
-            it.cleanName == "Armor Stand" && it.getLorenzVec().distance(location) < 1.2
+            it.cleanName == "Armor Stand" && it.positionVector().distance(location) < 1.2
         }
     }
 

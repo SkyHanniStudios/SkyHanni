@@ -5,14 +5,14 @@ import at.hannibal2.skyhanni.events.IslandChangeEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.LocationUtils
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import kotlin.time.Duration.Companion.minutes
 
 @SkyHanniModule
 object IsGiftingDetection {
 
-    private var lastGiftLocation: LorenzVec? = null
+    private var lastGiftLocation: SkyHanniVector? = null
     private var lastGiftTime = SimpleTimeMark.farPast()
 
     fun markLocation() {

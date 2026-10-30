@@ -2,14 +2,14 @@ package at.hannibal2.skyhanni.events.mining
 
 import at.hannibal2.skyhanni.api.event.SkyHanniEvent
 import at.hannibal2.skyhanni.features.mining.glacitemineshaft.corpse.CorpseType
-import at.hannibal2.skyhanni.utils.LorenzVec
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 
 /**
  * Fired when a Mineshaft corpse entity is in line of sight of the player.
  */
 class CorpseFoundEvent(
     val corpseType: CorpseType,
-    val location: LorenzVec,
+    val location: SkyHanniVector,
     val isLastCorpse: Boolean,
 ) : SkyHanniEvent()
 

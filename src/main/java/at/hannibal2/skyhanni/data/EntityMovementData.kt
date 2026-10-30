@@ -8,13 +8,13 @@ import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.entity.EntityMoveEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.DelayedRun
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.compat.deceased
-import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.world.entity.LivingEntity
 import kotlin.time.Duration.Companion.milliseconds
@@ -43,11 +43,11 @@ object EntityMovementData {
         val startTime: SimpleTimeMark = SimpleTimeMark.now()
     }
 
-    private val entityLocation = mutableMapOf<LivingEntity, LorenzVec>()
+    private val entityLocation = mutableMapOf<LivingEntity, SkyHanniVector>()
 
     fun addToTrack(entity: LivingEntity) {
         if (entity !in entityLocation) {
-            entityLocation[entity] = entity.getLorenzVec()
+            entityLocation[entity] = entity.positionVector()
         }
     }
 
@@ -94,7 +94,7 @@ object EntityMovementData {
         for (entity in entityLocation.keys) {
             if (entity.deceased) continue
 
-            val newLocation = entity.getLorenzVec()
+            val newLocation = entity.positionVector()
             val oldLocation = entityLocation[entity]!!
             val distance = newLocation.distance(oldLocation)
             if (distance > 0.01) {

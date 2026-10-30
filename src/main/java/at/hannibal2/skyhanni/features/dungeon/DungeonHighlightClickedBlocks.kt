@@ -11,12 +11,12 @@ import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ColorUtils.rgb
 import at.hannibal2.skyhanni.utils.ExtendedChatColor
 import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.collection.TimeLimitedCache
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawColor
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawString
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import io.github.notenoughupdates.moulconfig.ChromaColour
 import net.minecraft.network.chat.Component
 import kotlin.time.Duration.Companion.seconds
@@ -36,7 +36,7 @@ object DungeonHighlightClickedBlocks {
         "§cThat chest is locked!",
     )
 
-    private val blocks = TimeLimitedCache<LorenzVec, ClickedBlock>(3.seconds)
+    private val blocks = TimeLimitedCache<SkyHanniVector, ClickedBlock>(3.seconds)
     private var colorIndex = 0
     private val undesirableColors = listOf(
         LorenzColor.BLACK,

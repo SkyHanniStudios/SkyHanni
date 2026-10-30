@@ -37,7 +37,6 @@ import at.hannibal2.skyhanni.utils.ItemUtils.getLore
 import at.hannibal2.skyhanni.utils.LocationUtils
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceTo
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 import at.hannibal2.skyhanni.utils.NumberUtil.formatDouble
 import at.hannibal2.skyhanni.utils.NumberUtil.formatInt
@@ -53,13 +52,14 @@ import at.hannibal2.skyhanni.utils.chat.TextHelper.asComponent
 import at.hannibal2.skyhanni.utils.compat.EntityCompat.deceased
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLeadingWhiteLessResets
-import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawString
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
-import at.hannibal2.skyhanni.utils.toLorenzVec
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.toSkyHanniVector
 import net.minecraft.client.gui.screens.inventory.ContainerScreen
 import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.level.block.Blocks
@@ -71,8 +71,8 @@ object MinionFeatures {
     const val MINION_PICKUP_SLOT = 53
 
     private val config get() = SkyHanniMod.feature.misc.minions
-    private var lastClickedEntity: LorenzVec? = null
-    private var newMinion: LorenzVec? = null
+    private var lastClickedEntity: SkyHanniVector? = null
+    private var newMinion: SkyHanniVector? = null
     private var newMinionName: String? = null
     private var lastMinionOpened = 0L
 
@@ -134,12 +134,12 @@ object MinionFeatures {
         "You applied the eyedrops on the minion and ran out!",
     )
 
-    var lastMinion: LorenzVec? = null
-    private var lastStorage: LorenzVec? = null
+    var lastMinion: SkyHanniVector? = null
+    private var lastStorage: SkyHanniVector? = null
     var minionInventoryOpen = false
     var minionStorageInventoryOpen = false
 
-    private val minions: MutableMap<LorenzVec, ProfileSpecificStorage.MinionConfig>?
+    private val minions: MutableMap<SkyHanniVector, ProfileSpecificStorage.MinionConfig>?
         get() = ProfileStorageData.profileSpecific?.minions
 
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
@@ -147,7 +147,7 @@ object MinionFeatures {
         if (event.action != ClickAction.RIGHT_CLICK_BLOCK) return
 
         val vec = event.face?.unitVec3i ?: return
-        val lookingAt = event.pos?.offset(vec)?.toLorenzVec() ?: return
+        val lookingAt = event.pos?.offset(vec)?.toSkyHanniVector() ?: return
         val equipped = InventoryUtils.getItemInHand() ?: return
 
         if (equipped.hoverName.string.contains(" Minion ") && lookingAt.getBlockStateAt().block == Blocks.AIR) {
@@ -163,7 +163,7 @@ object MinionFeatures {
     fun onEntityClick(event: EntityClickEvent) {
         if (event.clickType != InteractClickType.RIGHT_CLICK) return
 
-        lastClickedEntity = event.clickedEntity.getLorenzVec()
+        lastClickedEntity = event.clickedEntity.positionVector()
     }
 
     @HandleEvent(onlyOnIslands = [PRIVATE_ISLAND, HUB])
@@ -253,7 +253,7 @@ object MinionFeatures {
         if (!IslandType.PRIVATE_ISLAND.isInIsland()) return
         val minions = minions ?: return
 
-        val removedEntities = mutableListOf<LorenzVec>()
+        val removedEntities = mutableListOf<SkyHanniVector>()
         for (location in minions.keys) {
             if (location.distanceToPlayer() > 30) continue
             val entitiesNearby = location.getEntitiesNearby<ArmorStand>(5.0).map { it.distanceTo(location) }
@@ -446,7 +446,7 @@ object MinionFeatures {
         } ?: return
         val minions = minions ?: return
 
-        val loc = entity.getLorenzVec()
+        val loc = entity.positionVector()
         if (minions.any { it.key.distance(loc) < 5 }) {
             event.cancel()
         }

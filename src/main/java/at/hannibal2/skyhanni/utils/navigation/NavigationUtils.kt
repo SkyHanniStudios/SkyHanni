@@ -4,8 +4,8 @@ import at.hannibal2.skyhanni.data.model.graph.GraphNode
 import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.GraphUtils
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 
 object NavigationUtils {
 
@@ -13,7 +13,7 @@ object NavigationUtils {
         nodes: List<GraphNode>,
         maxIterations: Int = 300,
         neighborhoodSize: Int = 50,
-    ): List<LorenzVec> = getRoute(nodes, maxIterations, neighborhoodSize).map { it.position }
+    ): List<SkyHanniVector> = getRoute(nodes, maxIterations, neighborhoodSize).map { it.position }
 
     fun getRoute(
         nodes: List<GraphNode>,

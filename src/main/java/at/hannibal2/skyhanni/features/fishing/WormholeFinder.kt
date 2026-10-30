@@ -19,12 +19,12 @@ import at.hannibal2.skyhanni.utils.ItemUtils.getInternalName
 import at.hannibal2.skyhanni.utils.LocationUtils
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceSqToPlayer
 import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
-import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.world.entity.Display
 import kotlin.time.Duration.Companion.seconds
 
@@ -38,7 +38,7 @@ object WormholeFinder {
     private var matchedWormholes: List<GraphNode> = emptyList()
     private var currentTarget: GraphNode? = null
     private var lastDepartureAlert = SimpleTimeMark.farPast()
-    private var lastPlayerPos: LorenzVec? = null
+    private var lastPlayerPos: SkyHanniVector? = null
 
     @HandleEvent(onlyOnIslands = [IslandType.LOTUS_ATOLL, IslandType.CRIMSON_ISLE])
     private fun onTick(event: SkyHanniTickEvent) {
@@ -75,14 +75,14 @@ object WormholeFinder {
 
     private fun matchArrow(arrow: Display.TextDisplay): GraphNode? {
         val graph = IslandGraphs.currentIslandGraph ?: return null
-        val origin = arrow.getLorenzVec()
+        val origin = arrow.positionVector()
         val forward = arrow.arrowForwardVec()
         return graph.asSequence()
             .filter { it.hasTag(GraphNodeTag.FISHING_WORMHOLE) }
             .map { node ->
                 val delta = node.position - origin
-                val horizontal = LorenzVec(delta.x, 0.0, delta.z).normalize()
-                node to forward.dotProduct(horizontal)
+                val horizontal = SkyHanniVector(delta.x, 0.0, delta.z).normalized()
+                node to (forward dot horizontal)
             }
             .filter { (_, score) -> score >= DIRECTION_TOLERANCE }
             .maxByOrNull { (_, score) -> score }
