@@ -16,6 +16,7 @@ import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.RecalculatingValue
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
+import at.hannibal2.skyhanni.utils.lorenzVecDirections
 import at.hannibal2.skyhanni.utils.render.LineDrawer
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawColor
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawString
@@ -57,7 +58,7 @@ class LivingCaveSnake(
 
     private fun isNotTouchingAir(): Boolean = blocks.any { it.isNotTouchingAir() }
 
-    private fun LorenzVec.isNotTouchingAir(): Boolean = LorenzVec.directions.none { plus(it).getBlockAt() == Blocks.AIR }
+    private fun LorenzVec.isNotTouchingAir(): Boolean = lorenzVecDirections.none { plus(it).getBlockAt() == Blocks.AIR }
 
     private fun isSelected() = LivingCaveSnakeFeatures.selectedSnake == this
 

@@ -19,9 +19,10 @@ import at.hannibal2.skyhanni.utils.compat.createResourceLocation
 import at.hannibal2.skyhanni.utils.compat.deceased
 import at.hannibal2.skyhanni.utils.compat.position
 import at.hannibal2.skyhanni.utils.compat.rotation
-import at.hannibal2.skyhanni.utils.expand
 import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.toLorenzVec
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorBounds.inflate
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
 import io.github.notenoughupdates.moulconfig.ChromaColour
@@ -939,8 +940,12 @@ object WorldRenderUtils {
     //~ if < 26.2 'mainCamera()' -> 'mainCamera'
     fun getViewerPos() = exactLocation(Minecraft.getInstance().gameRenderer.mainCamera())
 
-    fun AABB.expandBlock(n: Int = 1) = expand(LorenzVec.expandVector * n)
-    fun AABB.inflateBlock(n: Int = 1) = expand(LorenzVec.expandVector * -n)
+    private const val BLOCK_OUTLINE_INFLATION = 0.002f
+
+    val EXPAND_VECTOR = SkyHanniVector(1.0, 1.0, 1.0) * BLOCK_OUTLINE_INFLATION.toDouble()
+
+    fun AABB.expandBlock(n: Int = 1) = inflate(EXPAND_VECTOR * n)
+    fun AABB.inflateBlock(n: Int = 1) = inflate(EXPAND_VECTOR * -n)
 
     fun exactLocation(entity: Entity, partialTicks: Float): LorenzVec {
         if (!entity.isAlive) return entity.getLorenzVec()

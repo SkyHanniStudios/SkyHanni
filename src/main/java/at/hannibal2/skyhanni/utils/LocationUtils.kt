@@ -2,6 +2,7 @@ package at.hannibal2.skyhanni.utils
 
 import at.hannibal2.skyhanni.utils.collection.TimeLimitedSet
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import net.minecraft.core.Direction
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.phys.AABB
@@ -17,7 +18,7 @@ import kotlin.math.sqrt
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-typealias PointSet = TimeLimitedSet<Pair<LorenzVec, Boolean>>
+typealias PointSet = TimeLimitedSet<Pair<SkyHanniVector, Boolean>>
 typealias FacePointEntry = Map.Entry<Direction, PointSet>
 typealias FacePointSet = MutableMap<Direction, PointSet>
 

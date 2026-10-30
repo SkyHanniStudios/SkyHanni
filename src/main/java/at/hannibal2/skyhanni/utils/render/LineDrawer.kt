@@ -5,6 +5,8 @@ import at.hannibal2.skyhanni.utils.LocationUtils.calculateEdges
 import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.zipWithNext3
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.submitCustomGeometry
+import at.hannibal2.skyhanni.utils.vector.VectorBounds.blockBox
+import at.hannibal2.skyhanni.utils.vector.VectorBounds.edges
 import net.minecraft.world.phys.AABB
 import java.awt.Color
 
@@ -78,7 +80,7 @@ class LineDrawer @PublishedApi internal constructor(
     }
 
     fun drawEdges(location: LorenzVec, color: Color) {
-        for ((p1, p2) in location.edges) {
+        for ((p1, p2) in location.blockBox().inflate(EDGE_OUTLINE_INFLATION).edges()) {
             draw3DLine(p1, p2, color)
         }
     }
@@ -125,6 +127,8 @@ class LineDrawer @PublishedApi internal constructor(
     }
 
     companion object {
+        private const val EDGE_OUTLINE_INFLATION = 0.0001
+
         inline fun draw3D(
             event: SkyHanniRenderWorldEvent,
             lineWidth: Int,
