@@ -47,6 +47,7 @@ import at.hannibal2.skyhanni.features.garden.visitor.VisitorReward
 import at.hannibal2.skyhanni.features.gifting.GiftProfitTracker
 import at.hannibal2.skyhanni.features.hunting.HuntingProfitTracker
 import at.hannibal2.skyhanni.features.inventory.CurrentEquipmentApi
+import at.hannibal2.skyhanni.features.inventory.PersonalCompactorOverlay
 import at.hannibal2.skyhanni.features.inventory.chocolatefactory.stray.CFStrayTracker
 import at.hannibal2.skyhanni.features.inventory.experimentationtable.ExperimentsProfitTracker
 import at.hannibal2.skyhanni.features.inventory.loadout.LoadoutApi.LoadoutData
@@ -779,6 +780,9 @@ class ProfileSpecificStorage(
         @Expose
         var riftSlots: MutableList<SafeItemStack?> = CurrentEquipmentApi.getEmptyEquipment()
     }
+
+    @Expose
+    var compactorItems: MutableMap<PersonalCompactorOverlay.CompactorType, MutableMap<NeuInternalName, Boolean>> = mutableMapOf()
 
     @Expose
     var bazaarOrders: BazaarOrdersStorage = BazaarOrdersStorage()
