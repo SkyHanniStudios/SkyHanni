@@ -18,8 +18,13 @@ import at.hannibal2.skyhanni.utils.DelayedRun
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.PrimitiveItemStack.Companion.makePrimitiveStack
 import at.hannibal2.skyhanni.utils.RegexUtils.anyMatches
+import at.hannibal2.skyhanni.utils.RegexUtils.firstMatcher
+import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
+import at.hannibal2.skyhanni.utils.ServerTimeMark
+import at.hannibal2.skyhanni.utils.ServerTimeMark.Companion.fromServerNow
 import at.hannibal2.skyhanni.utils.SoundUtils
+import at.hannibal2.skyhanni.utils.TimeUtils
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import kotlin.time.Duration.Companion.seconds
 
@@ -68,7 +73,15 @@ object MiningNotifications {
     )
 
     /**
-     * REGEX-TEST: Mining Speed Boost is now available!
+     * REGEX-TEST: Pickobulus: 6s
+     * REGEX-TEST: Mining Speed Boost: 106s
+     */
+    private val pickaxeAbilityCooldownWidgetPattern by patternGroup.pattern(
+        "pickaxe.ability.cooldown",
+        "\\s*(?<ability>.+): (?<time>(?:\\d+[hms] ?)+)",
+    )
+
+    /**
      * REGEX-TEST: Pickobulus is now available!
      */
     private val pickaxeAbilityReadyChatPattern by patternGroup.pattern(
@@ -90,22 +103,38 @@ object MiningNotifications {
     private var hasSentCold = false
     private var hasSentAscensionRope = false
 
-    private var pickaxeReadyArmed = false
-    private var pickaxeWidgetOnCooldown = false
+    private var pickaxeReadyAt = ServerTimeMark.farFuture()
+
+    // tab list can still show the old cooldown for a bit after the notif
+    private var pickaxeAwaitingReset = false
+
+    private var lastUsedPickaxeAbility: String? = null
 
     @HandleEvent
     private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!IslandTypeTag.MINING.isInIsland()) return
         if (!config.enabled) return
         val message = event.message
-        val cleanMessage = event.cleanMessage
         when {
             mineshaftSpawn.matches(message) -> sendNotification(MiningNotificationList.MINESHAFT_SPAWN)
             scrapDrop.matches(message) -> sendNotification(MiningNotificationList.SCRAP)
             goldenGoblinSpawn.matches(message) -> sendNotification(MiningNotificationList.GOLDEN_GOBLIN)
             diamondGoblinSpawn.matches(message) -> sendNotification(MiningNotificationList.DIAMOND_GOBLIN)
-            pickaxeAbilityUsedPattern.matches(cleanMessage) -> pickaxeReadyArmed = true
-            pickaxeAbilityReadyChatPattern.matches(cleanMessage) -> notifyPickaxeReady()
+        }
+        handlePickaxeAbilityChat(event.cleanMessage)
+    }
+
+    private fun handlePickaxeAbilityChat(message: String) {
+        pickaxeAbilityUsedPattern.matchMatcher(message) {
+            pickaxeAwaitingReset = false
+            lastUsedPickaxeAbility = group("ability")
+        }
+        // only used without the widget, less accurate
+        if (TabWidget.PICKAXE_COOLDOWN.isActive) return
+        pickaxeAbilityReadyChatPattern.matchMatcher(message) {
+            if (group("ability") != lastUsedPickaxeAbility) return
+            lastUsedPickaxeAbility = null
+            notifyPickaxeReady()
         }
     }
 
@@ -116,19 +145,26 @@ object MiningNotifications {
         if (event.isClear()) return
 
         if (pickaxeAbilityReadyWidgetPattern.anyMatches(event.cleanLines)) {
-            if (pickaxeWidgetOnCooldown) {
-                pickaxeWidgetOnCooldown = false
-                notifyPickaxeReady()
-            }
-        } else {
-            pickaxeWidgetOnCooldown = true
-            pickaxeReadyArmed = true
+            pickaxeAwaitingReset = false
+            if (!pickaxeReadyAt.isFarFuture()) notifyPickaxeReady()
+            return
         }
+        if (pickaxeAwaitingReset) return
+
+        val cooldown = pickaxeAbilityCooldownWidgetPattern.firstMatcher(event.cleanLines) {
+            TimeUtils.getDurationOrNull(group("time"))
+        } ?: return
+        pickaxeReadyAt = cooldown.fromServerNow()
+    }
+
+    @HandleEvent(onlyOnIslandTypeTag = [IslandTypeTag.MINING])
+    private fun onTick() {
+        if (pickaxeReadyAt.isInPast()) notifyPickaxeReady()
     }
 
     private fun notifyPickaxeReady() {
-        if (!pickaxeReadyArmed) return
-        pickaxeReadyArmed = false
+        pickaxeReadyAt = ServerTimeMark.farFuture()
+        pickaxeAwaitingReset = true
         sendNotification(MiningNotificationList.PICKAXE_ABILITY)
     }
 
@@ -154,8 +190,8 @@ object MiningNotifications {
     private fun onWorldChange() {
         hasSentCold = false
         hasSentAscensionRope = false
-        pickaxeReadyArmed = false
-        pickaxeWidgetOnCooldown = false
+        pickaxeReadyAt = ServerTimeMark.farFuture()
+        pickaxeAwaitingReset = false
     }
 
     @HandleEvent
