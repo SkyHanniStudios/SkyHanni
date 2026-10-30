@@ -8,14 +8,12 @@ import at.hannibal2.skyhanni.events.NeuRepositoryReloadEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.chat.TabCompletionEvent
 import at.hannibal2.skyhanni.events.minecraft.KeyPressEvent
-import at.hannibal2.skyhanni.events.minecraft.WorldChangeEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.DelayedRun
 import at.hannibal2.skyhanni.utils.HypixelCommands
 import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.StringUtils.isValidUuid
-import at.hannibal2.skyhanni.utils.StringUtils.removeAllNonLettersAndNumbers
 import at.hannibal2.skyhanni.utils.compat.value
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import org.lwjgl.glfw.GLFW
@@ -40,17 +38,17 @@ object AbiphoneFeatures {
     )
 
     @HandleEvent(priority = HandleEvent.HIGHEST)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
-        if (callRingPattern.matches(event.message) && acceptUUID == null) readPickupUuid(event)
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
+        if (callRingPattern.matches(event.message) && acceptUUID == null) event.readPickupUuid()
     }
 
     @HandleEvent
-    fun onWorldChange(event: WorldChangeEvent) {
+    private fun onWorldChange() {
         acceptUUID = null
     }
 
     @HandleEvent
-    fun onKeyPress(event: KeyPressEvent) {
+    private fun onKeyPress(event: KeyPressEvent) {
         if (InventoryUtils.inInventory()) return
         if (config.abiphoneAcceptKey == GLFW.GLFW_KEY_UNKNOWN || config.abiphoneAcceptKey != event.keyCode) return
         val acceptUUID = acceptUUID ?: return
@@ -61,27 +59,27 @@ object AbiphoneFeatures {
     private var abiphoneContacts: Set<String>? = null
 
     @HandleEvent
-    fun onNeuRepoReload(event: NeuRepositoryReloadEvent) {
+    private fun onNeuRepoReload(event: NeuRepositoryReloadEvent) {
         val constant = event.getConstant<Map<String, AbiphoneContactInfo>>("abiphone")
         abiphoneContacts = constant.flatMap { (key, value) ->
-            value.callNames ?: listOf(key.removeAllNonLettersAndNumbers().replace(" ", ""))
+            value.callNames ?: listOf(key.lowercase())
         }.toSet()
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onTabCompletion(event: TabCompletionEvent) {
+    private fun onTabCompletion(event: TabCompletionEvent) {
         if (!config.commands.tabComplete.call) return
         if (event.command != "call") return
         abiphoneContacts?.let { event.addSuggestions(it) }
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(76, "event.hoppityEggs.hoppityCallWarning.acceptHotkey", "misc.abiphoneAcceptKey")
     }
 
-    private fun readPickupUuid(event: SkyHanniChatEvent.Allow) {
-        val siblings = event.chatComponent.siblings.takeIf { it.size >= 3 } ?: return
+    private fun SkyHanniChatEvent.Allow.readPickupUuid() {
+        val siblings = this.chatComponent.siblings.takeIf { it.size >= 3 } ?: return
         val clickEvent = siblings[2].style.clickEvent ?: return
         if (clickEvent.action().name.lowercase() != "run_command" || !clickEvent.value().lowercase().startsWith("/cb")) return
         acceptUUID = clickEvent.value().lowercase().replace("/cb ", "").takeIf { it.isValidUuid() }
