@@ -19,8 +19,10 @@ object UpdateKeybinds {
         }
         for (keybindPath in SkyHanniConfigSearchResetCommand.allKeybinds) {
             event.transform(150, keybindPath) { element ->
-                
-                val oldCode = runCatching { element.asInt }.getOrDefault(-1)
+                val oldCode = runCatching { element.asInt }.getOrElse {
+                    unknownKeybinds.add(keybindPath)
+                    -1
+                }
 
                 val newStringName = glfwKeyName(oldCode) ?: run {
                     unknownKeybinds.add(keybindPath)
