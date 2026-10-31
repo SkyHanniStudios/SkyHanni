@@ -10,7 +10,7 @@ import com.google.gson.JsonPrimitive
 @SkyHanniModule
 object UpdateKeybinds {
 
-    private val unknownKeybinds = mutableSetOf<String>(
+    private val unknownKeybinds = mutableSetOf<String>()
 
     @HandleEvent
     private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
@@ -19,7 +19,8 @@ object UpdateKeybinds {
         }
         for (keybindPath in SkyHanniConfigSearchResetCommand.allKeybinds) {
             event.transform(150, keybindPath) { element ->
-                val oldCode = element.asInt
+                
+                val oldCode = runCatching { element.asInt }.getOrDefault(-1)
 
                 val newStringName = glfwKeyName(oldCode) ?: run {
                     unknownKeybinds.add(keybindPath)
