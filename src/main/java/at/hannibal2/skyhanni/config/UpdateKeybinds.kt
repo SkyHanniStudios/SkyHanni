@@ -1,12 +1,16 @@
 package at.hannibal2.skyhanni.config
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
+import at.hannibal2.skyhanni.events.hypixel.HypixelJoinEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.SkyHanniConfigSearchResetCommand
+import at.hannibal2.skyhanni.utils.ChatUtils
 import com.google.gson.JsonPrimitive
 
 @SkyHanniModule
 object UpdateKeybinds {
+
+    private val unknownKeybinds = mutableSetOf<String>(
 
     @HandleEvent
     private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
@@ -15,16 +19,28 @@ object UpdateKeybinds {
         }
         for (keybindPath in SkyHanniConfigSearchResetCommand.allKeybinds) {
             event.transform(150, keybindPath) { element ->
-                val oldCode = runCatching { element.asInt }.getOrNull()
-                    ?: return@transform element
+                val oldCode = element.asInt
 
                 val newStringName = glfwKeyName(oldCode) ?: run {
-                    return@transform element
+                    unknownKeybinds.add(keybindPath)
+                    glfwKeyName(-1)
                 }
 
                 JsonPrimitive(newStringName)
             }
         }
+    }
+
+    @HandleEvent
+    private fun onHypixelJoin(event: HypixelJoinEvent) {
+        if (unknownKeybinds.isEmpty()) return
+        ChatUtils.hoverableChat(
+            "Some Invalid Keybinds were reset due to a migration from an older version of SkyHanni.\n" +
+                "Please check your keybinds in the config and reconfigure them if necessary.",
+            hover = unknownKeybinds.toList(),
+            prefixColor = "§c", 
+        )
+        unknownKeybinds.clear()
     }
 
     // https://github.com/Polyfrost/OneConfig/blob/feat/26.3/minecraft/src/main/java/org/polyfrost/oneconfig/api/ui/v1/keybind/internal/MinecraftKeybindCodec.java
