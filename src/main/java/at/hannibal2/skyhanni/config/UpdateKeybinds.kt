@@ -41,7 +41,7 @@ object UpdateKeybinds {
             "Some Invalid Keybinds were reset due to a migration from an older version of SkyHanni.\n" +
                 "Please check your keybinds in the config and reconfigure them if necessary.",
             hover = unknownKeybinds.toList(),
-            prefixColor = "§c", 
+            prefixColor = "§c",
         )
         unknownKeybinds.clear()
     }
