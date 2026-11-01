@@ -20,6 +20,7 @@ import io.github.notenoughupdates.moulconfig.gui.editors.ComponentEditor
 import io.github.notenoughupdates.moulconfig.internal.Warnings
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption
 
+// Based on: https://github.com/NotEnoughUpdates/MoulConfig/blob/v4/common/src/main/java/io/github/notenoughupdates/moulconfig/gui/editors/GuiOptionEditorKeybind.java
 class GuiOptionEditorInputConstantsKey(option: ProcessedOption, defaultKey: InputConstants.Key) : ComponentEditor(option) {
     private var editingKeycode = false
     var component: GuiComponent
