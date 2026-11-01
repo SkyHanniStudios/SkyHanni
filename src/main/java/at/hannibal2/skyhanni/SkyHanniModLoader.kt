@@ -2,12 +2,15 @@ package at.hannibal2.skyhanni
 
 import at.hannibal2.skyhanni.SkyHanniMod.modules
 import net.fabricmc.api.ModInitializer
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents
 
 class SkyHanniModLoader : ModInitializer {
 
     override fun onInitialize() {
         SkyHanniMod.preInit()
-        SkyHanniMod.init()
+        ClientLifecycleEvents.CLIENT_STARTED.register {
+            SkyHanniMod.init()
+        }
         loadedClasses.clear()
     }
 
