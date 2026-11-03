@@ -11,7 +11,7 @@ allprojects {
 
     val buildToolsPath = when (name) {
         "SkyHanni" -> layout.projectDirectory.dir("buildTools")
-        "annotation-processors", "detekt" -> layout.projectDirectory.dir("../buildTools")
+        "annotation-processors", "build-progress", "detekt" -> layout.projectDirectory.dir("../buildTools")
         else -> layout.projectDirectory.dir("../../buildTools")
     }
 
