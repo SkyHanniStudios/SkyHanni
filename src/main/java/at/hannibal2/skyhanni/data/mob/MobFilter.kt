@@ -141,7 +141,7 @@ object MobFilter {
     )
     val summonOwnerPattern by patternGroup.pattern(
         "pattern.summon.owner",
-        ".*Spawned by: (?<name>.*).*",
+        "(?<name>\\w+)'s? SLAYER BOSS",
     )
     /**
      * REGEX-TEST: SHINY PIG
