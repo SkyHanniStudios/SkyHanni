@@ -139,10 +139,16 @@ object MobFilter {
         "pattern.jerry.magma.cube",
         "§c(?:Cubie|Maggie|Cubert|Cübe|Cubette|Magmalene|Lucky 7|8ball|Mega Cube|Super Cube)(?: ᛤ)? §a\\d+§8\\/§a\\d+§c${SkyblockStat.HEALTH.hypixelIcon}",
     )
+
+    /**
+     * REGEX-TEST: Ernor's SLAYER BOSS
+     * REGEX-TEST: cutelybarks' SLAYER BOSS
+     */
     val summonOwnerPattern by patternGroup.pattern(
         "pattern.summon.owner",
         "(?<name>\\w+)'s? SLAYER BOSS",
     )
+
     /**
      * REGEX-TEST: SHINY PIG
      */
