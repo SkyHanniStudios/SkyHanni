@@ -52,7 +52,7 @@ loom.apply {
 
     runs {
         named("client") {
-            isIdeConfigGenerated = true
+            generateRunConfig = true
             preferGradleTask = true
             appendProjectPathToDisplayName.set(true)
             this.runDirectory = rootProject.file("versions/${target.projectName}/run").relativeTo(projectDir)
@@ -235,6 +235,8 @@ tasks.withType<Test> {
     javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
     workingDir(file(runDirectory))
     systemProperty("junit.jupiter.extensions.autodetection.enabled", "true")
+    systemProperty("joml.nounsafe", "true")
+    systemProperty("net.bytebuddy.safe", "true")
     jvmArgs(
         "--add-opens", "java.base/java.lang=ALL-UNNAMED",
         "--add-opens", "java.base/java.util=ALL-UNNAMED",
