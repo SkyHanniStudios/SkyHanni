@@ -31,10 +31,8 @@ object TerminalWaypoints {
             if (term.unsolved) {
                 event.drawWaypointFilled(term.location, config.inactiveColor.toColor(), seeThroughBlocks = true)
                 event.drawDynamicText(term.location, term.text, 1.0)
-            }
-            else if (!config.removeActive)
+            } else if (!config.removeActive)
                 event.drawWaypointFilled(term.location, config.activeColor.toColor(), seeThroughBlocks = true)
-
         }
     }
 
