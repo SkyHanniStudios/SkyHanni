@@ -21,6 +21,12 @@ enum class JavacHook(override val id: String) : ProgressHook {
     COMPILATION("TaskEvent.Kind.COMPILATION"),
 }
 
+enum class KspHook(override val id: String) : ProgressHook {
+    CREATE("SymbolProcessorProvider.create"),
+    PROCESS("SymbolProcessor.process"),
+    FINISH("SymbolProcessor.finish"),
+}
+
 enum class DetektHook(override val id: String) : ProgressHook {
     INIT("FileProcessListener.init"),
     START("FileProcessListener.onStart"),
