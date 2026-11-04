@@ -1,11 +1,11 @@
 package at.hannibal2.skyhanni.events.entity
 
 import at.hannibal2.skyhanni.api.event.GenericSkyHanniEvent
-import at.hannibal2.skyhanni.events.entity.abstract.SkyHanniEntityEvent
+import at.hannibal2.skyhanni.events.entity.abstract.SkyHanniLivingEntityEvent
 import at.hannibal2.skyhanni.skyhannimodule.PrimaryFunction
-import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.LivingEntity
 
 @PrimaryFunction("onEntityDeath")
-open class EntityDeathEvent<T : Entity>(
+open class EntityDeathEvent<T : LivingEntity>(
     override val entity: T,
-) : GenericSkyHanniEvent<T>(entity.javaClass), SkyHanniEntityEvent<T>
+) : GenericSkyHanniEvent<T>(entity.javaClass), SkyHanniLivingEntityEvent<T>
