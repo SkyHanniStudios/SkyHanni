@@ -84,7 +84,9 @@ object DungeonBossApi {
     )
 
     /**
-     * REGEX-TEST: GregSpeck1 activated a terminal! (3/7)
+     * REGEX-TEST: Fazfoxy activated a terminal! (1/7)
+     * REGEX-TEST: Fazfoxy activated a lever! (6/7)
+     * REGEX-TEST: Fazfoxy completed a device! (7/7)
      */
     val goldorTerminalPattern by patternGroup.pattern(
         "f7.goldor.terminalcomplete.colorless",

@@ -9,16 +9,11 @@ import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.features.dungeon.DungeonApi
 import at.hannibal2.skyhanni.features.dungeon.DungeonBossApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
-import at.hannibal2.skyhanni.utils.AllEntitiesGetter
-import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.ColorUtils.toColor
-import at.hannibal2.skyhanni.utils.EntityUtils
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
-import net.minecraft.client.player.LocalPlayer
-import net.minecraft.client.player.RemotePlayer
 import net.minecraft.world.entity.player.Player
 
 @SkyHanniModule
@@ -50,10 +45,7 @@ object TerminalWaypoints {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CATACOMBS)
-    private fun onEntityEnterWorld(event: EntityEnterWorldEvent<LocalPlayer>) = players.add(event.entity)
-
-    @HandleEvent
-    private fun onEntityEnterWorld(event: EntityEnterWorldEvent<RemotePlayer>) = players.add(event.entity)
+    private fun onEntityEnterWorld(event: EntityEnterWorldEvent<Player>) = players.add(event.entity)
 
     @HandleEvent(onlyOnIsland = IslandType.CATACOMBS)
     private fun onChat(event: SkyHanniChatEvent.Allow) {
