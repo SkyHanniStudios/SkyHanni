@@ -39,19 +39,59 @@ jobs:
                     repository: ${{ github.event.pull_request.head.repo.full_name }}
 
             -   uses: ./.github/actions/setup-normal-workspace
+            -   name: Restore beta build state
+                id: restore_build_state
+                if: github.event_name == 'pull_request'
+                uses: actions/cache/restore@v6
+                with:
+                    path: |
+                        versions/${{ matrix.minecraft_version }}/build/classes
+                        versions/${{ matrix.minecraft_version }}/build/generated
+                        versions/${{ matrix.minecraft_version }}/build/kotlin
+                        versions/${{ matrix.minecraft_version }}/build/kspCaches
+                        versions/${{ matrix.minecraft_version }}/build/ksp-*-state-*.txt
+                        versions/${{ matrix.minecraft_version }}/build/tmp
+                        .gradle/*/executionHistory
+                        .gradle/*/fileHashes
+                    key: build-state-v1-${{ matrix.minecraft_version }}-${{ github.sha }}
+                    restore-keys: build-state-v1-${{ matrix.minecraft_version }}-
             -   name: Build with Gradle w/retry
-                id: assemble
+                id: assemble_incremental
                 continue-on-error: true
                 uses: ./.github/actions/gradle-retry
                 with:
                     gradle-command: ${{ matrix.minecraft_version }}:assemble -x ${{ matrix.minecraft_version }}:test --stacktrace
+            -   name: Discard restored build state after failure
+                id: discard_build_state
+                if: steps.assemble_incremental.outcome == 'failure' && steps.restore_build_state.outputs.cache-matched-key != ''
+                run: |
+                    echo "::notice::Incremental assemble failed with restored state ${{ steps.restore_build_state.outputs.cache-matched-key }}, rebuilding clean"
+                    rm -rf "versions/${{ matrix.minecraft_version }}/build" .gradle/*/executionHistory .gradle/*/fileHashes
+            -   name: Build with Gradle w/retry (clean)
+                id: assemble_clean
+                if: steps.discard_build_state.outcome == 'success'
+                continue-on-error: true
+                uses: ./.github/actions/gradle-retry
+                with:
+                    gradle-command: ${{ matrix.minecraft_version }}:assemble -x ${{ matrix.minecraft_version }}:test --stacktrace
+            -   name: Resolve assemble outcome
+                id: assemble
+                env:
+                    INCREMENTAL: ${{ steps.assemble_incremental.outcome }}
+                    CLEAN: ${{ steps.assemble_clean.outcome }}
+                run: |
+                    if [ "$INCREMENTAL" = "success" ] || [ "$CLEAN" = "success" ]; then
+                        echo "outcome=success" >> "$GITHUB_OUTPUT"
+                    else
+                        echo "outcome=failure" >> "$GITHUB_OUTPUT"
+                    fi
             -   name: Save assemble log on failure
-                if: steps.assemble.outcome == 'failure'
+                if: steps.assemble.outputs.outcome == 'failure'
                 run: |
                     cp "$GITHUB_WORKSPACE/gradle-output.log" \
                        "assemble-failure-${{ matrix.minecraft_version }}.log" 2>/dev/null || true
             -   name: Upload assemble failure artifact
-                if: steps.assemble.outcome == 'failure'
+                if: steps.assemble.outputs.outcome == 'failure'
                 uses: actions/upload-artifact@v7
                 with:
                     name: build-failure-output-${{ matrix.minecraft_version }}
@@ -66,7 +106,7 @@ jobs:
             # one artifact name would be read back in directory order.
             -   name: Test with Gradle w/retry
                 id: test
-                if: steps.assemble.outcome == 'success'
+                if: steps.assemble.outputs.outcome == 'success'
                 continue-on-error: true
                 uses: ./.github/actions/gradle-retry
                 with:
@@ -91,10 +131,24 @@ jobs:
                     name: Test Results (${{ matrix.minecraft_version }})
                     path: versions/${{ matrix.minecraft_version }}/build/reports/tests/test/
                     if-no-files-found: warn
+            -   name: Save beta build state
+                if: github.event_name == 'push' && github.ref_name == 'beta' && steps.assemble.outputs.outcome == 'success'
+                uses: actions/cache/save@v6
+                with:
+                    path: |
+                        versions/${{ matrix.minecraft_version }}/build/classes
+                        versions/${{ matrix.minecraft_version }}/build/generated
+                        versions/${{ matrix.minecraft_version }}/build/kotlin
+                        versions/${{ matrix.minecraft_version }}/build/kspCaches
+                        versions/${{ matrix.minecraft_version }}/build/ksp-*-state-*.txt
+                        versions/${{ matrix.minecraft_version }}/build/tmp
+                        .gradle/*/executionHistory
+                        .gradle/*/fileHashes
+                    key: build-state-v1-${{ matrix.minecraft_version }}-${{ github.sha }}
             # Assemble and test are both continue-on-error, so this step is what makes either of them red.
             # A newly added continue-on-error step has to be listed here too.
             -   name: Fail job if assemble or test failed
-                if: steps.assemble.outcome == 'failure' || steps.test.outcome == 'failure'
+                if: steps.assemble.outputs.outcome == 'failure' || steps.test.outcome == 'failure'
                 run: exit 1
 
     verify:
