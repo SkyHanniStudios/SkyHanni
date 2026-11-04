@@ -49,7 +49,6 @@ plugins {
 }
 
 include("annotation-processors")
-include("build-progress")
 include("detekt")
 rootProject.name = "SkyHanni"
 rootProject.buildFileName = "root.gradle.kts"

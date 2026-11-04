@@ -78,9 +78,17 @@ val shadowImpl = configurations.create("shadowImpl") {
 
 val shadowOnly = configurations.create("shadowOnly")
 
+val buildSrcJar = files(rootProject.layout.projectDirectory.file("buildSrc/build/libs/buildSrc.jar"))
+
 val buildProgressPlugin = configurations.create("buildProgressPlugin") {
     isCanBeConsumed = false
     isTransitive = false
+}
+
+val buildProgressJavacPlugin = configurations.create("buildProgressJavacPlugin") {
+    isCanBeConsumed = false
+    isTransitive = false
+    extendsFrom(buildProgressPlugin)
 }
 
 val mixinTestRuntime = configurations.create("mixinTestRuntime") {
@@ -132,8 +140,9 @@ dependencies {
 
     compileOnly(libs.jbAnnotations)
     ksp(project(":annotation-processors"))?.let { compileOnly(it) }
-    buildProgressPlugin(project(":build-progress"))
-    detektPlugins(project(":build-progress"))
+    buildProgressPlugin(buildSrcJar)
+    buildProgressJavacPlugin(libs.kotlin.stdlib)
+    detektPlugins(buildSrcJar)
 
     ksp(libs.autoservice.ksp)
     implementation(libs.autoservice.annotations)
@@ -212,6 +221,7 @@ dependencies {
         "productionRuntimeMods"("net.azureaaron:render-chest:$it")
         "minecraftTestClientRuntimeLibraries"("net.azureaaron:render-chest:$it")
     }
+    testImplementation(kotlin("test"))
 }
 
 /**
@@ -347,13 +357,14 @@ excludeBuildPaths(file("buildpaths-excluded.txt"), sourceSets.test)
 val buildProgressService = gradle.sharedServices.registerIfAbsent("buildProgress", BuildProgressService::class.java) {}
 serviceOf<BuildEventsListenerRegistry>().onTaskCompletion(buildProgressService)
 val buildProgressDirectory = layout.projectDirectory.dir(BuildProgress.DIRECTORY).asFile
+val buildProgressTimings = System.getenv("CI") != null || findProperty(BuildProgress.TIMING_PROPERTY) == "true"
 
 tasks.withType<KotlinCompile> {
     val reportFile = buildProgressDirectory.resolve("$name.txt")
     val reportFileOption = InternalSubpluginOption(BuildProgress.KOTLIN_REPORT_FILE_OPTION, reportFile.absolutePath)
     pluginClasspath.from(buildProgressPlugin)
     pluginOptions.add(CompilerPluginConfig().apply { addPluginArgument(BuildProgress.KOTLIN_PLUGIN_ID, reportFileOption) })
-    BuildProgress.watch(this, reportFile, buildProgressService, objects)
+    BuildProgress.watch(this, reportFile, buildProgressService, objects, buildProgressTimings)
     compilerOptions {
         val jvmTargetStr = target.minecraftVersion.formattedKotlinJvmTarget
         jvmTarget.set(JvmTarget.fromTarget(jvmTargetStr))
@@ -379,9 +390,9 @@ tasks.withType<KotlinCompile> {
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
     val reportFile = buildProgressDirectory.resolve("$name.txt")
-    options.annotationProcessorPath = (options.annotationProcessorPath ?: files()) + buildProgressPlugin
+    options.annotationProcessorPath = (options.annotationProcessorPath ?: files()) + buildProgressJavacPlugin
     options.compilerArgumentProviders.add(JavacProgressArgument(reportFile))
-    BuildProgress.watch(this, reportFile, buildProgressService, objects)
+    BuildProgress.watch(this, reportFile, buildProgressService, objects, buildProgressTimings)
 }
 
 tasks.withType<GradleJar> {
@@ -443,11 +454,13 @@ detekt {
     buildUponDefaultConfig = true
     config.setFrom(rootProject.layout.projectDirectory.file("detekt/detekt.yml"))
     baseline = file(rootProject.layout.projectDirectory.file("detekt/baseline-main.xml"))
-    source.setFrom(project.sourceSets.named("main").map {
-        it.allSource.matching {
-            exclude { elem -> elem.file.absolutePath.replace('\\', '/').contains("/build/generated/") }
+    source.setFrom(
+        project.sourceSets.named("main").map {
+            it.allSource.matching {
+                exclude { elem -> elem.file.absolutePath.replace('\\', '/').contains("/build/generated/") }
+            }
         }
-    })
+    )
 }
 
 // Detekt is handled by a dedicated CI workflow; exclude it from the check/build lifecycle
@@ -469,9 +482,9 @@ tasks.withType<Detekt>().configureEach {
     val skipDetekt = project.findProperty("skipDetekt") == "true"
     onlyIf { isTargetVersion && !skipDetekt }
 
-    val detektBasePath = basePath.map(::File).getOrElse(layout.projectDirectory.asFile)
+    val detektBasePath = basePath.map(::File).getOrElse(rootProject.layout.projectDirectory.asFile)
     val reportFile = detektBasePath.resolve(BuildProgress.DIRECTORY).resolve(BuildProgress.DETEKT_REPORT_FILE_NAME)
-    BuildProgress.watch(this, reportFile, buildProgressService, objects)
+    BuildProgress.watch(this, reportFile, buildProgressService, objects, buildProgressTimings)
 
     val isDetektMain = name == "detektMain"
     val outputFileName = if (isDetektMain) "main" else "detekt"
