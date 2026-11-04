@@ -8,6 +8,7 @@ import net.fabricmc.loom.task.ValidateAccessWidenerTask
 import net.fabricmc.loom.task.prod.ClientProductionRunTask
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.process.ExecSpec
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import skyhannibuildsystem.ChangelogVerification
@@ -102,7 +103,16 @@ tasks.named<JavaExec>("runClient") {
 }
 
 @Suppress("UnstableApiUsage")
-tasks.register<ClientProductionRunTask>("prodClient") {
+abstract class ArgFileClientProductionRunTask : ClientProductionRunTask() {
+    override fun configureClasspath(exec: ExecSpec) {
+        val argFile = temporaryDir.resolve("classpath.args")
+        val classpath = streamClasspath().toList().joinToString(File.pathSeparator) { it.absolutePath }
+        argFile.writeText("-cp \"${classpath.replace("\\", "\\\\")}\"")
+        exec.args("@${argFile.absolutePath}")
+    }
+}
+
+tasks.register<ArgFileClientProductionRunTask>("prodClient") {
     description = "Interactive Minecraft client"
     notCompatibleWithConfigurationCache("Interactive client launches must start a new process every time.")
     outputs.upToDateWhen { false }
@@ -310,7 +320,7 @@ if (target == primaryTarget) {
             eula = true
         }
     }
-    tasks.register("generateRepoPatterns", ClientProductionRunTask::class.java) {
+    tasks.register("generateRepoPatterns", ArgFileClientProductionRunTask::class.java) {
         description = "Runs an MC client, and dumps RepoPatterns to build/regexes/constants.json"
     }.configure {
         javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
