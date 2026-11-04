@@ -136,6 +136,11 @@ class DebugConfig {
     var copyBestiaryData: Boolean = false
 
     @Expose
+    @ConfigOption(name = "Copy Sack Items", desc = "Copies sacks items from the inventory as json to clipboard.")
+    @ConfigEditorBoolean
+    var copySacksItems: Boolean = false
+
+    @Expose
     @ConfigOption(
         name = "Highlight Missing Repo Items",
         desc = "Highlights each item in the current inventory that is not in your current NEU repo.",
@@ -179,7 +184,7 @@ class DebugConfig {
     @Expose
     @ConfigOption(
         name = "SkyHanni Event Counter",
-        desc = "Count once per second how many skyhanni events gets triggered, show the total amount in console output.",
+        desc = "Count once per second how many SkyHanni events get triggered, show the total amount in console output.",
     )
     @ConfigEditorBoolean
     var eventCounter: Boolean = false
