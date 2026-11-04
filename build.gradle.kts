@@ -2,15 +2,15 @@ import at.skyhanni.sharedvariables.ProjectTarget
 import at.skyhanni.sharedvariables.SHVersionInfo
 import dev.detekt.gradle.Detekt
 import dev.detekt.gradle.DetektCreateBaselineTask
-import dev.kikugie.stonecutter.StonecutterExperimentalAPI
+import jdk.internal.net.http.common.TimeSource.source
+import jdk.jfr.internal.JVM.exclude
+import jdk.jfr.internal.JVM.include
 import net.fabricmc.loom.api.fabricapi.FabricApiExtension
 import net.fabricmc.loom.task.RemapSourcesJarTask
 import net.fabricmc.loom.task.ValidateAccessWidenerTask
 import net.fabricmc.loom.task.prod.ClientProductionRunTask
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.gradle.build.event.BuildEventsListenerRegistry
-import org.gradle.kotlin.dsl.support.serviceOf
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.plugin.CompilerPluginConfig
 import org.jetbrains.kotlin.gradle.plugin.InternalSubpluginOption
@@ -21,6 +21,8 @@ import skyhannibuildsystem.ChangelogVerification
 import skyhannibuildsystem.JavacProgressArgument
 import skyhannibuildsystem.DownloadBackupRepo
 import skyhannibuildsystem.PublishToModrinth
+import sun.jvmstat.monitor.MonitoredVmUtil.jvmArgs
+import kotlin.jvm.java
 import org.gradle.jvm.tasks.Jar as GradleJar
 
 plugins {
@@ -45,7 +47,6 @@ val runDirectory = rootProject.file("run")
 runDirectory.mkdirs()
 
 // Minecraft configuration:
-@OptIn(StonecutterExperimentalAPI::class)
 loom.apply {
     val classTweakerFile = sc.process(
         rootProject.file("src/main/resources/skyhanni.classtweaker"),
@@ -97,6 +98,7 @@ val mixinTestRuntime = configurations.create("mixinTestRuntime") {
 }
 
 val includeBackupRepo = tasks.register<DownloadBackupRepo>("includeBackupRepo") {
+    description = "Download the SH repo archive, bundled as the backup repo"
     this.user = "SkyHanniStudios"
     this.repo = "SkyHanni-REPO"
     this.branch = "main"
@@ -105,6 +107,7 @@ val includeBackupRepo = tasks.register<DownloadBackupRepo>("includeBackupRepo") 
 }
 
 val includeBackupNeuRepo = tasks.register<DownloadBackupRepo>("includeBackupNeuRepo") {
+    description = "Download the NEU repo archive, bundled as the backup repo"
     this.user = "NotEnoughUpdates"
     this.repo = "NotEnoughUpdates-Repo"
     this.branch = "master"
@@ -112,13 +115,26 @@ val includeBackupNeuRepo = tasks.register<DownloadBackupRepo>("includeBackupNeuR
     this.outputDirectory.set(layout.buildDirectory.dir("downloadedNeuRepo"))
 }
 
-val publishToModrinth = tasks.register<PublishToModrinth>("publishToModrinth")
+val publishToModrinth = tasks.register<PublishToModrinth>("publishToModrinth") {
+    description = "Publish the mod to Modrinth"
+}
 
 tasks.named<JavaExec>("runClient") {
     this.javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
 }
 
-tasks.register<ClientProductionRunTask>("prodClient") {
+@Suppress("UnstableApiUsage")
+abstract class ArgFileClientProductionRunTask : ClientProductionRunTask() {
+    override fun configureClasspath(exec: ExecSpec) {
+        val argFile = temporaryDir.resolve("classpath.args")
+        val classpath = streamClasspath().toList().joinToString(File.pathSeparator) { it.absolutePath }
+        argFile.writeText("-cp \"${classpath.replace("\\", "\\\\")}\"")
+        exec.args("@${argFile.absolutePath}")
+    }
+}
+
+tasks.register<ArgFileClientProductionRunTask>("prodClient") {
+    description = "Interactive Minecraft client"
     notCompatibleWithConfigurationCache("Interactive client launches must start a new process every time.")
     outputs.upToDateWhen { false }
     runDir = file("run")
@@ -126,6 +142,7 @@ tasks.register<ClientProductionRunTask>("prodClient") {
 
 if (target == primaryTarget) {
     tasks.register("checkPrDescription", ChangelogVerification::class) {
+        description = "Check PR title + body against SH changelog format"
         this.prTitle = System.getenv("PR_TITLE") ?: project.findProperty("prTitle") as? String ?: ""
         this.prBody = System.getenv("PR_BODY") ?: project.findProperty("prBody") as? String ?: ""
         this.outputDirectory.set(
@@ -265,6 +282,8 @@ tasks.withType<Test> {
         "--add-opens", "java.base/java.lang=ALL-UNNAMED",
         "--add-opens", "java.base/java.util=ALL-UNNAMED",
         "-XX:+EnableDynamicAgentLoading",
+        // Fixes the "bootstrap class append" warnings post J-25
+        "-Xshare:off",
         // Tests start NPE-ing without this on Java 25
         "-Dnet.bytebuddy.experimental=true",
     )
@@ -297,7 +316,9 @@ kotlin {
 tasks.processResources {
     from(includeBackupRepo)
     from(includeBackupNeuRepo)
+    val fabLoaderVersion = target.fabricLoaderVersion.split(":").last()
     val fapiVersion = target.fabricApiVersion.split(":").last()
+    val fabLangKotlinVersion = target.fabricLanguageKotlinVersion.split(":").last()
     val hypixelModApiVersion = target.hypixelModApiFabricVersion.split(":").last()
     val minecraftVersion = target.minecraftVersion.fabricModJsonVersion
     val renderChestVersion = target.renderChestVersion ?: ""
@@ -305,6 +326,8 @@ tasks.processResources {
         put("version", version)
         put("minecraft", minecraftVersion)
         put("fapi", fapiVersion)
+        put("fabloader", fabLoaderVersion)
+        put ("fablangkotlin", fabLangKotlinVersion)
         put("hypixelmodapi", hypixelModApiVersion)
         put("renderchest", renderChestVersion)
     }
@@ -326,7 +349,9 @@ if (target == primaryTarget) {
             eula = true
         }
     }
-    tasks.register("generateRepoPatterns", ClientProductionRunTask::class.java).configure {
+    tasks.register("generateRepoPatterns", ArgFileClientProductionRunTask::class.java) {
+        description = "Runs an MC client, and dumps RepoPatterns to build/regexes/constants.json"
+    }.configure {
         javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
         dependsOn(tasks.named("configureLaunch"))
         val outputFile = project.file("build/regexes/constants.json")
@@ -398,13 +423,15 @@ tasks.withType<JavaCompile> {
 tasks.withType<GradleJar> {
     archiveBaseName.set("SkyHanni")
     archiveVersion.set("$version-mc${target.minecraftVersion.versionName}")
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE // Why do we have this here? This only *hides* errors.
 }
 
 tasks.shadowJar {
     destinationDirectory.set(rootProject.layout.buildDirectory.dir("libs"))
     archiveClassifier.set("")
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    filesMatching("META-INF/services/**") {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    }
     configurations = buildList {
         add(shadowImpl)
         add(shadowOnly)
@@ -414,8 +441,10 @@ tasks.shadowJar {
     mergeServiceFiles()
     relocate("io.github.notenoughupdates.moulconfig", "at.hannibal2.skyhanni.deps.moulconfig")
     relocate("moe.nea.libautoupdate", "at.hannibal2.skyhanni.deps.libautoupdate")
+    relocate("com.notkamui.keval", "at.hannibal2.skyhanni.deps.keval")
 }
 // Loom only nests `include`d jars into the default jar task; wire them into the final jar too
+@Suppress("UnstableApiUsage")
 loom.nestJars(tasks.shadowJar, configurations.named("include"))
 tasks.jar {
     archiveClassifier.set("nodeps")
@@ -425,6 +454,7 @@ tasks.jar {
 tasks.assemble.get().dependsOn(tasks.shadowJar)
 
 val sourcesJar = tasks.register<Jar>("sourcesJar") {
+    description = "Assemble main source set into a jar, for Maven publication"
     destinationDirectory.set(layout.buildDirectory.dir("badjars"))
     archiveClassifier.set("src")
     from(sourceSets.main.get().allSource)
