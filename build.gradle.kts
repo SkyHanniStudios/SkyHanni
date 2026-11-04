@@ -249,7 +249,6 @@ dependencies {
             isTransitive = false
         }
     }
-    testImplementation(kotlin("test"))
 }
 
 /**
