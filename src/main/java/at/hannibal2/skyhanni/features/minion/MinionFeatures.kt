@@ -163,7 +163,7 @@ object MinionFeatures {
     fun onEntityClick(event: EntityClickEvent) {
         if (event.clickType != InteractClickType.RIGHT_CLICK) return
 
-        lastClickedEntity = event.clickedEntity.getLorenzVec()
+        lastClickedEntity = event.entity.getLorenzVec()
     }
 
     @HandleEvent(onlyOnIslands = [PRIVATE_ISLAND, HUB])

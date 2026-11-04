@@ -1,16 +1,17 @@
 package at.hannibal2.skyhanni.events.entity
 
 import at.hannibal2.skyhanni.api.event.GenericSkyHanniEvent
+import at.hannibal2.skyhanni.events.entity.abstract.SkyHanniEntityEvent
 import at.hannibal2.skyhanni.skyhannimodule.PrimaryFunction
 import at.hannibal2.skyhanni.utils.SafeItemStack
 import net.minecraft.world.entity.Entity
 
 @PrimaryFunction("onEntityEquipmentChange")
 data class EntityEquipmentChangeEvent<T : Entity>(
-    val entity: T,
+    override val entity: T,
     val equipmentSlot: Int,
     val newItemStack: SafeItemStack?,
-) : GenericSkyHanniEvent<T>(entity.javaClass) {
+) : GenericSkyHanniEvent<T>(entity.javaClass), SkyHanniEntityEvent<T> {
 
     val isHead get() = equipmentSlot == EQUIPMENT_SLOT_HEAD
     val isChest get() = equipmentSlot == EQUIPMENT_SLOT_CHEST
@@ -19,6 +20,7 @@ data class EntityEquipmentChangeEvent<T : Entity>(
     val isHand get() = equipmentSlot == EQUIPMENT_SLOT_HAND
 
     companion object {
+        // TODO these are definitely defined in MC somewhere. -Dae
         const val EQUIPMENT_SLOT_HEAD = 4
         const val EQUIPMENT_SLOT_CHEST = 3
         const val EQUIPMENT_SLOT_LEGGINGS = 2
