@@ -1,6 +1,5 @@
 package at.hannibal2.skyhanni.config.features.gui.customscoreboard
 
-import at.hannibal2.skyhanni.config.FeatureToggle
 import at.hannibal2.skyhanni.config.OnlyDevEnv
 import at.hannibal2.skyhanni.config.core.config.Position
 import at.hannibal2.skyhanni.utils.OSUtils.openBrowser
@@ -26,7 +25,6 @@ class CustomScoreboardConfig {
     @Expose
     @ConfigOption(name = "Enabled", desc = "Show a custom scoreboard instead of the vanilla one.")
     @ConfigEditorBoolean
-    @FeatureToggle
     val enabled: Property<Boolean> = Property.of(false)
 
     @OnlyDevEnv
