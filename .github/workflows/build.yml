@@ -64,9 +64,12 @@ jobs:
             -   name: Discard restored build state after failure
                 id: discard_build_state
                 if: steps.assemble_incremental.outcome == 'failure' && steps.restore_build_state.outputs.cache-matched-key != ''
+                env:
+                    MATCHED_KEY: ${{ steps.restore_build_state.outputs.cache-matched-key }}
+                    VERSION_BUILD_DIR: versions/${{ matrix.minecraft_version }}/build
                 run: |
-                    echo "::notice::Incremental assemble failed with restored state ${{ steps.restore_build_state.outputs.cache-matched-key }}, rebuilding clean"
-                    rm -rf "versions/${{ matrix.minecraft_version }}/build" .gradle/*/executionHistory .gradle/*/fileHashes
+                    echo "::notice::Incremental assemble failed with restored state $MATCHED_KEY, rebuilding clean"
+                    rm -rf "$VERSION_BUILD_DIR" .gradle/*/executionHistory .gradle/*/fileHashes
             -   name: Build with Gradle w/retry (clean)
                 id: assemble_clean
                 if: steps.discard_build_state.outcome == 'success'
@@ -132,7 +135,7 @@ jobs:
                     path: versions/${{ matrix.minecraft_version }}/build/reports/tests/test/
                     if-no-files-found: warn
             -   name: Save beta build state
-                if: github.event_name == 'push' && github.ref_name == 'beta' && steps.assemble.outputs.outcome == 'success'
+                if: github.event_name == 'push' && github.ref == 'refs/heads/beta' && steps.assemble.outputs.outcome == 'success'
                 uses: actions/cache/save@v6
                 with:
                     path: |
