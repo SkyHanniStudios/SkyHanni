@@ -16,15 +16,13 @@ import org.gradle.tooling.events.task.TaskFinishEvent
 import skyhannibuildsystem.progress.DetektProgressListener
 import skyhannibuildsystem.progress.JavacProgressPlugin
 import skyhannibuildsystem.progress.KotlinProgressOptions
+import skyhannibuildsystem.progress.PhaseTimer
 import skyhannibuildsystem.progress.ProgressReport
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import kotlin.concurrent.thread
-import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.nanoseconds
-import kotlin.time.DurationUnit
 
 interface ProgressLoggerFactoryAccessor {
     @get:Inject
@@ -36,13 +34,11 @@ class BuildProgressWatcher(
     private val reportFile: File,
     private val progressLogger: ProgressLogger,
     private val timingLogger: Logger?,
+    private val initialStatus: String?,
 ) : AutoCloseable {
 
     private val lock = Any()
-    private val phases = LinkedHashMap<String, Duration>()
-    private var phase: String? = null
-    private var phaseStart = 0L
-    private val startNanos = System.nanoTime()
+    private val timer = PhaseTimer()
 
     @Volatile
     private var open = true
@@ -55,7 +51,7 @@ class BuildProgressWatcher(
                 last = status
                 synchronized(lock) {
                     if (!open) return@thread
-                    status.takeWhile { !it.isDigit() }.trim().takeIf { it != phase }?.let(::enterPhase)
+                    timer.observe(status)
                     progressLogger.progress(status)
                 }
             }
@@ -66,7 +62,7 @@ class BuildProgressWatcher(
     fun start() = apply {
         reportFile.delete()
         progressLogger.description = reportFile.nameWithoutExtension
-        progressLogger.started()
+        initialStatus?.let(progressLogger::started) ?: progressLogger.started()
         poller.start()
     }
 
@@ -74,26 +70,11 @@ class BuildProgressWatcher(
         synchronized(lock) {
             if (!open) return
             open = false
-            enterPhase(null)
             progressLogger.completed()
-            timingLogger?.lifecycle(timingLine())
+            timingLogger?.lifecycle("$taskPath  ${timer.stop()}")
         }
         poller.interrupt()
     }
-
-    private fun enterPhase(next: String?) {
-        val now = System.nanoTime()
-        phase?.let { phases.merge(it, (now - phaseStart).nanoseconds, Duration::plus) }
-        phase = next
-        phaseStart = now
-    }
-
-    private fun timingLine() = buildList {
-        add("total ${(System.nanoTime() - startNanos).nanoseconds.seconds()}")
-        phases.mapTo(this) { (name, duration) -> "$name ${duration.seconds()}" }
-    }.joinToString(" | ", prefix = "$taskPath  ")
-
-    private fun Duration.seconds() = "${toString(DurationUnit.SECONDS, decimals = 3)}"
 
     private companion object {
         val POLL_INTERVAL = 200.milliseconds
@@ -130,14 +111,21 @@ object BuildProgress {
     const val DETEKT_REPORT_FILE_NAME = DetektProgressListener.REPORT_FILE_NAME
     const val TIMING_PROPERTY = "build.progress.log"
 
-    fun watch(task: Task, reportFile: File, service: Provider<BuildProgressService>, objects: ObjectFactory, logTimings: Boolean) {
+    fun watch(
+        task: Task,
+        reportFile: File,
+        service: Provider<BuildProgressService>,
+        objects: ObjectFactory,
+        logTimings: Boolean,
+        initialStatus: String? = null,
+    ) {
         val taskPath = task.path
         task.usesService(service)
         task.doFirst {
             val factory = objects.newInstance(ProgressLoggerFactoryAccessor::class.java).factory
             val progressLogger = factory.newOperation(BuildProgressWatcher::class.java)
             val timingLogger = logger.takeIf { logTimings }
-            service.get().start(taskPath, BuildProgressWatcher(taskPath, reportFile, progressLogger, timingLogger))
+            service.get().start(taskPath, BuildProgressWatcher(taskPath, reportFile, progressLogger, timingLogger, initialStatus))
         }
         task.doLast { service.get().finish(taskPath) }
     }

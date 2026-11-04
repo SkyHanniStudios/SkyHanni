@@ -20,6 +20,7 @@ import skyhannibuildsystem.ChangelogVerification
 import skyhannibuildsystem.JavacProgressArgument
 import skyhannibuildsystem.DownloadBackupRepo
 import skyhannibuildsystem.PublishToModrinth
+import skyhannibuildsystem.progress.DetektProgressListener
 import skyhannibuildsystem.progress.KspProgressProbe
 import com.google.devtools.ksp.gradle.KspAATask
 import kotlin.jvm.java
@@ -525,7 +526,7 @@ tasks.withType<Detekt>().configureEach {
 
     val detektBasePath = basePath.map(::File).getOrElse(rootProject.layout.projectDirectory.asFile)
     val reportFile = detektBasePath.resolve(BuildProgress.DIRECTORY).resolve(BuildProgress.DETEKT_REPORT_FILE_NAME)
-    BuildProgress.watch(this, reportFile, buildProgressService, objects, buildProgressTimings)
+    BuildProgress.watch(this, reportFile, buildProgressService, objects, buildProgressTimings, DetektProgressListener.SESSION_STATUS)
 
     val isDetektMain = name == "detektMain"
     val outputFileName = if (isDetektMain) "main" else "detekt"

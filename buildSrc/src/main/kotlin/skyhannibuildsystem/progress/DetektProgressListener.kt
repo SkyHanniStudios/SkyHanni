@@ -45,5 +45,6 @@ class DetektProgressListener : FileProcessListener {
 
     companion object {
         const val REPORT_FILE_NAME = "detekt.txt"
+        const val SESSION_STATUS = "EnvironmentFacade.<init> parsing sources and building analysis session"
     }
 }

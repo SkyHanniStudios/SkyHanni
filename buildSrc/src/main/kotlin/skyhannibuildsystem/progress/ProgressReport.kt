@@ -49,7 +49,7 @@ class ProgressReport(private val reportFile: File) {
     }
 
     private fun Status.render(): String = when (this) {
-        is Status.Entered -> if (fileCount > 0) "${hook.id} $fileCount/$fileCount" else hook.id
+        is Status.Entered -> if (fileCount > 0) "${hook.id} $fileCount" else hook.id
         is Status.Stepped -> buildString {
             append(hook.id).append(' ')
             append(if (total > 0) "$done/$total" else done)

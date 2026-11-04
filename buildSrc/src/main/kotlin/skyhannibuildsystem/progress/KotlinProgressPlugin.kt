@@ -31,6 +31,7 @@ import org.jetbrains.kotlin.ir.declarations.IrTypeAlias
 import org.jetbrains.kotlin.ir.symbols.UnsafeDuringIrConstructionAPI
 import org.jetbrains.kotlin.ir.util.fileOrNull
 import java.io.File
+import java.nio.file.Files
 
 object KotlinProgressOptions {
     const val PLUGIN_ID = "at.hannibal2.skyhanni.buildprogress"
@@ -99,7 +100,7 @@ class KotlinProgressRegistrar : CompilerPluginRegistrar() {
     }
 
     private fun CompilerConfiguration.countKotlinSourceFiles() = kotlinSourceRoots.sumOf { root ->
-        File(root.path).walk().count { it.isFile && it.extension in KOTLIN_EXTENSIONS }
+        File(root.path).walk().onEnter { !Files.isSymbolicLink(it.toPath()) }.count { it.isFile && it.extension in KOTLIN_EXTENSIONS }
     }
 
     private class Frontend(private val probe: KotlinProgressProbe) : FirExtensionRegistrar() {
