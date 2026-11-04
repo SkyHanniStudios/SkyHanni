@@ -11,7 +11,7 @@ changelog-builder = "1.1.8"
 methanol = "1.9.0"
 
 shadow = "9.6.1"
-loom = "1.19.5"
+loom = "1.19.3"
 kotlin = "2.4.21"
 fabricLanguageKotlin = "1.14.2+kotlin.2.4.21"
 keval = "2.0.1"
