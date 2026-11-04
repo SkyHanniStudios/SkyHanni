@@ -24,7 +24,7 @@ object EntityData {
 
     private val maxHealthMap = mutableMapOf<Int, Int>()
     private val nametagCache = TimeLimitedCache<UUID, Component>(50.milliseconds)
-    private val healthDisplayCache = TimeLimitedCache<Component, Component>(50.milliseconds)
+    private val healthDisplayCache = TimeLimitedCache<Pair<UUID, Component>, Component>(50.milliseconds)
     private val lastVisibilityCheck = TimeLimitedCache<Int, Boolean>(200.milliseconds)
 
     // TODO replace with packet detection
@@ -69,7 +69,7 @@ object EntityData {
     }
 
     @JvmStatic
-    fun getHealthDisplay(entity: Entity, text: Component) = healthDisplayCache.getOrPut(text) {
+    fun getHealthDisplay(entity: Entity, text: Component) = healthDisplayCache.getOrPut(entity.uuid to text) {
         EntityHealthDisplayEvent(entity, text).apply {
             post()
         }.text
