@@ -2,6 +2,9 @@ import at.skyhanni.sharedvariables.ProjectTarget
 import at.skyhanni.sharedvariables.SHVersionInfo
 import dev.detekt.gradle.Detekt
 import dev.detekt.gradle.DetektCreateBaselineTask
+import jdk.internal.net.http.common.TimeSource.source
+import jdk.jfr.internal.JVM.exclude
+import jdk.jfr.internal.JVM.include
 import net.fabricmc.loom.api.fabricapi.FabricApiExtension
 import net.fabricmc.loom.task.RemapSourcesJarTask
 import net.fabricmc.loom.task.ValidateAccessWidenerTask
@@ -14,6 +17,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import skyhannibuildsystem.ChangelogVerification
 import skyhannibuildsystem.DownloadBackupRepo
 import skyhannibuildsystem.PublishToModrinth
+import sun.jvmstat.monitor.MonitoredVmUtil.jvmArgs
 import kotlin.jvm.java
 import org.gradle.jvm.tasks.Jar as GradleJar
 
@@ -291,7 +295,9 @@ kotlin {
 tasks.processResources {
     from(includeBackupRepo)
     from(includeBackupNeuRepo)
+    val fabLoaderVersion = target.fabricLoaderVersion.split(":").last()
     val fapiVersion = target.fabricApiVersion.split(":").last()
+    val fabLangKotlinVersion = target.fabricLanguageKotlinVersion.split(":").last()
     val hypixelModApiVersion = target.hypixelModApiFabricVersion.split(":").last()
     val minecraftVersion = target.minecraftVersion.fabricModJsonVersion
     val renderChestVersion = target.renderChestVersion ?: ""
@@ -299,6 +305,8 @@ tasks.processResources {
         put("version", version)
         put("minecraft", minecraftVersion)
         put("fapi", fapiVersion)
+        put("fabloader", fabLoaderVersion)
+        put ("fablangkotlin", fabLangKotlinVersion)
         put("hypixelmodapi", hypixelModApiVersion)
         put("renderchest", renderChestVersion)
     }
