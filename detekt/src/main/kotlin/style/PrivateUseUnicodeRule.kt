@@ -40,7 +40,7 @@ class PrivateUseUnicodeRule(config: Config) :
     }
 
     private fun Int.isPrivateUse(): Boolean {
-        return Character.getType(this) == Character.PRIVATE_USE ||
+        return Character.getType(this) == Character.PRIVATE_USE.toInt() ||
             this in extraIconsCodePoints
     }
 }
