@@ -162,14 +162,13 @@ dependencies {
     runtimeOnly(libs.devauth)
     "productionRuntimeMods"(libs.devauth)
 
-    val moulconfigVersion = target.minecraftVersion.moulconfigMinecraftVersionOverride ?: target.minecraftVersion.versionName
-    shadowImpl("org.notenoughupdates.moulconfig:modern-$moulconfigVersion:${libs.versions.moulconfig.get()}") {
+    val moulconfig = versionedCatalog["moulconfig"]
+    shadowImpl(moulconfig) {
         exclude("org.jetbrains.kotlin")
         exclude("org.jetbrains.kotlinx")
     }
-    "minecraftTestClientRuntimeLibraries"(
-        "org.notenoughupdates.moulconfig:modern-$moulconfigVersion:${libs.versions.moulconfig.get()}"
-    )
+
+    "minecraftTestClientRuntimeLibraries"(moulconfig)
 
     shadowImpl(libs.libautoupdate) {
         exclude(module = "gson")

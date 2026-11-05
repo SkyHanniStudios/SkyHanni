@@ -3,9 +3,11 @@ fabric-api = "0.155.2+26.2"
 modmenu = "20.0.0-beta.4"
 rei = "26.2.820"
 renderchest = "1.0.3+26.2"
+moulconfig = "4.8.0"
 
 [libraries]
 fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric-api" }
 modmenu = { module = "maven.modrinth:modmenu", version.ref = "modmenu" }
 rei = { module = "me.shedaniel:RoughlyEnoughItems-api", version.ref = "rei" }
+moulconfig = { module = "org.notenoughupdates.moulconfig:modern-26.2", version.ref = "moulconfig" }
 renderchest = { module = "net.azureaaron:render-chest", version.ref = "renderchest" }
