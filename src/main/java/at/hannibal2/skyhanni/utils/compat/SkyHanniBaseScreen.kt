@@ -49,14 +49,14 @@ abstract class SkyHanniBaseScreen(title: Component = Component.empty()) : Screen
 
     private fun postMouseClicked(originalMouseX: Int, originalMouseY: Int, mouseButton: Int) {
         try {
-            val button = InputKeys.mouse(mouseButton)
-            onMouseClicked(originalMouseX, originalMouseY, button)
+            val key = InputKeys.mouse(mouseButton)
+            onMouseClicked(originalMouseX, originalMouseY, key)
         } catch (e: Exception) {
             ErrorManager.logErrorWithData(e, "Error while clicking mouse", "screen" to this)
         }
     }
 
-    open fun onMouseClicked(originalMouseX: Int, originalMouseY: Int, mouseButton: InputConstants.Key) {}
+    open fun onMouseClicked(originalMouseX: Int, originalMouseY: Int, key: InputConstants.Key) {}
 
     override fun keyPressed(input: KeyEvent): Boolean {
         val key = InputKeys.keyEvent(input)

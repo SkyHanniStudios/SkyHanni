@@ -174,7 +174,7 @@ class GuiPositionEditor(
     private fun getEditorScaledHeight() = Minecraft.getInstance().window.guiScaledHeight
     private fun getEditorScaledWidth() = Minecraft.getInstance().window.guiScaledWidth
 
-    override fun onMouseClicked(originalMouseX: Int, originalMouseY: Int, mouseButton: InputConstants.Key) {
+    override fun onMouseClicked(originalMouseX: Int, originalMouseY: Int, key: InputConstants.Key) {
         for (i in positions.indices.reversed()) {
             val position = positions[i]
             val handled = position.withPositionMetrics {
@@ -182,7 +182,7 @@ class GuiPositionEditor(
 
                 val (mouseX, mouseY) = GuiScreenUtils.mousePos
 
-                when (mouseButton) {
+                when (key) {
                     InputKeys.MOUSE_BUTTON_RIGHT -> position.jumpToConfigOptions()
                     InputKeys.MOUSE_BUTTON_LEFT -> if (!position.clicked) {
                         clickedPos = i

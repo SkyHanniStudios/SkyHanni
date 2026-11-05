@@ -3,28 +3,31 @@ package at.hannibal2.skyhanni.config
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.events.hypixel.HypixelJoinEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
-import at.hannibal2.skyhanni.test.SkyHanniConfigSearchResetCommand
 import at.hannibal2.skyhanni.utils.ChatUtils
 import com.google.gson.JsonPrimitive
 
 @SkyHanniModule
 object UpdateKeybinds {
 
-    private val defaultedKeyBinds = mutableSetOf<String>()
+    private val unknownKeybinds = mutableSetOf<String>()
 
     @HandleEvent
     private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         if (event.oldVersion >= 150) {
             return
         }
-        for (keybindPath in SkyHanniConfigSearchResetCommand.allKeybinds) {
+        for (keybindPath in allKeybindConfigs) {
             event.transform(150, keybindPath) { element ->
-                val oldCode = element.asInt
-                val newStringName = glfwKeyName(oldCode) ?: run {
-                    defaultedKeyBinds.add(keybindPath)
-                    val defaultValue = SkyHanniConfigSearchResetCommand.getDefaultValue("config.$keybindPath") as Int
-                    glfwKeyName(defaultValue) ?: glfwKeyName(-1)
+                val oldCode = runCatching { element.asInt }.getOrElse {
+                    unknownKeybinds.add(keybindPath)
+                    -1
                 }
+
+                val newStringName = glfwKeyName(oldCode) ?: run {
+                    unknownKeybinds.add(keybindPath)
+                    glfwKeyName(-1)
+                }
+
                 JsonPrimitive(newStringName)
             }
         }
@@ -32,16 +35,132 @@ object UpdateKeybinds {
 
     @HandleEvent
     private fun onHypixelJoin(event: HypixelJoinEvent) {
-        if (defaultedKeyBinds.isNotEmpty()) {
-            ChatUtils.hoverableChat(
-                "Some Invalid Keybinds were reset to default values due to a migration from an older version of SkyHanni.\n" +
-                    "Please check your keybinds in the config and reconfigure them if necessary.",
-                hover = defaultedKeyBinds.toList(),
-                prefixColor = "§c",
-            )
-            defaultedKeyBinds.clear()
-        }
+        if (unknownKeybinds.isEmpty()) return
+        ChatUtils.hoverableChat(
+            "Some Invalid Keybinds were reset due to a migration from an older version of SkyHanni.\n" +
+                "Please check your keybinds in the config and reconfigure them if necessary.",
+            hover = unknownKeybinds.toList(),
+            prefixColor = "§c",
+        )
+        unknownKeybinds.clear()
     }
+
+    // Must be hardcoded list to still work with future config migrations
+    private val allKeybindConfigs = listOf(
+        "gui.keyBindOpen",
+        "gui.keyBindReset",
+        "garden.visitors.rewardWarning.bypassKey",
+        "garden.visitors.acceptHotkey",
+        "garden.keyBind.attack",
+        "garden.keyBind.useItem",
+        "garden.keyBind.left",
+        "garden.keyBind.right",
+        "garden.keyBind.forward",
+        "garden.keyBind.back",
+        "garden.keyBind.jump",
+        "garden.keyBind.sneak",
+        "garden.pests.pestFinder.teleportHotkey",
+        "garden.pests.pestTrap.releaseHotkey",
+        "garden.tooltipTweak.fortuneTooltipKeybind",
+        "garden.mouseSensitivityReducer.keybind",
+        "garden.gardenCommands.homeHotkey",
+        "garden.gardenCommands.sethomeHotkey",
+        "garden.gardenCommands.barnHotkey",
+        "garden.seeThroughWindow.keybind",
+        "garden.plotBorderKey",
+        "crimsonIsle.reputationHelper.hotkey",
+        "crimsonIsle.vanquisherShare.keybindSharing",
+        "fishing.trophyFishing.display.keybind",
+        "mining.glaciteMineshaft.waypointsConfig.shareCorpseKeybind",
+        "mining.tunnelMaps.campfireKey",
+        "mining.tunnelMaps.nextSpotHotkey",
+        "hunting.shardTracker.selectShardKeybind",
+        "hunting.fusionKeybinds.repeatFusionKeybind",
+        "hunting.fusionKeybinds.confirmFusionKeybind",
+        "hunting.nextShulkerKeybind",
+        "combat.instanceChestProfit.keybind",
+        "dungeon.spiritLeapOverlay.spiritLeapKeybindConfig.keybindOption1",
+        "dungeon.spiritLeapOverlay.spiritLeapKeybindConfig.keybindOption2",
+        "dungeon.spiritLeapOverlay.spiritLeapKeybindConfig.keybindOption3",
+        "dungeon.spiritLeapOverlay.spiritLeapKeybindConfig.keybindOption4",
+        "inventory.auctions.copyUnderbidKeybind",
+        "inventory.helper.harp.harpKeybinds.key1",
+        "inventory.helper.harp.harpKeybinds.key2",
+        "inventory.helper.harp.harpKeybinds.key3",
+        "inventory.helper.harp.harpKeybinds.key4",
+        "inventory.helper.harp.harpKeybinds.key5",
+        "inventory.helper.harp.harpKeybinds.key6",
+        "inventory.helper.harp.harpKeybinds.key7",
+        "inventory.customWardrobe.tooltipKeybind",
+        "inventory.customWardrobe.keybinds.slot1",
+        "inventory.customWardrobe.keybinds.slot2",
+        "inventory.customWardrobe.keybinds.slot3",
+        "inventory.customWardrobe.keybinds.slot4",
+        "inventory.customWardrobe.keybinds.slot5",
+        "inventory.customWardrobe.keybinds.slot6",
+        "inventory.customWardrobe.keybinds.slot7",
+        "inventory.customWardrobe.keybinds.slot8",
+        "inventory.customWardrobe.keybinds.slot9",
+        "inventory.customLoadout.keybinds.slot1",
+        "inventory.customLoadout.keybinds.slot2",
+        "inventory.customLoadout.keybinds.slot3",
+        "inventory.customLoadout.keybinds.slot4",
+        "inventory.customLoadout.keybinds.slot5",
+        "inventory.customLoadout.keybinds.slot6",
+        "inventory.customLoadout.keybinds.slot7",
+        "inventory.customLoadout.keybinds.slot8",
+        "inventory.customLoadout.keybinds.slot9",
+        "inventory.customLoadout.keybinds.slot10",
+        "inventory.customLoadout.keybinds.slot11",
+        "inventory.customLoadout.keybinds.slot12",
+        "inventory.chocolateFactory.keybinds.key1",
+        "inventory.chocolateFactory.keybinds.key2",
+        "inventory.chocolateFactory.keybinds.key3",
+        "inventory.chocolateFactory.keybinds.key4",
+        "inventory.chocolateFactory.keybinds.key5",
+        "inventory.chocolateFactory.keybinds.key6",
+        "inventory.chocolateFactory.keybinds.key7",
+        "inventory.personalCompactor.keybind",
+        "inventory.focusMode.toggleKey",
+        "inventory.jacobFarmingContests.openOnElite",
+        "inventory.estimatedItemValues.hotkey",
+        "inventory.gfs.keybind",
+        "inventory.gfs.compactorKeybind",
+        "inventory.pageScrolling.bypassKey",
+        "event.diana.keyBindWarp",
+        "event.diana.rareMobsSharing.keyBindShare",
+        "event.hoppityEggs.eventSummary.liveDisplay.toggleKeybind",
+        "chat.peekChat",
+        "misc.commands.betterWiki.wikiKeybind",
+        "misc.trevorTheTrapper.keyBind",
+        "misc.abiphoneAcceptKey",
+        "dev.debug.copyInternalName",
+        "dev.debug.copyCosmeticsSkullData",
+        "dev.debug.copyItemData",
+        "dev.debug.copyItemDataCompressed",
+        "dev.debug.bypassAdvancedPlayerTabList",
+        "dev.debug.trackSound.toggleKeybind",
+        "dev.debug.trackParticle.toggleKeybind",
+        "dev.showSlotNumberKey",
+        "dev.waypoint.saveKey",
+        "dev.waypoint.deleteKey",
+        "dev.devTool.graph.placeKey",
+        "dev.devTool.graph.selectKey",
+        "dev.devTool.graph.selectRaycastKey",
+        "dev.devTool.graph.connectKey",
+        "dev.devTool.graph.exitKey",
+        "dev.devTool.graph.editKey",
+        "dev.devTool.graph.textKey",
+        "dev.devTool.graph.dijkstraKey",
+        "dev.devTool.graph.saveKey",
+        "dev.devTool.graph.loadKey",
+        "dev.devTool.graph.clearKey",
+        "dev.devTool.graph.throughBlocksKey",
+        "dev.devTool.graph.tutorialKey",
+        "dev.devTool.graph.splitKey",
+        "dev.devTool.graph.dissolveKey",
+        "dev.devTool.graph.edgeCycle",
+    )
 
     // https://github.com/Polyfrost/OneConfig/blob/feat/26.3/minecraft/src/main/java/org/polyfrost/oneconfig/api/ui/v1/keybind/internal/MinecraftKeybindCodec.java
     // Note that "key.keyboard.application" and "key.keyboard.keypad.period" are 26.3 only.

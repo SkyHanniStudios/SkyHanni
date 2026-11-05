@@ -50,7 +50,7 @@ class CustomWardrobeScreen(
         CustomWardrobeKeybinds.handlePress()
     }
 
-    override fun onMouseClicked(originalMouseX: Int, originalMouseY: Int, mouseButton: InputConstants.Key) {
+    override fun onMouseClicked(originalMouseX: Int, originalMouseY: Int, key: InputConstants.Key) {
         CustomWardrobeKeybinds.handlePress()
     }
 }

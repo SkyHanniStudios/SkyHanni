@@ -11,13 +11,13 @@ import io.github.notenoughupdates.moulconfig.common.text.StructuredText
 import io.github.notenoughupdates.moulconfig.gui.GuiComponent
 import io.github.notenoughupdates.moulconfig.gui.GuiImmediateContext
 import io.github.notenoughupdates.moulconfig.gui.KeyboardEvent
-import io.github.notenoughupdates.moulconfig.gui.KeyboardEvent.KeyPressed
 import io.github.notenoughupdates.moulconfig.gui.MouseEvent
-import io.github.notenoughupdates.moulconfig.gui.MouseEvent.Click
 import io.github.notenoughupdates.moulconfig.gui.editors.ComponentEditor
 import io.github.notenoughupdates.moulconfig.internal.Warnings
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption
+import net.minecraft.client.input.KeyEvent
 
+// Based on MoulConfig GuiOptionEditorKeybind
 class GuiOptionEditorInputConstantsKey(option: ProcessedOption, defaultKey: InputConstants.Key) : ComponentEditor(option) {
     private var editingKeycode = false
     var component: GuiComponent
@@ -72,51 +72,46 @@ class GuiOptionEditorInputConstantsKey(option: ProcessedOption, defaultKey: Inpu
 
                 override fun mouseEvent(mouseEvent: MouseEvent, context: GuiImmediateContext): Boolean {
                     if (mouseEvent !is Click) return false
-                    if (mouseEvent.mouseState && mouseEvent.mouseButton != InputKeys.KEY_UNKNOWN && editingKeycode) {
-                        editingKeycode = false
-                        val mouseButton = mouseEvent.mouseButton
-                        option.set(InputKeys.mouse(mouseButton))
-                        return true
-                    }
+                    if (!mouseEvent.mouseState) return false
 
-                    if (mouseEvent.mouseState && mouseEvent.mouseButton == InputConstants.MOUSE_BUTTON_LEFT) {
-                        val height = getHeight()
-                        val width = getHeight()
-                        val mouseX = context.mouseX
-                        val mouseY = context.mouseY
-                        if (mouseX > width / 6 - 24 && mouseX < width / 6 + 16 && mouseY > height - 7 - 14 && mouseY < height - 7 + 2) {
-                            editingKeycode = true
-                            return true
-                        }
-                        if (mouseX > width / 6 - 24 + 48 - 3 && mouseX < width / 6 - 24 + 48 + 13 - 5 &&
-                            mouseY > height - 7 - 14 + 3 && mouseY < height - 7 - 14 + 3 + 11
-                        ) {
-                            option.set(defaultKey)
-                            return true
-                        }
-                    }
+                    val button = mouseEvent.mouseButton
+                    return when {
+                        button == InputConstants.MOUSE_BUTTON_LEFT -> {
+                            val height = getHeight()
+                            val width = getHeight()
+                            val mouseX = context.mouseX
+                            val mouseY = context.mouseY
+                            if (mouseX > width / 6 - 24 && mouseX < width / 6 + 16 && mouseY > height - 7 - 14 && mouseY < height - 7 + 2) {
+                                editingKeycode = true
+                                return true
+                            }
 
-                    return false
+                            if (mouseX > width / 6 - 24 + 48 - 3 && mouseX < width / 6 - 24 + 48 + 13 - 5 &&
+                                mouseY > height - 7 - 14 + 3 && mouseY < height - 7 - 14 + 3 + 11
+                            ) {
+                                option.set(defaultKey)
+                                return true
+                            }
+                            false
+                        }
+                        button != InputKeys.KEY_UNKNOWN && editingKeycode -> {
+                            editingKeycode = false
+                            option.set(InputKeys.mouse(button))
+                            true
+                        }
+                        else -> false
+                    }
                 }
 
                 override fun keyboardEvent(keyboardEvent: KeyboardEvent, context: GuiImmediateContext): Boolean {
-                    if (keyboardEvent is KeyPressed) {
-                        if (editingKeycode) {
-                            if (keyboardEvent.pressed) return true
-                            editingKeycode = false
-                            val keycode = keyboardEvent.keycode
-                            if (keycode == InputConstants.KEY_ESCAPE || keycode == InputKeys.KEY_UNKNOWN) {
-                                option.set(InputConstants.UNKNOWN)
-                                return true
-                            }
-                            option.set(InputKeys.keyboard(keycode))
-                            return true
-                        } else {
-                            return false
-                        }
-                    }
-
-                    return editingKeycode
+                    if (keyboardEvent !is KeyPressed) return editingKeycode
+                    if (!editingKeycode) return false
+                    if (keyboardEvent.pressed) return true
+                    editingKeycode = false
+                    val key = InputKeys.keyEvent(KeyEvent(keyboardEvent.keycode, keyboardEvent.scancode, 0))
+                        .takeUnless { it == InputKeys.KEY_ESCAPE } ?: InputConstants.UNKNOWN
+                    option.set(key)
+                    return true
                 }
             },
         )

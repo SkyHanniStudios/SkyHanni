@@ -215,7 +215,9 @@ dependencies {
     target.renderChestVersion?.let {
         includeImplementation("net.azureaaron:render-chest:$it")
         "productionRuntimeMods"("net.azureaaron:render-chest:$it")
-        "minecraftTestClientRuntimeLibraries"("net.azureaaron:render-chest:$it")
+        "minecraftTestClientRuntimeLibraries"("net.azureaaron:render-chest:$it") {
+            isTransitive = false
+        }
     }
 }
 
