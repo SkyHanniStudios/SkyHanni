@@ -122,12 +122,6 @@ allprojects {
 
 stonecutter active "26.2"
 
-stonecutter handlers {
-    configure("fsh", "vsh") {
-        commenter = line("//")
-    }
-}
-
 stonecutter parameters {
 
     val versionedCatalog = versionCatalogs.named("libs" + current.version.replace(".", ""))
