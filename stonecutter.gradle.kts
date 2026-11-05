@@ -132,8 +132,8 @@ stonecutter parameters {
 
     val versionedCatalog = versionCatalogs.named("libs" + current.version.replace(".", ""))
     constants["renderchest"] = versionedCatalog.findLibrary("renderchest").isPresent
-    constants["rei"] = versionedCatalog.findLibrary("rei").isPresent
-    constants["iris"] = true
+    constants["rei_compat"] = versionedCatalog.findLibrary("rei").isPresent
+    constants["iris_compat"] = true
 
     replacements {
         string(current.parsed < "26.2") {

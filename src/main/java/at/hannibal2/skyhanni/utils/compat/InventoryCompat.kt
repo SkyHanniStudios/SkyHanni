@@ -34,7 +34,10 @@ object InventoryCompat {
         val screen = MinecraftCompat.screen as? SkyHanniGuiContainer ?: return null
         val stack = screen.hoveredSlot?.item
         if (stack != null) return stack
+        //? if rei_compat
         return ReiCompat.getHoveredStackFromRei()
+        //? else
+        // return null
     }
 
     fun slotUnderCursor(): Slot? {

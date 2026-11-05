@@ -13,7 +13,7 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import java.awt.Color
 
-//? if >= 26.2 {
+//? if renderchest {
 import net.azureaaron.renderchest.api.CustomGlowCallback
 import net.azureaaron.renderchest.api.GlowConstants
 //?}
@@ -31,7 +31,7 @@ object RenderLivingEntityHelper {
 
     private var currentGlowEvent: RenderEntityOutlineEvent? = null
 
-    //? if >= 26.2 {
+    //? if renderchest {
     init {
         CustomGlowCallback.EVENT.register { entity, _ ->
             // Minecraft already renders all glow as opaque, and non-opaque values are reserved by Render Chest.
@@ -46,7 +46,7 @@ object RenderLivingEntityHelper {
 
     @JvmStatic
     fun postNoXrayOutlineEvent() {
-        //? if < 26.2 {
+        //? if !renderchest {
         /*isUsingCustomGlow = entityGlowMap.values.any { it.condition() } ||
             currentGlowEvent?.entitiesToOutline.orEmpty().isNotEmpty()
         *///?}

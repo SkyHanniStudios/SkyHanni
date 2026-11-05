@@ -1,5 +1,6 @@
 package at.hannibal2.skyhanni.compat
 
+//? if rei_compat {
 import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.compat.MouseCompat
@@ -68,3 +69,4 @@ object ReiCompat {
 
     private fun currentMousePoint(): Point = Point(MouseCompat.getX(), MouseCompat.getY())
 }
+//?}

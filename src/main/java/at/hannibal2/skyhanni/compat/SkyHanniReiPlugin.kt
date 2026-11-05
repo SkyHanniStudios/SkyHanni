@@ -1,5 +1,6 @@
 package at.hannibal2.skyhanni.compat
 
+//? if rei_compat {
 import at.hannibal2.skyhanni.utils.compat.SkyHanniBaseScreen
 import me.shedaniel.math.Rectangle
 import me.shedaniel.rei.api.client.plugins.REIClientPlugin
@@ -34,3 +35,4 @@ private class SkyHanniDisplayBoundsProvider : DisplayBoundsProvider<SkyHanniBase
         return SkyHanniBaseScreen::class.java.isAssignableFrom(screen)
     }
 }
+//?}

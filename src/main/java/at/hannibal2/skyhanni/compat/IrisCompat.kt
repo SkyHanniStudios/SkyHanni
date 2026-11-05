@@ -1,5 +1,6 @@
 package at.hannibal2.skyhanni.compat
 
+//? if iris_compat {
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.events.utils.InitFinishedEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -57,3 +58,4 @@ object IrisCompat {
         }
     }
 }
+//?}

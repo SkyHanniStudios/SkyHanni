@@ -26,6 +26,7 @@ public abstract class MixinKeyboardHandler {
         //System.out.println("Key: " + key + " Scancode: " + scancode + " Action: " + action + " Modifiers: " + modifiers);
 
         // Don't send key events if REI search bar is selected
+        //? if rei_compat
         if (ReiCompat.searchHasFocus()) return;
 
         /*
