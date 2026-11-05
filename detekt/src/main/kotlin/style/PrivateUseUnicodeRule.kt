@@ -16,7 +16,7 @@ class PrivateUseUnicodeRule(config: Config) :
         "☯❣"
     )
 
-    private val extraIconsCodePoints: List<Int> by lazy { extraIcons.codePoints().toList() }
+    private val extraIconsCodePoints: List<Int> = extraIcons.codePoints().toList()
 
     override fun visitStringTemplateExpression(
         expression: KtStringTemplateExpression,
@@ -33,18 +33,14 @@ class PrivateUseUnicodeRule(config: Config) :
                         val displayCodePoint = codePoint.toString(16).uppercase().padStart(4, '0')
                         expression.reportIssue(
                             "String contains private-use Unicode character U+$displayCodePoint " +
-                                "Use SkyblockStat/SkyblockMobType/SkyblockIcon instead."
+                                "Use SkyblockIcon instead."
                         )
                     }
             }
     }
 
     private fun Int.isPrivateUse(): Boolean {
-        if (this in 0xE000..0xF8FF ||
-            this in 0xF0000..0xFFFFD ||
-            this in 0x100000..0x10FFFD) {
-            return true
-        }
-        return extraIconsCodePoints.contains(this)
+        return Character.getType(this) == Character.PRIVATE_USE ||
+            this in extraIconsCodePoints
     }
 }
