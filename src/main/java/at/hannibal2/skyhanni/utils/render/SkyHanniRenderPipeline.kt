@@ -20,10 +20,8 @@ import com.mojang.blaze3d.pipeline.BindGroupLayout
 import net.minecraft.client.renderer.BindGroupLayouts
 //?}
 
-//? if iris_compat {
-import at.hannibal2.skyhanni.compat.IrisCompat
+//? if iris_compat
 import at.hannibal2.skyhanni.compat.IrisCompat.IrisProgram
-//?}
 
 //? if < 26.2
 //private typealias PrimitiveTopology = VertexFormat.Mode
