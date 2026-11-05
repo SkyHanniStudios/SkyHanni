@@ -185,9 +185,11 @@ dependencies {
     runtimeOnly(versionedCatalog["hypixel-modapi-fabric"])
     "productionRuntimeMods"(versionedCatalog["hypixel-modapi-fabric"])
 
-    compileOnly(versionedCatalog["rei"]) { isTransitive = false }
-    "minecraftTestClientRuntimeLibraries"(versionedCatalog["rei"]) {
-        isTransitive = false
+    versionedCatalog.libraries.getOrNull("rei")?.let {
+        compileOnly(it) { isTransitive = false }
+        "minecraftTestClientRuntimeLibraries"(it) {
+            isTransitive = false
+        }
     }
     compileOnly(libs.basicMath)
     "minecraftTestClientRuntimeLibraries"(libs.basicMath)
