@@ -13,6 +13,7 @@ import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtProperty
 import potentialbugs.StorageNeedsExpose.Companion.CONFIG_PACKAGE
 import utils.DetektUtils.doWeNeedToCheckConfigProp
+import utils.DetektUtils.hasAnnotation
 
 class StorageVarOrVal(config: Config) : RequiresAnalysisApi, SkyHanniRule(
     config,
@@ -58,9 +59,8 @@ class StorageVarOrVal(config: Config) : RequiresAnalysisApi, SkyHanniRule(
     }
 
     private fun shouldBeVar(property: KtProperty): Boolean {
-        val annotations = property.annotationEntries.mapNotNull { it.shortName?.asString() }
-        val isInfoText = "ConfigEditorInfoText" in annotations
-        val isKeyMapping = "ConfigEditorKeyMapping" in annotations
+        val isInfoText = property.hasAnnotation("ConfigEditorInfoText")
+        val isKeyMapping = property.hasAnnotation("ConfigEditorKeyMapping")
 
         return analyze(property) {
             val type = property.returnType
