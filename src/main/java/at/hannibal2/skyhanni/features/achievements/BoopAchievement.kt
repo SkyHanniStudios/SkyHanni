@@ -28,7 +28,7 @@ object BoopAchievement {
     private const val BOOP_ACHIEVEMENT = "Social Butterfly"
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "Social Butterfly".asComponent(),
             description = componentBuilder {
@@ -45,7 +45,7 @@ object BoopAchievement {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (boopPattern.matches(event.cleanMessage)) {
             val achievement = AchievementManager.getAchievement(BOOP_ACHIEVEMENT)
             AchievementManager.updateTieredAchievement(BOOP_ACHIEVEMENT, achievement.data.progress + 1)

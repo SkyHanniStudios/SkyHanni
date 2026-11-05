@@ -26,7 +26,7 @@ object RenderData {
     }
 
     @HandleEvent
-    fun onBackgroundDraw() {
+    private fun onBackgroundDraw() {
         if (GlobalRender.renderDisabled) return
         if (GuiEditManager.isInGui() || VisualWordGui.isInGui()) return
         val currentScreen = MinecraftCompat.screen ?: return

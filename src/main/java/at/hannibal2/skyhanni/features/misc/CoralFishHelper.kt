@@ -149,14 +149,14 @@ object CoralFishHelper {
     )
 
     @HandleEvent(onlyOnIsland = IslandType.GALATEA)
-    fun onChestGuiRender() {
+    private fun onChestGuiRender() {
         if (!config.coralFishHelper) return
         if (display.isEmpty()) return
         config.coralFishHelperPosition.renderRenderables(display, posLabel = "Coral Fish Helper")
     }
 
     @HandleEvent
-    fun onInventoryClose() {
+    private fun onInventoryClose() {
         display = emptyList()
     }
 }

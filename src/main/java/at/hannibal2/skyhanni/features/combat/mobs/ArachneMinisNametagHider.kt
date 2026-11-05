@@ -14,7 +14,7 @@ object ArachneMinisNametagHider {
     private val config get() = SkyHanniMod.feature.combat.mobs
 
     @HandleEvent(priority = HandleEvent.HIGH, onlyOnIsland = IslandType.SPIDER_DEN)
-    fun onRenderLiving(event: SkyHanniRenderEntityEvent.Specials.Pre<ArmorStand>) {
+    private fun onRenderLiving(event: SkyHanniRenderEntityEvent.Specials.Pre<ArmorStand>) {
         if (!config.hideNameTagArachneMinis) return
 
         val entity = event.entity

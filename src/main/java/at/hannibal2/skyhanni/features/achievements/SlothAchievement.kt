@@ -18,7 +18,7 @@ object SlothAchievement {
     private const val SECURITY_SLOTH_ACHIEVEMENT = "Security Sloth"
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "Good Advice".asComponent(),
             description = componentBuilder {
@@ -33,7 +33,7 @@ object SlothAchievement {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.HUB)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (event.cleanMessage.startsWith("[SECURITY] Sloth")) {
             AchievementManager.completeAchievement(SECURITY_SLOTH_ACHIEVEMENT)
         }

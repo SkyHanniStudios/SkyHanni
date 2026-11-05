@@ -276,14 +276,14 @@ object ForagingBeaconSolver {
     private fun SafeItemStack.isPaused(): Boolean = this.`is`(ColoredBlockCompat.RED.clayBlock.asItem())
 
     @HandleEvent
-    fun onTick() {
+    private fun onTick() {
         if (!debugConfig.moongladeBeacon || nextDevUpdate.isInFuture()) return
         display = drawDisplay()
         nextDevUpdate = SimpleTimeMark.now() + 100.milliseconds
     }
 
     @HandleEvent(onlyOnIslandTypeTag = [IslandTypeTag.FORAGING_CUSTOM_TREES])
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         if (!solverEnabled()) return
         if (event.blockOverClick()) {
             SoundUtils.playErrorSound()
@@ -314,13 +314,13 @@ object ForagingBeaconSolver {
     private var currentServerTicks = 0
 
     @HandleEvent(onlyOnIslandTypeTag = [IslandTypeTag.FORAGING_CUSTOM_TREES])
-    fun onServerTick() {
+    private fun onServerTick() {
         if (!colorMinigameInventory.isInside()) return
         currentServerTicks++
     }
 
     @HandleEvent(onlyOnIslandTypeTag = [IslandTypeTag.FORAGING_CUSTOM_TREES])
-    fun onPlaySound(event: PlaySoundEvent) {
+    private fun onPlaySound(event: PlaySoundEvent) {
         if (!colorMinigameInventory.isInside() || event.soundName != "block.note_block.bass") return
         val pitch = BeaconPitch.getByPitch(event.pitch) ?: return
 
@@ -348,7 +348,7 @@ object ForagingBeaconSolver {
     }
 
     @HandleEvent(onlyOnIslandTypeTag = [IslandTypeTag.FORAGING_CUSTOM_TREES])
-    fun onBackgroundDrawn() {
+    private fun onBackgroundDrawn() {
         if (!solverEnabled()) return
         InventoryUtils.getItemsInOpenChest().forEach { slot ->
             if (normalTuning.tryHighlightSlot(slot)) return@forEach
@@ -357,14 +357,14 @@ object ForagingBeaconSolver {
     }
 
     @HandleEvent(onlyOnIslandTypeTag = [IslandTypeTag.FORAGING_CUSTOM_TREES])
-    fun onRenderItemTip(event: RenderInventoryItemTipEvent) {
+    private fun onRenderItemTip(event: RenderInventoryItemTipEvent) {
         if (!solverEnabled()) return
         normalTuning.tryLabelIfAble(event)
         enchantedTuning.tryLabelIfAble(event)
     }
 
     @HandleEvent(onlyOnIslandTypeTag = [IslandTypeTag.FORAGING_CUSTOM_TREES])
-    fun onInventoryUpdated() {
+    private fun onInventoryUpdated() {
         if (!solverEnabled()) return
 
         for (slot in InventoryUtils.getItemsInOpenChest().filter { it.hasItem() && it.item.isNotEmpty() }) {

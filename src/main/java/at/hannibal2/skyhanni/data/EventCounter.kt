@@ -21,7 +21,7 @@ object EventCounter {
     private var enabled = false
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         enabled = SkyBlockUtils.onHypixel && config.eventCounter
     }
 

@@ -56,7 +56,7 @@ object CustomTodosGui {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onTabListUpdate(event: TabListUpdateEvent) {
+    private fun onTabListUpdate(event: TabListUpdateEvent) {
         todos.forEach { todo ->
             if (todo.triggerTarget != CustomTodo.TriggerTarget.TAB_LIST) return@forEach
             event.tabList.forEach { line ->
@@ -66,7 +66,7 @@ object CustomTodosGui {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onScoreboardUpdate(event: ScoreboardUpdateEvent) {
+    private fun onScoreboardUpdate(event: ScoreboardUpdateEvent) {
         todos.forEach { todo ->
             if (todo.triggerTarget != CustomTodo.TriggerTarget.SIDEBAR) return@forEach
             event.new.forEach { line ->
@@ -76,7 +76,7 @@ object CustomTodosGui {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onActionBarUpdate(event: ActionBarUpdateEvent) {
+    private fun onActionBarUpdate(event: ActionBarUpdateEvent) {
         todos.forEach { todo ->
             if (todo.triggerTarget != CustomTodo.TriggerTarget.ACTION_BAR) return@forEach
             val matchType = matchString(todo, event.actionBar)
@@ -86,7 +86,7 @@ object CustomTodosGui {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         todos.forEach { todo ->
             if (todo.triggerTarget != CustomTodo.TriggerTarget.CHAT) return@forEach
             val matchType = matchString(todo, event.message)
@@ -96,7 +96,7 @@ object CustomTodosGui {
     }
 
     @HandleEvent
-    fun onRender(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onRender(event: GuiRenderEvent.GuiOverlayRenderEvent) {
         if (!config.enabled) return
         if (todos.isEmpty()) return
         val display = mutableListOf<Renderable>()

@@ -15,7 +15,7 @@ object AttributesShardsInventory {
     private val config get() = AttributeShardsData.config
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onRenderItemTip(event: RenderInventoryItemTipEvent) {
+    private fun onRenderItemTip(event: RenderInventoryItemTipEvent) {
         if (!AttributeShardsData.attributeMenuInventory.isInside()) return
         if (!config.tierAsStackSize) return
 

@@ -24,7 +24,7 @@ object StarCultAchievement {
     private const val STAR_CULT_ACHIEVEMENT = "Weekly Cult"
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "Weekly Cult",
             description = "Attend 7 cult meetings",
@@ -34,7 +34,7 @@ object StarCultAchievement {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         starCultPattern.matchMatcher(event.cleanMessage) {
             if (group("amount").formatInt() >= 7) {
                 AchievementManager.completeAchievement(STAR_CULT_ACHIEVEMENT)

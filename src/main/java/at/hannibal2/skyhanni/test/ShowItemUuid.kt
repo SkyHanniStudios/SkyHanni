@@ -11,7 +11,7 @@ import at.hannibal2.skyhanni.utils.SkyBlockItemModifierUtils.getItemUuid
 object ShowItemUuid {
 
     @HandleEvent
-    fun onToolTip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!DevApi.config.debug.showItemUuid) return
         event.itemStack.getItemUuid()?.let {
             event.toolTip.add("§7Item UUID: '$it'")
@@ -19,7 +19,7 @@ object ShowItemUuid {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(3, "dev.showItemUuid", "dev.debug.showItemUuid")
     }
 }

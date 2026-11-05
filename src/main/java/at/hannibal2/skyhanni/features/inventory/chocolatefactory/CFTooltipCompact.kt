@@ -21,7 +21,7 @@ object CFTooltipCompact {
     private var tooltipToHover = listOf<Component>()
 
     @HandleEvent
-    fun onToolTip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!CFApi.inChocolateFactory) return
 
         if (config.tooltipMove) {
@@ -39,7 +39,7 @@ object CFTooltipCompact {
     }
 
     @HandleEvent
-    fun onChestGuiRender() {
+    private fun onChestGuiRender() {
         if (!CFApi.inChocolateFactory) return
         if (config.tooltipMove) {
             if (lastHover.passedSince() < 1.seconds) {
@@ -66,7 +66,7 @@ object CFTooltipCompact {
     }
 
     @HandleEvent(priority = HandleEvent.HIGH)
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
 
         if (CFApi.inChocolateFactory) {
             if (event.slotId == 13) {

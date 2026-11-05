@@ -18,7 +18,7 @@ object RenderableTooltips {
     private var tooltip: DeferredTooltip? = null
 
     @HandleEvent
-    fun onRenderingTick(event: RenderingTickEvent) {
+    private fun onRenderingTick(event: RenderingTickEvent) {
         if (event.startPhase) {
             tooltip = null
         } else {

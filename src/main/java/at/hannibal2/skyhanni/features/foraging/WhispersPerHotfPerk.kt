@@ -15,7 +15,7 @@ object WhispersPerHotfPerk : CurrencyPerHotxPerk<HotfData.Companion>(HotfData, "
     private val config get() = SkyHanniMod.feature.foraging.hotf
 
     @HandleEvent
-    fun onToolTip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!isEnabled()) return
         handleHotxCurrency(
             event,

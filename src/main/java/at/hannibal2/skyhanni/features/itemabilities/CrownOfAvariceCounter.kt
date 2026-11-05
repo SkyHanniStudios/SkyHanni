@@ -76,7 +76,7 @@ object CrownOfAvariceCounter {
 
 
     @HandleEvent(SecondPassedEvent::class)
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         if (!isEnabled()) return
         if (!isWearingCrown) return
         // No need to update if paused, we'll unpause with onInventoryUpdated
@@ -85,7 +85,7 @@ object CrownOfAvariceCounter {
     }
 
     @HandleEvent
-    fun onInventoryArmorUpdate(event: OwnInventoryArmorUpdateEvent) {
+    private fun onInventoryArmorUpdate(event: OwnInventoryArmorUpdateEvent) {
         if (!isEnabled() || event.slot != 5) return
         val item = event.itemStack
         if (item.getInternalNameOrNull() != internalName) return
@@ -122,7 +122,7 @@ object CrownOfAvariceCounter {
         isWearingCrown && (totalCoins ?: 0) < MAX_AVARICE_COINS
 
     @HandleEvent(IslandJoinEvent::class)
-    fun onIslandJoin() {
+    private fun onIslandJoin() {
         if (config.resetOnWorldChange) reset()
         totalCoins = InventoryUtils.getHelmet()?.getCoinsOfAvarice()
     }

@@ -78,7 +78,7 @@ object CropCollectionApi {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shaddcropcollection") {
             description = "Add an amount to a certain crop collection."
             category = CommandCategory.DEVELOPER_TEST
@@ -131,7 +131,7 @@ object CropCollectionApi {
     }
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("crop collection")
         event.addIrrelevant {
             cropCollectionCounter?.forEach {

@@ -30,7 +30,7 @@ object DungeonArchitectFeatures {
     private val architectsFirstDraftItem = "ARCHITECT_FIRST_DRAFT".toInternalName()
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!isEnabled()) return
 
         puzzleFailPattern.matchMatcher(event.message) {

@@ -73,7 +73,7 @@ object GardenVisitorCompactChat {
     private var rewardsList = mutableListOf<String>()
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (GardenApi.inGarden() && config.compactRewardChat && (
                 fullyAcceptedPattern.matcher(event.message.removeResets()).matches() ||
                     visitorRewardPattern.matcher(event.message.removeResets()).matches() ||

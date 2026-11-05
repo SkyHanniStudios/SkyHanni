@@ -40,7 +40,7 @@ object HighlightPlaceableNpcs {
     private var highlightedItems = emptyList<Int>()
 
     @HandleEvent
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         inInventory = false
         if (!isEnabled()) return
 
@@ -57,13 +57,13 @@ object HighlightPlaceableNpcs {
     }
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    private fun onInventoryClose(event: InventoryCloseEvent) {
         inInventory = false
         highlightedItems = emptyList()
     }
 
     @HandleEvent(priority = HandleEvent.LOW)
-    fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
+    private fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
         if (!isEnabled() || !inInventory) return
         for (slot in InventoryUtils.getItemsInOpenChest()) {
             if (slot.containerSlot in highlightedItems) {
@@ -73,7 +73,7 @@ object HighlightPlaceableNpcs {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(31, "stranded", "misc.stranded")
     }
 

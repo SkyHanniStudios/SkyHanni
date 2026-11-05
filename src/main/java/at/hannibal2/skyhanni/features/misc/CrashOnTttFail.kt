@@ -24,7 +24,7 @@ object CrashOnTttFail {
     )
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!isEnabled()) return
         tttFailPattern.matchMatcher(event.chatComponent) {
             if (group("name") == PlayerUtils.getName()) {

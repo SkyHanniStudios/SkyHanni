@@ -80,25 +80,25 @@ object BingoCardDisplay {
     private fun isEnabled() = config.enabled && SkyBlockUtils.isBingoProfile
 
     @HandleEvent
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         if (!isEnabled()) return
         if (hasHiddenPersonalGoals) dirty = true
     }
 
     @HandleEvent(BingoCardUpdateEvent::class)
-    fun onBingoCardUpdate() {
+    private fun onBingoCardUpdate() {
         if (!isEnabled()) return
         dirty = true
     }
 
     @HandleEvent
-    fun onConfigLoad() {
+    private fun onConfigLoad() {
         config.hideCommunityGoals.onToggle { dirty = true }
         config.nextTipDuration.onToggle { dirty = true }
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shbingotoggle") {
             description = "Toggle the bingo card display mode"
             category = CommandCategory.USERS_ACTIVE
@@ -113,7 +113,7 @@ object BingoCardDisplay {
 
     // todo use RenderDisplayHelper
     @HandleEvent
-    fun onGuiRenderTop() {
+    private fun onGuiRenderTop() {
         if (InventoryUtils.inAnyInventory()) {
             InventoryGuiScaleCompat.withOriginalHudScale {
                 renderDisplay()
@@ -281,7 +281,7 @@ object BingoCardDisplay {
     private var lastSneak = false
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(2, "bingo", "event.bingo")
     }
 }

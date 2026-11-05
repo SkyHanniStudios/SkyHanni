@@ -16,7 +16,7 @@ object CocoonOverlay {
     private val config get() = SkyHanniMod.feature.combat.cocoonOverlay
 
     @HandleEvent
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!CocoonAPI.canCocoon && config.requireCocoonPossible) return
         for (cocoon in CocoonAPI.getVisible()) {
             if (config.showCocoonContainedMobName) event.drawDynamicText(

@@ -25,14 +25,14 @@ object CFTimeTowerManager {
     private var wasTimeTowerRecentlyActive = false
 
     @HandleEvent
-    fun onProfileJoin(event: ProfileJoinEvent) {
+    private fun onProfileJoin(event: ProfileJoinEvent) {
         wasTimeTowerRecentlyActive = false
     }
 
     private const val HOVER_TEXT = "§eClick to run /cf!"
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         val profileStorage = profileStorage ?: return
 
         if (profileStorage.currentTimeTowerEnds.isInPast()) {
@@ -151,7 +151,7 @@ object CFTimeTowerManager {
     }
 
     @HandleEvent
-    fun onProfileChange(event: ProfileJoinEvent) {
+    private fun onProfileChange(event: ProfileJoinEvent) {
         lastTimeTowerWarning = SimpleTimeMark.farPast()
     }
 }

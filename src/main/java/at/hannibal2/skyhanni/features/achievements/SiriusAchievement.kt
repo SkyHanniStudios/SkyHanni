@@ -21,7 +21,7 @@ object SiriusAchievement {
     private const val DA_ACHIEVEMENT = "20 items da"
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "Adopted by Sirius",
             description = "Buy 20 items from Sirius",
@@ -31,7 +31,7 @@ object SiriusAchievement {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.HUB)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         daItemsPattern.matchMatcher(event.cleanMessage) {
             if (group("count").toInt() >= 20) {
                 AchievementManager.completeAchievement(DA_ACHIEVEMENT)

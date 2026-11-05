@@ -24,7 +24,7 @@ object ParticleHider {
     private fun inM7Boss() = DungeonApi.inDungeon() && DungeonApi.dungeonFloor == "M7" && DungeonApi.inBossRoom
 
     @HandleEvent
-    fun onParticle(event: ParticleEvent) {
+    private fun onParticle(event: ParticleEvent) {
         with(event) {
             val hideFarCancel = (config.hideFarParticles && distanceToPlayer > 40 && !inM7Boss())
             val hideCloseRedstoneCancel = (config.hideCloseRedstoneParticles && type == ParticleTypes.DUST && distanceToPlayer < 2)
@@ -55,7 +55,7 @@ object ParticleHider {
     fun shouldHideFireballParticles() = MinecraftCompat.localWorldExists && config.hideFireballParticles
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(3, "misc.hideBlazeParticles", "misc.particleHiders.hideBlazeParticles")
         event.move(3, "misc.hideEndermanParticles", "misc.particleHiders.hideEndermanParticles")
         event.move(3, "misc.hideFarParticles", "misc.particleHiders.hideFarParticles")

@@ -76,7 +76,7 @@ object TrevorTracker {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         peltsPerSecond.clear()
         peltsPerHour = 0
         stoppedChecks = 0
@@ -86,7 +86,7 @@ object TrevorTracker {
     private fun formatDisplay(map: List<Renderable>) = config.textFormat.map { map[it.ordinal] }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_FARMING_ISLANDS)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         val storage = ProfileStorageData.profileSpecific?.trapperData ?: return
 
         selfKillMobPattern.matchMatcher(event.message) {
@@ -135,7 +135,7 @@ object TrevorTracker {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_FARMING_ISLANDS)
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
         if (!shouldDisplay()) return
         config.position.renderRenderables(display, posLabel = "Trevor Tracker")
     }

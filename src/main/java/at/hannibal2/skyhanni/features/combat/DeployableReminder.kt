@@ -33,7 +33,7 @@ object DeployableReminder {
     private val scheduledWarnings = ConcurrentHashMap.newKeySet<WarningType>()
 
     @HandleEvent
-    fun onSlayerStateChange(event: SlayerStateChangeEvent) {
+    private fun onSlayerStateChange(event: SlayerStateChangeEvent) {
         if (!isActive(SLAYER)) return
         if (event.state != SlayerApi.ActiveQuestState.BOSS_FIGHT) return
 
@@ -45,7 +45,7 @@ object DeployableReminder {
     }
 
     @HandleEvent(onlyOnIsland = MINESHAFT)
-    fun onIslandJoin() {
+    private fun onIslandJoin() {
         if (!isActive(MINESHAFT)) return
 
         scheduleWarning(
@@ -56,7 +56,7 @@ object DeployableReminder {
     }
 
     @HandleEvent
-    fun onTrophyFishCaught() {
+    private fun onTrophyFishCaught() {
         if (!isActive(TROPHY_FISHING)) return
         if (!FishingApi.isTrophyFishing()) return
 
@@ -67,7 +67,7 @@ object DeployableReminder {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onGuiRenderOverlay() {
+    private fun onGuiRenderOverlay() {
         if (!isEnabled()) return
         activeWarnings.removeIf { it.startTime.passedSince() > config.warningDuration.seconds }
 
@@ -79,7 +79,7 @@ object DeployableReminder {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         activeWarnings.clear()
         scheduledWarnings.clear()
     }

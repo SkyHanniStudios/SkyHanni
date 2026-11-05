@@ -77,7 +77,7 @@ object PowderTracker {
     }
 
     @HandleEvent
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         if (!isEnabled()) return
         calculateResourceHour(gemstoneInfo)
         calculateResourceHour(mithrilInfo)
@@ -123,7 +123,7 @@ object PowderTracker {
     }
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!isEnabled()) return
         val msg = event.cleanMessage
 
@@ -155,7 +155,7 @@ object PowderTracker {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CRYSTAL_HOLLOWS)
-    fun onPowderGain(event: PowderEvent.Gain) {
+    private fun onPowderGain(event: PowderEvent.Gain) {
         if (lastChestPicked.passedSince() > 5.seconds) return
         tracker.modify {
             val reward = when (event.powder) {
@@ -167,14 +167,14 @@ object PowderTracker {
     }
 
     @HandleEvent
-    fun onConfigLoad() {
+    private fun onConfigLoad() {
         config.textFormat.afterChange {
             tracker.update()
         }
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         if (!isEnabled()) return
         gemstoneInfo.perHour = 0.0
         gemstoneInfo.stoppedChecks = 0
@@ -198,7 +198,7 @@ object PowderTracker {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(2, "misc.powderTrackerConfig", "mining.powderTracker")
         event.transform(8, "#profile.powderTracker") { old -> old.asJsonObject.get("0") }
 
@@ -226,7 +226,7 @@ object PowderTracker {
     }
 
     @HandleEvent
-    fun onIslandChange(event: IslandChangeEvent) {
+    private fun onIslandChange(event: IslandChangeEvent) {
         if (event.newIsland == IslandType.CRYSTAL_HOLLOWS) {
             tracker.firstUpdate()
         }
@@ -411,7 +411,7 @@ object PowderTracker {
     private fun isEnabled() = IslandType.CRYSTAL_HOLLOWS.isInIsland() && config.enabled
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shresetpowdertracker") {
             description = "Resets the Powder Tracker"
             category = CommandCategory.USERS_RESET

@@ -58,7 +58,7 @@ class HideNotClickableConfig {
     @SkyHanniModule
     companion object {
         @HandleEvent
-        fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+        private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
             val base = "inventory.hideNotClickable"
             event.move(126, "$base.opacity", "$base.transparency")
         }

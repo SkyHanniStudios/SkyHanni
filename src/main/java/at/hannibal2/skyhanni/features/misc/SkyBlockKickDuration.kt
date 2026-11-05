@@ -57,7 +57,7 @@ object SkyBlockKickDuration {
     }
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!config.enabled || !(lastKickTime.isFarFuture())) return
 
         if (kickPattern.matches(event.message)) {
@@ -75,7 +75,7 @@ object SkyBlockKickDuration {
     }
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
         if (!config.enabled || !SkyBlockUtils.onHypixel || !showTime) return
 
         if (SkyBlockUtils.inSkyBlock || lastKickTime.passedSince() > 5.minutes) notKicked()

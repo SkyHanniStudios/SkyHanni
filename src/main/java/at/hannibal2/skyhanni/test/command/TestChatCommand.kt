@@ -82,7 +82,7 @@ object TestChatCommand {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shtestmessage") {
             description = "Sends a custom chat message client side in the chat"
             category = CommandCategory.DEVELOPER_TEST

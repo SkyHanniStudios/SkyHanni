@@ -15,7 +15,7 @@ object ReindrakeWarpHelper {
     private val config get() = SkyHanniMod.feature.event.winter
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!isEnabled()) return
         if (!WinterApi.isReindrakeSpawnMessage(event.cleanMessage)) return
         ChatUtils.clickToActionOrDisable(

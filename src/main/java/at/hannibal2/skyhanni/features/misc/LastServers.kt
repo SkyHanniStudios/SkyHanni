@@ -24,7 +24,7 @@ object LastServers {
     private val lastServers = mutableMapOf<String, SimpleTimeMark>()
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         if (!isEnabled()) return
 
         val id = HypixelData.serverId ?: return

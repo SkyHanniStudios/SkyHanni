@@ -25,7 +25,7 @@ object ColdOverlay {
     private val textureLocation = createResourceLocation("minecraft", "textures/misc/powder_snow_outline.png")
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
         if (!isEnabled()) return
         val alpha = getColdAlpha()
         if (alpha == 0f) return
@@ -41,7 +41,7 @@ object ColdOverlay {
     }
 
     @HandleEvent
-    fun onColdUpdate(event: ColdUpdateEvent) {
+    private fun onColdUpdate(event: ColdUpdateEvent) {
         val duration = if (event.cold == 0) 1.seconds else 0.seconds
         DelayedRun.runDelayed(duration) {
             lastCold = cold

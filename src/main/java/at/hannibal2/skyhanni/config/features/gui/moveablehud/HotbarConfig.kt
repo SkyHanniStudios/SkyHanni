@@ -32,7 +32,7 @@ class HotbarConfig : MoveableHudConfig {
     @SkyHanniModule
     companion object {
         @HandleEvent
-        fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+        private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
             event.move(129, "gui.hotbar.editable", "gui.hotbar.enabled")
             event.move(129, "gui.hotbar.hotbar", "gui.hotbar.position")
         }

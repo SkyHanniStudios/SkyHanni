@@ -13,7 +13,7 @@ import at.hannibal2.skyhanni.utils.HypixelCommands
 object PetStorageCommands {
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shresetpetstorage") {
             description = "Removes all pets from SkyHanni's storage"
             category = CommandCategory.USERS_RESET

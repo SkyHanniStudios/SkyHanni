@@ -39,7 +39,7 @@ object NpcDayLimitTracker {
     )
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!config.enabled) return
 
         npcSellPattern.matchMatcher(event.cleanMessage) {
@@ -51,7 +51,7 @@ object NpcDayLimitTracker {
     }
 
     @HandleEvent(GuiRenderEvent.GuiOverlayRenderEvent::class, onlyOnSkyblock = true)
-    fun onGuiRenderOverlay() {
+    private fun onGuiRenderOverlay() {
         if (!config.enabled) return
 
         config.position.renderRenderable(

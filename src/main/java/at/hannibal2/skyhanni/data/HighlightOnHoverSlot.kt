@@ -14,17 +14,17 @@ object HighlightOnHoverSlot {
     val currentSlots = mutableMapOf<Pair<Int, Int>, List<Int>>()
 
     @HandleEvent
-    fun onInventoryOpen(event: InventoryOpenEvent) {
+    private fun onInventoryOpen(event: InventoryOpenEvent) {
         currentSlots.clear()
     }
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    private fun onInventoryClose(event: InventoryCloseEvent) {
         currentSlots.clear()
     }
 
     @HandleEvent(priority = HandleEvent.LOW, onlyOnSkyblock = true)
-    fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
+    private fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
         val list = currentSlots.flatMapTo(mutableSetOf()) { it.value }
         for (slot in InventoryUtils.getItemsInOpenChest()) {
             if (slot.index in list) {

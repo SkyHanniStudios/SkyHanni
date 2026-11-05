@@ -21,7 +21,7 @@ object BlobbercystsHighlight {
     private const val ENTITY_NAME = "Blobbercyst "
 
     @HandleEvent
-    fun onEntityEnterWorld(event: EntityEnterWorldEvent<RemotePlayer>) {
+    private fun onEntityEnterWorld(event: EntityEnterWorldEvent<RemotePlayer>) {
         if (!isEnabled()) return
         val entity = event.entity
         if (entity.name.string != ENTITY_NAME) return
@@ -30,13 +30,13 @@ object BlobbercystsHighlight {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         if (!isEnabled()) return
         entityList.clear()
     }
 
     @HandleEvent
-    fun onEntityDeath(event: EntityDeathEvent<*>) {
+    private fun onEntityDeath(event: EntityDeathEvent<*>) {
         if (!isEnabled()) return
         if (entityList.contains(event.entity)) {
             entityList.remove(event.entity)
@@ -46,7 +46,7 @@ object BlobbercystsHighlight {
     fun isEnabled() = RiftApi.inRift() && config.highlightBlobbercysts && SkyBlockUtils.graphArea == "Colosseum"
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(9, "rift.area.colosseumConfig", "rift.area.colosseum")
     }
 }

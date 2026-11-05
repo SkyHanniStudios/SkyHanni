@@ -31,7 +31,7 @@ object DevApi {
     val mainToggles get() = config.mainToggles
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(127, "dev.damageIndicatorBackend", "dev.mainToggles.damageIndicator")
         event.move(127, "dev.mobDebug.enable", "dev.mainToggles.mobDetection")
         event.move(127, "dev.pingApi", "dev.mainToggles.pingApi")

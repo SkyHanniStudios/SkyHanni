@@ -68,7 +68,7 @@ object FlowstateHelper {
     private var flowstateCache: Int? = null
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onBlockMined(event: OreMinedEvent) {
+    private fun onBlockMined(event: OreMinedEvent) {
         if (!IslandTypeTag.CUSTOM_MINING.isInIsland()) return
         if (flowstateCache == null) return
 
@@ -80,7 +80,7 @@ object FlowstateHelper {
     }
 
     @HandleEvent
-    fun onTick() {
+    private fun onTick() {
         if (!IslandTypeTag.CUSTOM_MINING.isInIsland()) return
 
         attemptClearDisplay()
@@ -121,7 +121,7 @@ object FlowstateHelper {
     }
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
         if (!IslandTypeTag.CUSTOM_MINING.isInIsland() || !config.enabled) return
         if (flowstateCache == null && !streakEndTimer.isInFuture()) return
 
@@ -166,12 +166,12 @@ object FlowstateHelper {
     }
 
     @HandleEvent
-    fun onChangeItem(event: ItemInHandChangeEvent) {
+    private fun onChangeItem(event: ItemInHandChangeEvent) {
         hasFlowstate()
     }
 
     @HandleEvent
-    fun onIslandChange(event: IslandChangeEvent) {
+    private fun onIslandChange(event: IslandChangeEvent) {
         streakEndTimer = SimpleTimeMark.farPast()
         attemptClearDisplay()
     }
@@ -259,7 +259,7 @@ object FlowstateHelper {
     }
 
     @HandleEvent
-    fun onUserLuck(event: UserLuckCalculateEvent) {
+    private fun onUserLuck(event: UserLuckCalculateEvent) {
         if (personalBest < 500) return
         val luck = calculateFlowstateLuck(personalBest)
         event.addLuck(luck)

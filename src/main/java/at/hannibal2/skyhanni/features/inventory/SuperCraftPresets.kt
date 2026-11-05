@@ -31,7 +31,7 @@ object SuperCraftPresets {
     private const val BUTTONS_PER_ROW = 4
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shsupercraftpreset") {
             description = "Add or remove supercraft preset amounts"
             category = CommandCategory.USERS_ACTIVE
@@ -75,7 +75,7 @@ object SuperCraftPresets {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onGuiOpen(event: GuiScreenOpenEvent) {
+    private fun onGuiOpen(event: GuiScreenOpenEvent) {
         display = null
         if (!config.enabled) return
         val gui = event.gui as? SignEditScreen ?: return
@@ -109,7 +109,7 @@ object SuperCraftPresets {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onScreenDrawn(event: ScreenDrawnEvent) {
+    private fun onScreenDrawn(event: ScreenDrawnEvent) {
         if (!config.enabled) return
         val gui = event.gui as? SignEditScreen ?: return
         if (!gui.isSupercraftAmountSetSign()) return

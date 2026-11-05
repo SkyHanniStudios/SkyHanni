@@ -12,7 +12,7 @@ import net.minecraft.world.entity.decoration.ArmorStand
 object DungeonBossHideDamageSplash {
 
     @HandleEvent(priority = HandleEvent.HIGH, onlyOnIsland = IslandType.CATACOMBS)
-    fun onRenderLiving(event: SkyHanniRenderEntityEvent.Specials.Pre<ArmorStand>) {
+    private fun onRenderLiving(event: SkyHanniRenderEntityEvent.Specials.Pre<ArmorStand>) {
         if (!SkyHanniMod.feature.dungeon.damageSplashBoss) return
         if (!DungeonApi.inBossRoom) return
 

@@ -64,7 +64,7 @@ object SkyBlockXPApi {
     fun getLevelColor(level: Int): LorenzColor = levelColors.entries.firstOrNull { level in it.key }?.value ?: LorenzColor.BLACK
 
     @HandleEvent
-    fun onWidgetUpdate(event: WidgetUpdateEvent) {
+    private fun onWidgetUpdate(event: WidgetUpdateEvent) {
         if (!event.isWidget(TabWidget.SB_LEVEL)) return
 
         TabWidget.SB_LEVEL.matchMatcherFirstLine {
@@ -76,7 +76,7 @@ object SkyBlockXPApi {
     }
 
     @HandleEvent
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         if (!UtilsPatterns.skyblockMenuInventory.isInside()) return
 
         val stack = event.inventoryItems.values.find { itemNamePattern.matches(it.hoverName.formattedTextCompatLeadingWhiteLessResets()) } ?: return

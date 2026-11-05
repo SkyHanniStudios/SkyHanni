@@ -20,7 +20,7 @@ import net.minecraft.client.gui.screens.inventory.ContainerScreen
 object ItemTipHelper {
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onRenderItemOverlayPost(event: GuiRenderItemEvent.RenderOverlayEvent.GuiRenderItemPost) {
+    private fun onRenderItemOverlayPost(event: GuiRenderItemEvent.RenderOverlayEvent.GuiRenderItemPost) {
         val stack = event.stack ?: return
 
         val itemTipEvent = RenderItemTipEvent(stack, mutableListOf())
@@ -38,7 +38,7 @@ object ItemTipHelper {
     }
 
     @HandleEvent(priority = HandleEvent.HIGHEST, onlyOnSkyblock = true)
-    fun onRenderInventoryItemOverlayPost(event: DrawScreenAfterEvent) {
+    private fun onRenderInventoryItemOverlayPost(event: DrawScreenAfterEvent) {
         if (GlobalRender.renderDisabled) return
 
         val gui = MinecraftCompat.screen

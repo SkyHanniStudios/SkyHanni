@@ -25,7 +25,7 @@ object RecipeAchievement {
     private const val RECIPE_ACHIEVEMENT = "Recipe Unlocker"
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "Recipe Fanatic".asComponent(),
             description = "Unlock all the Recipes".asComponent(),
@@ -36,7 +36,7 @@ object RecipeAchievement {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         if (!UtilsPatterns.skyblockMenuInventory.isInside()) return
         val recipeSlot = 21
         val lore = event.inventoryItems[recipeSlot]?.getLoreComponent() ?: return
