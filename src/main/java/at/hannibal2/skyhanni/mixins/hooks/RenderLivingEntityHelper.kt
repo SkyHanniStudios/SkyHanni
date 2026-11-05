@@ -38,7 +38,9 @@ object RenderLivingEntityHelper {
             getEntityGlowColor(entity)?.let(ARGB::opaque) ?: GlowConstants.NO_GLOW
         }
     }
-    //?} else {
+    //?}
+
+    //? if < 26.2 {
     /*@JvmStatic
     var isUsingCustomGlow = false
         private set
@@ -46,7 +48,7 @@ object RenderLivingEntityHelper {
 
     @JvmStatic
     fun postNoXrayOutlineEvent() {
-        //? if !renderchest {
+        //? if < 26.2 {
         /*isUsingCustomGlow = entityGlowMap.values.any { it.condition() } ||
             currentGlowEvent?.entitiesToOutline.orEmpty().isNotEmpty()
         *///?}
