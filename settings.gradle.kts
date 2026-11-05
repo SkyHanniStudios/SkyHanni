@@ -53,9 +53,28 @@ include("detekt")
 rootProject.name = "SkyHanni"
 rootProject.buildFileName = "root.gradle.kts"
 
+val versions = listOf("26.2", "26.1")
+
 stonecutter {
     create(rootProject) {
-        versions("26.1", "26.2")
-        vcsVersion = "26.2"
+        versions.forEach {
+            version(it)
+        }
+        vcsVersion = versions.first()
+    }
+}
+
+dependencyResolutionManagement {
+    versionCatalogs {
+        versions.forEach {
+            val name = it.replace(".", "")
+            create("libs$name") {
+                from(
+                    files(
+                        rootProject.projectDir.resolve("gradle/${it.replace(".", "_")}.versions.toml")
+                    )
+                )
+            }
+        }
     }
 }

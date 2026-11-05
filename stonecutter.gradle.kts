@@ -129,6 +129,12 @@ stonecutter handlers {
 }
 
 stonecutter parameters {
+
+    val versionedCatalog = versionCatalogs.named("libs" + current.version.replace(".", ""))
+    constants["renderchest"] = versionedCatalog.findLibrary("renderchest").isPresent
+    constants["rei"] = versionedCatalog.findLibrary("rei").isPresent
+    constants["iris"] = true
+
     replacements {
         string(current.parsed < "26.2") {
             replace("net.minecraft.world.entity.monster.cubemob.MagmaCube", "net.minecraft.world.entity.monster.MagmaCube")
