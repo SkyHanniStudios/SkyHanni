@@ -16,6 +16,4 @@ import com.mojang.blaze3d.platform.InputConstants
  * @param key the input code the user pressed
  */
 @PrimaryFunction("onKeyDown")
-class KeyDownEvent(val key: InputConstants.Key) : SkyHanniEvent() {
-    val keyCode: Int get() = key.value
-}
+class KeyDownEvent(val key: InputConstants.Key) : SkyHanniEvent()

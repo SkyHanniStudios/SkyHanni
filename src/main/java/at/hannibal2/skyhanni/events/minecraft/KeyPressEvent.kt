@@ -6,6 +6,4 @@ import com.mojang.blaze3d.platform.InputConstants
 
 /** Gets posted each tick it's pressed down*/
 @PrimaryFunction("onKeyPress")
-class KeyPressEvent(val key: InputConstants.Key) : SkyHanniEvent() {
-    val keyCode: Int get() = key.value
-}
+class KeyPressEvent(val key: InputConstants.Key) : SkyHanniEvent()
