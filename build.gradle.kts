@@ -207,7 +207,7 @@ dependencies {
     "minecraftTestClientRuntimeLibraries"(libs.keval)
 
     detektPlugins(libs.detektrules.neu)
-    detektPlugins(project(":detekt"))
+    detektPlugins(project(":detekt", "detektRuleClasses"))
     detektPlugins(libs.detektrules.ktlint)
 
     shadowImpl(libs.httpclient)
@@ -295,6 +295,10 @@ kotlin {
             languageVersion = "2.4"
         }
     }
+}
+
+tasks.named<KotlinCompile>("compileTestKotlin") {
+    friendPaths.setFrom(sourceSets.main.get().output.classesDirs)
 }
 
 // Tasks:
