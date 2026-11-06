@@ -25,15 +25,6 @@ object DVDLogoDisplay {
     private var renderableDirty = true
 
     private const val DVD_ACHIEVEMENT = "DVD Logo Corner Hits"
-    private val achievement = Achievement(
-        "Corner Connoisseur".asComponent(),
-        "Have the DVD Logo hit a corner perfectly".asComponent(),
-        userLuckAmount = 1f,
-        secret = false,
-        tiers = listOf(1, 5, 10),
-        hidden = true,
-    )
-
     private fun handleCornerHit() = with(AchievementManager) {
         val current = getAchievement(DVD_ACHIEVEMENT)
         updateTieredAchievement(DVD_ACHIEVEMENT, current.data.progress + 1)
@@ -44,10 +35,10 @@ object DVDLogoDisplay {
 
         // Capture here instead of at runtime
         val edgeSound = config.edgeHitSound.get().takeIf { it.isNotBlank() }?.let {
-            SoundUtils.createSound(it, 1f)
+            SoundUtils.createSound(it, 1f, isWarning = false)
         }
         val cornerSound = config.cornerHitSound.get().takeIf { it.isNotBlank() }?.let {
-            SoundUtils.createSound(it, 1f)
+            SoundUtils.createSound(it, 1f, isWarning = false)
         }
 
         renderable = Renderable.dvdLogo(
@@ -59,19 +50,22 @@ object DVDLogoDisplay {
             syncPosition = config.position,
             initialTrajectory = startTrajectory,
             onBounce = { edgeSound?.playSound() },
-            onCornerHit = { cornerSound?.playSound() },
+            onCornerHit = {
+                cornerSound?.playSound()
+                handleCornerHit()
+            },
         )
     }
 
     @HandleEvent
-    fun onConfigLoad() {
+    private fun onConfigLoad() {
         ConditionalUtils.onAnyToggled(config) {
             renderableDirty = true
         }
     }
 
     @HandleEvent
-    fun onGuiRenderTop() {
+    private fun onGuiRenderTop() {
         if (!config.enabled.get()) return
         if (renderableDirty) {
             buildRenderable()
@@ -82,7 +76,14 @@ object DVDLogoDisplay {
     }
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+        val achievement = Achievement(
+            name = "Corner Connoisseur".asComponent(),
+            description = "Have the DVD Logo hit a corner perfectly".asComponent(),
+            userLuckAmount = 1f,
+            tiers = listOf(1, 5, 10),
+            hidden = true,
+        )
         event.register(achievement, DVD_ACHIEVEMENT)
     }
 }

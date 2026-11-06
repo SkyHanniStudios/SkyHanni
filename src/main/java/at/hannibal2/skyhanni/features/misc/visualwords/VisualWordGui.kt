@@ -2,40 +2,29 @@ package at.hannibal2.skyhanni.features.misc.visualwords
 
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.config.ConfigManager
 import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
 import at.hannibal2.skyhanni.config.enums.OutsideSBFeature
 import at.hannibal2.skyhanni.data.model.TextInput
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
-import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.ChatUtils
-import at.hannibal2.skyhanni.utils.ChatUtils.chat
+import at.hannibal2.skyhanni.utils.ColorUtils.toColor
 import at.hannibal2.skyhanni.utils.GuiRenderUtils
 import at.hannibal2.skyhanni.utils.ItemUtils
-import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
-import at.hannibal2.skyhanni.utils.RenderUtils.HorizontalAlignment as HA
-import at.hannibal2.skyhanni.utils.RenderUtils.VerticalAlignment as VA
-import at.hannibal2.skyhanni.utils.SkullTextureHolder
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.StringUtils.convertToFormatted
 import at.hannibal2.skyhanni.utils.compat.ColoredBlockCompat
 import at.hannibal2.skyhanni.utils.compat.DrawContextUtils
+import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.RenderableUtils
-import at.hannibal2.skyhanni.utils.renderables.primitives.ItemStackRenderable.Companion.item
-import at.hannibal2.skyhanni.utils.renderables.primitives.text
-import at.hannibal2.skyhanni.utils.ColorUtils.toColor
 import at.hannibal2.skyhanni.utils.renderables.container.HorizontalContainerRenderable.Companion.horizontal
 import at.hannibal2.skyhanni.utils.renderables.container.VerticalContainerRenderable.Companion.vertical
-import at.hannibal2.skyhanni.utils.renderables.primitives.ItemRenderableConfig
-import com.google.gson.JsonObject
+import at.hannibal2.skyhanni.utils.renderables.primitives.ItemStackRenderable.Companion.item
+import at.hannibal2.skyhanni.utils.renderables.primitives.text
 import io.github.notenoughupdates.moulconfig.ChromaColour
-import net.minecraft.client.Minecraft
 import java.awt.Color
-import java.io.File
-import java.io.FileInputStream
-import java.io.InputStreamReader
-import java.nio.charset.StandardCharsets
+import at.hannibal2.skyhanni.utils.RenderUtils.HorizontalAlignment as HA
+import at.hannibal2.skyhanni.utils.RenderUtils.VerticalAlignment as VA
 
 /**
  * Constructs the full Renderable display for [VisualWordScreen].
@@ -57,36 +46,32 @@ object VisualWordGui {
     private val COLOR_BTN_ENABLED = ChromaColour.fromStaticRGB(35, 95, 35, 215)
     private val COLOR_BTN_DISABLED = ChromaColour.fromStaticRGB(110, 35, 35, 215)
 
-    val sbeConfigPath: File = File("." + File.separator + "config" + File.separator + "SkyblockExtras.cfg")
-
-    // TODO regex tests (idk hanni asked for the todo)
-    private val replacementLinePattern = "(?<from>.*)@-(?<to>.*)@:-(?<state>false|true)".toPattern()
-
-    private val upSkull by lazy {
-        ItemUtils.createSkull(
-            displayName = "§aMove Up",
-            uuid = "7f68dd73-1ff6-4193-b246-820975d6fab1",
-            value = SkullTextureHolder.getTexture("UP_ARROW"),
-        )
+    private val upSkull = ItemUtils.repoSkullProvider(
+        displayName = "§aMove Up",
+        uuid = "7f68dd73-1ff6-4193-b246-820975d6fab1",
+        repoSkullId = "UP_ARROW",
+    )
+    private val downSkull = ItemUtils.repoSkullProvider(
+        displayName = "§aMove Down",
+        uuid = "e4ace6de-0629-4719-aea3-3e113314dd3f",
+        repoSkullId = "DOWN_ARROW",
+    )
+    private val upItem by lazy { Renderable.item(upSkull) { scale = 1.0 } }
+    private val upItemDimmed by lazy {
+        Renderable.item(upSkull) {
+            scale = 1.0
+            alpha = 0.4f
+        }
     }
-    private val downSkull by lazy {
-        ItemUtils.createSkull(
-            displayName = "§aMove Down",
-            uuid = "e4ace6de-0629-4719-aea3-3e113314dd3f",
-            value = SkullTextureHolder.getTexture("DOWN_ARROW"),
-        )
+    private val downItem by lazy { Renderable.item(downSkull) { scale = 1.0 } }
+    private val downItemDimmed by lazy {
+        Renderable.item(downSkull) {
+            scale = 1.0
+            alpha = 0.4f
+        }
     }
-    private val defaultConfig = ItemRenderableConfig { scale = 1.0 }
-    private val dimmedConfig = ItemRenderableConfig {
-        scale = 1.0
-        alpha = 0.4f
-    }
-    private val upItem by lazy { Renderable.item(upSkull, defaultConfig) }
-    private val upItemDimmed by lazy { Renderable.item(upSkull, dimmedConfig) }
-    private val downItem by lazy { Renderable.item(downSkull, defaultConfig) }
-    private val downItemDimmed by lazy { Renderable.item(downSkull, dimmedConfig) }
 
-    fun isInGui(): Boolean = Minecraft.getInstance().screen is VisualWordScreen
+    fun isInGui(): Boolean = MinecraftCompat.screen is VisualWordScreen
 
     fun onCommand() {
         if (!SkyBlockUtils.onHypixel && !OutsideSBFeature.MODIFY_VISUAL_WORDS.isSelected()) {
@@ -97,7 +82,7 @@ object VisualWordGui {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shwords") {
             description = "Opens the config list for modifying visual words"
             callback { onCommand() }
@@ -137,6 +122,7 @@ object VisualWordGui {
                 screen.modifiedWords.mapIndexed { index, word -> buildWordRow(screen, index, word) },
                 height = 150,
                 scrollValue = screen.listScrollValue,
+                velocity = 4.0,
                 bypassChecks = true,
                 showScrollableTipsInList = false,
                 showScrollbar = true,
@@ -202,12 +188,8 @@ object VisualWordGui {
         )
     }
 
-    private fun buildListBottomRow(screen: VisualWordScreen): Renderable {
-        val addBtn = buildButton("§a+ Add New", COLOR_BTN_ADD.toColor()) { screen.addNewWord() }
-        if (!sbeConfigPath.exists() || SkyHanniMod.feature.storage.visualWordsImported) return addBtn
-        val importBtn = buildButton("§eImport from SBE", COLOR_BTN_NEUTRAL.toColor()) { tryImportFromSbe(screen) }
-        return Renderable.horizontal(listOf(addBtn, importBtn), spacing = 8, verticalAlign = VA.CENTER)
-    }
+    private fun buildListBottomRow(screen: VisualWordScreen): Renderable =
+        buildButton("§a+ Add New", COLOR_BTN_ADD.toColor()) { screen.addNewWord() }
 
     private fun buildEditView(screen: VisualWordScreen): Renderable {
         val word = screen.modifiedWords.getOrNull(screen.currentIndex) ?: return buildListView(screen)
@@ -308,45 +290,5 @@ object VisualWordGui {
             onLeftClick = onClick,
             bypassChecks = true,
         )
-    }
-
-    private fun tryImportFromSbe(screen: VisualWordScreen) {
-        InputStreamReader(FileInputStream(sbeConfigPath), StandardCharsets.UTF_8).use { reader ->
-            try {
-                val json = ConfigManager.gson.fromJson(reader, JsonObject::class.java)
-                importFromSbeJson(json, screen)
-            } catch (e: Throwable) {
-                ErrorManager.logErrorWithData(e, "Failed to load visual words from SBE")
-            }
-        }
-    }
-
-    private fun importFromSbeJson(
-        json: JsonObject,
-        screen: VisualWordScreen,
-    ) {
-        var importedWords = 0
-        var skippedWords = 0
-
-        for (line in json["custom"].asJsonObject["visualWords"].asJsonArray) {
-            replacementLinePattern.matchMatcher(line.asString) {
-                val from = group("from").replace("&", "&&")
-                val to = group("to").replace("&", "&&")
-                val state = group("state").toBoolean()
-                if (screen.modifiedWords.any { it.phrase == from }) {
-                    skippedWords++
-                    return@matchMatcher
-                }
-                screen.modifiedWords.add(VisualWord(from, to, state, caseSensitive = false))
-                importedWords++
-            }
-        }
-
-        if (importedWords > 0 || skippedWords > 0) {
-            chat("§aSuccessfully imported §e$importedWords §awords and skipped §e$skippedWords §afrom SkyBlockExtras!")
-            SkyHanniMod.feature.storage.visualWordsImported = true
-            screen.saveChanges()
-            screen.rebuildDisplay()
-        }
     }
 }

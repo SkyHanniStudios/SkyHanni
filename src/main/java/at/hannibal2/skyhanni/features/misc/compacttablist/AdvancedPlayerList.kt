@@ -24,7 +24,6 @@ import at.hannibal2.skyhanni.utils.chat.TextHelper.merge
 import at.hannibal2.skyhanni.utils.collection.TimeLimitedCache
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompat
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
-import kotlinx.coroutines.flow.merge
 import net.minecraft.client.Minecraft
 import net.minecraft.network.chat.Component
 import java.util.regex.Matcher
@@ -250,7 +249,7 @@ object AdvancedPlayerList {
     enum class CrimsonIsleFaction(color: String?, private val symbol: String?) {
         BARBARIAN("§c", "⚒"),
         MAGE("§5", "ቾ"),
-        NONE(null, null)
+        NONE(null, null),
         ;
 
         val icon: String? = color?.let { "$it$symbol" }
@@ -268,7 +267,7 @@ object AdvancedPlayerList {
         PARTY("§9§lP", 5),
         FRIEND("§d§lF", 4),
         GUILD("§2§lG", 3),
-        OTHER("", 1)
+        OTHER("", 1),
         ;
 
         constructor(icon: String, score: Int) : this({ icon }, score)

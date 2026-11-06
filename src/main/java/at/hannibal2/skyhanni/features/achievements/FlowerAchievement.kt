@@ -20,10 +20,10 @@ object FlowerAchievement {
     @HandleEvent
     fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
-            "Fill your hotbar with flowers".asComponent(),
-            "Have your hotbar look like Romero's".asComponent(),
-            30f,
-            true,
+            name = "Fill your hotbar with flowers".asComponent(),
+            description = "Have your hotbar look like Romero's".asComponent(),
+            userLuckAmount = 30f,
+            secret = true,
         )
         event.register(achievement, ROMERO_ACHIEVEMENT)
     }
