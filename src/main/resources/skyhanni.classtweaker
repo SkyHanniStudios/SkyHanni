@@ -95,7 +95,6 @@ accessible method net/minecraft/client/gui/GuiGraphicsExtractor innerBlit (Lcom/
 
 #? if >= 26.2 {
 accessible method com/mojang/blaze3d/vertex/BufferBuilder beginElement (I)J
-accessible field com/mojang/blaze3d/vertex/BufferBuilder format Lcom/mojang/renderpearl/api/vertex/VertexFormat;
 accessible field com/mojang/blaze3d/vertex/BufferBuilder vertexPointer J
 accessible field net/minecraft/client/renderer/state/gui/GuiTextRenderState backgroundColor I
 accessible field net/minecraft/client/renderer/state/gui/GuiTextRenderState color I
