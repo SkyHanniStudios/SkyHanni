@@ -1,6 +1,5 @@
 package at.hannibal2.skyhanni.skyhannimodule
 
-import com.google.devtools.ksp.getClassDeclarationByName
 import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.KSPLogger
@@ -8,6 +7,8 @@ import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import java.io.OutputStreamWriter
+
+private const val SKY_HANNI_EVENT = "at.hannibal2.skyhanni.api.event.SkyHanniEvent"
 
 class PrimaryFunctionProcessor(
     codeGenerator: CodeGenerator,
@@ -20,12 +21,9 @@ class PrimaryFunctionProcessor(
     private val cache = KspIncrementalCache(cacheDir, mcVersion, "ksp-primary-function-state")
 
     override fun processSymbols(resolver: Resolver): List<KSAnnotated> {
-        val skyHanniEvent = resolver.getClassDeclarationByName("at.hannibal2.skyhanni.api.event.SkyHanniEvent")
-            ?.asStarProjectedType() ?: return emptyList()
-
         val symbols = resolver.getSymbolsWithAnnotation(PrimaryFunction::class.qualifiedName!!)
             .filterIsInstance<KSClassDeclaration>()
-            .filter { skyHanniEvent.isAssignableFrom(it.asStarProjectedType()) }
+            .filter { it.extendsSkyHanniEvent() }
             .toList()
 
         val filePaths = symbols.mapNotNull { it.containingFile?.filePath }.toSet()
@@ -46,6 +44,9 @@ class PrimaryFunctionProcessor(
         cache.commit()
         return emptyList()
     }
+
+    private fun KSClassDeclaration.extendsSkyHanniEvent(): Boolean = qualifiedName?.asString() == SKY_HANNI_EVENT ||
+        superTypes.any { (it.resolve().declaration as? KSClassDeclaration)?.extendsSkyHanniEvent() == true }
 
     private fun generate(symbols: List<KSClassDeclaration>) {
         val entries = symbols.mapNotNull { symbol ->
