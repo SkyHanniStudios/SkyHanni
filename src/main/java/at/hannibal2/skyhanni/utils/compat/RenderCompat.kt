@@ -1,18 +1,7 @@
 package at.hannibal2.skyhanni.utils.compat
 
-import com.mojang.blaze3d.pipeline.RenderTarget
-import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.renderpearl.api.commands.RenderPass
-import com.mojang.renderpearl.api.device.GpuDevice
 import com.mojang.renderpearl.api.pipeline.RenderPipeline
 import net.minecraft.client.renderer.RenderPipelines
-import java.util.OptionalDouble
-
-//? if >= 26.2 {
-import java.util.Optional
-//?} else {
-/*import java.util.OptionalInt
-*///?}
 
 object RenderCompat {
     /**
@@ -23,39 +12,4 @@ object RenderCompat {
     const val CLEAR_DEPTH = 0.0
 
     fun getMinecraftGuiTextured(): RenderPipeline = RenderPipelines.GUI_TEXTURED
-
-    fun RenderPass.enableRenderPassScissorStateIfAble() {
-        val scissorState = RenderSystem.getScissorStateForRenderTypeDraws()
-        if (scissorState.enabled()) {
-            this.enableScissor(scissorState.x(), scissorState.y(), scissorState.width(), scissorState.height())
-        }
-    }
-
-    fun RenderPass.drawIndexed(indices: Int) {
-        drawIndexed(
-            0,
-            0,
-            indices,
-            1,
-            //? if >= 26.2
-            0,
-        )
-    }
-
-    private fun RenderTarget.findColorAttachment() = this.colorTextureView
-
-    //~ if < 26.3 'hasDepth()' -> 'useDepth'
-    private fun RenderTarget.findDepthAttachment() = if (this.hasDepth()) this.depthTextureView else null
-
-    fun GpuDevice.createRenderPass(name: String, framebuffer: RenderTarget): RenderPass {
-        val colorAttachment = framebuffer.findColorAttachment() ?: error("color attachment is null")
-        return this.createCommandEncoder().createRenderPass(
-            { name },
-            colorAttachment,
-            //~ if < 26.2 'Optional' -> 'OptionalInt'
-            Optional.empty(),
-            framebuffer.findDepthAttachment(),
-            OptionalDouble.empty(),
-        )
-    }
 }
