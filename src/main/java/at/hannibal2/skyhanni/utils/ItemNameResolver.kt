@@ -1,8 +1,10 @@
 package at.hannibal2.skyhanni.utils
 
+import at.hannibal2.skyhanni.api.enoughupdates.EnoughUpdatesManager
 import at.hannibal2.skyhanni.api.enoughupdates.ItemResolutionQuery
 import at.hannibal2.skyhanni.data.model.SkyblockStat
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
+import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.NeuItems.getItemStackOrNull
 import at.hannibal2.skyhanni.utils.NumberUtil.romanToDecimalIfNecessary
@@ -36,12 +38,13 @@ object ItemNameResolver {
             return itemNameCache.getOrPut(lowercase) { NeuInternalName.MISSING_ITEM }
         }
 
-        ItemResolutionQuery.resolveEnchantmentByName(itemName)?.let {
-            return itemNameCache.getOrPut(lowercase) { fixEnchantmentName(it.asString()) }
-        }
-
-        resolveEnchantmentByCleanName(itemName)?.let {
+        val enchantedBookCandidates = enchantedBookCandidates(itemName)
+        enchantedBookCandidates.firstOrNull { it.getItemStackOrNull() != null }?.let {
             return itemNameCache.getOrPut(lowercase) { it }
+        }
+        if (ItemUtils.readBookType(itemName) != null) {
+            reportUnresolvedEnchantedBook(itemName, enchantedBookCandidates)
+            return null
         }
 
         resolvePetWithRarity(itemName)?.let {
@@ -74,6 +77,40 @@ object ItemNameResolver {
         return internalName
     }
 
+    fun resolveEnchantedBook(displayName: String): NeuInternalName? {
+        val candidates = enchantedBookCandidates(displayName)
+        return candidates.firstOrNull { it.getItemStackOrNull() != null } ?: run {
+            reportUnresolvedEnchantedBook(displayName, candidates)
+            null
+        }
+    }
+
+    fun enchantedBookCandidates(displayName: String): List<NeuInternalName> {
+        val bookName = ItemUtils.readBookType(displayName) ?: displayName
+        val formatted = ItemResolutionQuery.resolveEnchantmentByName(bookName)
+        val clean = UtilsPatterns.cleanEnchantedNamePattern.matchMatcher(bookName.removeColor().trim()) {
+            val name = group("name").trim().replace("'", "").replace(" ", "_").replace("-", "_")
+            val rawInternalName = "$name;${group("level").romanToDecimalIfNecessary()}"
+            listOf(fixEnchantmentName(rawInternalName), fixEnchantmentName("ULTIMATE_$rawInternalName"))
+        }.orEmpty()
+        return listOfNotNull(formatted).plus(clean).distinct()
+    }
+
+    fun enchantedBookCommandId(internalName: String): String {
+        val (name, level) = internalName.split(";", limit = 2)
+        return "ENCHANTED_BOOK_${name}_$level"
+    }
+
+    private fun reportUnresolvedEnchantedBook(displayName: String, candidates: List<NeuInternalName>) {
+        if (EnoughUpdatesManager.inLoadingState() || NeuItems.allInternalNames.isEmpty()) return
+        ErrorManager.logErrorStateWithData(
+            "Could not resolve an enchanted book",
+            "No enchanted book internal name found in the NEU repo",
+            "displayName" to displayName,
+            "attemptedInternalNames" to candidates.joinToString { it.asString() },
+        )
+    }
+
     private fun resolveGemstoneToStat(itemName: String): SkyblockStat? =
         when (itemName) {
             "jade" -> MINING_FORTUNE
@@ -102,53 +139,28 @@ object ItemNameResolver {
         return internalName.takeIf { it.getItemStackOrNull() != null }
     }
 
-    private fun resolveEnchantmentByCleanName(itemName: String): NeuInternalName? {
-        UtilsPatterns.cleanEnchantedNamePattern.matchMatcher(itemName) {
-            val name = group("name").replace("'", "")
-            val level = group("level").romanToDecimalIfNecessary()
-            val rawInternalName = "$name;$level".uppercase()
-
-            var internalName = fixEnchantmentName(rawInternalName)
-            internalName.getItemStackOrNull()?.let {
-                return internalName
-            }
-
-            internalName = fixEnchantmentName("ULTIMATE_$rawInternalName")
-            internalName.getItemStackOrNull()?.let {
-                return internalName
-            }
-
-            return null
-        }
-        return null
-    }
-
     /**
      * REGEX-TEST: ULTIMATE_DUPLEX;5
      */
     private val duplexPattern by patternGroup.pattern(
         "enchantment.duplex",
-        "ULTIMATE_DUPLEX;(?<tier>.*)",
+        "ULTIMATE_DUPLEX;(?<tier>\\d+)",
     )
 
     /**
      * REGEX-TEST: LOOTING_NEW;7
+     * REGEX-TEST: LUCK_NEW;7
      */
     private val newEnchantPattern by patternGroup.pattern(
         "enchantment.new",
-        "^(?<name>[\\w_]+)_NEW;(?<tier>.*)",
+        "(?<name>\\w+?)_NEW;(?<tier>\\d+)",
     )
 
     fun fixEnchantmentName(originalName: String): NeuInternalName {
-        var fixedInternalString = originalName.removeColor()
-
-        duplexPattern.matchMatcher(originalName) {
-            fixedInternalString = fixedInternalString.replace("DUPLEX", "REITERATE")
-        }
-        newEnchantPattern.matchMatcher(fixedInternalString) {
-            fixedInternalString = fixedInternalString.replace("_NEW", "")
-        }
-        return fixedInternalString.toInternalName()
+        val cleanName = originalName.removeColor().uppercase().replace("ULTIMATE_ULTIMATE_", "ULTIMATE_")
+        val withoutNew = newEnchantPattern.matchMatcher(cleanName) { "${group("name")};${group("tier")}" } ?: cleanName
+        val fixed = duplexPattern.matchMatcher(withoutNew) { "ULTIMATE_REITERATE;${group("tier")}" } ?: withoutNew
+        return fixed.toInternalName()
     }
 
     private fun getInternalNameOrNullIgnoreCase(itemName: String): NeuInternalName? {
