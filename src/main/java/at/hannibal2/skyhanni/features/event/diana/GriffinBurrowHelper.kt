@@ -29,7 +29,6 @@ import at.hannibal2.skyhanni.utils.LocationUtils
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceSqToPlayer
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
 import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
@@ -48,7 +47,12 @@ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawColorOrOutline
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawLineToCrosshair
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
-import at.hannibal2.skyhanni.utils.toLorenzVec
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.toSkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorFormat.formatRounded
+import at.hannibal2.skyhanni.utils.vector.VectorMath.blockCenter
+import at.hannibal2.skyhanni.utils.vector.VectorMath.floor
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.minus
 import io.github.notenoughupdates.moulconfig.ChromaColour
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.world.level.block.Blocks
@@ -110,11 +114,11 @@ object GriffinBurrowHelper {
         "§6§l(?:RARE DROP!|Wow!) §r§eYou dug out(?: a)? §r§?.+§r§e!",
     )
 
-    var targetLocation: LorenzVec? = null
+    var targetLocation: SkyHanniVector? = null
 
     private val allGuessesTimers = mutableMapOf<GuessEntry, SimpleTimeMark>() // hypixel itself removes burrows after 30m
     private val allGuesses = ConcurrentLinkedQueue<GuessEntry>()
-    private val recentGuessesRemoved = TimeLimitedSet<LorenzVec>(5.seconds)
+    private val recentGuessesRemoved = TimeLimitedSet<SkyHanniVector>(5.seconds)
     fun getTimer(guessEntry: GuessEntry): SimpleTimeMark? {
         return allGuessesTimers[guessEntry]
     }
@@ -128,12 +132,12 @@ object GriffinBurrowHelper {
     }
 
     // used because instant-breaking a block makes it invalid would be better to store valid blocks in repo
-    private val recentClickedBlocks = TimeLimitedSet<LorenzVec>(1.seconds)
+    private val recentClickedBlocks = TimeLimitedSet<SkyHanniVector>(1.seconds)
 
     private var shouldFocusOnRareMob = false
     var mobAlive = false
 
-    fun removeGuess(location: LorenzVec, reason: String) {
+    fun removeGuess(location: SkyHanniVector, reason: String) {
         val toRemove = allGuesses.filter { it.contains(location) }
         for (item in toRemove) {
             removeGuess(item, reason)
@@ -168,7 +172,7 @@ object GriffinBurrowHelper {
         addDebug("added guess: $guess because $reason")
     }
 
-    fun getGuess(location: LorenzVec?): GuessEntry? {
+    fun getGuess(location: SkyHanniVector?): GuessEntry? {
         if (location == null) return null
         return allGuesses.toList().firstOrNull { it.contains(location) }
     }
@@ -179,11 +183,11 @@ object GriffinBurrowHelper {
         val toDelete = mutableSetOf<GuessEntry>()
         for (item in inaccurate) {
             val player = MinecraftCompat.localPlayerOrThrow
-            val eyePos = player.eyePosition.toLorenzVec()
-            val lookAngle = player.lookAngle.toLorenzVec()
+            val eyePos = player.eyePosition.toSkyHanniVector()
+            val lookAngle = player.lookAngle.toSkyHanniVector()
             val toTarget = item.getCurrent().minus(eyePos)
 
-            val angle = Math.toDegrees(acos(lookAngle.dotProduct(toTarget.normalize())))
+            val angle = Math.toDegrees(acos(lookAngle.dot(toTarget.normalize())))
             if (angle < 2.0 && toTarget.length() < 80) toDelete.add(item)
         }
         removeGuess(toDelete, "clicked inaccurate guess")
@@ -199,10 +203,10 @@ object GriffinBurrowHelper {
         }
 
         event.addData {
-            add("targetLocation: ${targetLocation?.printWithAccuracy(1)}")
+            add("targetLocation: ${targetLocation?.formatRounded(1)}")
             add("allGuesses: ${allGuesses.size}")
             for (guess in allGuesses) {
-                add("  ${guess.getCurrent().printWithAccuracy(1)} (size=${guess.guesses.size}) (type=${guess.burrowType})")
+                add("  ${guess.getCurrent().formatRounded(1)} (size=${guess.guesses.size}) (type=${guess.burrowType})")
             }
             add("recent actions:")
             for (string in recentActionsDebug) {
@@ -243,8 +247,8 @@ object GriffinBurrowHelper {
 
     // TODO add option to only focus on last guess - highly requested method that is less optimal for money per hour. users choice
     // TODO pathfind alg / check closest to any warp point
-    private fun calculateNewTarget(): LorenzVec? {
-        val locations = mutableListOf<LorenzVec>()
+    private fun calculateNewTarget(): SkyHanniVector? {
+        val locations = mutableListOf<SkyHanniVector>()
 
         if (config.rareMobsSharing.enabled) {
             for (waypoint in RareMobWaypointShare.waypoints) {
@@ -272,7 +276,7 @@ object GriffinBurrowHelper {
         val newLocation = event.guess.getCurrent()
         val playerLocation = LocationUtils.playerLocation()
 
-        if (newLocation.distance(playerLocation) < 6) return
+        if (newLocation.distanceTo(playerLocation) < 6) return
         if (!IslandType.HUB.isInBounds(newLocation)) return
 
         addGuess(event.guess, "burrow guess from ${event.source}")
@@ -291,7 +295,7 @@ object GriffinBurrowHelper {
 
         val toDelete = mutableSetOf<GuessEntry>()
         allGuesses.filter { it.spadeGuess }.forEach {
-            if (it.getCurrent().distanceSq(burrowLocation) < 2000) {
+            if (it.getCurrent().distanceToSqr(burrowLocation) < 2000) {
                 toDelete.add(it)
             }
         }
@@ -310,7 +314,7 @@ object GriffinBurrowHelper {
 
         // finished chain
         if (event.current == event.max && config.warnOnChainComp) {
-            val nearby = allGuesses.filter { it.getCurrent().distanceSq(location) < 10 }.toSet()
+            val nearby = allGuesses.filter { it.getCurrent().distanceToSqr(location) < 10 }.toSet()
             removeGuess(nearby, "chain finished with leftover burrow within 3 blocks")
             if (config.warnOnChainComp) {
                 val anyClose = allGuesses.filter { it.getCurrent().distanceSqToPlayer() < 8100 }
@@ -418,7 +422,7 @@ object GriffinBurrowHelper {
         DelayedRun.runOrNextTick { resetAllData() }
     }
 
-    fun isBlockValid(pos: LorenzVec): Boolean {
+    fun isBlockValid(pos: SkyHanniVector): Boolean {
         if (!pos.isInLoadedChunk()) {
             return true
         }
@@ -479,7 +483,7 @@ object GriffinBurrowHelper {
         } else {
             val target = getGuess(targetLocation) ?: return
             val location = target.getCurrent()
-            val distance = location.distance(playerLocation)
+            val distance = location.distanceTo(playerLocation)
             val text = when (target.burrowType) {
                 BurrowType.UNKNOWN -> "${if (currentWarp != null) "§b" else "§f"}Guess".asComponent()
                 else -> target.burrowType.getBurrowText()
@@ -495,12 +499,12 @@ object GriffinBurrowHelper {
 
     }
 
-    private fun renderRareMobs(event: SkyHanniRenderWorldEvent, playerLocation: LorenzVec) {
+    private fun renderRareMobs(event: SkyHanniRenderWorldEvent, playerLocation: SkyHanniVector) {
         for (rareMob in RareMobWaypointShare.waypoints.values) {
             val location = rareMob.location
             // TODO add chroma color support via config
             event.drawColor(location, LorenzColor.LIGHT_PURPLE.toChromaColor())
-            val distance = location.distance(playerLocation)
+            val distance = location.distanceTo(playerLocation)
             if (distance > 10) {
                 // TODO use round(1)
                 val formattedDistance = distance.toInt().addSeparators()
@@ -521,10 +525,10 @@ object GriffinBurrowHelper {
         }
     }
 
-    private fun renderAllGuesses(event: SkyHanniRenderWorldEvent, playerLocation: LorenzVec) {
+    private fun renderAllGuesses(event: SkyHanniRenderWorldEvent, playerLocation: SkyHanniVector) {
         for (guess in allGuesses.toList()) {
             val location = guess.getCurrent()
-            val distance = location.distance(playerLocation)
+            val distance = location.distanceTo(playerLocation)
             val burrowType = guess.burrowType
             var text = burrowType.getBurrowText()
 
@@ -629,7 +633,7 @@ object GriffinBurrowHelper {
         }
 
         EntityMovementData.addToTrack(MinecraftCompat.localPlayerOrThrow)
-        val location = LocationUtils.playerLocation().roundLocation()
+        val location = LocationUtils.playerLocation().floor().down()
         addGuess(GuessEntry(listOf(location), burrowType = type), "added test burrow from command")
         update()
     }
@@ -659,15 +663,15 @@ object GriffinBurrowHelper {
                     addGuess(
                         GuessEntry(
                             listOf(
-                                LorenzVec(-143, 69, 62),
-                                LorenzVec(-137, 69, 68),
-                                LorenzVec(-132, 69, 73),
-                                LorenzVec(-125, 69, 80),
-                                LorenzVec(-117, 69, 88),
-                                LorenzVec(-107, 69, 98),
-                                LorenzVec(-92, 69, 113),
-                                LorenzVec(-88, 69, 123),
-                                LorenzVec(-78, 69, 136),
+                                SkyHanniVector(-143, 69, 62),
+                                SkyHanniVector(-137, 69, 68),
+                                SkyHanniVector(-132, 69, 73),
+                                SkyHanniVector(-125, 69, 80),
+                                SkyHanniVector(-117, 69, 88),
+                                SkyHanniVector(-107, 69, 98),
+                                SkyHanniVector(-92, 69, 113),
+                                SkyHanniVector(-88, 69, 123),
+                                SkyHanniVector(-78, 69, 136),
                             ),
                         ),
                         "added test burrow chain from command",
@@ -680,7 +684,7 @@ object GriffinBurrowHelper {
             category = CommandCategory.DEVELOPER_TEST
             simpleCallback {
                 DelayedRun.runOrNextTick {
-                    BurrowDetectEvent(LorenzVec(-88, 69, 123), BurrowType.TREASURE).post()
+                    BurrowDetectEvent(SkyHanniVector(-88, 69, 123), BurrowType.TREASURE).post()
                 }
             }
         }

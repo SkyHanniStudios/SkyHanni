@@ -51,7 +51,7 @@ object DailyMiniBossHelper {
         for (miniBoss in miniBosses) {
             if (miniBoss.doneToday && !needMiniBossQuest(miniBoss)) continue
             val location = miniBoss.location ?: continue
-            if (DamageIndicatorManager.getNearestDistanceTo(location) < 40 && playerLocation.distance(location) < 40) continue
+            if (DamageIndicatorManager.getNearestDistanceTo(location) < 40 && playerLocation.distanceTo(location) < 40) continue
 
             event.drawWaypointFilled(location, LorenzColor.WHITE.toColor())
             event.drawDynamicText(location, miniBoss.displayName, 1.5)

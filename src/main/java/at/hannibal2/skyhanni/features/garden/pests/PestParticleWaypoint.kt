@@ -14,7 +14,6 @@ import at.hannibal2.skyhanni.utils.ColorUtils.toColor
 import at.hannibal2.skyhanni.utils.LocationUtils
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayerIgnoreY
 import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.ParticlePathBezierFitter
 import at.hannibal2.skyhanni.utils.PlayerUtils
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
@@ -22,6 +21,10 @@ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawLineToCrosshair
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.exactPlayerEyeLocation
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorMath.ceil
+import at.hannibal2.skyhanni.utils.vector.VectorMath.equalsIgnoreY
+import at.hannibal2.skyhanni.utils.vector.VectorMath.isZero
 import com.google.gson.JsonPrimitive
 import io.github.notenoughupdates.moulconfig.ChromaColour
 import net.minecraft.core.particles.ParticleTypes
@@ -37,7 +40,7 @@ object PestParticleWaypoint {
     private var lastPestTrackerUse = SimpleTimeMark.farPast()
     private var lastParticle = SimpleTimeMark.farPast()
 
-    private var guessPosition: LorenzVec? = null
+    private var guessPosition: SkyHanniVector? = null
     private var isGuessPlotMiddle: Boolean = false
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
@@ -68,7 +71,7 @@ object PestParticleWaypoint {
 
         lastParticle = SimpleTimeMark.now()
 
-        val emptyCondition: (LorenzVec) -> Boolean = { it.distance(LocationUtils.playerLocation()) > 5 }
+        val emptyCondition: (SkyHanniVector) -> Boolean = { it.distanceTo(LocationUtils.playerLocation()) > 5 }
         if (!bezierFitter.tryAdd(event.location, maxDistanceToLast = 3.0, emptyCondition = emptyCondition)) return
 
         val solved = bezierFitter.solve() ?: return
@@ -102,7 +105,7 @@ object PestParticleWaypoint {
             return
         }
         val waypoint = guessPosition ?: return
-        val distance = waypoint.distance(event.exactPlayerEyeLocation())
+        val distance = waypoint.distanceTo(event.exactPlayerEyeLocation())
         val color: ChromaColour
         if (isGuessPlotMiddle && config.differentiatePlotMiddle) {
             color = LorenzColor.YELLOW.toChromaColor()

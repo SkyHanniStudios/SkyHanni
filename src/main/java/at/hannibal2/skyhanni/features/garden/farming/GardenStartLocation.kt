@@ -14,6 +14,7 @@ import at.hannibal2.skyhanni.utils.LocationUtils.distanceSqToPlayer
 import at.hannibal2.skyhanni.utils.LorenzColor
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
+import at.hannibal2.skyhanni.utils.vector.VectorMath.floor
 
 @SkyHanniModule
 object GardenStartLocation {
@@ -65,7 +66,7 @@ object GardenStartLocation {
             ChatUtils.chat("Auto updated your Crop Start Location for ${crop.cropName}")
         }
 
-        lastFarmedLocations[crop] = LocationUtils.playerLocation().roundToBlock()
+        lastFarmedLocations[crop] = LocationUtils.playerLocation().floor()
         shouldShowLastFarmedWaypoint = false
     }
 
@@ -76,7 +77,7 @@ object GardenStartLocation {
 
         if (showStartWaypoint()) {
             GardenApi.storage?.cropStartLocations?.get(crop)
-                ?.roundToBlock()
+                ?.floor()
                 ?.also {
                     event.drawWaypointFilled(it, LorenzColor.WHITE.toColor())
                     event.drawDynamicText(it, "§b${crop.cropName}", 1.5)

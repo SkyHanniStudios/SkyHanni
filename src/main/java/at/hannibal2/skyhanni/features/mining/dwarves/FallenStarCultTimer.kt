@@ -7,20 +7,20 @@ import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.ItemUtils.getInternalNameOrNull
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.RenderUtils.renderStrings
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SkyBlockTime
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.TimeUtils.format
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 
 @SkyHanniModule
 object FallenStarCultTimer {
 
     private val config get() = SkyHanniMod.feature.mining.fallenStarCult
 
-    private val cultRoomLocation = LorenzVec(-45.5, 193.5, 45.6)
+    private val cultRoomLocation = SkyHanniVector(-45.5, 193.5, 45.6)
     private const val CULT_ROOM_RADIUS = 10.0
 
     private val fallenStarHelmet = "FALLEN_STAR_HAT".toInternalName()

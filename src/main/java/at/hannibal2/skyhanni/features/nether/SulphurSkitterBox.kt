@@ -14,10 +14,11 @@ import at.hannibal2.skyhanni.utils.BlockUtils
 import at.hannibal2.skyhanni.utils.ColorUtils.toColor
 import at.hannibal2.skyhanni.utils.LocationUtils
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawFilledBoundingBox
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawHitbox
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.expandBlock
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorBounds.boxTo
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.phys.AABB
 
@@ -25,8 +26,8 @@ import net.minecraft.world.phys.AABB
 object SulphurSkitterBox {
 
     private val config get() = SkyHanniMod.feature.fishing.trophyFishing.sulphurSkitterBox
-    private var spongeLocations = listOf<LorenzVec>()
-    private var closestSponge: LorenzVec? = null
+    private var spongeLocations = listOf<SkyHanniVector>()
+    private var closestSponge: SkyHanniVector? = null
     private var renderBox: AABB? = null
     private const val RADIUS = 4
 
@@ -51,7 +52,7 @@ object SulphurSkitterBox {
         renderBox = location?.let {
             val pos1 = it.add(-RADIUS, -RADIUS, -RADIUS)
             val pos2 = it.add(RADIUS + 1, RADIUS + 1, RADIUS + 1)
-            pos1.axisAlignedTo(pos2).expandBlock()
+            pos1.boxTo(pos2).expandBlock()
         }
     }
 

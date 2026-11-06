@@ -7,7 +7,6 @@ import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.GraphUtils.distanceSqToPlayer
 import at.hannibal2.skyhanni.utils.KeyboardManager
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderables
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
@@ -20,6 +19,7 @@ import at.hannibal2.skyhanni.utils.renderables.SearchTextInput
 import at.hannibal2.skyhanni.utils.renderables.Searchable
 import at.hannibal2.skyhanni.utils.renderables.buildSearchableScrollable
 import at.hannibal2.skyhanni.utils.renderables.toSearchable
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import kotlin.math.sqrt
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -255,10 +255,10 @@ object GraphNodeEditor {
         },
     ).toSearchable(name)
 
-    private var disabledLocations = setOf<LorenzVec>()
+    private var disabledLocations = setOf<SkyHanniVector>()
 
     fun handleDisabled(graph: Graph) {
-        val newDisabled = mutableSetOf<LorenzVec>()
+        val newDisabled = mutableSetOf<SkyHanniVector>()
         for (node in graph) {
             if (!node.enabled) {
                 newDisabled.add(node.position)

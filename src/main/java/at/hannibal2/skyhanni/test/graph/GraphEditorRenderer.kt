@@ -8,7 +8,6 @@ import at.hannibal2.skyhanni.utils.ColorUtils
 import at.hannibal2.skyhanni.utils.GraphUtils.distanceSqToPlayer
 import at.hannibal2.skyhanni.utils.KeyboardManager
 import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderables
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.draw3DLine
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
@@ -16,6 +15,11 @@ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawPyramid
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.primitives.StringRenderable
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.div
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.minus
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.plus
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.times
 import net.minecraft.client.KeyMapping
 import java.awt.Color
 import kotlin.math.min
@@ -190,22 +194,16 @@ object GraphEditorRenderer {
         val pyramidSize =
             lineVec.normalize().times(min(lineVec.length() / 10.0, 1.0)) * (if (edge.direction == EdgeDirection.ONE_TO_TWO) 1.0 else -1.0)
 
-        val lineOffsetVec = LorenzVec(0.5, 0.5, 0.5)
+        val lineOffsetVec = SkyHanniVector(0.5, 0.5, 0.5)
 
-        fun pyramidDraw(
-            pos: LorenzVec,
-        ) {
+        setOf(center, quad1, quad2).forEach {
             this.drawPyramid(
-                pos + lineOffsetVec + pyramidSize,
-                pos + lineOffsetVec,
-                pos.crossProduct(lineVec).normalize().times(pyramidSize.length() / 2.5) + pos + lineOffsetVec,
+                it + lineOffsetVec + pyramidSize,
+                it + lineOffsetVec,
+                it.cross(lineVec).normalize().times(pyramidSize.length() / 2.5) + it + lineOffsetVec,
                 color,
             )
         }
-
-        pyramidDraw(center)
-        pyramidDraw(quad1)
-        pyramidDraw(quad2)
     }
 
     private fun GraphingNode.getNodeColor() = when (this) {
