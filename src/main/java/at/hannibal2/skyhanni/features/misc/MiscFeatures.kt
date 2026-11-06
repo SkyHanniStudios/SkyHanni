@@ -6,7 +6,7 @@ import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.events.ActionBarUpdateEvent
 import at.hannibal2.skyhanni.events.ParticleEvent
-import at.hannibal2.skyhanni.events.entity.EndermanTeleportEvent
+import at.hannibal2.skyhanni.events.mob.EndermanTeleportAnimationEvent
 import at.hannibal2.skyhanni.events.render.BlockOverlayRenderEvent
 import at.hannibal2.skyhanni.events.render.OverlayType
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -31,7 +31,7 @@ object MiscFeatures {
     private var inChickenRace = false
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onEndermanTeleport(event: EndermanTeleportEvent) {
+    private fun onEndermanTeleportAnimation(event: EndermanTeleportAnimationEvent) {
         if (!SkyHanniMod.feature.combat.mobs.endermanTeleportationHider) return
         event.cancel()
     }

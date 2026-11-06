@@ -15,12 +15,12 @@ object KuudraProfileViewerBlocker {
     private val config get() = SkyHanniMod.feature.crimsonIsle
 
     @HandleEvent(onlyOnIsland = IslandType.KUUDRA_ARENA)
-    fun onClickEntity(event: EntityClickEvent) {
+    private fun onEntityClick(event: EntityClickEvent) {
         if (!config.disableProfileViewerInKuudra) return
 
         if (event.clickType != InteractClickType.RIGHT_CLICK) return
-        if (event.clickedEntity !is Player) return
-        if (event.clickedEntity.isNpc()) return
+        if (event.entity !is Player) return
+        if (event.entity.isNpc()) return
 
         event.cancel()
     }

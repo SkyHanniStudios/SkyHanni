@@ -73,8 +73,8 @@ public abstract class MixinEntityRenderer {
         index = 3
     )
     private Component modifyRenderLabelIfPresentArgs(Component text) {
-        if (SkyBlockUtils.getInSkyBlock()) {
-            return EntityData.getHealthDisplay(text);
+        if (SkyBlockUtils.getInSkyBlock() && EntityRenderDispatcherHookKt.getEntity() instanceof Entity entity) {
+            return EntityData.getHealthDisplay(entity, text);
         }
         return text;
     }

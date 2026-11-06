@@ -32,16 +32,16 @@ object SlayerSpiderFeatures {
     private fun Mob.isRightTier() = category == MobCategory.SLAYER && (levelOrTier in 3..5) && name == "Tarantula Broodfather"
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onClickEntity(event: EntityClickEvent) {
+    private fun onEntityClick(event: EntityClickEvent) {
         if (event.action != EntityClickEvent.ActionType.ATTACK) return
-        val mob = event.clickedEntity.mob ?: return
+        val mob = event.entity.mob ?: return
         if (mob in allTier) {
             lastClicked = mob
         }
     }
 
     @HandleEvent
-    fun onChat(event: SystemMessageEvent.Allow) {
+    private fun onSystemMessage(event: SystemMessageEvent.Allow) {
         if (event.message != "§cYou need to kill the Broodfather's hatchlings before it can be damaged again!") return
 
         val mob = lastClicked ?: return
@@ -51,7 +51,7 @@ object SlayerSpiderFeatures {
     }
 
     @HandleEvent
-    fun onPlayerMove(event: EntityMoveEvent<Spider>) {
+    private fun onEntityMove(event: EntityMoveEvent<Spider>) {
         val mob = event.entity.mob ?: return
         if (mob in stuckMobs) {
             stuckMobs.remove(mob)
