@@ -1,20 +1,18 @@
 #version 150
 
-const float pi = 3.14159265f;
-
 in vec4 vertexColor;
-in vec4 roundedParams0;
-in vec4 roundedParams1;
+
+layout(std140) uniform SkyHanniRoundedUniforms {
+    float smoothness;
+    vec2 halfSize;
+    vec2 centerPos;
+    float angle1;
+    float angle2;
+};
 
 out vec4 fragColor;
 
 void main() {
-    float smoothness = roundedParams0.y;
-    vec2 halfSize = roundedParams0.zw;
-    vec2 centerPos = roundedParams1.xy;
-    float angle1 = roundedParams1.z;
-    float angle2 = roundedParams1.w;
-
     float radius = min(halfSize.x, halfSize.y);
 
     vec2 adjusted = gl_FragCoord.xy - centerPos;

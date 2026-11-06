@@ -1,24 +1,32 @@
 package at.hannibal2.skyhanni.utils.render
 
+import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ColorUtils.toColor
 import at.hannibal2.skyhanni.utils.GuiRenderUtils
 import at.hannibal2.skyhanni.utils.compat.DrawContextUtils
 import at.hannibal2.skyhanni.utils.compat.GuiScreenUtils
 import at.hannibal2.skyhanni.utils.render.states.RoundedRenderStateParams
+import at.hannibal2.skyhanni.utils.render.states.SkyHanniCirclePipRenderer
 import at.hannibal2.skyhanni.utils.render.states.SkyHanniCircleRenderState
 import at.hannibal2.skyhanni.utils.render.states.SkyHanniRadialGradientCircleRenderState
 import at.hannibal2.skyhanni.utils.render.states.SkyHanniRoundedRectOutlineRenderState
 import at.hannibal2.skyhanni.utils.render.states.SkyHanniRoundedRectRenderState
 import at.hannibal2.skyhanni.utils.render.states.SkyHanniRoundedTexturedRectRenderState
 import io.github.notenoughupdates.moulconfig.ChromaColour
+import net.fabricmc.fabric.api.client.rendering.v1.PictureInPictureRendererRegistry
 import net.minecraft.client.renderer.state.gui.GuiRenderState
 import net.minecraft.resources.Identifier
 import org.joml.Matrix3x2f
 import java.awt.Color
 import kotlin.math.max
 
+@SkyHanniModule
 @Suppress("TooManyFunctions")
 object ShaderRenderUtils {
+
+    init {
+        PictureInPictureRendererRegistry.register(::SkyHanniCirclePipRenderer)
+    }
 
     /**
      * Returns a float array representation of the [ChromaColour].
@@ -306,7 +314,7 @@ object ShaderRenderUtils {
         angle1: Float = 7.0f,
         angle2: Float = 7.0f,
     ) {
-        DrawContextUtils.addGuiElement(buildCircleState(x, y, radius, color.rgb, smoothness, angle1, angle2))
+        DrawContextUtils.submitPip(buildCircleState(x, y, radius, color.rgb, smoothness, angle1, angle2))
     }
 
     /**
@@ -400,6 +408,7 @@ object ShaderRenderUtils {
             color, smoothness,
             angle1 - Math.PI.toFloat(), angle2 - Math.PI.toFloat(),
             params, DrawContextUtils.drawContext.scissorStack.peek(),
+            pose = DrawContextUtils.copyPose()
         )
     }
 

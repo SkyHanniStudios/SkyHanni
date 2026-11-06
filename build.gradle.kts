@@ -61,7 +61,6 @@ loom.apply {
             appendProjectPathToDisplayName.set(true)
             this.runDirectory = rootProject.file("versions/${target.projectName}/run").relativeTo(projectDir)
             if (System.getenv("repo_action") != "true") {
-                systemProperties.put("devauth.configDir", rootProject.file(".devauth").absolutePath)
             }
             jvmArguments.add("-Xmx4G")
         }
@@ -237,7 +236,7 @@ fun DependencyHandler.includeImplementation(dep: Any) {
 
 afterEvaluate {
     loom.runs.named("client") {
-        programArguments.addAll("--quickPlayMultiplayer", "hypixel.net")
+        //programArguments.addAll("--quickPlayMultiplayer", "hypixel.net")
     }
 
     ksp {

@@ -4,7 +4,9 @@ import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.compat.IrisCompat
 import at.hannibal2.skyhanni.utils.render.SkyHanniRenderPipelineUtils.MATRICES_PROJECTION_SNIPPET
 import at.hannibal2.skyhanni.utils.render.SkyHanniRenderPipelineUtils.PosColorNormal
+import at.hannibal2.skyhanni.utils.render.SkyHanniRenderPipelineUtils.circleUniform
 import at.hannibal2.skyhanni.utils.render.SkyHanniRenderPipelineUtils.commonChromaUniforms
+import at.hannibal2.skyhanni.utils.render.states.SkyHanniCircleUniform
 import com.mojang.blaze3d.pipeline.BlendFunction
 import com.mojang.blaze3d.pipeline.ColorTargetState
 import com.mojang.blaze3d.pipeline.RenderPipeline
@@ -12,7 +14,6 @@ import com.mojang.blaze3d.shaders.UniformType
 import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import com.mojang.blaze3d.vertex.VertexFormat
 import net.minecraft.client.renderer.RenderPipelines
-import net.minecraft.resources.Identifier
 import java.util.Optional
 
 //? if >= 26.2 {
@@ -116,9 +117,10 @@ enum class SkyHanniRenderPipeline(
     ),
     CIRCLE_DEFERRED(
         snippet = MATRICES_PROJECTION_SNIPPET,
-        vFormat = SkyHanniVertexFormats.POSITION_COLOR_ROUNDED,
+        vFormat = DefaultVertexFormat.POSITION_COLOR,
         blend = BlendFunction.TRANSLUCENT,
         vertexShaderPath = "circle_deferred",
+        uniforms = circleUniform,
         depthWrite = false,
     ),
     ROUNDED_TEXTURED_RECT_DEFERRED(
@@ -150,7 +152,7 @@ enum class SkyHanniRenderPipeline(
 
     private val internalPipeline: RenderPipeline = RenderPipelines.register(
         RenderPipeline.builder(snippet)
-            .withLocation(Identifier.fromNamespaceAndPath(SkyHanniMod.MODID, this.name.lowercase()))
+            .withLocation(SkyHanniMod.id(this.name.lowercase()))
             //? if >= 26.2 {
             .withVertexBinding(0, vFormat)
             .withPrimitiveTopology(vDrawMode)
@@ -159,14 +161,8 @@ enum class SkyHanniRenderPipeline(
             .apply {
                 // One or the other, never both
                 blend?.let { withColorTargetState(ColorTargetState(it)) } ?: withCull?.let(this::withCull)
-                vertexShaderPath?.let { withVertexShader(Identifier.fromNamespaceAndPath(SkyHanniMod.MODID, it)) }
-                fragmentShaderPath?.let {
-                    withFragmentShader(
-                        Identifier.fromNamespaceAndPath(
-                            SkyHanniMod.MODID, it
-                        )
-                    )
-                }
+                vertexShaderPath?.let { withVertexShader(SkyHanniMod.id(it)) }
+                fragmentShaderPath?.let { withFragmentShader(SkyHanniMod.id(it)) }
 
                 //? if >= 26.2 {
                 if (sampler != null || uniforms.isNotEmpty()) {
@@ -198,5 +194,6 @@ private object SkyHanniRenderPipelineUtils {
     //val MATRICES_PROJECTION_SNIPPET = RenderPipelines.MATRICES_PROJECTION_SNIPPET
 
     val commonChromaUniforms = mapOf("SkyHanniChromaUniforms" to UniformType.UNIFORM_BUFFER)
+    val circleUniform = mapOf(SkyHanniCircleUniform.NAME to UniformType.UNIFORM_BUFFER)
     val PosColorNormal: VertexFormat = DefaultVertexFormat.POSITION_COLOR_NORMAL_LINE_WIDTH
 }

@@ -3,6 +3,7 @@ package at.hannibal2.skyhanni.mixins.transformers;
 import at.hannibal2.skyhanni.mixins.hooks.GuiRendererHook;
 import at.hannibal2.skyhanni.utils.render.item.SkyHanniGuiItemRenderState;
 import at.hannibal2.skyhanni.utils.render.item.SkyHanniItemRenderCoordinator;
+import at.hannibal2.skyhanni.utils.render.states.SkyHanniCircleUniform;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -119,5 +120,11 @@ public abstract class MixinGuiRenderer {
             renderState,
             skyhanni$frameNumber
         );
+    }
+
+    @Inject(method = "endFrame", at = @At("HEAD"))
+    private void endFrame(CallbackInfo ci) {
+        // todo this really should just be an event, maybe even with primary name?
+        SkyHanniCircleUniform.endFrame();
     }
 }
