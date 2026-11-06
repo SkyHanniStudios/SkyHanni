@@ -108,7 +108,7 @@ class GuiOptionEditorInputConstantsKey(option: ProcessedOption, defaultKey: Inpu
                     if (!editingKeycode) return false
                     if (keyboardEvent.pressed) return true
                     editingKeycode = false
-                    val key = InputKeys.keyEvent(KeyEvent(keyboardEvent.keycode, keyboardEvent.scancode, 0))
+                    val key = InputKeys.keyboard(keyboardEvent.keycode, keyboardEvent.scancode)
                         .takeUnless { it == InputKeys.KEY_ESCAPE } ?: InputConstants.UNKNOWN
                     option.set(key)
                     return true
