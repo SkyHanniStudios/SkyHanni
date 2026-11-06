@@ -27,7 +27,6 @@ import at.hannibal2.skyhanni.utils.SkyHanniLogger
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.filterNotNullValues
 import at.hannibal2.skyhanni.utils.compat.DrawContextUtils
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
-import at.hannibal2.skyhanni.utils.compat.RenderCompat
 import at.hannibal2.skyhanni.utils.compat.createResourceLocation
 import at.hannibal2.skyhanni.utils.render.ShaderRenderUtils
 import at.hannibal2.skyhanni.utils.render.SkyHanniRenderLayers
@@ -43,6 +42,7 @@ import io.github.notenoughupdates.moulconfig.ChromaColour
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.screens.PauseScreen
 import net.minecraft.client.gui.screens.inventory.SignEditScreen
+import net.minecraft.client.renderer.RenderPipelines
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.Identifier
 import java.awt.Color
@@ -590,12 +590,12 @@ interface Renderable {
                 } else {
                     if (texture == SkillProgressBarConfig.TexturedBar.UsedTexture.MATCH_PACK) {
                         DrawContextUtils.drawContext.blitSprite(
-                            RenderCompat.getMinecraftGuiTextured(), createResourceLocation("hud/experience_bar_background"),
+                            RenderPipelines.GUI_TEXTURED, createResourceLocation("hud/experience_bar_background"),
                             mouseOffsetX, mouseOffsetY, width, height,
                         )
                     } else {
                         DrawContextUtils.drawContext.blit(
-                            RenderCompat.getMinecraftGuiTextured(), createResourceLocation(texture.path),
+                            RenderPipelines.GUI_TEXTURED, createResourceLocation(texture.path),
                             mouseOffsetX, mouseOffsetY, 0f, 0f, width, height, 182, 5, 256, 256, -1,
                         )
                     }
@@ -615,12 +615,12 @@ interface Renderable {
                     } else {
                         if (texture == SkillProgressBarConfig.TexturedBar.UsedTexture.MATCH_PACK) {
                             DrawContextUtils.drawContext.blitSprite(
-                                RenderCompat.getMinecraftGuiTextured(), createResourceLocation("hud/experience_bar_progress"),
+                                RenderPipelines.GUI_TEXTURED, createResourceLocation("hud/experience_bar_progress"),
                                 width, height, 0, 0, mouseOffsetX, mouseOffsetY, progress, height,
                             )
                         } else {
                             DrawContextUtils.drawContext.blit(
-                                RenderCompat.getMinecraftGuiTextured(), createResourceLocation(texture.path),
+                                RenderPipelines.GUI_TEXTURED, createResourceLocation(texture.path),
                                 mouseOffsetX, mouseOffsetY, 0f, 5f, progress, height, progress, 5, 256, 256, -1,
                             )
                         }
