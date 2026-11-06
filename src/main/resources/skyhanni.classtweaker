@@ -82,9 +82,6 @@ mutable field net/minecraft/world/item/ItemStack components Lnet/minecraft/core/
 mutable field net/minecraft/world/item/ItemStack item Lnet/minecraft/core/Holder;
 
 #? if >= 26.2 {
-accessible method com/mojang/blaze3d/vertex/BufferBuilder beginElement (I)J
-accessible field com/mojang/blaze3d/vertex/BufferBuilder format Lcom/mojang/blaze3d/vertex/VertexFormat;
-accessible field com/mojang/blaze3d/vertex/BufferBuilder vertexPointer J
 accessible field net/minecraft/client/renderer/state/gui/GuiTextRenderState backgroundColor I
 accessible field net/minecraft/client/renderer/state/gui/GuiTextRenderState color I
 accessible field net/minecraft/client/renderer/state/gui/GuiTextRenderState dropShadow Z
@@ -95,7 +92,6 @@ accessible field net/minecraft/client/renderer/state/gui/GuiTextRenderState y I
 #?} else {
 #accessible field net/minecraft/client/renderer/RenderPipelines FOG_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
 #accessible field net/minecraft/client/renderer/RenderPipelines MATRICES_PROJECTION_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-#accessible method com/mojang/blaze3d/vertex/BufferBuilder beginElement (Lcom/mojang/blaze3d/vertex/VertexFormatElement;)J
 #inject-interface net/minecraft/client/renderer/SubmitNodeStorage$ItemSubmit at/hannibal2/skyhanni/mixins/hooks/GlowingStateStore
 #inject-interface net/minecraft/client/renderer/SubmitNodeStorage$ModelPartSubmit at/hannibal2/skyhanni/mixins/hooks/GlowingStateStore
 #inject-interface net/minecraft/client/renderer/SubmitNodeStorage$ModelSubmit at/hannibal2/skyhanni/mixins/hooks/GlowingStateStore

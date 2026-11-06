@@ -1,14 +1,17 @@
 #version 150
 
+#moj_import <skyhanni:shape_data.glsl>
+
 const float pi = 3.14159265f;
 
 in vec4 vertexColor;
-in vec4 roundedParams0;
-in vec4 roundedParams1;
+flat in int shapeIndex;
 
 out vec4 fragColor;
 
 void main() {
+    vec4 roundedParams0 = ShapeData[shapeIndex];
+    vec4 roundedParams1 = ShapeData[shapeIndex + 1];
     float smoothness = roundedParams0.y;
     vec2 halfSize = roundedParams0.zw;
     vec2 centerPos = roundedParams1.xy;
