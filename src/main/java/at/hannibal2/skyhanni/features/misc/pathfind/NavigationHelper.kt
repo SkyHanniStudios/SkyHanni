@@ -6,7 +6,7 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
 import at.hannibal2.skyhanni.config.commands.brigadier.BrigadierArguments
 import at.hannibal2.skyhanni.config.commands.brigadier.BrigadierUtils
-import at.hannibal2.skyhanni.config.commands.brigadier.arguments.LorenzVecArgumentType
+import at.hannibal2.skyhanni.config.commands.brigadier.arguments.VectorArgumentType
 import at.hannibal2.skyhanni.data.IslandGraphs
 import at.hannibal2.skyhanni.data.IslandGraphs.pathFind
 import at.hannibal2.skyhanni.data.model.graph.GraphNode
@@ -157,7 +157,7 @@ object NavigationHelper {
         event.registerBrigadier("shnavigate") {
             description = "Use the path finder to go to a specific location"
             aliases = listOf("shnav")
-            argCallback("coords", LorenzVecArgumentType.double()) { location ->
+            argCallback("coords", VectorArgumentType.double()) { location ->
                 pathFind(location, "Custom Goal", condition = { true })
                 ChatUtils.chat("Started Navigating to custom goal at §f${location.toLocalFormat()}", messageId = messageId)
             }

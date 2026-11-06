@@ -1,6 +1,6 @@
 package at.hannibal2.skyhanni.utils
 
-import at.hannibal2.skyhanni.utils.LorenzVec.Companion.toLorenzVec
+import at.hannibal2.skyhanni.utils.vector.VectorFormat.toSkyHanniVector
 import kotlin.math.pow
 import kotlin.time.Duration.Companion.seconds
 
@@ -139,7 +139,7 @@ class BezierCurve(private val coefficients: List<DoubleArray>) {
             result = result * t + coefficient * (reversed.size - i)
         }
         result
-    }.toLorenzVec()
+    }.toSkyHanniVector()
 
     fun at(t: Double): LorenzVec = coefficients.map {
         var result = 0.0
@@ -148,5 +148,5 @@ class BezierCurve(private val coefficients: List<DoubleArray>) {
             result = result * t + coefficient
         }
         result
-    }.toLorenzVec()
+    }.toSkyHanniVector()
 }
