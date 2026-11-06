@@ -22,13 +22,11 @@ import kotlin.reflect.KClass
 object RenderableTestSuite {
 
     private val register = mutableMapOf<String, TestRenderableBase<*>>()
-
     private val storage get() = SkyHanniMod.feature.storage
-
     private val active = mutableSetOf<TestRenderableBase<*>>()
 
     @HandleEvent(GuiRenderEvent.GuiOnTopRenderEvent::class)
-    fun onGuiRenderTop() {
+    private fun onGuiRenderTop() {
         for (test in active.filter { it.eventClass == GuiRenderEvent.GuiOnTopRenderEvent::class }) {
             test.finalRenderable?.let {
                 test.position.renderRenderable(it, posLabel = "Renderable Test: $test")
@@ -37,7 +35,7 @@ object RenderableTestSuite {
     }
 
     @HandleEvent
-    fun onRenderOverlayPost(event: GameOverlayRenderPostEvent) {
+    private fun onRenderOverlayPost(event: GameOverlayRenderPostEvent) {
         if (event.type != RenderLayer.HOTBAR) return
         for (test in active.filter { it.eventClass == GameOverlayRenderPostEvent::class }) {
             test.finalRenderable?.let {
@@ -47,7 +45,7 @@ object RenderableTestSuite {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shtestrenderable") {
             category = CommandCategory.DEVELOPER_TEST
             description = "Used for testing specific gui element primitives."
@@ -91,8 +89,6 @@ object RenderableTestSuite {
      *
      * @param name Name of the Test, is the name you have to type to use it ingame with `\shrenderable`.
      * @param shouldRenderBounds Enables a Red Boundary around the test [renderable].
-     * @property renderable Function that is called for retrieving the [Renderable] that is going to be tested (and rendered on screen, once active). Define here your test you want to do.
-     * @property position The position at which the test will be rendered. There should be no reason that is touched. Other than inside [RenderableTestSuite].
      */
     abstract class TestRenderable(
         name: String,
