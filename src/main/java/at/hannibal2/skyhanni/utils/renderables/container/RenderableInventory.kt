@@ -80,6 +80,8 @@ object RenderableInventory {
         }
     }
 
+    // TODO Make a way for this to render with Hypixel's Tooltip style
+    // TODO Fix Slot.png not rendering for itemStacks
     fun Renderable.Companion.fakeInventory(
         items: List<SafeItemStack?>,
         maxRowSize: Int,
