@@ -1,11 +1,11 @@
 package at.hannibal2.skyhanni.utils.render.uniforms
 
 import at.hannibal2.skyhanni.test.command.ErrorManager
-import com.mojang.blaze3d.buffers.GpuBufferSlice
+import com.mojang.blaze3d.buffers.GpuBuffer
 import com.mojang.blaze3d.systems.RenderPass
-import net.minecraft.client.renderer.DynamicUniformStorage
-import java.nio.ByteBuffer
-import java.nio.ByteOrder
+import com.mojang.blaze3d.systems.RenderSystem
+import org.lwjgl.system.MemoryStack
+import java.util.Arrays
 
 object SkyHanniShapeData {
     const val UNIFORM_NAME = "SkyHanniShapeData"
@@ -16,9 +16,17 @@ object SkyHanniShapeData {
     private const val BLOCK_BYTES = CAPACITY_FLOATS * Float.SIZE_BYTES
 
     private val values = FloatArray(CAPACITY_FLOATS)
-    private val storage by lazy { DynamicUniformStorage<ShapeBlock>("SkyHanni Shape Data UBO", BLOCK_BYTES, 1) }
+    private val uploaded = FloatArray(CAPACITY_FLOATS)
+    private val buffer by lazy {
+        RenderSystem.getDevice().createBuffer(
+            { "SkyHanni Shape Data UBO" },
+            GpuBuffer.USAGE_UNIFORM or GpuBuffer.USAGE_COPY_DST,
+            BLOCK_BYTES.toLong(),
+        )
+    }
     private var size = 0
-    private var slice: GpuBufferSlice? = null
+    private var uploadedSize = 0
+    private var uploadedThisFrame = false
     private var overflowed = false
 
     fun add(params: FloatArray): Int? {
@@ -32,18 +40,25 @@ object SkyHanniShapeData {
     }
 
     fun upload() {
-        if (slice != null || size == 0) return
-        slice = storage.writeUniform(ShapeBlock())
+        if (uploadedThisFrame || size == 0) return
+        uploadedThisFrame = true
+        if (size == uploadedSize && Arrays.equals(values, 0, size, uploaded, 0, size)) return
+        MemoryStack.stackPush().use { stack ->
+            val bytes = stack.malloc(size * Float.SIZE_BYTES)
+            bytes.asFloatBuffer().put(values, 0, size)
+            RenderSystem.getDevice().createCommandEncoder().writeToBuffer(buffer.slice(0L, bytes.remaining().toLong()), bytes)
+        }
+        values.copyInto(uploaded, 0, 0, size)
+        uploadedSize = size
     }
 
     fun bind(renderPass: RenderPass) {
-        slice?.let { renderPass.setUniform(UNIFORM_NAME, it) }
+        if (uploadedSize > 0) renderPass.setUniform(UNIFORM_NAME, buffer)
     }
 
     fun endFrame() {
-        if (slice != null) storage.endFrame()
         size = 0
-        slice = null
+        uploadedThisFrame = false
         overflowed = false
     }
 
@@ -57,11 +72,5 @@ object SkyHanniShapeData {
             "used vec4s" to size / VEC4_FLOATS,
             "requested vec4s" to requestedVec4s,
         )
-    }
-
-    private class ShapeBlock : DynamicUniformStorage.DynamicUniform {
-        override fun write(buffer: ByteBuffer) {
-            buffer.order(ByteOrder.nativeOrder()).asFloatBuffer().put(values, 0, size)
-        }
     }
 }

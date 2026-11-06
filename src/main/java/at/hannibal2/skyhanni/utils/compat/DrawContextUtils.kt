@@ -4,6 +4,8 @@ import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.SafeItemStack
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.renderer.state.gui.GuiElementRenderState
+import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState
+import org.joml.Matrix3x2f
 
 /**
  * Utils methods related to DrawContext, also known on 1.8 as GLStateManager
@@ -135,11 +137,17 @@ object DrawContextUtils {
         scale(1 / x.toFloat(), 1 / y.toFloat())
     }
 
+    fun copyPose(): Matrix3x2f = Matrix3x2f(drawContext.pose())
+
     fun loadIdentity() {
         drawContext.pose().identity()
     }
 
     fun addGuiElement(state: GuiElementRenderState) {
         drawContext.guiRenderState.addGuiElement(state)
+    }
+
+    fun submitPip(state: PictureInPictureRenderState) {
+        drawContext.guiRenderState.addPicturesInPictureState(state)
     }
 }

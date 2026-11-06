@@ -21,7 +21,6 @@ import net.minecraft.util.ARGB
 import net.minecraft.util.FormattedCharSequence
 import net.minecraft.world.item.ItemDisplayContext
 import net.minecraft.world.phys.Vec3
-import org.joml.Matrix3x2f
 import kotlin.math.min
 import kotlin.math.sqrt
 
@@ -320,7 +319,7 @@ object GuiRenderUtils {
          *  It also will not correctly adhere to other GUI transforms (such as blurring when in a menu).
          */
         val guiItemRenderState = GuiItemRenderState(
-            Matrix3x2f(DrawContextUtils.drawContext.pose()),
+            DrawContextUtils.copyPose(),
             trackingState,
             0,
             0,
@@ -338,7 +337,7 @@ object GuiRenderUtils {
             frameNumber = frameNumber,
             alpha = alpha,
         )
-        Minecraft.getInstance().gameRenderer.gameRenderState().guiRenderState.addPicturesInPictureState(newRenderState)
+        DrawContextUtils.submitPip(newRenderState)
 
         return newRenderState.stableId
     }

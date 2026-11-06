@@ -2,8 +2,6 @@
 
 #moj_import <skyhanni:shape_data.glsl>
 
-const float pi = 3.14159265f;
-
 in vec4 vertexColor;
 flat in int shapeIndex;
 
