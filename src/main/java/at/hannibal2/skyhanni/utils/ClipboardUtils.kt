@@ -11,10 +11,10 @@ import at.hannibal2.skyhanni.utils.coroutines.CoroutineSettings
 import kotlinx.coroutines.Deferred
 
 //? if >= 26.3 {
-import org.lwjgl.sdl.SDLError
-import java.lang.foreign.Arena
 import net.minecraft.util.StringDecomposer
 import org.lwjgl.sdl.SDLClipboard
+import org.lwjgl.sdl.SDLError
+import java.lang.foreign.Arena
 //?} else {
 /*import com.mojang.blaze3d.platform.ClipboardManager
 import net.minecraft.client.Minecraft
