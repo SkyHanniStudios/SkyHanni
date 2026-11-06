@@ -9,6 +9,7 @@ import at.hannibal2.skyhanni.utils.render.item.SkyHanniGuiItemRenderState
 import at.hannibal2.skyhanni.utils.render.item.SkyHanniItemRenderCoordinator
 import at.hannibal2.skyhanni.utils.render.item.SkyHanniPipCoordinatorRenderer
 import at.hannibal2.skyhanni.utils.render.uniforms.SkyHanniChromaUniform
+import at.hannibal2.skyhanni.utils.render.uniforms.SkyHanniRoundedUniform
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation
 import com.mojang.blaze3d.buffers.GpuBufferSlice
 import com.mojang.blaze3d.pipeline.RenderPipeline
@@ -29,7 +30,32 @@ import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState
 
 object GuiRendererHook {
     private val chromaUniform = SkyHanniChromaUniform()
+    private val roundedUniform = SkyHanniRoundedUniform()
     var chromaBufferSlice: GpuBufferSlice? = null
+    private var roundedBufferSlice: GpuBufferSlice? = null
+
+    fun addRoundedUniform(
+        rounded0: FloatArray,
+        rounded1: FloatArray,
+        gradient0: FloatArray = floatArrayOf(),
+        startColor: FloatArray = floatArrayOf(),
+        endColor: FloatArray = floatArrayOf(),
+    ): Int {
+        return roundedUniform.add(
+            rounded0,
+            rounded1,
+            if (gradient0.isEmpty()) floatArrayOf(0f, 0f, 0f, 0f) else gradient0,
+            if (startColor.isEmpty()) floatArrayOf(0f, 0f, 0f, 0f) else startColor,
+            if (endColor.isEmpty()) floatArrayOf(0f, 0f, 0f, 0f) else endColor,
+        )
+    }
+
+    fun insertRoundedSetUniform(renderPass: RenderPass) {
+        if (roundedBufferSlice == null) {
+            roundedBufferSlice = roundedUniform.write()
+        }
+        roundedBufferSlice?.let { renderPass.setUniform("SkyHanniRoundedUniforms", it) }
+    }
 
     fun computeChromaBufferSlice() {
         if (!SkyHanniMod.feature.gui.chroma.enabled.get()) return
@@ -53,8 +79,10 @@ object GuiRendererHook {
     @JvmStatic
     fun clearChromaUniforms() {
         chromaUniform.clear()
+        roundedUniform.clear()
         //? if >= 26.2
         chromaBufferSlice = null
+        roundedBufferSlice = null
     }
 
     // This 'should' be fine being injected into GuiRenderer's render pass since if the bound pipeline's shader doesn't

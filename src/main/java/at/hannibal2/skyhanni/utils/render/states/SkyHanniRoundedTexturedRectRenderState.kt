@@ -1,9 +1,7 @@
 package at.hannibal2.skyhanni.utils.render.states
 
 import at.hannibal2.skyhanni.utils.render.SkyHanniRenderPipeline
-import at.hannibal2.skyhanni.utils.render.SkyHanniVertexFormats
-import at.hannibal2.skyhanni.utils.render.SkyHanniVertexFormats.writeParams
-import com.mojang.blaze3d.vertex.BufferBuilder
+import at.hannibal2.skyhanni.mixins.hooks.GuiRendererHook
 import com.mojang.blaze3d.vertex.VertexConsumer
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.navigation.ScreenRectangle
@@ -21,6 +19,13 @@ class SkyHanniRoundedTexturedRectRenderState(
     private val alpha: Float,
     scissor: ScreenRectangle?,
 ) : AbstractSkyHanniRoundedShapeRenderState(x, y, width, height, params, scissor) {
+
+    private val roundedUniformIndex = with(params) {
+        GuiRendererHook.addRoundedUniform(
+            floatArrayOf(radius, smoothness, adjustedHalfSizeX, adjustedHalfSizeY),
+            floatArrayOf(adjustedCenterPosX, adjustedCenterPosY, alpha, 0f),
+        )
+    }
 
     override val padding = 5
     override fun pipeline() = SkyHanniRenderPipeline.ROUNDED_TEXTURED_RECT_DEFERRED()
@@ -40,10 +45,7 @@ class SkyHanniRoundedTexturedRectRenderState(
     }
 
     private fun writeTexturedVertex(consumer: VertexConsumer, vx: Float, vy: Float, u: Float, v: Float) = with(params) {
-        val buf = consumer as BufferBuilder
-        buf.addVertex(matXScale * vx + matXTranslation, matYScale * vy + matYTranslation, 0f)
-        buf.setUv(u, v)
-        buf.writeParams(radius, smoothness, adjustedHalfSizeX, adjustedHalfSizeY, SkyHanniVertexFormats.VertexElement.ROUNDED_PARAMS_0)
-        buf.writeParams(adjustedCenterPosX, adjustedCenterPosY, alpha, 0f, SkyHanniVertexFormats.VertexElement.ROUNDED_PARAMS_1)
+        consumer.addVertex(matXScale * vx + matXTranslation, matYScale * vy + matYTranslation, roundedUniformIndex.toFloat())
+            .setUv(u, v)
     }
 }

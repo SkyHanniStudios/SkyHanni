@@ -1,9 +1,7 @@
 package at.hannibal2.skyhanni.utils.render.states
 
 import at.hannibal2.skyhanni.utils.render.SkyHanniRenderPipeline
-import at.hannibal2.skyhanni.utils.render.SkyHanniVertexFormats.VertexElement
-import at.hannibal2.skyhanni.utils.render.SkyHanniVertexFormats.writeParams
-import com.mojang.blaze3d.vertex.BufferBuilder
+import at.hannibal2.skyhanni.mixins.hooks.GuiRendererHook
 import com.mojang.blaze3d.vertex.VertexConsumer
 import net.minecraft.client.gui.navigation.ScreenRectangle
 
@@ -22,11 +20,17 @@ class SkyHanniRoundedRectRenderState(
     override val padding = 5
     override fun pipeline() = SkyHanniRenderPipeline.ROUNDED_RECT_DEFERRED()
 
-    override fun writeVertex(consumer: VertexConsumer, vx: Float, vy: Float, isTop: Boolean) = with(params) {
-        val buf = consumer as BufferBuilder
-        buf.addVertex(matXScale * vx + matXTranslation, matYScale * vy + matYTranslation, 0f)
-        buf.setColor(if (isTop) color else bottomColor)
-        buf.writeParams(radius, smoothness, adjustedHalfSizeX, adjustedHalfSizeY, VertexElement.ROUNDED_PARAMS_0)
-        buf.writeParams(adjustedCenterPosX, adjustedCenterPosY, 0f, 0f, VertexElement.ROUNDED_PARAMS_1)
+    private val roundedUniformIndex = with(params) {
+        GuiRendererHook.addRoundedUniform(
+            floatArrayOf(radius, smoothness, adjustedHalfSizeX, adjustedHalfSizeY),
+            floatArrayOf(adjustedCenterPosX, adjustedCenterPosY, 0f, 0f),
+        )
+    }
+
+    override fun writeVertex(consumer: VertexConsumer, vx: Float, vy: Float, isTop: Boolean) {
+        with(params) {
+        consumer.addVertex(matXScale * vx + matXTranslation, matYScale * vy + matYTranslation, roundedUniformIndex.toFloat())
+            .setColor(if (isTop) color else bottomColor)
+        }
     }
 }

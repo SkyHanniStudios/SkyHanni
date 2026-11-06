@@ -2,15 +2,19 @@
 
 const float tau = 6.2831853f;
 
-in vec4 roundedParams0;
-in vec4 roundedParams1;
-in vec4 gradientParams0;
-in vec4 gradientParams1;
-in vec4 gradientParams2;
+layout(std140) uniform SkyHanniRoundedUniforms {
+    vec4 roundedParams[1280];
+};
+flat in int roundedUniformIndex;
 
 out vec4 fragColor;
 
 void main() {
+    vec4 roundedParams0 = roundedParams[roundedUniformIndex * 5];
+    vec4 roundedParams1 = roundedParams[roundedUniformIndex * 5 + 1];
+    vec4 gradientParams0 = roundedParams[roundedUniformIndex * 5 + 2];
+    vec4 gradientParams1 = roundedParams[roundedUniformIndex * 5 + 3];
+    vec4 gradientParams2 = roundedParams[roundedUniformIndex * 5 + 4];
     float smoothness = roundedParams0.y;
     vec2 halfSize = roundedParams0.zw;
     vec2 centerPos = roundedParams1.xy;

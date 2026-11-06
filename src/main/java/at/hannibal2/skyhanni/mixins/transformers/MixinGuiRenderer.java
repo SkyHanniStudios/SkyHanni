@@ -41,6 +41,7 @@ public abstract class MixinGuiRenderer {
         CallbackInfo ci,
         @Local RenderPass renderPass) {
         GuiRendererHook.INSTANCE.insertChromaSetUniform(renderPass);
+        GuiRendererHook.INSTANCE.insertRoundedSetUniform(renderPass);
     }
 
     @WrapOperation(

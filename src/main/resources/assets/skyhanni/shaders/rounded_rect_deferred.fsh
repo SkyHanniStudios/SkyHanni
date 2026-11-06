@@ -1,8 +1,10 @@
 #version 150
 
 in vec4 vertexColor;
-in vec4 roundedParams0;
-in vec4 roundedParams1;
+flat in int roundedUniformIndex;
+layout(std140) uniform SkyHanniRoundedUniforms {
+    vec4 roundedParams[1280];
+};
 
 out vec4 fragColor;
 
@@ -11,6 +13,8 @@ float roundedRectSDF(vec2 center, vec2 halfSize, float radius) {
 }
 
 void main() {
+    vec4 roundedParams0 = roundedParams[roundedUniformIndex * 5];
+    vec4 roundedParams1 = roundedParams[roundedUniformIndex * 5 + 1];
     float radius = roundedParams0.x;
     float smoothness = roundedParams0.y;
     vec2 halfSize = roundedParams0.zw;
