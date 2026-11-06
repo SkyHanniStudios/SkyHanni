@@ -3,10 +3,10 @@ package at.hannibal2.skyhanni.utils.render
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawFilledBoundingBox
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawPyramid
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawString
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import net.minecraft.network.chat.Component
 import net.minecraft.world.phys.AABB
 import java.awt.Color
@@ -93,9 +93,9 @@ object DeferredDrawer {
     }
 
     fun deferPyramid(
-        topPoint: LorenzVec,
-        baseCenterPoint: LorenzVec,
-        baseEdgePoint: LorenzVec,
+        topPoint: SkyHanniVector,
+        baseCenterPoint: SkyHanniVector,
+        baseEdgePoint: SkyHanniVector,
         color: Color,
         depth: Boolean = true,
     ) {
@@ -108,7 +108,7 @@ object DeferredDrawer {
     }
 
     fun deferString(
-        location: LorenzVec,
+        location: SkyHanniVector,
         component: Component,
         color: Color?,
         scale: Double,
@@ -128,14 +128,14 @@ object DeferredDrawer {
     )
 
     data class DeferredPyramid(
-        val topPoint: LorenzVec,
-        val baseCenterPoint: LorenzVec,
-        val baseEdgePoint: LorenzVec,
+        val topPoint: SkyHanniVector,
+        val baseCenterPoint: SkyHanniVector,
+        val baseEdgePoint: SkyHanniVector,
         val color: Color,
     )
 
     data class DeferredString(
-        val location: LorenzVec,
+        val location: SkyHanniVector,
         val component: Component,
         val color: Color?,
         val scale: Double,

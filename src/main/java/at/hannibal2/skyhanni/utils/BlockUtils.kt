@@ -2,6 +2,8 @@ package at.hannibal2.skyhanni.utils
 
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.compat.addRedstoneOres
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.toSkyHanniVector
 import net.minecraft.client.Minecraft
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.ClipContext
@@ -16,14 +18,14 @@ object BlockUtils {
 
     private val world get() = MinecraftCompat.localWorldOrThrow
 
-    fun LorenzVec.getBlockAt(): Block = getBlockStateAt().block
+    fun SkyHanniVector.getBlockAt(): Block = getBlockStateAt().block
 
-    fun LorenzVec.getBlockStateAt(): BlockState = world.getBlockState(toBlockPos())
+    fun SkyHanniVector.getBlockStateAt(): BlockState = world.getBlockState(toBlockPos())
 
-    fun LorenzVec.isInLoadedChunk(): Boolean =
+    fun SkyHanniVector.isInLoadedChunk(): Boolean =
         world.chunkSource.hasChunk(x.toInt() shr 4, z.toInt() shr 4)
 
-    fun getTextureFromSkull(position: LorenzVec): String? {
+    fun getTextureFromSkull(position: SkyHanniVector): String? {
         val entity = world.getBlockEntity(position.toBlockPos()) as? SkullBlockEntity ?: return null
         return entity.getSkullTexture()
     }
@@ -37,14 +39,14 @@ object BlockUtils {
         return getValue(property) == 0
     }
 
-    private fun raycast(start: LorenzVec, direction: LorenzVec, distance: Double = 50.0): LorenzVec {
-        val target = start + direction.normalize() * distance
+    private fun raycast(start: SkyHanniVector, direction: SkyHanniVector, distance: Double = 50.0): SkyHanniVector {
+        val target = start + direction.normalized() * distance
         val result = raycast(start, target)
 
-        return result.location.toLorenzVec()
+        return result.location.toSkyHanniVector()
     }
 
-    fun raycast(start: LorenzVec, end: LorenzVec): BlockHitResult = world.clip(
+    fun raycast(start: SkyHanniVector, end: SkyHanniVector): BlockHitResult = world.clip(
         ClipContext(
             start.toVec3(),
             end.toVec3(),
@@ -54,29 +56,30 @@ object BlockUtils {
         ),
     )
 
-    fun getTargetedBlock(): LorenzVec? =
+    fun getTargetedBlock(): SkyHanniVector? =
         Minecraft.getInstance().hitResult?.takeIf { it.type == HitResult.Type.BLOCK }
-            ?.location?.toLorenzVec()?.roundToBlock()
+            ?.location?.toSkyHanniVector()?.floor()
 
     fun getTargetedBlockAtDistance(distance: Double) = raycast(
         LocationUtils.playerEyeLocation(),
-        MinecraftCompat.localPlayerOrThrow.lookAngle.toLorenzVec(),
+        MinecraftCompat.localPlayerOrThrow.lookAngle.toSkyHanniVector(),
         distance,
-    ).roundToBlock()
+    ).floor()
 
-    private fun nearbyBlocks(center: LorenzVec, distance: Int): MutableIterable<BlockPos> {
-        val from = center.add(-distance, -distance, -distance).toBlockPos()
-        val to = center.add(distance, distance, distance).toBlockPos()
+    private fun nearbyBlocks(center: SkyHanniVector, distance: Int): MutableIterable<BlockPos> {
+        val offset = distance.toDouble()
+        val from = center.add(-offset, -offset, -offset).toBlockPos()
+        val to = center.add(offset, offset, offset).toBlockPos()
         return BlockPos.betweenClosed(from, to)
     }
 
     fun nearbyBlocks(
-        center: LorenzVec,
+        center: SkyHanniVector,
         distance: Int,
         radius: Int = distance,
         condition: (BlockState) -> Boolean,
-    ): Map<LorenzVec, BlockState> = nearbyBlocks(center, distance).mapNotNull {
-        val loc = it.toLorenzVec()
+    ): Map<SkyHanniVector, BlockState> = nearbyBlocks(center, distance).mapNotNull {
+        val loc = it.toSkyHanniVector()
         val state = loc.getBlockStateAt()
         if (condition(state) && center.distance(loc) <= radius) {
             loc to state
@@ -84,11 +87,11 @@ object BlockUtils {
     }.toMap()
 
     fun nearbyBlocks(
-        center: LorenzVec,
+        center: SkyHanniVector,
         distance: Int,
         radius: Int = distance,
         filter: Block,
-    ): Map<LorenzVec, BlockState> =
+    ): Map<SkyHanniVector, BlockState> =
         nearbyBlocks(center, distance, radius, condition = { it.block == filter })
 
     val redstoneOreBlocks = buildList { addRedstoneOres() }

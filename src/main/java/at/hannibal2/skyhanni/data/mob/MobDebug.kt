@@ -8,7 +8,6 @@ import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.command.CopyNearbyEntitiesCommand.getMobInfo
 import at.hannibal2.skyhanni.utils.ChatUtils
-import at.hannibal2.skyhanni.utils.LocationUtils.getTopCenter
 import at.hannibal2.skyhanni.utils.LorenzColor
 import at.hannibal2.skyhanni.utils.LorenzDebug
 import at.hannibal2.skyhanni.utils.MobUtils
@@ -16,6 +15,7 @@ import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawFilledBoundingBox
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawString
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.expandBlock
+import at.hannibal2.skyhanni.utils.vector.VectorBounds.topCenter
 import io.github.notenoughupdates.moulconfig.ChromaColour
 import net.minecraft.client.player.LocalPlayer
 
@@ -42,7 +42,7 @@ object MobDebug {
 
     private fun MobData.MobSet.showName(event: SkyHanniRenderWorldEvent) {
         val map = filter { it.canBeSeen() && it.isNotInvisible() }
-            .map { it.boundingBox.getTopCenter() to it.name }
+            .map { it.boundingBox.topCenter() to it.name }
         for ((location, text) in map) {
             event.drawString(location.up(0.5), "§5$text", seeThroughBlocks = true)
         }

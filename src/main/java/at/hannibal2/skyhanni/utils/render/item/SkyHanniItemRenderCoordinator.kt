@@ -3,8 +3,8 @@ package at.hannibal2.skyhanni.utils.render.item
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
-import at.hannibal2.skyhanni.utils.VectorUtils.isEqualTo
 import at.hannibal2.skyhanni.utils.render.item.atlas.SkyHanniItemAtlas
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.isEqualTo
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.ProjectionMatrixBuffer
 import net.minecraft.client.renderer.feature.FeatureRenderDispatcher

@@ -6,7 +6,7 @@ import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.LocationUtils
 import at.hannibal2.skyhanni.utils.SkyHanniLogger
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.takeIfAllNotNull
-import at.hannibal2.skyhanni.utils.getLorenzVec
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.decoration.ArmorStand
 import java.util.TreeMap
@@ -81,7 +81,7 @@ object MobData {
         fun toKeyValuePair() = entity.id to this
 
         fun outsideRange() =
-            entity.getLorenzVec().distanceChebyshevIgnoreY(LocationUtils.playerLocation()) > when (roughCategory) {
+            entity.positionVector().distanceChebyshevIgnoreY(LocationUtils.playerLocation()) > when (roughCategory) {
                 MobCategory.DISPLAY_NPC -> DISPLAY_NPC_DETECTION_RANGE
                 MobCategory.PLAYER -> Double.POSITIVE_INFINITY
                 else -> DETECTION_RANGE
