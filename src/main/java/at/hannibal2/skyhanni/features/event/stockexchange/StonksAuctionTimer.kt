@@ -19,7 +19,6 @@ import at.hannibal2.skyhanni.utils.TimeUtils.timerColor
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.container.VerticalContainerRenderable.Companion.vertical
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
-import java.awt.Color
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 
@@ -86,8 +85,7 @@ object StonksAuctionTimer {
         val bidStatus = if (hasBidThisRound(storage, roundEnd)) "§a✔ Bid: §e${storage.bidAmount.addSeparators()} Coins" else "§c✘ Not bid!"
         val countdownLine = Renderable.text("§6Stonks Auction §7ends in $color${timeUntil.format(maxUnits = 2)}")
         val bidLine = Renderable.text(bidStatus)
-        val textRenderable = Renderable.vertical(countdownLine, bidLine, horizontalAlign = HorizontalAlignment.CENTER)
-        return Renderable.drawInsideRoundedRect(textRenderable, color = Color(255, 255, 255, 100), radius = 5)
+        return Renderable.vertical(countdownLine, bidLine, horizontalAlign = HorizontalAlignment.CENTER)
     }
 
     private fun updateNewRoundState(roundEnd: SimpleTimeMark) {
