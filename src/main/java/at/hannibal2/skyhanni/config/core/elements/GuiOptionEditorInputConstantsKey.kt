@@ -76,6 +76,11 @@ class GuiOptionEditorInputConstantsKey(option: ProcessedOption, defaultKey: Inpu
 
                     val button = mouseEvent.mouseButton
                     return when {
+                        editingKeycode && button != InputKeys.KEY_UNKNOWN -> {
+                            editingKeycode = false
+                            option.set(InputKeys.mouse(button))
+                            true
+                        }
                         button == InputConstants.MOUSE_BUTTON_LEFT -> {
                             val height = getHeight()
                             val width = getHeight()
@@ -93,11 +98,6 @@ class GuiOptionEditorInputConstantsKey(option: ProcessedOption, defaultKey: Inpu
                                 return true
                             }
                             false
-                        }
-                        button != InputKeys.KEY_UNKNOWN && editingKeycode -> {
-                            editingKeycode = false
-                            option.set(InputKeys.mouse(button))
-                            true
                         }
                         else -> false
                     }
