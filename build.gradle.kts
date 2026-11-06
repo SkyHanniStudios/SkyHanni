@@ -248,8 +248,11 @@ afterEvaluate {
     }
 }
 
+val testForkCpuDivisor = 2
+
 tasks.withType<Test> {
     useJUnitPlatform()
+    maxParallelForks = (Runtime.getRuntime().availableProcessors() / testForkCpuDivisor).coerceAtLeast(1)
     testLogging {
         showStackTraces = true
         exceptionFormat = TestExceptionFormat.FULL
