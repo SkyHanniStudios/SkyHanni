@@ -1,9 +1,6 @@
 package at.hannibal2.skyhanni.utils.render.states
 
 import at.hannibal2.skyhanni.utils.render.SkyHanniRenderPipeline
-import at.hannibal2.skyhanni.utils.render.SkyHanniVertexFormats.VertexElement
-import at.hannibal2.skyhanni.utils.render.SkyHanniVertexFormats.writeParams
-import com.mojang.blaze3d.vertex.BufferBuilder
 import com.mojang.blaze3d.vertex.VertexConsumer
 import net.minecraft.client.gui.navigation.ScreenRectangle
 
@@ -23,11 +20,9 @@ class SkyHanniRoundedRectOutlineRenderState(
     override val padding = (borderThickness / 2).toInt()
     override fun pipeline() = SkyHanniRenderPipeline.ROUNDED_RECT_OUTLINE_DEFERRED()
 
-    override fun writeVertex(consumer: VertexConsumer, vx: Float, vy: Float, isTop: Boolean) = with(params) {
-        val buf = consumer as BufferBuilder
-        buf.addVertex(matXScale * vx + matXTranslation, matYScale * vy + matYTranslation, 0f)
-        buf.setColor(if (isTop) topColor else bottomColor)
-        buf.writeParams(radius, borderThickness, adjustedHalfSizeX, adjustedHalfSizeY, VertexElement.ROUNDED_PARAMS_0)
-        buf.writeParams(adjustedCenterPosX, adjustedCenterPosY, borderBlur, 0f, VertexElement.ROUNDED_PARAMS_1)
+    override fun shapeParams() = roundedParams(borderThickness, borderBlur)
+
+    override fun writeVertex(vertex: VertexConsumer, u: Float, v: Float) {
+        vertex.setColor(if (v == 0f) topColor else bottomColor)
     }
 }

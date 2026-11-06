@@ -13,6 +13,7 @@ accessible field net/minecraft/client/KeyMapping key Lcom/mojang/blaze3d/platfor
 accessible field net/minecraft/client/Minecraft deltaTracker Lnet/minecraft/client/DeltaTracker$Timer;
 accessible field net/minecraft/client/ToggleKeyMapping needsToggle Ljava/util/function/BooleanSupplier;
 accessible field net/minecraft/client/gui/GuiGraphicsExtractor guiRenderState Lnet/minecraft/client/renderer/state/gui/GuiRenderState;
+accessible field net/minecraft/client/resources/model/ModelManager bakedItemStackModels Ljava/util/Map;
 accessible field net/minecraft/client/gui/GuiGraphicsExtractor scissorStack Lnet/minecraft/client/gui/GuiGraphicsExtractor$ScissorStack;
 accessible field net/minecraft/client/gui/GuiGraphicsExtractor$ScissorStack stack Ljava/util/Deque;
 accessible field net/minecraft/client/gui/components/BossHealthOverlay events Ljava/util/Map;
@@ -82,9 +83,6 @@ mutable field net/minecraft/world/item/ItemStack components Lnet/minecraft/core/
 mutable field net/minecraft/world/item/ItemStack item Lnet/minecraft/core/Holder;
 
 #? if >= 26.2 {
-accessible method com/mojang/blaze3d/vertex/BufferBuilder beginElement (I)J
-accessible field com/mojang/blaze3d/vertex/BufferBuilder format Lcom/mojang/blaze3d/vertex/VertexFormat;
-accessible field com/mojang/blaze3d/vertex/BufferBuilder vertexPointer J
 accessible field net/minecraft/client/renderer/state/gui/GuiTextRenderState backgroundColor I
 accessible field net/minecraft/client/renderer/state/gui/GuiTextRenderState color I
 accessible field net/minecraft/client/renderer/state/gui/GuiTextRenderState dropShadow Z
@@ -95,7 +93,6 @@ accessible field net/minecraft/client/renderer/state/gui/GuiTextRenderState y I
 #?} else {
 #accessible field net/minecraft/client/renderer/RenderPipelines FOG_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
 #accessible field net/minecraft/client/renderer/RenderPipelines MATRICES_PROJECTION_SNIPPET Lcom/mojang/blaze3d/pipeline/RenderPipeline$Snippet;
-#accessible method com/mojang/blaze3d/vertex/BufferBuilder beginElement (Lcom/mojang/blaze3d/vertex/VertexFormatElement;)J
 #inject-interface net/minecraft/client/renderer/SubmitNodeStorage$ItemSubmit at/hannibal2/skyhanni/mixins/hooks/GlowingStateStore
 #inject-interface net/minecraft/client/renderer/SubmitNodeStorage$ModelPartSubmit at/hannibal2/skyhanni/mixins/hooks/GlowingStateStore
 #inject-interface net/minecraft/client/renderer/SubmitNodeStorage$ModelSubmit at/hannibal2/skyhanni/mixins/hooks/GlowingStateStore
