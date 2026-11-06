@@ -3,7 +3,7 @@
 in vec2 texCoord;
 flat in int roundedUniformIndex;
 layout(std140) uniform SkyHanniRoundedUniforms {
-    vec4 roundedParams[1280];
+    vec4 roundedParams[640];
 };
 
 uniform sampler2D Sampler0;

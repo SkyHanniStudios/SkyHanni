@@ -3,7 +3,7 @@
 const float tau = 6.2831853f;
 
 layout(std140) uniform SkyHanniRoundedUniforms {
-    vec4 roundedParams[1280];
+    vec4 roundedParams[640];
 };
 flat in int roundedUniformIndex;
 

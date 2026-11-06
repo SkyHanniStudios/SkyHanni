@@ -8,7 +8,7 @@ import java.nio.ByteBuffer
 
 class SkyHanniRoundedUniform : AutoCloseable {
     companion object {
-        const val MAX_STATES = 256
+        const val MAX_STATES = 128
         const val VEC4S_PER_STATE = 5
     }
 
@@ -30,7 +30,9 @@ class SkyHanniRoundedUniform : AutoCloseable {
         startColor: FloatArray,
         endColor: FloatArray,
     ): Int {
-        check(values.size < MAX_STATES * VEC4S_PER_STATE) { "Too many SkyHanni rounded render states" }
+        check(values.size + VEC4S_PER_STATE <= MAX_STATES * VEC4S_PER_STATE) {
+            "Too many SkyHanni rounded render states"
+        }
         val index = values.size / VEC4S_PER_STATE
         values.add(rounded0)
         values.add(rounded1)

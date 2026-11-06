@@ -5,7 +5,7 @@ const float pi = 3.14159265f;
 in vec4 vertexColor;
 flat in int roundedUniformIndex;
 layout(std140) uniform SkyHanniRoundedUniforms {
-    vec4 roundedParams[1280];
+    vec4 roundedParams[640];
 };
 
 out vec4 fragColor;
