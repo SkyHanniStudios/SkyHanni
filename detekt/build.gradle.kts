@@ -17,6 +17,18 @@ dependencies {
     detektPlugins(libs.detektrules.ktlint)
 }
 
+val detektRuleClasses by configurations.creating {
+    isCanBeConsumed = true
+    isCanBeResolved = false
+    extendsFrom(configurations.runtimeClasspath.get())
+}
+
+artifacts {
+    val main = sourceSets.main.get().output
+    main.classesDirs.forEach { add(detektRuleClasses.name, it) { builtBy(tasks.classes) } }
+    main.resourcesDir?.let { add(detektRuleClasses.name, it) { builtBy(tasks.processResources) } }
+}
+
 tasks.withType<Detekt>().configureEach {
     onlyIf { false }
 }

@@ -207,7 +207,7 @@ dependencies {
     "minecraftTestClientRuntimeLibraries"(libs.keval)
 
     detektPlugins(libs.detektrules.neu)
-    detektPlugins(project(":detekt"))
+    detektPlugins(project(":detekt", "detektRuleClasses"))
     detektPlugins(libs.detektrules.ktlint)
 
     shadowImpl(libs.httpclient)
@@ -248,15 +248,19 @@ afterEvaluate {
     }
 }
 
+val testForkCpuDivisor = 2
+
 tasks.withType<Test> {
     useJUnitPlatform()
+    maxParallelForks = (Runtime.getRuntime().availableProcessors() / testForkCpuDivisor).coerceAtLeast(1)
     testLogging {
         showStackTraces = true
         exceptionFormat = TestExceptionFormat.FULL
     }
     javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
     workingDir(file(runDirectory))
-    systemProperty("junit.jupiter.extensions.autodetection.enabled", "true")
+    dependsOn(includeBackupNeuRepo)
+    systemProperty("skyhanni.test.neuRepo", includeBackupNeuRepo.get().repoFile.absolutePath)
     systemProperty("joml.nounsafe", "true")
     systemProperty("net.bytebuddy.safe", "true")
     jvmArgs(
@@ -291,6 +295,10 @@ kotlin {
             languageVersion = "2.4"
         }
     }
+}
+
+tasks.named<KotlinCompile>("compileTestKotlin") {
+    friendPaths.setFrom(sourceSets.main.get().output.classesDirs)
 }
 
 // Tasks:
@@ -451,9 +459,11 @@ detekt {
     buildUponDefaultConfig = true
     config.setFrom(rootProject.layout.projectDirectory.file("detekt/detekt.yml"))
     baseline = file(rootProject.layout.projectDirectory.file("detekt/baseline-main.xml"))
-    source.setFrom(project.sourceSets.named("main").map {
-        it.allSource.matching {
-            exclude { elem -> elem.file.absolutePath.replace('\\', '/').contains("/build/generated/") }
+    source.setFrom(listOf("main", "test").map { name ->
+        project.sourceSets.named(name).map {
+            it.allSource.matching {
+                exclude { elem -> elem.file.absolutePath.replace('\\', '/').contains("/build/generated/") }
+            }
         }
     })
 }
