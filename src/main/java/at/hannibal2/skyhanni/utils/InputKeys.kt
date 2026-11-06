@@ -23,7 +23,7 @@ object InputKeys {
         //? if >= 26.3
         val keyEvent = KeyEvent(scancode, keyCode, 0)
         //? else
-        // val keyEvent = KeyEvent(keyCode, scancode, 0)
+        //val keyEvent = KeyEvent(keyCode, scancode, 0)
         return keyEvent(keyEvent)
     }
 
