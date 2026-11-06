@@ -45,12 +45,6 @@ class EnchantedBookResolverTest {
     }
 
     @Test
-    fun newSuffixIsStripped() {
-        assertEquals("LOOTING;7".toInternalName(), ItemNameResolver.fixEnchantmentName("LOOTING_NEW;7"))
-        assertEquals("LUCK;7".toInternalName(), ItemNameResolver.fixEnchantmentName("luck_new;7"))
-    }
-
-    @Test
     fun newSuffixOnlyStrippedFromEnchantIds() {
         assertEquals("SALMON_HELMET_NEW".toInternalName(), ItemNameResolver.fixEnchantmentName("SALMON_HELMET_NEW"))
     }

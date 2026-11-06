@@ -147,20 +147,10 @@ object ItemNameResolver {
         "ULTIMATE_DUPLEX;(?<tier>\\d+)",
     )
 
-    /**
-     * REGEX-TEST: LOOTING_NEW;7
-     * REGEX-TEST: LUCK_NEW;7
-     */
-    private val newEnchantPattern by patternGroup.pattern(
-        "enchantment.new",
-        "(?<name>\\w+?)_NEW;(?<tier>\\d+)",
-    )
-
     fun fixEnchantmentName(originalName: String): NeuInternalName {
         val cleanName = originalName.removeColor().uppercase().replace("ULTIMATE_ULTIMATE_", "ULTIMATE_")
-        val withoutNew = newEnchantPattern.matchMatcher(cleanName) { "${group("name")};${group("tier")}" } ?: cleanName
-        val fixed = duplexPattern.matchMatcher(withoutNew) { "ULTIMATE_REITERATE;${group("tier")}" } ?: withoutNew
-        return fixed.toInternalName()
+        val duplexFixed = duplexPattern.matchMatcher(cleanName) { "ULTIMATE_REITERATE;${group("tier")}" } ?: cleanName
+        return duplexFixed.toInternalName()
     }
 
     private fun getInternalNameOrNullIgnoreCase(itemName: String): NeuInternalName? {
