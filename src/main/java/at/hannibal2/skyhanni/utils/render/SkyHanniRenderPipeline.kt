@@ -7,23 +7,17 @@ import at.hannibal2.skyhanni.utils.render.SkyHanniRenderPipelineUtils.PosColorNo
 import at.hannibal2.skyhanni.utils.render.SkyHanniRenderPipelineUtils.commonChromaUniforms
 import at.hannibal2.skyhanni.utils.render.SkyHanniRenderPipelineUtils.shapeDataUniforms
 import at.hannibal2.skyhanni.utils.render.uniforms.SkyHanniShapeData
+import com.mojang.blaze3d.PrimitiveTopology
+import com.mojang.blaze3d.pipeline.BindGroupLayout
 import com.mojang.blaze3d.pipeline.BlendFunction
 import com.mojang.blaze3d.pipeline.ColorTargetState
 import com.mojang.blaze3d.pipeline.RenderPipeline
 import com.mojang.blaze3d.shaders.UniformType
 import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import com.mojang.blaze3d.vertex.VertexFormat
+import net.minecraft.client.renderer.BindGroupLayouts
 import net.minecraft.client.renderer.RenderPipelines
 import java.util.Optional
-
-//? if >= 26.2 {
-import com.mojang.blaze3d.PrimitiveTopology
-import com.mojang.blaze3d.pipeline.BindGroupLayout
-import net.minecraft.client.renderer.BindGroupLayouts
-//?}
-
-//? if < 26.2
-//private typealias PrimitiveTopology = VertexFormat.Mode
 
 enum class SkyHanniRenderPipeline(
     snippet: RenderPipeline.Snippet,
@@ -160,18 +154,14 @@ enum class SkyHanniRenderPipeline(
     private val internalPipeline: RenderPipeline = RenderPipelines.register(
         RenderPipeline.builder(snippet)
             .withLocation(SkyHanniMod.id(this.name.lowercase()))
-            //? if >= 26.2 {
             .withVertexBinding(0, vFormat)
             .withPrimitiveTopology(vDrawMode)
-            //?} else
-            //.withVertexFormat(vFormat, vDrawMode)
             .apply {
                 // One or the other, never both
                 blend?.let { withColorTargetState(ColorTargetState(it)) } ?: withCull?.let(this::withCull)
                 vertexShaderPath?.let { withVertexShader(SkyHanniMod.id(it)) }
                 fragmentShaderPath?.let { withFragmentShader(SkyHanniMod.id(it)) }
 
-                //? if >= 26.2 {
                 if (sampler != null || uniforms.isNotEmpty()) {
                     withBindGroupLayout(
                         BindGroupLayout.builder().apply {
@@ -180,10 +170,6 @@ enum class SkyHanniRenderPipeline(
                         }.build(),
                     )
                 }
-                //?} else {
-                /*sampler?.let(this::withSampler)
-                uniforms.forEach(this::withUniform)
-                *///?}
 
                 if (usesShapeData) {
                     withShaderDefine(SkyHanniShapeData.CAPACITY_DEFINE, SkyHanniShapeData.CAPACITY_VEC4S)
@@ -199,10 +185,7 @@ enum class SkyHanniRenderPipeline(
 }
 
 private object SkyHanniRenderPipelineUtils {
-    //? if >= 26.2 {
     val MATRICES_PROJECTION_SNIPPET = RenderPipeline.builder().withBindGroupLayout(BindGroupLayouts.MATRICES_PROJECTION).buildSnippet()
-    //?} else
-    //val MATRICES_PROJECTION_SNIPPET = RenderPipelines.MATRICES_PROJECTION_SNIPPET
 
     val commonChromaUniforms = mapOf("SkyHanniChromaUniforms" to UniformType.UNIFORM_BUFFER)
     val shapeDataUniforms = mapOf(SkyHanniShapeData.UNIFORM_NAME to UniformType.UNIFORM_BUFFER)
