@@ -2,23 +2,16 @@ import at.skyhanni.sharedvariables.ProjectTarget
 import at.skyhanni.sharedvariables.SHVersionInfo
 import dev.detekt.gradle.Detekt
 import dev.detekt.gradle.DetektCreateBaselineTask
-import jdk.internal.net.http.common.TimeSource.source
-import jdk.jfr.internal.JVM.exclude
-import jdk.jfr.internal.JVM.include
 import net.fabricmc.loom.api.fabricapi.FabricApiExtension
 import net.fabricmc.loom.task.RemapSourcesJarTask
 import net.fabricmc.loom.task.ValidateAccessWidenerTask
 import net.fabricmc.loom.task.prod.ClientProductionRunTask
-import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.gradle.process.ExecSpec
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import skyhannibuildsystem.ChangelogVerification
 import skyhannibuildsystem.DownloadBackupRepo
 import skyhannibuildsystem.PublishToModrinth
-import sun.jvmstat.monitor.MonitoredVmUtil.jvmArgs
-import kotlin.jvm.java
 import org.gradle.jvm.tasks.Jar as GradleJar
 
 plugins {
@@ -33,7 +26,7 @@ plugins {
 }
 
 val target = ProjectTarget.entries.find { it.projectPath == project.path }!!
-val primaryTarget = ProjectTarget.MODERN_26200
+val primaryTarget = ProjectTarget.MODERN_26300
 
 // Toolchains:
 java {
@@ -184,17 +177,16 @@ dependencies {
     runtimeOnly(target.hypixelModApiFabricVersion)
     "productionRuntimeMods"(target.hypixelModApiFabricVersion)
 
-    val reiVersion = when (target) {
-        ProjectTarget.MODERN_26200 -> "26.2.820"
-        ProjectTarget.MODERN_26100 -> "26.1.819"
+    val reiVersion = target.reiVersion
+    if (reiVersion != null) {
+        val reiApi = "me.shedaniel:RoughlyEnoughItems-api:$reiVersion"
+        compileOnly(reiApi) { isTransitive = false }
+        "minecraftTestClientRuntimeLibraries"(reiApi) {
+            isTransitive = false
+        }
+        compileOnly(libs.basicMath)
+        "minecraftTestClientRuntimeLibraries"(libs.basicMath)
     }
-    val reiApi = "me.shedaniel:RoughlyEnoughItems-api:$reiVersion"
-    compileOnly(reiApi) { isTransitive = false }
-    "minecraftTestClientRuntimeLibraries"(reiApi) {
-        isTransitive = false
-    }
-    compileOnly(libs.basicMath)
-    "minecraftTestClientRuntimeLibraries"(libs.basicMath)
 
     // getting clock offset
     shadowImpl(libs.commons.net)
@@ -508,7 +500,18 @@ tasks.matching { it.name == "kspTestKotlin" || it.name == "kspTestJava" }.config
 }
 
 tasks.withType<ValidateAccessWidenerTask>().configureEach {
-    dependsOn("stonecutterPrepare")
+    dependsOn("stonecutterGenerate")
+}
+
+tasks.withType<ProcessResources>().configureEach {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+
+    // Taken From SkyOcean, this is a workaround since stonecutter does not work in shaders
+    if (stonecutter.eval(stonecutter.current.version, "< 26.3")) {
+        filesMatching(listOf("**/*.fsh", "**/*.vsh")) {
+            filter { if (it.startsWith("#include")) "#moj_import ${it.substringAfter(' ')}" else it }
+        }
+    }
 }
 
 repositories {
