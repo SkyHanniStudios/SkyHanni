@@ -747,10 +747,10 @@ object ItemUtils {
         return grabItemNameFromStack(itemStack)
     }
 
-    fun NeuInternalName.getRepoItemNameFromJson(itemInfo: NeuItemJson): String? {
+    fun NeuInternalName.getRepoItemNameFromJson(itemInfo: NeuItemJson, replaceRomanNumerals: Boolean = true): String? {
         getSpecialRepoItemName()?.let { return it }
         val name = itemInfo.displayName ?: return null
-        return formatRepoItemName(name, itemInfo)
+        return formatRepoItemName(name, itemInfo, replaceRomanNumerals)
     }
 
     private fun NeuInternalName.getSpecialRepoItemName(): String? {
@@ -770,7 +770,8 @@ object ItemUtils {
         return null
     }
 
-    private fun NeuInternalName.formatRepoItemName(name: String, itemInfo: NeuItemJson): String {
+    private fun NeuInternalName.formatRepoItemName(name: String, itemInfo: NeuItemJson, replaceRomanNumerals: Boolean): String {
+        val numerals = { line: String -> if (replaceRomanNumerals) ReplaceRomanNumerals.replaceLine(line) else line }
         if (itemInfo.itemId.endsWith(":enchanted_book")) {
             val enchantName = itemInfo.lore.firstNotNullOfOrNull {
                 val clean = it.removeColor()
@@ -778,10 +779,10 @@ object ItemUtils {
             }
             if (enchantName != null) {
                 if (name.endsWith("Enchanted Book Bundle")) {
-                    return name.replace("Enchanted Book", ReplaceRomanNumerals.replaceLine(enchantName).removeColor())
+                    return name.replace("Enchanted Book", numerals(enchantName).removeColor())
                 }
                 if (name.endsWith("Enchanted Book")) {
-                    return ReplaceRomanNumerals.replaceLine(enchantName)
+                    return numerals(enchantName)
                 }
             }
         }
@@ -791,7 +792,7 @@ object ItemUtils {
         }
 
         if (isRune()) {
-            return ReplaceRomanNumerals.replaceLine(name)
+            return numerals(name)
         }
 
         return name
@@ -882,25 +883,10 @@ object ItemUtils {
             return@buildList
         }
 
-        val matches = mutableSetOf<NeuInternalName>()
-        for ((name, internalName) in NeuItems.allItemsCache) {
-            if (name.contains(input, ignoreCase = true)) {
-                matches.add(internalName)
-            } else if (internalName.asString().contains(input.replace(" ", "_"), ignoreCase = true)) {
-                matches.add(internalName)
-            }
-        }
-        // TODO add all enchantments to NeuItems.allItemsCache
-        // somehow, enchantments arent part of NeuItems.allItemsCache atm
-        // itemNameCache contains bazaar enchantments
-        // the non bz enchantments are only in the cache after found in game
-        for ((internalName, name) in itemNameCache) {
-            if (name.contains(input, ignoreCase = true)) {
-                matches.add(internalName)
-            } else if (internalName.asString().contains(input.replace(" ", "_"), ignoreCase = true)) {
-                matches.add(internalName)
-            }
-        }
+        val underscored = input.replace(" ", "_")
+        val matches = NeuItems.allItemsCache.filter { (name, internalName) ->
+            name.contains(input, ignoreCase = true) || internalName.asString().contains(underscored, ignoreCase = true)
+        }.values.toSet()
 
         if (matches.isEmpty()) {
             add("§cNothing found!".asComponent())
