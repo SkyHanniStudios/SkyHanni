@@ -21,10 +21,10 @@ import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.compat.deceased
 import at.hannibal2.skyhanni.utils.compat.findHealthReal
-import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
@@ -93,9 +93,9 @@ object BlazeSlayerDaggerHelper {
 
         val playerLocation = LocationUtils.playerLocation()
         return HellionShieldHelper.hellionShieldMobs
-            .filter { !it.key.deceased && it.key.getLorenzVec().distance(playerLocation) < 10 && it.key.findHealthReal() > 0 }
+            .filter { !it.key.deceased && it.key.positionVector().distance(playerLocation) < 10 && it.key.findHealthReal() > 0 }
             .toSortedMap { a, b ->
-                if (a.getLorenzVec().distance(playerLocation) > b.getLorenzVec().distance(playerLocation)) 1 else 0
+                if (a.positionVector().distance(playerLocation) > b.positionVector().distance(playerLocation)) 1 else 0
             }.firstNotNullOfOrNull { it.value }
     }
 

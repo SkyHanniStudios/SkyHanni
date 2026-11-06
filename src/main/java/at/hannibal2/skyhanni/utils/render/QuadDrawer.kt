@@ -1,16 +1,16 @@
 package at.hannibal2.skyhanni.utils.render
 
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.submitCustomGeometry
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import java.awt.Color
 
 class QuadDrawer @PublishedApi internal constructor(val event: SkyHanniRenderWorldEvent) {
 
     fun draw(
-        middlePoint: LorenzVec,
-        sidePoint1: LorenzVec,
-        sidePoint2: LorenzVec,
+        middlePoint: SkyHanniVector,
+        sidePoint1: SkyHanniVector,
+        sidePoint2: SkyHanniVector,
         c: Color,
     ) {
         event.matrices.pushPose()

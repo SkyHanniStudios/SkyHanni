@@ -11,7 +11,7 @@ import at.hannibal2.skyhanni.utils.collection.TimeLimitedCache
 import at.hannibal2.skyhanni.utils.collection.TimeLimitedSet
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLessResets
 import at.hannibal2.skyhanni.utils.compat.getAllEquipment
-import at.hannibal2.skyhanni.utils.getLorenzVec
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.decoration.ArmorStand
 import kotlin.time.Duration.Companion.seconds
@@ -54,9 +54,9 @@ object ChumBucketHider {
 
         // Second text line
         if (name.contains("/10 §aChums")) {
-            val entityLocation = entity.getLorenzVec()
+            val entityLocation = entity.positionVector()
             for (title in titleEntity) {
-                if (entityLocation.equalsIgnoreY(title.getLorenzVec())) {
+                if (entityLocation.equalsIgnoreY(title.positionVector())) {
                     hiddenEntities[entity] = true
                     event.cancel()
                     return
@@ -70,9 +70,9 @@ object ChumBucketHider {
                 it != null && (it.hoverName.string == "Empty Chum Bucket" || it.hoverName.string == "Empty Chumcap Bucket")
             }
         ) {
-            val entityLocation = entity.getLorenzVec()
+            val entityLocation = entity.positionVector()
             for (title in titleEntity) {
-                if (entityLocation.equalsIgnoreY(title.getLorenzVec())) {
+                if (entityLocation.equalsIgnoreY(title.positionVector())) {
                     hiddenEntities[entity] = true
                     event.cancel()
                     return

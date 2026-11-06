@@ -2,22 +2,22 @@ package at.hannibal2.skyhanni.features.event.diana
 
 import at.hannibal2.skyhanni.events.diana.BurrowGuessEvent
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceSqToPlayer
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 data class GuessEntry(
-    val guesses: List<LorenzVec>,
+    val guesses: List<SkyHanniVector>,
     var burrowType: BurrowType = BurrowType.UNKNOWN,
     var currentIndex: Int = 0,
     val spadeGuess: Boolean = false,
     var ignoreParticleCheckUntil: SimpleTimeMark = SimpleTimeMark.now(),
     var ignoreInvalidBlock: Boolean = false,
 ) {
-    fun getCurrent(): LorenzVec = guesses[currentIndex]
-    fun contains(vec: LorenzVec): Boolean {
+    fun getCurrent(): SkyHanniVector = guesses[currentIndex]
+    fun contains(vec: SkyHanniVector): Boolean {
         return guesses.contains(vec)
     }
 

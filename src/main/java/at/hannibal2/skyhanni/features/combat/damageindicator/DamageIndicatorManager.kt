@@ -39,7 +39,6 @@ import at.hannibal2.skyhanni.utils.EntityUtils.hasNameTagWith
 import at.hannibal2.skyhanni.utils.LocationUtils
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
 import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.MobUtils.mob
 import at.hannibal2.skyhanni.utils.NumberUtil
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
@@ -58,9 +57,11 @@ import at.hannibal2.skyhanni.utils.collection.TimeLimitedCache
 import at.hannibal2.skyhanni.utils.compat.EntityCompat.deceased
 import at.hannibal2.skyhanni.utils.compat.EntityCompat.findHealthReal
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLessResets
-import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
+import at.hannibal2.skyhanni.utils.vector.VectorFormat.formatRounded
 import com.google.gson.JsonArray
 import net.minecraft.client.player.RemotePlayer
 import net.minecraft.world.entity.LivingEntity
@@ -131,15 +132,15 @@ object DamageIndicatorManager {
 
     fun getDistanceTo(vararg types: BossType): Double {
         val playerLocation = LocationUtils.playerLocation()
-        return data.values.filter { it.bossType in types }.map { it.entity.getLorenzVec().distance(playerLocation) }.let { list ->
+        return data.values.filter { it.bossType in types }.map { it.entity.positionVector().distance(playerLocation) }.let { list ->
             if (list.isEmpty()) Double.MAX_VALUE else list.minOf { it }
         }
     }
 
     fun getAllMobs(): Collection<LivingEntity> = data.values.map { it.entity }
 
-    fun getNearestDistanceTo(location: LorenzVec): Double {
-        return data.values.map { it.entity.getLorenzVec() }.minOfOrNull { it.distance(location) } ?: Double.MAX_VALUE
+    fun getNearestDistanceTo(location: SkyHanniVector): Double {
+        return data.values.map { it.entity.positionVector() }.minOfOrNull { it.distance(location) } ?: Double.MAX_VALUE
     }
 
     fun removeDamageIndicator(type: BossType) {
@@ -226,7 +227,7 @@ object DamageIndicatorManager {
             val location = if (data.dead && data.deathLocation != null) {
                 data.deathLocation!!
             } else {
-                val loc = entity.getLorenzVec()
+                val loc = entity.positionVector()
                 if (data.dead) data.deathLocation = loc
                 loc
             }.add(-0.5, 0.0, -0.5)
@@ -391,14 +392,14 @@ object DamageIndicatorManager {
 
     val list = mutableListOf<Highlight>()
 
-    class Highlight(val location: LorenzVec, val text: String, val decayAt: SimpleTimeMark)
+    class Highlight(val location: SkyHanniVector, val text: String, val decayAt: SimpleTimeMark)
 
     @HandleEvent
     private fun onMobSpawn(event: MobEvent.Spawn) {
         val mob = event.mob
 
         if (SkyBlockUtils.debug) {
-            list.add(Highlight(mob.baseEntity.getLorenzVec(), "${mob.name} - ${mob.category}", 5.seconds.fromNow()))
+            list.add(Highlight(mob.baseEntity.positionVector(), "${mob.name} - ${mob.category}", 5.seconds.fromNow()))
         }
         if (!isEnabled()) return
         try {
@@ -577,7 +578,7 @@ object DamageIndicatorManager {
             }
 
             BossType.NETHER_BARBARIAN_DUKE -> {
-                val location = entity.getLorenzVec()
+                val location = entity.positionVector()
                 entityData.ignoreBlocks = location.y == 117.0 && location.distanceToPlayer() < 15
             }
 
@@ -1011,7 +1012,7 @@ object DamageIndicatorManager {
         val entity = event.entity
 
         val entityData = data.values.find {
-            val distance = it.entity.getLorenzVec().distance(entity.getLorenzVec())
+            val distance = it.entity.positionVector().distance(entity.positionVector())
             distance < 4.5
         } ?: return
 
@@ -1122,8 +1123,8 @@ object DamageIndicatorManager {
                 add("Active mobs: ${data.size}")
                 for (entityData in data.values) {
                     val type = entityData.bossType
-                    val loc = entityData.entity.getLorenzVec()
-                    add("  - $type ${loc.printWithAccuracy(1)}")
+                    val loc = entityData.entity.positionVector()
+                    add("  - $type ${loc.formatRounded(1)}")
                 }
             }
         }

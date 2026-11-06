@@ -20,12 +20,12 @@ import at.hannibal2.skyhanni.utils.BlockUtils.getBlockStateAt
 import at.hannibal2.skyhanni.utils.ColorUtils.toColor
 import at.hannibal2.skyhanni.utils.LocationUtils.canBeSeen
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.ButtonBlock
 import kotlin.time.Duration.Companion.seconds
@@ -46,16 +46,16 @@ object WoodenButtonsHelper {
         "§eYou have hit §r§b\\d+/56 §r§eof the wooden buttons!",
     )
 
-    private var buttonLocations = mapOf<String, List<LorenzVec>>()
-    private var hitButtons = mutableSetOf<LorenzVec>()
-    private var lastHitButton: LorenzVec? = null
+    private var buttonLocations = mapOf<String, List<SkyHanniVector>>()
+    private var hitButtons = mutableSetOf<SkyHanniVector>()
+    private var lastHitButton: SkyHanniVector? = null
     private var currentSpot: GraphNode? = null
     private var lastBlowgunFire = SimpleTimeMark.farPast()
 
     @HandleEvent
     fun onRepoReload(event: RepositoryReloadEvent) {
         val data = event.getConstant<RiftWoodenButtonsJson>("rift/RiftWoodenButtons")
-        buttonLocations = mutableMapOf<String, List<LorenzVec>>().apply {
+        buttonLocations = mutableMapOf<String, List<SkyHanniVector>>().apply {
             data.houses.forEach { (houseName, spots) ->
                 spots.forEach { spot ->
                     this["$houseName House:${spot.position}"] = spot.buttons
@@ -168,7 +168,7 @@ object WoodenButtonsHelper {
         val spot = currentSpot ?: return
         val distance = spot.position.distanceToPlayer()
         if (distance > 2.5) {
-            event.drawDynamicText(spot.position.add(y = 1), "Hit Buttons Here!", 1.25)
+            event.drawDynamicText(spot.position.up(), "Hit Buttons Here!", 1.25)
         }
 
         if (distance > 15.0) return

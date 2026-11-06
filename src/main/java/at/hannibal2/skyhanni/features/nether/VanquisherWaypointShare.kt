@@ -16,18 +16,18 @@ import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.HypixelCommands
 import at.hannibal2.skyhanni.utils.KeyboardManager
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.PlayerUtils
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatchers
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.StringUtils.cleanPlayerName
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
-import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawLineToCrosshair
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.renderBeaconBeam
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.component1
@@ -70,7 +70,7 @@ object VanquisherWaypointShare {
 
     data class SharedVanquisher(
         val playerName: String,
-        val location: LorenzVec,
+        val location: SkyHanniVector,
         val spawnTime: SimpleTimeMark,
     )
 
@@ -83,7 +83,7 @@ object VanquisherWaypointShare {
             return
         }
 
-        val location = data.mob.baseEntity.getLorenzVec()
+        val location = data.mob.baseEntity.positionVector()
         val x = location.x.toInt()
         val y = location.y.toInt()
         val z = location.z.toInt()
@@ -115,7 +115,7 @@ object VanquisherWaypointShare {
         val playerName = PlayerUtils.getName()
         sharedWaypoints[playerName] = SharedVanquisher(
             playerName,
-            event.vanquisher.mob.baseEntity.getLorenzVec(),
+            event.vanquisher.mob.baseEntity.positionVector(),
             SimpleTimeMark.now(),
         )
         if (config.instantShare) {
@@ -180,7 +180,7 @@ object VanquisherWaypointShare {
             val x = group("x").toDoubleOrNull() ?: return
             val y = group("y").toDoubleOrNull() ?: return
             val z = group("z").toDoubleOrNull() ?: return
-            rawName to LorenzVec(x, y, z)
+            rawName to SkyHanniVector(x, y, z)
         } ?: return
 
         val name = rawName.cleanPlayerName()

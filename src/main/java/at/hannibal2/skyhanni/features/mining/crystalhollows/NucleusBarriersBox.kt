@@ -9,10 +9,11 @@ import at.hannibal2.skyhanni.events.skyblock.GraphAreaChangeEvent
 import at.hannibal2.skyhanni.features.event.hoppity.HoppityApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ColorUtils.toColor
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawFilledBoundingBox
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawHitbox
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.expandBlock
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorBounds.boxTo
 import io.github.notenoughupdates.moulconfig.ChromaColour
 import io.github.notenoughupdates.moulconfig.observer.Property
 import net.minecraft.world.phys.AABB
@@ -29,27 +30,27 @@ object NucleusBarriersBox {
         val configColorOption: Property<ChromaColour>,
     ) {
         AMBER(
-            LorenzVec(474, 124, 524).axisAlignedTo(LorenzVec(485, 111, 535))
+            SkyHanniVector(474, 124, 524).boxTo(SkyHanniVector(485, 111, 535))
                 .expandBlock(),
             colorConfig.amber,
         ),
         AMETHYST(
-            LorenzVec(474, 124, 492).axisAlignedTo(LorenzVec(485, 111, 503))
+            SkyHanniVector(474, 124, 492).boxTo(SkyHanniVector(485, 111, 503))
                 .expandBlock(),
             colorConfig.amethyst,
         ),
         TOPAZ(
-            LorenzVec(508, 124, 473).axisAlignedTo(LorenzVec(519, 111, 484))
+            SkyHanniVector(508, 124, 473).boxTo(SkyHanniVector(519, 111, 484))
                 .expandBlock(),
             colorConfig.topaz,
         ),
         JADE(
-            LorenzVec(542, 124, 492).axisAlignedTo(LorenzVec(553, 111, 503))
+            SkyHanniVector(542, 124, 492).boxTo(SkyHanniVector(553, 111, 503))
                 .expandBlock(),
             colorConfig.jade,
         ),
         SAPPHIRE(
-            LorenzVec(542, 124, 524).axisAlignedTo(LorenzVec(553, 111, 535))
+            SkyHanniVector(542, 124, 524).boxTo(SkyHanniVector(553, 111, 535))
                 .expandBlock(),
             colorConfig.sapphire,
         ),

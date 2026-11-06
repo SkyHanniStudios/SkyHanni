@@ -9,14 +9,14 @@ import at.hannibal2.skyhanni.utils.AllEntitiesGetter
 import at.hannibal2.skyhanni.utils.EntityUtils
 import at.hannibal2.skyhanni.utils.EntityUtils.getNameTagWith
 import at.hannibal2.skyhanni.utils.EntityUtils.wearingSkullTexture
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.SkullTextureHolder
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.sorted
 import at.hannibal2.skyhanni.utils.collection.TimeLimitedCache
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLessResets
-import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawString
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.world.entity.Mob
 import net.minecraft.world.entity.decoration.ArmorStand
 import kotlin.time.Duration.Companion.minutes
@@ -27,7 +27,7 @@ object SummoningSoulsName {
 
     private val SUMMONING_SOUL_TEXTURE by SkullTextureHolder.texture("SUMMONING_SOUL")
     private val souls = mutableMapOf<ArmorStand, String>()
-    private val mobsLastLocation = TimeLimitedCache<Int, LorenzVec>(6.minutes)
+    private val mobsLastLocation = TimeLimitedCache<Int, SkyHanniVector>(6.minutes)
     private val mobsName = TimeLimitedCache<Int, String>(6.minutes)
 
     @HandleEvent(SkyHanniTickEvent::class)
@@ -45,7 +45,7 @@ object SummoningSoulsName {
             if (entity in souls) continue
 
             if (!entity.wearingSkullTexture(SUMMONING_SOUL_TEXTURE)) continue
-            val soulLocation = entity.getLorenzVec()
+            val soulLocation = entity.positionVector()
 
             val map = mutableMapOf<Int, Double>()
             for ((mob, loc) in mobsLastLocation) {
@@ -62,7 +62,7 @@ object SummoningSoulsName {
             val id = entity.id
             val consumer = entity.getNameTagWith(2, "§c❤")
             if (consumer != null && !consumer.name.formattedTextCompatLessResets().contains("§e0")) {
-                mobsLastLocation[id] = entity.getLorenzVec()
+                mobsLastLocation[id] = entity.positionVector()
                 mobsName[id] = consumer.name.formattedTextCompatLessResets()
             }
         }
@@ -78,7 +78,7 @@ object SummoningSoulsName {
         if (!isEnabled()) return
 
         for ((entity, name) in souls) {
-            val vec = entity.getLorenzVec()
+            val vec = entity.positionVector()
             event.drawString(vec.up(2.5), name)
         }
     }

@@ -18,7 +18,6 @@ import at.hannibal2.skyhanni.utils.EntityUtils.getBlockInHand
 import at.hannibal2.skyhanni.utils.EntityUtils.hasSkullTexture
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
 import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SkullTextureHolder
 import at.hannibal2.skyhanni.utils.SkyHanniLogger
@@ -26,12 +25,13 @@ import at.hannibal2.skyhanni.utils.TimeUtils.format
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.editCopy
 import at.hannibal2.skyhanni.utils.compat.EntityCompat.deceased
 import at.hannibal2.skyhanni.utils.compat.getStandHelmet
-import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawColor
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawLineToCrosshair
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.exactLocation
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.entity.monster.EnderMan
@@ -47,7 +47,7 @@ object EndermanSlayerFeatures {
     private val endermenWithBeacons = mutableListOf<EnderMan>()
     private val flyingBeacons = mutableSetOf<ArmorStand>()
     private val nukekubiSkulls = mutableSetOf<ArmorStand>()
-    private var sittingBeacon = mapOf<LorenzVec, SimpleTimeMark>()
+    private var sittingBeacon = mapOf<SkyHanniVector, SimpleTimeMark>()
     private val logger = SkyHanniLogger("slayer/enderman")
 
     private val NUKEKUBI_SKULL_TEXTURE by SkullTextureHolder.texture("MOB_NUKEKUBI")
@@ -63,7 +63,7 @@ object EndermanSlayerFeatures {
             )
         ) {
             endermenWithBeacons.add(entity)
-            logger.log("Added enderman with beacon at ${entity.getLorenzVec()}")
+            logger.log("Added enderman with beacon at ${entity.positionVector()}")
         }
 
         if (entity is ArmorStand) {
@@ -80,7 +80,7 @@ object EndermanSlayerFeatures {
                     if (beaconConfig.showWarning) {
                         TitleManager.sendTitle("§4Beacon", duration = 2.seconds)
                     }
-                    logger.log("Added flying beacons at ${entity.getLorenzVec()}")
+                    logger.log("Added flying beacons at ${entity.positionVector()}")
                 }
             }
 
@@ -90,7 +90,7 @@ object EndermanSlayerFeatures {
                     entity,
                     LorenzColor.GOLD.toColor().addAlpha(1),
                 ) { config.highlightNukekebi }
-                logger.log("Added Nukekubi skulls at ${entity.getLorenzVec()}")
+                logger.log("Added Nukekubi skulls at ${entity.positionVector()}")
             }
         }
     }
@@ -104,7 +104,7 @@ object EndermanSlayerFeatures {
         if (beaconConfig.highlightBeacon) {
             endermenWithBeacons.removeIf { it.deceased || !hasBeaconInHand(it) }
 
-            for (location in endermenWithBeacons.map { it.getLorenzVec().add(-0.5, 0.2, -0.5) }) {
+            for (location in endermenWithBeacons.map { it.positionVector().add(-0.5, 0.2, -0.5) }) {
                 event.drawColor(location, beaconConfig.beaconColor, alpha = 0.5f)
             }
         }
@@ -119,7 +119,7 @@ object EndermanSlayerFeatures {
             if (skull.deceased) continue
             if (config.highlightNukekebi) {
                 event.drawDynamicText(
-                    skull.getLorenzVec().add(-0.5, 1.5, -0.5),
+                    skull.positionVector().add(-0.5, 1.5, -0.5),
                     "§6Nukekubi Skull",
                     1.6,
                     seeThroughBlocks = false,
@@ -145,7 +145,7 @@ object EndermanSlayerFeatures {
             if (!beacon.canBeSeen(ignoreFrustum = true)) continue
             if (beaconConfig.highlightBeacon) {
                 val beaconLocation = event.exactLocation(beacon)
-                event.drawDynamicText(beaconLocation.add(y = 1), "§4Beacon", 1.8)
+                event.drawDynamicText(beaconLocation.up(), "§4Beacon", 1.8)
             }
 
             if (beaconConfig.showLine) {
@@ -177,7 +177,7 @@ object EndermanSlayerFeatures {
                 val durationFormat = duration.format(showMilliSeconds = true)
                 event.drawColor(location, beaconConfig.beaconColor, alpha = 1f)
                 event.drawWaypointFilled(location, beaconConfig.beaconColor.toColor(), seeThroughBlocks = true, beacon = true)
-                event.drawDynamicText(location.add(y = 1), "§4Beacon §b$durationFormat", 1.8)
+                event.drawDynamicText(location.up(), "§4Beacon §b$durationFormat", 1.8)
             }
         }
     }
@@ -213,7 +213,7 @@ object EndermanSlayerFeatures {
 
         val location = event.location
         if (event.new == "beacon") {
-            val armorStand = flyingBeacons.find { location.distance(it.getLorenzVec()) < 3 }
+            val armorStand = flyingBeacons.find { location.distance(it.positionVector()) < 3 }
             if (armorStand != null) {
                 flyingBeacons.remove(armorStand)
                 RenderLivingEntityHelper.removeEntityColor(armorStand)
