@@ -15,7 +15,6 @@ import io.github.notenoughupdates.moulconfig.gui.MouseEvent
 import io.github.notenoughupdates.moulconfig.gui.editors.ComponentEditor
 import io.github.notenoughupdates.moulconfig.internal.Warnings
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption
-import net.minecraft.client.input.KeyEvent
 
 // Based on MoulConfig GuiOptionEditorKeybind
 class GuiOptionEditorInputConstantsKey(option: ProcessedOption, defaultKey: InputConstants.Key) : ComponentEditor(option) {
