@@ -15,6 +15,7 @@ import io.github.notenoughupdates.moulconfig.gui.MouseEvent
 import io.github.notenoughupdates.moulconfig.gui.editors.ComponentEditor
 import io.github.notenoughupdates.moulconfig.internal.Warnings
 import io.github.notenoughupdates.moulconfig.processor.ProcessedOption
+import net.minecraft.client.input.KeyEvent
 
 // Based on MoulConfig GuiOptionEditorKeybind
 class GuiOptionEditorInputConstantsKey(option: ProcessedOption, defaultKey: InputConstants.Key) : ComponentEditor(option) {
@@ -107,7 +108,9 @@ class GuiOptionEditorInputConstantsKey(option: ProcessedOption, defaultKey: Inpu
                     if (!editingKeycode) return false
                     if (keyboardEvent.pressed) return true
                     editingKeycode = false
-                    val key = InputKeys.keyboard(keyboardEvent.keycode, keyboardEvent.scancode)
+                    // This is wrong since keyCode is the 2nd parameter in 26.3+, but MoulConfig is inverted
+                    val keyEvent = KeyEvent(keyboardEvent.keycode, keyboardEvent.scancode, 0)
+                    val key = InputKeys.keyEvent(keyEvent)
                         .takeUnless { it == InputKeys.KEY_ESCAPE } ?: InputConstants.UNKNOWN
                     option.set(key)
                     return true
