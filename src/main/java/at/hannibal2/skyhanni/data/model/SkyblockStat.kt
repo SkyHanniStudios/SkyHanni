@@ -119,9 +119,9 @@ enum class SkyblockStat(
     // <editor-fold desc="Foraging Stats">
     SWEEP(DARK_GREEN, SkyblockIcon.SWEEP),
     FORAGING_FORTUNE(GOLD, SkyblockIcon.FORAGING_FORTUNE),
-    FIG_FORTUNE(GOLD, SkyblockIcon.FORAGING_FORTUNE),
-    MANGROVE_FORTUNE(GOLD, SkyblockIcon.FORAGING_FORTUNE),
-    HELIX_FORTUNE(GOLD, SkyblockIcon.FORAGING_FORTUNE),
+    FIG_FORTUNE(GOLD, SkyblockIcon.FIG_FORTUNE),
+    MANGROVE_FORTUNE(GOLD, SkyblockIcon.MANGROVE_FORTUNE),
+    HELIX_FORTUNE(GOLD, SkyblockIcon.HELIX_FORTUNE),
     TIMBER(DARK_RED, SkyblockIcon.TIMBER),
     // </editor-fold>
 
@@ -178,13 +178,13 @@ enum class SkyblockStat(
     // TODO get from Minecraft walk speed attribute
     RIFT_SPEED(
         WHITE,
-        SkyblockIcon.SPEED,
+        SkyblockIcon.RIFT_SPEED,
         displayName = "Speed",
         hypixelId = "RIFT_WALK_SPEED",
     ),
     RIFT_INTELLIGENCE(
         AQUA,
-        SkyblockIcon.INTELLIGENCE,
+        SkyblockIcon.RIFT_INTELLIGENCE,
         displayName = "Intelligence",
     ),
 

@@ -80,6 +80,8 @@ value class SkyblockIcon private constructor(private val icon: Char) {
         val HUNTING_WISDOM = WISDOM
         val RIFT_TIME = SkyblockIcon('\uE020')
         val RIFT_DAMAGE = SkyblockIcon('\uE01E')
+        val RIFT_INTELLIGENCE = INTELLIGENCE
+        val RIFT_SPEED = SPEED
         val MANA_REGEN = SkyblockIcon('\uE004')
         val HEARTS = SkyblockIcon('\uE01F')
         val AIRBORNE = SkyblockIcon('\uE070')
