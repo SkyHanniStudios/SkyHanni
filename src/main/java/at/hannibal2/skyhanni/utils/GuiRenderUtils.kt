@@ -3,13 +3,15 @@ package at.hannibal2.skyhanni.utils
 import at.hannibal2.skyhanni.utils.ItemBlink.checkBlinkItem
 import at.hannibal2.skyhanni.utils.ItemUtils.isSkull
 import at.hannibal2.skyhanni.utils.compat.DrawContextUtils
-import at.hannibal2.skyhanni.utils.compat.RenderCompat
+import at.hannibal2.skyhanni.utils.render.SkyHanniRenderPipeline
 import at.hannibal2.skyhanni.utils.render.item.SkyHanniGuiItemRenderState
 import at.hannibal2.skyhanni.utils.renderables.animated.AnimatedItemRenderableConfig
 import at.hannibal2.skyhanni.utils.renderables.primitives.ItemRenderableConfig
+import com.mojang.blaze3d.pipeline.RenderPipeline
 import com.mojang.blaze3d.platform.Lighting
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Font
+import net.minecraft.client.renderer.RenderPipelines
 import net.minecraft.client.renderer.item.TrackingItemStackRenderState
 import net.minecraft.client.renderer.state.gui.GuiItemRenderState
 import net.minecraft.network.chat.Component
@@ -158,7 +160,7 @@ object GuiRenderUtils {
         alpha: Float = 1f,
     ) {
         DrawContextUtils.drawContext.blit(
-            RenderCompat.getMinecraftGuiTextured(),
+            texturedPipeline(alpha),
             texture,
             x.toInt(),
             y.toInt(),
@@ -171,6 +173,9 @@ object GuiRenderUtils {
             ARGB.white(alpha)
         )
     }
+
+    fun texturedPipeline(alpha: Float): RenderPipeline =
+        if (alpha < 1f) SkyHanniRenderPipeline.GUI_TEXTURED_TRANSLUCENT() else RenderPipelines.GUI_TEXTURED
 
     fun enableScissor(left: Int, top: Int, right: Int, bottom: Int) {
         DrawContextUtils.drawContext.enableScissor(left, top, right, bottom)

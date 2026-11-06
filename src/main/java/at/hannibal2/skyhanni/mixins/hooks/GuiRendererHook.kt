@@ -1,13 +1,12 @@
 package at.hannibal2.skyhanni.mixins.hooks
+
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.minecraftevents.ClientEvents
 import at.hannibal2.skyhanni.config.features.chroma.ChromaConfig.Direction
 import at.hannibal2.skyhanni.features.chroma.ChromaManager
 import at.hannibal2.skyhanni.utils.compat.GuiScreenUtils
 import at.hannibal2.skyhanni.utils.render.SkyHanniRenderPipeline
-import at.hannibal2.skyhanni.utils.render.item.SkyHanniGuiItemRenderState
 import at.hannibal2.skyhanni.utils.render.item.SkyHanniItemRenderCoordinator
-import at.hannibal2.skyhanni.utils.render.item.SkyHanniPipCoordinatorRenderer
 import at.hannibal2.skyhanni.utils.render.uniforms.SkyHanniChromaUniform
 import at.hannibal2.skyhanni.utils.render.uniforms.SkyHanniShapeData
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation
@@ -16,111 +15,60 @@ import com.mojang.blaze3d.pipeline.RenderPipeline
 import com.mojang.blaze3d.systems.RenderPass
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.font.glyphs.BakedSheetGlyph.GlyphInstance
-import net.minecraft.client.gui.render.pip.PictureInPictureRenderer
-import net.minecraft.client.renderer.feature.FeatureRenderDispatcher
-import net.minecraft.client.renderer.state.gui.BlitRenderState
 import net.minecraft.client.renderer.state.gui.GlyphRenderState
 import net.minecraft.client.renderer.state.gui.GuiElementRenderState
-import net.minecraft.client.renderer.state.gui.GuiRenderState
-import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState
 
 object GuiRendererHook {
     private val chromaUniform = SkyHanniChromaUniform()
-    var chromaBufferSlice: GpuBufferSlice? = null
-
-    fun computeChromaBufferSlice() {
-        if (!SkyHanniMod.feature.gui.chroma.enabled.get()) return
-
-        val chromaSize: Float = ChromaManager.config.chromaSize * (GuiScreenUtils.displayWidth / 100f)
-        var ticks = (ClientEvents.totalTicks) + Minecraft.getInstance().deltaTracker.getGameTimeDeltaPartialTick(true)
-        ticks = when (ChromaManager.config.chromaDirection) {
-            Direction.FORWARD_RIGHT, Direction.BACKWARD_RIGHT -> ticks
-            Direction.FORWARD_LEFT, Direction.BACKWARD_LEFT -> -ticks
-        }
-        val timeOffset: Float = ticks * (ChromaManager.config.chromaSpeed / 360f)
-        val saturation: Float = ChromaManager.config.chromaSaturation
-        val forwardDirection: Int = when (ChromaManager.config.chromaDirection) {
-            Direction.FORWARD_RIGHT, Direction.FORWARD_LEFT -> 1
-            Direction.BACKWARD_RIGHT, Direction.BACKWARD_LEFT -> 0
-        }
-
-        chromaBufferSlice = chromaUniform.writeWith(chromaSize, timeOffset, saturation, forwardDirection)
-    }
-
-    fun uploadShapeData() = SkyHanniShapeData.upload()
-    fun bindShapeData(renderPass: RenderPass) = SkyHanniShapeData.bind(renderPass)
+    private var chromaBufferSlice: GpuBufferSlice? = null
 
     @JvmStatic
-    fun clearChromaUniforms() {
+    fun beginFrame() {
+        chromaBufferSlice = writeChromaUniform()
+    }
+
+    @JvmStatic
+    fun endFrame() {
+        SkyHanniItemRenderCoordinator.endFrame()
         SkyHanniShapeData.endFrame()
         chromaUniform.clear()
         chromaBufferSlice = null
     }
 
-    // This 'should' be fine being injected into GuiRenderer's render pass since if the bound pipeline's shader doesn't
-    // have a uniform with the given name, then the buffer slice will never be bound
-    fun insertChromaSetUniform(renderPass: RenderPass) {
-        if (!SkyHanniMod.feature.gui.chroma.enabled.get()) return
-
-        // A very explicit name is given since the uniform will show up in RenderPassImpl's simpleUniforms
-        // map, and so it is made clear where this uniform is from
-        chromaBufferSlice?.let { renderPass.setUniform("SkyHanniChromaUniforms", it) } ?: return
+    @JvmStatic
+    fun bindUniforms(renderPass: RenderPass) {
+        val chroma = chromaBufferSlice ?: writeChromaUniform().also { chromaBufferSlice = it }
+        renderPass.setUniform(SkyHanniChromaUniform.UNIFORM_NAME, chroma)
+        SkyHanniShapeData.bind(renderPass)
     }
 
-    fun insertChromaSetUniform(renderPass: RenderPass, pipeline: RenderPipeline) {
-        if (pipeline != SkyHanniRenderPipeline.CHROMA_TEXT.invoke() &&
-            pipeline != SkyHanniRenderPipeline.CHROMA_STANDARD.invoke()
-        ) return
+    fun uploadShapeData() = SkyHanniShapeData.upload()
 
-        if (chromaBufferSlice == null) computeChromaBufferSlice()
-        insertChromaSetUniform(renderPass)
+    private fun writeChromaUniform(): GpuBufferSlice {
+        val config = ChromaManager.config
+        val direction = config.chromaDirection
+        val partialTicks = Minecraft.getInstance().deltaTracker.getGameTimeDeltaPartialTick(true)
+        val ticks = (ClientEvents.totalTicks + partialTicks).let {
+            when (direction) {
+                Direction.FORWARD_RIGHT, Direction.BACKWARD_RIGHT -> it
+                Direction.FORWARD_LEFT, Direction.BACKWARD_LEFT -> -it
+            }
+        }
+        val forwardDirection = when (direction) {
+            Direction.FORWARD_RIGHT, Direction.FORWARD_LEFT -> 1
+            Direction.BACKWARD_RIGHT, Direction.BACKWARD_LEFT -> 0
+        }
+        return chromaUniform.writeWith(
+            chromaSize = config.chromaSize * (GuiScreenUtils.displayWidth / 100f),
+            timeOffset = ticks * (config.chromaSpeed / 360f),
+            saturation = config.chromaSaturation,
+            forwardDirection = forwardDirection,
+        )
     }
 
     fun replacePipeline(state: GuiElementRenderState, original: Operation<RenderPipeline>): RenderPipeline {
-        if (state is BlitRenderState) {
-            val alpha = (state.color() ushr 24) and 0xFF
-            if (alpha in 1..254) return SkyHanniRenderPipeline.GUI_TEXTURED_TRANSLUCENT.invoke()
-        }
-
-        if (!SkyHanniMod.feature.gui.chroma.enabled.get()) return original.call(state)
-
-        if (state is GlyphRenderState) {
-            val drawnGlyph = state.renderable as? GlyphInstance ?: return original.call(state)
-            val glyphColor = drawnGlyph.style.color
-            if (glyphColor != null && glyphColor.name == "chroma") {
-                return SkyHanniRenderPipeline.CHROMA_TEXT.invoke()
-            }
-        }
-
-        return original.call(state)
+        if (!SkyHanniMod.feature.gui.chroma.enabled.get() || state !is GlyphRenderState) return original.call(state)
+        val glyphColor = (state.renderable as? GlyphInstance)?.style?.color ?: return original.call(state)
+        return if (glyphColor.name == "chroma") SkyHanniRenderPipeline.CHROMA_TEXT() else original.call(state)
     }
-
-    fun preRenderAtlas(
-        pictureInPictureRenderers: Map<Class<out PictureInPictureRenderState>, PictureInPictureRenderer<*>>,
-        featureRenderDispatcher: FeatureRenderDispatcher,
-        frameNumber: Int,
-    ) {
-        val renderer = pictureInPictureRenderers[SkyHanniGuiItemRenderState::class.java]
-        if (renderer !is SkyHanniPipCoordinatorRenderer) return
-
-        // Peek, do not consume. States are still needed for per-item blit submission.
-        val states = renderer.peekPendingStates()
-        if (states.isEmpty()) return
-
-        SkyHanniItemRenderCoordinator.preRenderAtlas(
-            states,
-            featureRenderDispatcher,
-            frameNumber
-        )
-        renderer.clearPendingStates()
-    }
-
-    fun submitBlitForState(
-        state: SkyHanniGuiItemRenderState,
-        guiRenderState: GuiRenderState,
-        frameNumber: Int,
-    ) {
-        SkyHanniItemRenderCoordinator.submitBlit(state, guiRenderState, frameNumber)
-    }
-
 }

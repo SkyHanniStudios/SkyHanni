@@ -6,6 +6,7 @@ import at.hannibal2.skyhanni.utils.render.SkyHanniRenderPipelineUtils.MATRICES_P
 import at.hannibal2.skyhanni.utils.render.SkyHanniRenderPipelineUtils.PosColorNormal
 import at.hannibal2.skyhanni.utils.render.SkyHanniRenderPipelineUtils.commonChromaUniforms
 import at.hannibal2.skyhanni.utils.render.SkyHanniRenderPipelineUtils.shapeDataUniforms
+import at.hannibal2.skyhanni.utils.render.uniforms.SkyHanniChromaUniform
 import at.hannibal2.skyhanni.utils.render.uniforms.SkyHanniShapeData
 import com.mojang.blaze3d.PrimitiveTopology
 import com.mojang.blaze3d.pipeline.BindGroupLayout
@@ -187,7 +188,7 @@ enum class SkyHanniRenderPipeline(
 private object SkyHanniRenderPipelineUtils {
     val MATRICES_PROJECTION_SNIPPET = RenderPipeline.builder().withBindGroupLayout(BindGroupLayouts.MATRICES_PROJECTION).buildSnippet()
 
-    val commonChromaUniforms = mapOf("SkyHanniChromaUniforms" to UniformType.UNIFORM_BUFFER)
+    val commonChromaUniforms = mapOf(SkyHanniChromaUniform.UNIFORM_NAME to UniformType.UNIFORM_BUFFER)
     val shapeDataUniforms = mapOf(SkyHanniShapeData.UNIFORM_NAME to UniformType.UNIFORM_BUFFER)
     val PosColorNormal: VertexFormat = DefaultVertexFormat.POSITION_COLOR_NORMAL_LINE_WIDTH
 }

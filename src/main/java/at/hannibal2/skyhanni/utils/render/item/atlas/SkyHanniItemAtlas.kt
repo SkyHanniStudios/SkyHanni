@@ -1,7 +1,6 @@
 package at.hannibal2.skyhanni.utils.render.item.atlas
 
 import at.hannibal2.skyhanni.utils.render.atlas.SkyHanniAbstractAtlas
-import at.hannibal2.skyhanni.utils.render.atlas.SkyHanniAtlasBinPacker
 import at.hannibal2.skyhanni.utils.render.item.SkyHanniGuiItemRenderState
 import at.hannibal2.skyhanni.utils.render.item.SkyHanniItemRenderContext
 import net.minecraft.client.renderer.ProjectionMatrixBuffer
@@ -14,6 +13,10 @@ internal class SkyHanniItemAtlas : SkyHanniAbstractAtlas<SkyHanniAtlasKey, SkyHa
         Identifier.fromNamespaceAndPath("skyhanni", "item_atlas")
     }
 
+    private companion object {
+        const val ITEM_PIXELS = 16
+    }
+
     override val colorLabel = "SkyHanni item atlas"
     override val depthLabel = "SkyHanni item atlas depth"
 
@@ -24,7 +27,7 @@ internal class SkyHanniItemAtlas : SkyHanniAbstractAtlas<SkyHanniAtlasKey, SkyHa
         renderer = SkyHanniItemAtlasRenderer(sizePixels, textureView!!, depthTextureView!!, texture!!, depthTexture!!)
     }
 
-    private fun pruneFrames(currentFrame: Int, olderThanLastRenderedFrames: Int = 2) {
+    fun pruneFrames(currentFrame: Int, olderThanLastRenderedFrames: Int = 2) {
         entries.entries.removeIf { (key, pos) ->
             key is SkyHanniAnimatedAtlasKey && pos is SkyHanniAnimatedItemAtlasEntry &&
                 currentFrame - pos.lastRenderedFrame > olderThanLastRenderedFrames
@@ -45,67 +48,31 @@ internal class SkyHanniItemAtlas : SkyHanniAbstractAtlas<SkyHanniAtlasKey, SkyHa
         }
     }
 
-    private data class AtlasRenderJob(
-        val key: SkyHanniAtlasKey,
-        val representative: SkyHanniGuiItemRenderState,
-        val node: SkyHanniAtlasBinPacker.PackedNode,
-        val pixelSize: Int,
-    )
-
-    fun SkyHanniItemRenderContext.setupAtlasRendering(
-        frameNumber: Int,
-        projectionBuffer: ProjectionMatrixBuffer,
-    ) {
-        pruneFrames(frameNumber)
-        if (atlasStates.isEmpty()) return
-        ensureAllocated()
-        val renderer = renderer ?: return
-
-        val groups = LinkedHashMap<SkyHanniAtlasKey, MutableList<SkyHanniGuiItemRenderState>>()
-        for (state in atlasStates) groups.getOrPut(state.atlasKey) { mutableListOf() }.add(state)
-
-        val renderJobs = mutableListOf<AtlasRenderJob>()
-
-        for ((key, states) in groups) {
-            val neededPixels = states.maxOf { (16 * guiScale * it.adjustedScale).toInt() }
-            val existing = entries[key]
-
-            if (existing != null && existing.pixelSize >= neededPixels) {
-                if (key is SkyHanniAnimatedAtlasKey) key.clearPreviousFrame()
-                // Cache hit, no render job needed, blit submitted later per-item
-                continue
-            }
-
-            // Overflow, submitBlitForState will return false and fall back to realtime
-            val node = tryInsert(neededPixels) ?: continue
-
-            val representative = states.maxByOrNull { it.adjustedScale }!!
-            renderJobs.add(AtlasRenderJob(key, representative, node, neededPixels))
-        }
-
-        if (renderJobs.isEmpty()) return
-
-        renderer.render(projectionBuffer) {
-            for ((key, representative, node, pixelSize) in renderJobs) {
-                renderer.renderItemToAtlas(representative, node.x, node.y, pixelSize, submitNodeStorage, featureRenderDispatcher)
-                recordPosition(key, node.x, node.y, pixelSize)
-            }
-        }
-    }
-
-    // Returns false if no atlas entry exists (overflow/not yet settled), caller falls back to realtime
-    fun submitBlitForState(
+    fun SkyHanniItemRenderContext.renderAndBlit(
         state: SkyHanniGuiItemRenderState,
         guiRenderState: GuiRenderState,
-        frameNumber: Int,
+        projectionBuffer: ProjectionMatrixBuffer,
     ): Boolean {
-        val entry = entries[state.atlasKey] ?: return false
-        if (entry is SkyHanniAnimatedItemAtlasEntry) {
-            entries[state.atlasKey] = SkyHanniAnimatedItemAtlasEntry(
-                entry.x, entry.y, entry.u, entry.v, entry.pixelSize, frameNumber
-            )
+        ensureAllocated()
+        val renderer = renderer ?: return false
+        val key = state.atlasKey
+        val neededPixels = (ITEM_PIXELS * guiScale * state.adjustedScale).toInt()
+        val existing = entries[key]
+        val entry = if (existing != null && existing.pixelSize >= neededPixels) {
+            if (key is SkyHanniAnimatedAtlasKey) key.clearPreviousFrame()
+            existing
+        } else {
+            val node = tryInsert(neededPixels) ?: return false
+            renderer.render(projectionBuffer) {
+                renderer.renderItemToAtlas(state, node.x, node.y, neededPixels, submitNodeStorage, featureRenderDispatcher)
+            }
+            recordPosition(key, node.x, node.y, neededPixels)
+            entries.getValue(key)
         }
-        renderer?.submitBlitForState(state, guiRenderState, entry)
+        if (entry is SkyHanniAnimatedItemAtlasEntry) {
+            entries[key] = SkyHanniAnimatedItemAtlasEntry(entry.x, entry.y, entry.u, entry.v, entry.pixelSize, frameNumber)
+        }
+        renderer.submitBlitForState(state, guiRenderState, entry)
         return true
     }
 

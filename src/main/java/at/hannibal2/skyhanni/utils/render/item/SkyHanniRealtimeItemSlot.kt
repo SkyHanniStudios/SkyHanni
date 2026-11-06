@@ -1,6 +1,5 @@
 package at.hannibal2.skyhanni.utils.render.item
 
-import at.hannibal2.skyhanni.utils.compat.RenderCompat
 import com.mojang.blaze3d.ProjectionType
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.textures.FilterMode
@@ -43,7 +42,7 @@ internal class SkyHanniRealtimeItemSlot(val slotSize: Int) : SkyHanniAbstractIte
             texture,
             GuiRenderer.CLEAR_COLOR,
             depthTexture,
-            RenderCompat.CLEAR_DEPTH,
+            CLEAR_DEPTH,
         )
 
         val size = slotSize.toFloat()

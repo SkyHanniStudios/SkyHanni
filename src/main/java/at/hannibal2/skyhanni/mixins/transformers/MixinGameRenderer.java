@@ -10,8 +10,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(GameRenderer.class)
 public abstract class MixinGameRenderer {
 
+    @Inject(method = "render", at = @At("HEAD"))
+    private void beginSkyHanniFrame(CallbackInfo ci) {
+        GuiRendererHook.beginFrame();
+    }
+
     @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/render/GuiRenderer;endFrame()V", shift = At.Shift.AFTER))
-    private void clearChromaUniforms(CallbackInfo ci) {
-        GuiRendererHook.clearChromaUniforms();
+    private void endSkyHanniFrame(CallbackInfo ci) {
+        GuiRendererHook.endFrame();
     }
 }

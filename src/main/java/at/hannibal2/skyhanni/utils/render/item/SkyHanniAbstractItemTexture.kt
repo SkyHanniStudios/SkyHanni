@@ -1,6 +1,5 @@
 package at.hannibal2.skyhanni.utils.render.item
 
-import at.hannibal2.skyhanni.utils.compat.RenderCompat
 import com.mojang.blaze3d.GpuFormat
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.textures.GpuTexture
@@ -9,6 +8,10 @@ import net.minecraft.client.gui.render.GuiRenderer
 import net.minecraft.client.renderer.texture.AbstractTexture
 
 abstract class SkyHanniAbstractItemTexture : AbstractTexture(), AutoCloseable {
+
+    companion object {
+        const val CLEAR_DEPTH = 0.0
+    }
 
     protected var depthTexture: GpuTexture? = null
     protected var depthTextureView: GpuTextureView? = null
@@ -30,7 +33,7 @@ abstract class SkyHanniAbstractItemTexture : AbstractTexture(), AutoCloseable {
             texture!!,
             GuiRenderer.CLEAR_COLOR,
             depthTexture!!,
-            RenderCompat.CLEAR_DEPTH,
+            CLEAR_DEPTH,
         )
     }
 
