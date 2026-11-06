@@ -256,7 +256,8 @@ tasks.withType<Test> {
     }
     javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
     workingDir(file(runDirectory))
-    systemProperty("junit.jupiter.extensions.autodetection.enabled", "true")
+    dependsOn(includeBackupNeuRepo)
+    systemProperty("skyhanni.test.neuRepo", includeBackupNeuRepo.get().repoFile.absolutePath)
     systemProperty("joml.nounsafe", "true")
     systemProperty("net.bytebuddy.safe", "true")
     jvmArgs(
@@ -451,9 +452,11 @@ detekt {
     buildUponDefaultConfig = true
     config.setFrom(rootProject.layout.projectDirectory.file("detekt/detekt.yml"))
     baseline = file(rootProject.layout.projectDirectory.file("detekt/baseline-main.xml"))
-    source.setFrom(project.sourceSets.named("main").map {
-        it.allSource.matching {
-            exclude { elem -> elem.file.absolutePath.replace('\\', '/').contains("/build/generated/") }
+    source.setFrom(listOf("main", "test").map { name ->
+        project.sourceSets.named(name).map {
+            it.allSource.matching {
+                exclude { elem -> elem.file.absolutePath.replace('\\', '/').contains("/build/generated/") }
+            }
         }
     })
 }
