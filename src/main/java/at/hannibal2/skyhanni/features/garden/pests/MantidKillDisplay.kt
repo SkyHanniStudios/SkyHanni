@@ -39,7 +39,7 @@ object MantidKillDisplay {
     private var displayCache = emptyList<Renderable>()
 
     @HandleEvent(PestKillEvent::class)
-    fun onPestKill() {
+    private fun onPestKill() {
         if (!checkMantid()) return
         pestExpireQueue.add(SimpleTimeMark.now() + EXPIRE_TIME)
         removeExtraEntries()
@@ -47,18 +47,18 @@ object MantidKillDisplay {
 
     // mantid bonus resets on world change
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         resetKills()
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         checkForExpired()
         updateDisplay()
     }
 
     @HandleEvent(GuiRenderEvent.GuiOverlayRenderEvent::class, onlyOnIsland = IslandType.GARDEN)
-    fun onGuiRenderOverlay() {
+    private fun onGuiRenderOverlay() {
         if (!shouldShow()) return
         config.pos.renderRenderables(displayCache, posLabel = "Mantid Kill Display")
     }

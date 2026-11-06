@@ -26,7 +26,7 @@ object XPInInventories {
     )
 
     @HandleEvent
-    fun onToolTip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!isEnabled()) return
 
         var requiredXP = 0

@@ -65,7 +65,7 @@ object GardenCropMilestoneDisplay {
     private var displayCrop: CropType? = null
 
     @HandleEvent
-    fun onConfigLoad() {
+    private fun onConfigLoad() {
         onToggle(
             config.showMaxTier,
             config.highestTimeFormat,
@@ -77,7 +77,7 @@ object GardenCropMilestoneDisplay {
     }
 
     @HandleEvent(GuiRenderEvent.GuiOverlayRenderEvent::class, onlyOnIsland = IslandType.GARDEN)
-    fun onGuiRenderOverlay() {
+    private fun onGuiRenderOverlay() {
         if (!isEnabled()) return
         if (GardenApi.hideExtraGuis()) return
 
@@ -105,23 +105,23 @@ object GardenCropMilestoneDisplay {
     }
 
     @HandleEvent(priority = HandleEvent.LOW)
-    fun onProfileJoin() {
+    private fun onProfileJoin() {
         update()
     }
 
     // TODO make sure how we can replace this event without breaking logic
     @HandleEvent(priority = HandleEvent.LOW)
-    fun onIslandChange(event: IslandChangeEvent) {
+    private fun onIslandChange(event: IslandChangeEvent) {
         update()
     }
 
     @HandleEvent(CropMilestoneUpdateEvent::class)
-    fun onCropMilestoneUpdate() {
+    private fun onCropMilestoneUpdate() {
         update()
     }
 
     @HandleEvent(GardenToolChangeEvent::class)
-    fun onToolChange() {
+    private fun onToolChange() {
         update()
     }
 
@@ -391,7 +391,7 @@ object GardenCropMilestoneDisplay {
     private fun isEnabled() = GardenApi.inGarden() && config.progress
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(3, "garden.cropMilestoneProgress", "garden.cropMilestones.progress")
         event.move(3, "garden.cropMilestoneWarnClose", "garden.cropMilestones.warnClose")
         event.move(3, "garden.cropMilestoneHighestTimeFormat", "garden.cropMilestones.highestTimeFormat")

@@ -27,7 +27,7 @@ object HoppityAchievements {
     private const val CHOCOLATE_FULL_ACHIEVEMENT = "60b chocolate"
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val rabbitAchievement = Achievement(
             name = "Hoppity's Assistant".asComponent(),
             description = "Bring home all of Hoppity's Rabbits".asComponent(),
@@ -44,7 +44,7 @@ object HoppityAchievements {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         if (!CFApi.mainInventory.isInside()) return
         if (ChocolateAmount.CURRENT.chocolate() == 60_000_000_000L) {
             AchievementManager.completeAchievement(CHOCOLATE_FULL_ACHIEVEMENT)

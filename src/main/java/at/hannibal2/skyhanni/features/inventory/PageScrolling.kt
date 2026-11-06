@@ -57,7 +57,7 @@ object PageScrolling {
     private var cooldown = SimpleTimeMark.farPast()
 
     @HandleEvent
-    fun onTick() {
+    private fun onTick() {
         if (!isEnabled()) return
         if (!currentlyScrollable && cooldown.isInFuture()) return
         if (!scroll.isMouseEventValid()) return
@@ -83,7 +83,7 @@ object PageScrolling {
     }
 
     @HandleEvent
-    fun onInventoryOpen(event: InventoryOpenEvent) {
+    private fun onInventoryOpen(event: InventoryOpenEvent) {
         if (!isEnabled()) return
         currentlyScrollable = true
     }

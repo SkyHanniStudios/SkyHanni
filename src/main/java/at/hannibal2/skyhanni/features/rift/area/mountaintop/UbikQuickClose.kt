@@ -24,7 +24,7 @@ object UbikQuickClose {
     private val inventory = InventoryDetector { inventoryNamePattern }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         if (!config.ubikQuickClose) return
         if (!inventory.isInside()) return
 

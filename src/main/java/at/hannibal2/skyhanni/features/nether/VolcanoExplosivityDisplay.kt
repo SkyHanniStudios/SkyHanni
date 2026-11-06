@@ -21,7 +21,7 @@ object VolcanoExplosivityDisplay {
     private var display: Component = Component.empty()
 
     @HandleEvent
-    fun onWidgetUpdate(event: WidgetUpdateEvent) {
+    private fun onWidgetUpdate(event: WidgetUpdateEvent) {
         if (!isEnabled()) return
         if (!event.isWidget(TabWidget.VOLCANO)) return
 
@@ -39,7 +39,7 @@ object VolcanoExplosivityDisplay {
     }
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
         if (!isEnabled()) return
         config.positionVolcano.renderRenderable(Renderable.text(display), posLabel = "Volcano Explosivity")
     }

@@ -50,7 +50,7 @@ object GardenUptimeCommand {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shgardenuptime") {
             description = "Shows garden uptime history for past x days, defaults to 7"
             category = CommandCategory.USERS_ACTIVE

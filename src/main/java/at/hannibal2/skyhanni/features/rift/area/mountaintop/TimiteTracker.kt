@@ -99,7 +99,7 @@ object TimiteTracker {
     )
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onItem(event: ItemAddEvent) {
+    private fun onItem(event: ItemAddEvent) {
         if (event.internalName in validItems) {
             tracker.addItem(event.internalName, event.amount, event.source == ItemAddManager.Source.COMMAND)
         }
@@ -107,14 +107,14 @@ object TimiteTracker {
 
     // TODO use RenderDisplayHelper
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onRender(event: GuiRenderEvent) {
+    private fun onRender(event: GuiRenderEvent) {
         if (!isEnabled()) return
 
         tracker.renderDisplay(config.trackerPosition)
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shresettimitetracker") {
             description = "Resets the Timite Tracker."
             category = CommandCategory.USERS_RESET

@@ -23,7 +23,7 @@ object SkyBlockIslandTest {
         }
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Island Test")
         testIsland?.let {
             event.addData {
@@ -36,7 +36,7 @@ object SkyBlockIslandTest {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shtestisland") {
             description = "Changes the SkyBlock island SkyHanni thinks you are on"
             category = CommandCategory.DEVELOPER_TEST

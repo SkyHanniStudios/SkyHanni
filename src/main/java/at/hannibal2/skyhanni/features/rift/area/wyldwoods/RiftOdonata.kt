@@ -29,7 +29,7 @@ object RiftOdonata {
     private val emptyBottle = "EMPTY_ODONATA_BOTTLE".toInternalName()
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         if (isEnabled()) {
             checkHand()
         }
@@ -40,7 +40,7 @@ object RiftOdonata {
     }
 
     @HandleEvent
-    fun onEntityEquipmentChange(event: EntityEquipmentChangeEvent<ArmorStand>) {
+    private fun onEntityEquipmentChange(event: EntityEquipmentChangeEvent<ArmorStand>) {
         if (isEnabled()) tryAdd(event.entity)
     }
 
@@ -54,7 +54,7 @@ object RiftOdonata {
     // This only gets called on config change, so the performance impact is minimal
     @OptIn(AllEntitiesGetter::class)
     @HandleEvent
-    fun onConfigLoad(event: ConfigLoadEvent) {
+    private fun onConfigLoad(event: ConfigLoadEvent) {
         config.highlight.onToggle {
             getEntities<ArmorStand>().forEach(::tryAdd)
         }

@@ -57,7 +57,7 @@ object ColorFormattingHelper {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shcolors") {
             description = "Prints a list of all Minecraft color & formatting codes in chat."
             category = CommandCategory.USERS_ACTIVE

@@ -23,7 +23,7 @@ object PlayerDeathMessages {
     private val lastTimePlayerSeen = mutableMapOf<String, SimpleTimeMark>()
 
     @HandleEvent
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         if (!shouldHideFarDeaths()) return
 
         EntityUtils.getEntitiesNearby<RemotePlayer>(25.0).forEach { player ->
@@ -32,7 +32,7 @@ object PlayerDeathMessages {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onAllowPlayerDeath(event: PlayerDeathEvent.Allow) {
+    private fun onAllowPlayerDeath(event: PlayerDeathEvent.Allow) {
         if (event.isSelf) return
 
         val lastTime = lastTimePlayerSeen[event.name] ?: SimpleTimeMark.farPast()
@@ -44,7 +44,7 @@ object PlayerDeathMessages {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onModifyPlayerDeath(event: PlayerDeathEvent.Modify) {
+    private fun onModifyPlayerDeath(event: PlayerDeathEvent.Modify) {
         if (event.isSelf || DungeonApi.inDungeon() || KuudraApi.inKuudra) return
 
         val name = event.name

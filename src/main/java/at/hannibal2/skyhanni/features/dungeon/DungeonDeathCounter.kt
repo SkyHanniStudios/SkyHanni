@@ -48,7 +48,7 @@ object DungeonDeathCounter {
     private var deaths = 0
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!config.deathCounterDisplay || !deathPattern.matches(event.chatComponent)) return
         deaths++
         ChatUtils.chat("§c§l$deaths. DEATH!", false)
@@ -75,13 +75,13 @@ object DungeonDeathCounter {
     }
 
     @HandleEvent
-    fun onDungeonStart(event: DungeonStartEvent) = clear()
+    private fun onDungeonStart(event: DungeonStartEvent) = clear()
 
     @HandleEvent
-    fun onWorldChange() = clear()
+    private fun onWorldChange() = clear()
 
     @HandleEvent(onlyOnIsland = IslandType.CATACOMBS)
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
         if (!config.deathCounterDisplay) return
         val display = display ?: return
         config.deathCounterPos.renderRenderable(display, posLabel = "Dungeon Death Counter")

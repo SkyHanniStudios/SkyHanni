@@ -21,7 +21,7 @@ class SearchTextInput : TextInput() {
         val searchTextInputs = mutableListOf<SearchTextInput>()
 
         @HandleEvent
-        fun onInventoryClose(event: InventoryCloseEvent) {
+        private fun onInventoryClose(event: InventoryCloseEvent) {
             if (!isEnabled()) return
 
             for (input in searchTextInputs) {

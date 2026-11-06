@@ -71,7 +71,7 @@ object TrackSoundsCommand : TrackWorldCommand<PlaySoundEvent, String>(commonName
     }
 
     @HandleEvent(priority = HandleEvent.LOWEST, receiveCancelled = true)
-    fun onPlaySound(event: PlaySoundEvent) = super.onTrackableEvent(event)
+    private fun onPlaySound(event: PlaySoundEvent) = super.onTrackableEvent(event)
 
     // TODO for DavidArthurCole, this whole structure seems unnecessary.
     //  We're defining event handlers that defer to inherits, in the same shape
@@ -94,7 +94,7 @@ object TrackSoundsCommand : TrackWorldCommand<PlaySoundEvent, String>(commonName
     override fun onDisconnect(event: ClientDisconnectEvent) = super.onDisconnect(event)
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(94, "dev.debug.trackSoundPosition", "dev.debug.trackSound.position")
     }
 }

@@ -26,7 +26,7 @@ object MetalDetectorAllToolsAlert {
     private var playedSound = false
 
     @HandleEvent(onlyOnIsland = IslandType.CRYSTAL_HOLLOWS)
-    fun onActionBarUpdate(event: ActionBarUpdateEvent) {
+    private fun onActionBarUpdate(event: ActionBarUpdateEvent) {
         if (!config.metalDetectorAllToolsAlert) return
         if (InventoryUtils.itemInHandId != METAL_DETECTOR) return
 
@@ -53,7 +53,7 @@ object MetalDetectorAllToolsAlert {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         playedSound = false
     }
 }

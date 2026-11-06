@@ -24,7 +24,7 @@ object CustomScoreboardConfigFix {
     private const val EVENT_ENTRIES_KEY = "$DISPLAY_PREFIX.events.eventEntries"
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
 
         event.move(28, "$DISPLAY_CONFIG_PREFIX.showAllActiveEvents", "$EVENTS_CONFIG_KEY.showAllActiveEvents")
 

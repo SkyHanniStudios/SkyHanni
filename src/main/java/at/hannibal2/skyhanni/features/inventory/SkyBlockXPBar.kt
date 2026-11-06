@@ -21,7 +21,7 @@ object SkyBlockXPBar {
     private class OriginalValues(val currentXP: Float, val maxXP: Int, val level: Int)
 
     @HandleEvent
-    fun onRenderOverlayPre(event: GameOverlayRenderPreEvent) {
+    private fun onRenderOverlayPre(event: GameOverlayRenderPreEvent) {
         if (!isEnabled()) return
         if (event.type != RenderLayer.EXPERIENCE_BAR) return
         val (level, xp) = SkyBlockXPApi.levelXPPair ?: return
@@ -33,7 +33,7 @@ object SkyBlockXPBar {
     }
 
     @HandleEvent
-    fun onRenderOverlayPost(event: GameOverlayRenderPostEvent) {
+    private fun onRenderOverlayPost(event: GameOverlayRenderPostEvent) {
         if (event.type != RenderLayer.EXPERIENCE_BAR) return
         with(cache ?: return) {
             MinecraftCompat.localPlayerOrThrow.setExperienceValues(currentXP, maxXP, level)
@@ -42,7 +42,7 @@ object SkyBlockXPBar {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(95, "misc.skyblockXpBar", "misc.skyblockXPBar")
     }
 

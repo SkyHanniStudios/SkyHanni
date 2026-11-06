@@ -14,7 +14,7 @@ object HotmAchievements {
     private const val PICKAXE_ABILITY_ACHIEVEMENT = "ability master"
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "Have 4 Pickaxe Abilities unlocked".asComponent(),
             description = "Jack of all Abilities, master of none".asComponent(),
@@ -25,7 +25,7 @@ object HotmAchievements {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         if (AchievementManager.isCompleted(PICKAXE_ABILITY_ACHIEVEMENT)) return
         if (!HotmData.inInventory) return
         var count = 0

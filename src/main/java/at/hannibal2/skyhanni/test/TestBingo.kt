@@ -13,7 +13,7 @@ object TestBingo {
     var testBingo = false
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Bingo Test")
         if (testBingo) {
             event.addData {
@@ -25,7 +25,7 @@ object TestBingo {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shtestbingo") {
             description = "Toggle the test bingo card display mode"
             category = CommandCategory.DEVELOPER_DEBUG

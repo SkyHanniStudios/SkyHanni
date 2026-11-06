@@ -36,7 +36,7 @@ object ComposterInventoryNumbers {
     )
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onRenderItemTip(event: RenderInventoryItemTipEvent) {
+    private fun onRenderItemTip(event: RenderInventoryItemTipEvent) {
         if (!GardenApi.config.composters.inventoryNumbers) return
 
         if (event.inventoryName != "Composter") return
@@ -82,7 +82,7 @@ object ComposterInventoryNumbers {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(3, "garden.composterInventoryNumbers", "garden.composters.inventoryNumbers")
     }
 }

@@ -23,7 +23,7 @@ object GardenYawAndPitch {
     private var lastPitch = 0f
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
         if (!SkyBlockUtils.onHypixel) return
         if (!isEnabled()) return
         if (GardenApi.hideExtraGuis()) return
@@ -55,7 +55,7 @@ object GardenYawAndPitch {
     }
 
     @HandleEvent
-    fun onGardenToolChange(event: GardenToolChangeEvent) {
+    private fun onGardenToolChange(event: GardenToolChangeEvent) {
         lastChange = SimpleTimeMark.farPast()
     }
 
@@ -66,7 +66,7 @@ object GardenYawAndPitch {
             )
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(18, "garden.yawPitchDisplay.showEverywhere", "garden.yawPitchDisplay.showOutsideGarden")
     }
 }

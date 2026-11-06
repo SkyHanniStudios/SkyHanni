@@ -33,7 +33,7 @@ class ExtendedChatColor(
     companion object {
 
         @HandleEvent
-        fun onCommandRegistration(event: CommandRegistrationEvent) {
+        private fun onCommandRegistration(event: CommandRegistrationEvent) {
             event.registerBrigadier("shtestrainbow") {
                 description = "Sends a rainbow in chat"
                 category = CommandCategory.DEVELOPER_TEST

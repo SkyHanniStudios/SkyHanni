@@ -18,13 +18,13 @@ object CropAccessoryData {
     private var accessoryInInventory = CropAccessory.NONE
 
     @HandleEvent
-    fun onProfileJoin(event: ProfileJoinEvent) {
+    private fun onProfileJoin(event: ProfileJoinEvent) {
         accessoryInBag = CropAccessory.NONE
         accessoryInInventory = CropAccessory.NONE
     }
 
     @HandleEvent
-    fun onAccessoryBagUpdate(event: AccessoryBagUpdateEvent) {
+    private fun onAccessoryBagUpdate(event: AccessoryBagUpdateEvent) {
         val items = event.inventoryItems.values
         val bestInPage = bestCropAccessory(items)
         if (bestInPage > accessoryInBag) {
@@ -33,7 +33,7 @@ object CropAccessoryData {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         if (!event.repeatSeconds(5)) return
 
         accessoryInInventory = bestCropAccessory(InventoryUtils.getItemsInOwnInventory())

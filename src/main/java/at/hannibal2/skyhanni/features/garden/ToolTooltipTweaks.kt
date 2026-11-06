@@ -38,7 +38,7 @@ object ToolTooltipTweaks {
     private val statFormatter = DecimalFormat("0.##")
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onToolTip(event: ToolTipEvent) {
+    private fun onToolTip(event: ToolTipEvent) {
         if (true) return
         val itemStack = event.itemStack
         val itemLore = itemStack.getLore()
@@ -148,7 +148,7 @@ object ToolTooltipTweaks {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(3, "garden.compactToolTooltips", "garden.tooltipTweak.compactToolTooltips")
         event.move(3, "garden.fortuneTooltipKeybind", "garden.tooltipTweak.fortuneTooltipKeybind")
         event.move(3, "garden.cropTooltipFortune", "garden.tooltipTweak.cropTooltipFortune")

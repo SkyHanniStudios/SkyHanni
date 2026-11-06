@@ -13,7 +13,7 @@ object SkyblockXPInChat {
     val config get() = SkyHanniMod.feature.chat.skyBlockXPInChat
 
     @HandleEvent
-    fun onActionBarValueUpdate(event: ActionBarValueUpdateEvent) {
+    private fun onActionBarValueUpdate(event: ActionBarValueUpdateEvent) {
         if (event.updated != ActionBarStatsData.SKYBLOCK_XP) return
         if (!config) return
         ChatUtils.chat(event.updated.value)

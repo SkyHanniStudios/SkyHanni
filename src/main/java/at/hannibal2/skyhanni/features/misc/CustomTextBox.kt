@@ -17,7 +17,7 @@ object CustomTextBox {
     private var display = listOf<String>()
 
     @HandleEvent
-    fun onConfigLoad(event: ConfigLoadEvent) {
+    private fun onConfigLoad(event: ConfigLoadEvent) {
         config.text.afterChange(init = true) {
             display = config.text.get().format()
         }
@@ -26,7 +26,7 @@ object CustomTextBox {
     private fun String.format() = replace("&", "§").split("\\n").toList()
 
     @HandleEvent(onlyOnSkyblockOrFeatures = [OutsideSBFeature.CUSTOM_TEXT_BOX])
-    fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
+    private fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
         if (!config.onlyInGui || !config.enabled) return
 
 
@@ -34,14 +34,14 @@ object CustomTextBox {
     }
 
     @HandleEvent(onlyOnSkyblockOrFeatures = [OutsideSBFeature.CUSTOM_TEXT_BOX])
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
         if (config.onlyInGui || !config.enabled) return
 
         config.position.renderStrings(display, posLabel = "Custom Text Box")
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(2, "misc.textBox", "gui.customTextBox")
         event.move(81, "gui.customTextBox.onlyInGUI", "gui.customTextBox.onlyInGui")
     }

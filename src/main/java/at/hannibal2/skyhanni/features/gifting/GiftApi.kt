@@ -27,12 +27,12 @@ object GiftApi {
     fun isHoldingGift() = SkyBlockUtils.inSkyBlock && holdingGift
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         holdingGift = false
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onItemInHandChange(event: ItemInHandChangeEvent) {
+    private fun onItemInHandChange(event: ItemInHandChangeEvent) {
         holdingGift = giftNamePattern.matches(event.newItem.asString())
     }
 }

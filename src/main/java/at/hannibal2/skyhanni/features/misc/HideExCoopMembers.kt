@@ -46,7 +46,7 @@ object HideExCoopMembers {
     )
 
     @HandleEvent
-    fun onTooltip(event: ToolTipTextEvent) {
+    private fun onTooltip(event: ToolTipTextEvent) {
         if (!config.hideExCoopMembers || !CollectionApi.collectionInventory.isInside()) return
         val hiddenMembers = storage?.hiddenCoopMembers.takeIf { !it.isNullOrEmpty() } ?: return
         val index = event.slot?.index ?: return
@@ -98,7 +98,7 @@ object HideExCoopMembers {
         }
 
     @HandleEvent
-    fun onInventoryOpen(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryOpen(event: InventoryFullyOpenedEvent) {
         if (!config.hideExCoopMembers || !historicMembersInventory.isInside()) return
 
         event.inventoryItems.values
@@ -124,7 +124,7 @@ object HideExCoopMembers {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shedithiddencoopmembers") {
             description = "Manually edit the list of ex co-op members you want to hide."
             category = CommandCategory.USERS_ACTIVE

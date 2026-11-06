@@ -111,7 +111,7 @@ object ChatManager {
     )
 
     @HandleEvent
-    fun onPacketSent(event: PacketSentEvent) {
+    private fun onPacketSent(event: PacketSentEvent) {
         val message = getMessageFromPacket(event.packet) ?: return
         val component = message.asComponent()
         val originatingModCall = event.findOriginatingModCall()
@@ -365,7 +365,7 @@ object ChatManager {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shchathistory") {
             description = "Show the unfiltered chat history"
             category = CommandCategory.DEVELOPER_TEST

@@ -90,10 +90,10 @@ object ExperimentationSuperpairApi {
     val uncoveredItemStacks: Map<Int, SafeItemStack> get() = superpairsSlotMap
 
     @HandleEvent
-    fun onInventoryClose() = reset()
+    private fun onInventoryClose() = reset()
 
     @HandleEvent
-    fun onTableTaskStarted(event: TableTaskStartedEvent) = reset()
+    private fun onTableTaskStarted(event: TableTaskStartedEvent) = reset()
 
     private fun reset() {
         superpairsSlotMap.clear()
@@ -103,14 +103,14 @@ object ExperimentationSuperpairApi {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         if (!ExperimentationTableApi.inSuperpairs) return
         val tier = ExperimentationTableApi.currentExperimentTier ?: return
         if (event.slotId in tier.slotRange) lastClickedSlot = event.slotId
     }
 
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onInventoryUpdated(event: InventoryUpdatedEvent) {
+    private fun onInventoryUpdated(event: InventoryUpdatedEvent) {
         if (!ExperimentationTableApi.inSuperpairs) return
         if (ExperimentationTableApi.expOverInventoryPattern.matches(event.inventoryName)) return
         val tier = ExperimentationTableApi.currentExperimentTier ?: return

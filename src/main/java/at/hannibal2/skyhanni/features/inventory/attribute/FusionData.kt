@@ -35,7 +35,7 @@ object FusionData {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         currentFusionData = null
     }
 

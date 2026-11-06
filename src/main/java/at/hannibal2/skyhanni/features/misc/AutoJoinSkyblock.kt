@@ -16,7 +16,7 @@ object AutoJoinSkyblock {
     private var lastJoin = SimpleTimeMark.farPast()
 
     @HandleEvent
-    fun onHypixelJoin(event: HypixelJoinEvent) {
+    private fun onHypixelJoin(event: HypixelJoinEvent) {
         if (!SkyHanniMod.feature.misc.autoJoinSkyblock) return
         if (lastJoin.passedSince() < 30.seconds) return
         lastJoin = SimpleTimeMark.now()

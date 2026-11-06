@@ -26,7 +26,7 @@ object BestiaryAchievement {
     val bestiaryDetector = InventoryDetector(checkInventoryName = { it == "Bestiary" })
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "Insistent Murderer".asComponent(),
             description = "Unlock Bestiary Milestones".asComponent(),
@@ -37,7 +37,7 @@ object BestiaryAchievement {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         if (!bestiaryDetector.isInside()) return
         val milestoneSlot = 51
         val name = event.inventoryItems[milestoneSlot]?.hoverName ?: return

@@ -33,7 +33,7 @@ object HitmanApi {
     private val storage get() = ProfileStorageData.profileSpecific
 
     @HandleEvent
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         val storage = storage ?: return
         if (event.inventoryName != "Rabbit Hitman") return
         val summaryItem = event.inventoryItems[4].takeIf {

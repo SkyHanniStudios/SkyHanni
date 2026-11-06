@@ -75,7 +75,7 @@ object CurrentChatDisplay {
     )
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         val message = event.message
         changedChatPattern.matchMatcher(message) {
             return updateChat(ChatType.fromName(group("chat")))
@@ -90,7 +90,7 @@ object CurrentChatDisplay {
     }
 
     @HandleEvent
-    fun onPrivateMessageChat(event: PrivateMessageChatEvent.Allow) {
+    private fun onPrivateMessageChat(event: PrivateMessageChatEvent.Allow) {
         if (currentChat == ChatType.PRIVATE && privateMessagePlayer == event.author.cleanPlayerName()) {
             privateMessageEnd = maxPrivateMessageTime.fromNow()
             update()
@@ -115,7 +115,7 @@ object CurrentChatDisplay {
     }
 
     @HandleEvent(SecondPassedEvent::class)
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         if (!isEnabled()) return
         update()
     }
@@ -131,7 +131,7 @@ object CurrentChatDisplay {
     }
 
     @HandleEvent(GuiRenderEvent.GuiOverlayRenderEvent::class)
-    fun onGuiRenderOverlay() {
+    private fun onGuiRenderOverlay() {
         if (!isEnabled()) return
         if (MinecraftCompat.screen !is ChatScreen && lastClosedChatTime.passedSince() > 2.seconds) return
         val display = display ?: return

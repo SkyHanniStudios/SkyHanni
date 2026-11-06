@@ -31,7 +31,7 @@ object TimeFeatures {
     }
 
     @HandleEvent(onlyOnSkyblockOrFeatures = [OutsideSBFeature.REAL_TIME])
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
         if (config.realTime) {
             // TODO we should be using the standard formats, not remaking our own DTS
             val timeFormat = if (config.realTimeFormatToggle) {
@@ -58,7 +58,7 @@ object TimeFeatures {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(2, "misc.timeConfigs.winterTime", "event.winter.islandCloseTime")
         event.move(2, "misc.timeConfigs.winterTimePos", "event.winter.islandCloseTimePosition")
 

@@ -28,14 +28,14 @@ object NewYearCakeReminder {
     private var lastReminderSend = SimpleTimeMark.farPast()
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (event.message == "§aYou claimed a §r§cNew Year Cake§r§a!") {
             markCakeClaimed()
         }
     }
 
     @HandleEvent
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         //  cake already claimed
         if (event.inventoryName == "Baker") {
             markCakeClaimed()
@@ -53,7 +53,7 @@ object NewYearCakeReminder {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         if (!config.newYearCakeReminder) return
         if (!isCakeTime()) return
         if (ReminderUtils.isBusy()) return

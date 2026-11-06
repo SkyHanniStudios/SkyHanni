@@ -10,7 +10,7 @@ object ScreenData {
     private var wasOpen = false
 
     @HandleEvent
-    fun onTick() {
+    private fun onTick() {
         val isOpen = MinecraftCompat.screen != null
         if (wasOpen == isOpen) return
         wasOpen = isOpen

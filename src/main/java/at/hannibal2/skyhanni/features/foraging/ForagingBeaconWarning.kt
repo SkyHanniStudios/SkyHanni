@@ -25,7 +25,7 @@ object ForagingBeaconWarning {
     )
 
     @HandleEvent(onlyOnIslandTypeTag = [IslandTypeTag.FORAGING_CUSTOM_TREES])
-    fun onWidget(event: WidgetUpdateEvent) {
+    private fun onWidget(event: WidgetUpdateEvent) {
         if (!isEnabled()) return
         if (!event.isWidget(TabWidget.MOONGLADE_BEACON)) return
         if (lastAlert.passedSince() < 9.minutes) return
@@ -39,7 +39,7 @@ object ForagingBeaconWarning {
     fun isEnabled() = SkyHanniMod.feature.foraging.foragingBeacon.beaconAlert
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(139, "foraging.moongladeBeacon", "foraging.foragingBeacon")
     }
 

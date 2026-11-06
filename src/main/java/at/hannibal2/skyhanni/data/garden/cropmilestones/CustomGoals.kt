@@ -21,7 +21,7 @@ object CustomGoals {
     private val milestoneCustomGoals: MutableMap<CropType, MilestoneGoal> = mutableMapOf()
 
     @HandleEvent
-    fun onConfigLoad(event: ConfigLoadEvent) {
+    private fun onConfigLoad(event: ConfigLoadEvent) {
         config.customGoalCrops.afterChange {
             milestoneCustomGoals.clear()
             for (crop in this) {
@@ -76,7 +76,7 @@ object CustomGoals {
     }
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Crop Milestones Custom Goal")
         event.addIrrelevant {
             add(milestoneCustomGoals.toString())

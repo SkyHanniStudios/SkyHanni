@@ -22,7 +22,7 @@ object GlacitePowderFeatures {
     )
 
     @HandleEvent
-    fun onRenderItemTip(event: RenderItemTipEvent) {
+    private fun onRenderItemTip(event: RenderItemTipEvent) {
         if (!isEnabled()) return
 
         glacitePowderPattern.matchMatcher(event.stack.cleanName) {
