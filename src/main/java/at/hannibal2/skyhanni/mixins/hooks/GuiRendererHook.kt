@@ -55,7 +55,7 @@ object GuiRendererHook {
     fun bindShapeData(renderPass: RenderPass) = SkyHanniShapeData.bind(renderPass)
 
     @JvmStatic
-    fun clearChromaUniforms() {
+    fun endFrame() {
         SkyHanniShapeData.endFrame()
         chromaUniform.clear()
         //? if >= 26.2
