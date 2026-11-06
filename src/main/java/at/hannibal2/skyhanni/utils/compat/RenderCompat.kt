@@ -2,12 +2,15 @@ package at.hannibal2.skyhanni.utils.compat
 
 import com.mojang.renderpearl.api.pipeline.RenderPipeline
 import net.minecraft.client.renderer.RenderPipelines
-import com.mojang.blaze3d.pipeline.RenderTarget
+
+//? if < 26.2 {
+/*import com.mojang.blaze3d.pipeline.RenderTarget
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.renderpearl.api.commands.RenderPass
 import com.mojang.renderpearl.api.device.GpuDevice
 import java.util.OptionalDouble
 import java.util.OptionalInt
+*///?}
 
 object RenderCompat {
     /**
