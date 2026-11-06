@@ -20,7 +20,10 @@ object InputKeys {
         InputConstants.getKey(event)
 
     fun keyboard(keyCode: Int, scancode: Int): InputConstants.Key {
-        val keyEvent = KeyEvent(keyCode, scancode, 0)
+        //? if >= 26.3
+        val keyEvent = KeyEvent(scancode, keyCode, 0)
+        //? else
+        // val keyEvent = KeyEvent(keyCode, scancode, 0)
         return keyEvent(keyEvent)
     }
 
