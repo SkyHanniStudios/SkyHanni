@@ -9,12 +9,14 @@ import at.hannibal2.skyhanni.utils.NumberUtil.romanToDecimalIfNecessary
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.StringUtils.allLettersFirstUppercase
 import at.hannibal2.skyhanni.utils.StringUtils.removeColor
+import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 
 @SkyHanniModule
 object ItemNameResolver {
     private val itemNameCache = mutableMapOf<String, NeuInternalName>() // item name -> internal name
     private val HAY_BALE = "HAY_BALE".toInternalName()
     private val HAY_BLOCK = "HAY_BLOCK".toInternalName()
+    private val patternGroup = RepoPattern.group("misc.itemnameresolver")
 
     @Suppress("ReturnCount", "CyclomaticComplexMethod")
     internal fun getInternalNameOrNull(itemName: String): NeuInternalName? {
@@ -121,16 +123,32 @@ object ItemNameResolver {
         return null
     }
 
-    // Todo use repo for this
-    // Workaround for duplex
-    private val duplexPattern = "ULTIMATE_DUPLEX;(?<tier>.*)".toPattern()
+    /**
+     * REGEX-TEST: ULTIMATE_DUPLEX;5
+     */
+    private val duplexPattern by patternGroup.pattern(
+        "enchantment.duplex",
+        "ULTIMATE_DUPLEX;(?<tier>.*)",
+    )
+
+    /**
+     * REGEX-TEST: LOOTING_NEW;7
+     */
+    private val newEnchantPattern by patternGroup.pattern(
+        "enchantment.new",
+        "^(?<name>[\\w_]+)_NEW;(?<tier>.*)",
+    )
 
     fun fixEnchantmentName(originalName: String): NeuInternalName {
+        var fixedInternalString = originalName.removeColor()
+
         duplexPattern.matchMatcher(originalName) {
-            val tier = group("tier")
-            return "ULTIMATE_REITERATE;$tier".toInternalName()
+            fixedInternalString = fixedInternalString.replace("DUPLEX", "REITERATE")
         }
-        return originalName.removeColor().toInternalName()
+        newEnchantPattern.matchMatcher(fixedInternalString) {
+            fixedInternalString = fixedInternalString.replace("_NEW", "")
+        }
+        return fixedInternalString.toInternalName()
     }
 
     private fun getInternalNameOrNullIgnoreCase(itemName: String): NeuInternalName? {
