@@ -86,6 +86,8 @@ enum class ItemCategory {
     RABBIT,
     ABILITY_SCROLL,
 
+    SEA_CREATURE,
+
     NONE,
     ;
 
