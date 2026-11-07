@@ -34,7 +34,7 @@ enum class SkyHanniRenderPipeline(
     sampler: String? = null,
     uniforms: Map<String, UniformType> = emptyMap(),
     depthWrite: Boolean = true,
-    @Suppress("unused") // Iris compatibility is optional
+    @Suppress("unused")
     val irisProgram: IrisProgram = BASIC,
 ) {
     LINES(
