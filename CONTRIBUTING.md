@@ -146,6 +146,8 @@ CI. Do not manually edit `docs/CHANGELOG.md` or `docs/FEATURES.md`. These files 
   the changelog, "fixed an inverted discount calculation" belongs in the **What** section.
 - Refer to a feature by its name and capitalize it, along with every SkyBlock proper noun. This includes the
   names that read like ordinary words, such as Hunting Box or Instance Chest Profit.
+- The builder removes double quotes from the main line of an entry, while extra info lines keep them. Write
+  feature names in the main line without quotes, and put a quoted chat message into an extra info line.
 
 Here is an explanation of which changes belong to each category:
 
@@ -256,7 +258,7 @@ Everyone is still welcome to leave comments and feedback on any PR.
 - New features should be made in Kotlin objects unless there is a specific reason for it not to.
     - If the feature needs to register Fabric events, uses SkyHanni events or creates repo patterns, annotate the feature class with
       `@SkyHanniModule`
-    - This will automatically register all events to the respective event bus, and loads the repo patterns.
+    - This will automatically register all events to the respective event bus and load the repo patterns.
     - Until the project is compiled for the first time, the IDE will show a red error in `SkyHanniMod.kt`. This is expected and resolves
       after the first build.
 - All functions and properties must be defined inside a class or object. Top-level Kotlin functions and properties are not
@@ -269,9 +271,8 @@ Everyone is still welcome to leave comments and feedback on any PR.
   name instead of deleting it right away. Open pull requests that still use the old name then keep
   compiling and their authors get time to react. Remove the alias in a separate pull request one or
   two months later, and note that date in a TODO comment above it.
-- Future JSON data objects should be made in kotlin.
+- Future JSON data objects should be made in Kotlin.
 - Config files should be made in **Kotlin**.
-    - There may be legacy config files left as Java files, however they will all be ported eventually.
 - Please use the existing event system, or expand on it.
     - Custom SkyHanni events are located in the `events` package, organized into subpackages by category.
       When creating a new event, place it in the appropriate subpackage. Thematically related events can be placed together in a single
@@ -331,8 +332,8 @@ Everyone is still welcome to leave comments and feedback on any PR.
 - Do not use `fixedRateTimer` when possible and instead use `SecondPassedEvent` to safely execute the repeating event on
   the main thread.
 - When updating a config option variable, use the `ConfigUpdaterMigrator.ConfigFixEvent` with event.move() when moving a value, and
-  event.transform() when updating a
-  value. [For Example](https://github.com/SkyHanniStudios/SkyHanni/blob/beta/src/main/java/at/hannibal2/skyhanni/features/gui/customscoreboard/CustomScoreboard.kt#L276).
+  event.transform() when updating a value. For an example, see `onConfigFix` in
+  [BroodmotherFeatures.kt](https://github.com/SkyHanniStudios/SkyHanni/blob/beta/src/main/java/at/hannibal2/skyhanni/features/combat/BroodmotherFeatures.kt).
 - Use American English spelling conventions (e.g., "color" not "colour").
 - When creating/updating a command, move it out of the `Commands.kt` class, if it isn't already, into the class that it belongs to.
 - Avoid direct function imports. Always access functions or members through their respective namespaces or parent classes to improve
@@ -352,7 +353,7 @@ Everyone is still welcome to leave comments and feedback on any PR.
 - Follow Kotlin conventions for acronym naming:
     - Use all-uppercase for two-letter acronyms (e.g., `XP`).
     - Treat three or more letter acronyms as regular words with only the first letter capitalized (e.g., `Api`).
-- Always combine title messages with chat message.
+- Always combine title messages with a chat message.
     - This way users know what feature and what mod sends the title, if they want to disable it.
     - Also, we can include more information on why the title just showed up, as the title should not be too long.
 
@@ -447,7 +448,7 @@ its [privacy policy](https://eliteskyblock.com/privacy).
 A system to inject code into the original Minecraft code.
 Mixin is bundled with the Fabric Loader and does not need to be included as a runtime dependency.
 
-It allows to easily modify methods in Minecraft itself, without conflicting with other mods.
+It allows developers to easily modify methods in Minecraft itself, without conflicting with other mods.
 
 For more information, see https://github.com/SpongePowered/Mixin
 or [our existing mixins](https://github.com/SkyHanniStudios/SkyHanni/tree/beta/src/main/java/at/hannibal2/skyhanni/mixins/transformers).
