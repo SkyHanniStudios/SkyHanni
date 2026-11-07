@@ -43,7 +43,6 @@ enum class ItemCategory {
 
     // Creatures
     PET,
-    SEA_CREATURE,
 
     // Equipment
     BELT,
@@ -100,6 +99,11 @@ enum class ItemCategory {
     SWORD,
     VACUUM,
     WAND,
+
+    NONE,
+
+    // Fake Categories
+    SEA_CREATURE, // Exists for Neu Repo purposes, never existed in-game but SH throws errors without.
 
     // Legacy
     @Legacy("No longer exists")
