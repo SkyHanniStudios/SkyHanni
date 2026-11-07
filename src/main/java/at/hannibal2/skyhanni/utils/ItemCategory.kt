@@ -97,8 +97,7 @@ enum class ItemCategory {
 
     // Other
     SACK,
-
-    // Legacy / Uncategorized
+    ABIPHONE,
     // TODO This was previously used as a fake category for uncategorized dungeon items.
     //  Remove it after ensuring it doesn't break anything.
     @Deprecated("Legacy fake category", ReplaceWith("ItemCategory.NONE"))
