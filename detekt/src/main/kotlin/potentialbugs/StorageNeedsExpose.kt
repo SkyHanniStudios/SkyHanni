@@ -6,10 +6,11 @@ import dev.detekt.api.Config
 import utils.DetektUtils.hasAnnotation
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtProperty
+import utils.SkyHanniFqNames
 
 class StorageNeedsExpose(config: Config) : SkyHanniRule(
     config,
-    "Config/storage properties that are intended to store data should be annotated with @Expose.",
+    "Config and storage properties that store data should be annotated with @Expose.",
 ) {
 
     companion object {
@@ -36,7 +37,19 @@ class StorageNeedsExpose(config: Config) : SkyHanniRule(
             if (property.hasAnnotation("ConfigEditorButton")) return
         }
 
-        return property.reportIssue("@Expose annotation is missing from property ${property.name}")
+        (property.nameIdentifier ?: property).reportIssue("@Expose annotation is missing from property ${property.name}", property)
+        addExpose(property)
+    }
+
+    private fun addExpose(property: KtProperty) {
+        if (!canCorrect(property)) return
+        val anchor = property.modifierList?.takeIf { it.textLength > 0 } ?: property.valOrVarKeyword
+        val text = property.containingFile.text
+        val lineStart = text.lastIndexOf('\n', anchor.textRange.startOffset - 1) + 1
+        val indent = text.substring(lineStart, anchor.textRange.startOffset)
+        val separator = if (indent.isBlank()) "\n$indent" else " "
+        anchor.insertTextBefore("@Expose$separator")
+        property.containingKtFile.addImport(SkyHanniFqNames.EXPOSE)
     }
 
     override fun visitProperty(property: KtProperty) {

@@ -191,8 +191,10 @@ potential-bugs:
         active: false
     StorageNeedsExpose:
         active: true
+        autoCorrect: true
     NonStorageDoesntNeedExpose:
         active: true
+        autoCorrect: true
     ImmutableTypesWithExpectedInteriorMutabilityInConfig:
         active: true
     UnreachableCode:

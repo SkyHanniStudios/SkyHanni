@@ -3,6 +3,7 @@ package style
 import SkyHanniRule
 import dev.detekt.api.Config
 import org.jetbrains.kotlin.psi.KtNamedFunction
+import org.jetbrains.kotlin.psi.KtValueArgument
 import utils.DetektUtils.getAnnotation
 
 class OnlyOnIslandSpecificity(config: Config) : SkyHanniRule(
@@ -13,13 +14,17 @@ class OnlyOnIslandSpecificity(config: Config) : SkyHanniRule(
     override fun visitNamedFunction(function: KtNamedFunction) {
         function.getAnnotation("HandleEvent")?.let { annotation ->
             val arguments = annotation.valueArguments
-            val hasOnlyOnSkyblock = arguments.any { it.asElement().text.contains("onlyOnSkyblock") }
+            val onlyOnSkyblock = arguments.firstOrNull { it.asElement().text.contains("onlyOnSkyblock") }
             val hasOnlyOnIsland = arguments.any { it.asElement().text.contains("onlyOnIsland") }
 
-            if (hasOnlyOnSkyblock && hasOnlyOnIsland) {
-                annotation.reportIssue(
-                    "This instance of `onlyOnSkyblock = true` should be removed. `onlyOnIsland` implicitly covers this check."
+            if (onlyOnSkyblock != null && hasOnlyOnIsland) {
+                onlyOnSkyblock.asElement().reportIssue(
+                    "This instance of `onlyOnSkyblock = true` should be removed. `onlyOnIsland` implicitly covers this check.",
+                    annotation,
                 )
+                val isPlainFlag = onlyOnSkyblock.getArgumentName()?.asName?.asString() == "onlyOnSkyblock" &&
+                    onlyOnSkyblock.getArgumentExpression()?.text == "true"
+                if (isPlainFlag && arguments.all { it.getArgumentName() != null }) (onlyOnSkyblock as? KtValueArgument)?.deleteArgument()
             }
         }
 

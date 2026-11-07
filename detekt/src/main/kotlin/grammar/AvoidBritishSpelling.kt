@@ -1,14 +1,20 @@
 package grammar
 
 import SkyHanniRule
+import com.intellij.openapi.util.TextRange
 import dev.detekt.api.Config
+import org.jetbrains.kotlin.psi.KtLiteralStringTemplateEntry
 import org.jetbrains.kotlin.psi.KtStringTemplateExpression
 
 /**
  * This rule reports all usages of the british spelling over the american spelling in the codebase,
  * this will ignore any type annotations, i.e., `@ConfigEditorColour` will not be reported.
  */
-class AvoidBritishSpelling(config: Config) : SkyHanniRule(config, "Avoid using the british spelling over the american spelling.") {
+class AvoidBritishSpelling(config: Config) : SkyHanniRule(
+    config,
+    "String literals should use American spelling, such as color instead of colour.",
+    CONVENTIONS_URI,
+) {
 
     private val scannedWords = mapOf(
         "colour" to "color",
@@ -16,12 +22,18 @@ class AvoidBritishSpelling(config: Config) : SkyHanniRule(config, "Avoid using t
     )
 
     override fun visitStringTemplateExpression(expression: KtStringTemplateExpression) {
-        val text =
-            expression.text // Be aware .getText() returns the entire span of this template, including variable names contained within. This should be rare enough of a problem for us to not care about it.
-
-        for (word in scannedWords) {
-            if (text.contains(word.key, ignoreCase = true)) {
-                expression.reportIssue("Avoid using the word '${word.key}' in code, '${word.value}' is preferred instead.")
+        for (entry in expression.entries.filterIsInstance<KtLiteralStringTemplateEntry>()) {
+            for ((british, american) in scannedWords) {
+                var index = entry.text.indexOf(british, ignoreCase = true)
+                while (index >= 0) {
+                    val start = entry.textRange.startOffset + index
+                    entry.reportRange(
+                        TextRange(start, start + british.length),
+                        "Avoid using the word '$british' in code, '$american' is preferred instead.",
+                        expression,
+                    )
+                    index = entry.text.indexOf(british, index + british.length, ignoreCase = true)
+                }
             }
         }
         super.visitStringTemplateExpression(expression)

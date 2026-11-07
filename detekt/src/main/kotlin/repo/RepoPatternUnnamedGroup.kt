@@ -4,8 +4,11 @@ import SkyHanniRule
 import dev.detekt.api.Config
 import org.jetbrains.kotlin.psi.KtPropertyDelegate
 
-class RepoPatternUnnamedGroup(config: Config, private val ctx: RepoPatternContext) :
-    SkyHanniRule(config, "All repo patterns must not contain unnamed groups.") {
+class RepoPatternUnnamedGroup(config: Config, private val ctx: RepoPatternContext) : SkyHanniRule(
+    config,
+    "Repo patterns should use named or non-capturing groups instead of unnamed capture groups.",
+    CONVENTIONS_URI,
+) {
 
     override fun visitPropertyDelegate(delegate: KtPropertyDelegate) {
         super.visitPropertyDelegate(delegate)
@@ -13,7 +16,10 @@ class RepoPatternUnnamedGroup(config: Config, private val ctx: RepoPatternContex
         val repoPatternElement = ctx.getRepoPatternElement(delegate) ?: return
 
         if (repoPatternElement.rawPattern.hasUnnamedGroup()) {
-            delegate.reportIssue("Repo pattern `${repoPatternElement.variableName}` must not contain unnamed capture groups.")
+            (repoPatternElement.patternElement ?: delegate).reportIssue(
+                "Repo pattern `${repoPatternElement.variableName}` must not contain unnamed capture groups.",
+                delegate,
+            )
         }
     }
 

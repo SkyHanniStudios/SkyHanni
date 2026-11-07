@@ -16,7 +16,7 @@ import org.jetbrains.kotlin.psi.KtProperty
 
 class ImmutableTypesWithExpectedInteriorMutabilityInConfig(config: Config) : RequiresAnalysisApi, SkyHanniRule(
     config,
-    "Disallow using types which may disallow MoulConfig from mutating them, due to the lack of interior mutability",
+    "Config options should use mutable collection types so MoulConfig can modify them in place.",
 ) {
     companion object {
         val configPackage = FqName("at.hannibal2.skyhanni.config")
@@ -40,9 +40,9 @@ class ImmutableTypesWithExpectedInteriorMutabilityInConfig(config: Config) : Req
         )
     }
 
-    override fun visit(root: KtFile) {
-        if (!root.packageFqName.startsWith(configPackage)) return
-        super.visit(root)
+    override fun visitKtFile(file: KtFile) {
+        if (!file.packageFqName.startsWith(configPackage)) return
+        super.visitKtFile(file)
     }
 
     private fun KtAnnotated.hasConfigOptionAnnotation(): Boolean {
@@ -62,7 +62,10 @@ class ImmutableTypesWithExpectedInteriorMutabilityInConfig(config: Config) : Req
             val mutableParentTypes = allClassIds.intersect(mutableCollectionClassIds)
             if (mutableParentTypes.isNotEmpty()) return@analyze
 
-            property.reportIssue("A @ConfigOption field must use types with interior mutability: $immutableParentTypes")
+            (property.typeReference ?: property.nameIdentifier ?: property).reportIssue(
+                "A @ConfigOption field must use types with interior mutability: $immutableParentTypes",
+                property,
+            )
         }
     }
 

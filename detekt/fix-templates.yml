@@ -1,0 +1,7 @@
+AvoidBritishSpelling:
+  - find: colour
+    replace: color
+    ignoreCase: true
+  - find: armour
+    replace: armor
+    ignoreCase: true

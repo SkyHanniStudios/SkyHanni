@@ -16,7 +16,7 @@ import org.jetbrains.kotlin.psi.KtProperty
 
 class StorageVarOrVal(config: Config) : RequiresAnalysisApi, SkyHanniRule(
     config,
-    "Storage and config variables should be declared as `var` for primitives and `val` for objects.",
+    "Storage and config properties should be `var` for primitives, strings, enums and colors, and `val` for other objects.",
 ) {
     private enum class StorageType { VAR, VAL }
 
@@ -50,9 +50,12 @@ class StorageVarOrVal(config: Config) : RequiresAnalysisApi, SkyHanniRule(
         val expected = if (shouldBeVar(property)) StorageType.VAR else StorageType.VAL
         val actual = if (property.isVar) StorageType.VAR else StorageType.VAL
 
-        if (actual != expected) return property.reportIssue(
-            "${property.typeReference?.text} `${property.name}` should be a ${expected.name.lowercase()}",
-        )
+        if (actual != expected) {
+            val keyword = property.valOrVarKeyword
+            keyword.reportIssue("${property.typeReference?.text} `${property.name}` should be a ${expected.name.lowercase()}", property)
+            keyword.replaceText(expected.name.lowercase())
+            return
+        }
 
         super.visitProperty(property)
     }

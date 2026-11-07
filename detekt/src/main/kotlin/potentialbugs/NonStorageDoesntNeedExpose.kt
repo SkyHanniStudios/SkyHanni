@@ -4,6 +4,7 @@ import SkyHanniRule
 import potentialbugs.StorageNeedsExpose.Companion.CONFIG_PACKAGE
 import potentialbugs.StorageNeedsExpose.Companion.STORAGE_PACKAGE
 import dev.detekt.api.Config
+import utils.DetektUtils.getAnnotation
 import utils.DetektUtils.hasAnnotation
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtProperty
@@ -11,7 +12,7 @@ import org.jetbrains.kotlin.psi.psiUtil.isPrivate
 
 class NonStorageDoesntNeedExpose(config: Config) : SkyHanniRule(
     config,
-    "Config/storage properties that are not intended to store data should not be annotated with @Expose.",
+    "Config and storage properties that do not store data should not be annotated with @Expose.",
 ) {
 
     override fun visitKtFile(file: KtFile) {
@@ -21,7 +22,8 @@ class NonStorageDoesntNeedExpose(config: Config) : SkyHanniRule(
     }
 
     override fun visitProperty(property: KtProperty) {
-        if (property.hasAnnotation("Expose")) {
+        val expose = property.getAnnotation("Expose")
+        if (expose != null) {
             // Reasons to NOT have Expose annotation:
             //  - The property is local
             //  - The property is private
@@ -36,7 +38,8 @@ class NonStorageDoesntNeedExpose(config: Config) : SkyHanniRule(
                 property.hasAnnotation("Transient")
 
             if (doWeCare) {
-                property.reportIssue("@Expose annotation is not needed on property ${property.name}")
+                expose.reportIssue("@Expose annotation is not needed on property ${property.name}", property)
+                if (expose.valueArgumentList == null) expose.deleteText()
             }
         }
 
