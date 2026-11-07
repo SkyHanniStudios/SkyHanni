@@ -45,7 +45,7 @@ plugins {
     // We can't use libs refs in settings, so these are not stored in `libs.versions.toml`
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
     id("at.skyhanni.shared-variables")
-    id("dev.kikugie.stonecutter") version "0.9.7"
+    id("dev.kikugie.stonecutter") version "0.10-beta.4"
 }
 
 include("annotation-processors")
@@ -53,9 +53,28 @@ include("detekt")
 rootProject.name = "SkyHanni"
 rootProject.buildFileName = "root.gradle.kts"
 
+val versions = listOf("26.2", "26.1")
+
 stonecutter {
     create(rootProject) {
-        versions("26.1", "26.2")
-        vcsVersion = "26.2"
+        versions.forEach {
+            version(it)
+        }
+        vcsVersion = versions.first()
+    }
+}
+
+dependencyResolutionManagement {
+    versionCatalogs {
+        versions.forEach {
+            val name = it.replace(".", "")
+            create("libs$name") {
+                from(
+                    files(
+                        rootProject.projectDir.resolve("gradle/${it.replace(".", "_")}.versions.toml")
+                    )
+                )
+            }
+        }
     }
 }

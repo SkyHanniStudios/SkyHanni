@@ -30,6 +30,7 @@ plugins {
     id("com.google.devtools.ksp")
     `maven-publish`
     id("dev.detekt")
+    id("versioned-catalogues")
 }
 
 val target = ProjectTarget.entries.find { it.projectPath == project.path }!!
@@ -144,31 +145,30 @@ dependencies {
     ksp(libs.autoservice.ksp)
     implementation(libs.autoservice.annotations)
 
-    target.fabricLoaderVersion.let {
+    versionedCatalog["fabric-loader"].let {
         implementation(it)
         "productionRuntimeMods"(it)
-        mixinTestRuntime("net.fabricmc:fabric-loader-junit:${it.substringAfterLast(':')}")
+        mixinTestRuntime("net.fabricmc:fabric-loader-junit:${it.get().versionConstraint.requiredVersion}")
     }
-    target.fabricApiVersion.let {
+    versionedCatalog["fabric-api"].let {
         implementation(it)
         "productionRuntimeMods"(it)
     }
-    implementation(libs.fabricLanguageKotlin)
-    "productionRuntimeMods"(libs.fabricLanguageKotlin)
+    implementation(versionedCatalog["fabricLanguageKotlin"])
+    "productionRuntimeMods"(versionedCatalog["fabricLanguageKotlin"])
 
-    implementation("maven.modrinth:modmenu:${target.modMenuVersion}")
+    implementation(versionedCatalog["modmenu"])
 
     runtimeOnly(libs.devauth)
     "productionRuntimeMods"(libs.devauth)
 
-    val moulconfigVersion = target.minecraftVersion.moulconfigMinecraftVersionOverride ?: target.minecraftVersion.versionName
-    shadowImpl("org.notenoughupdates.moulconfig:modern-$moulconfigVersion:${libs.versions.moulconfig.get()}") {
+    val moulconfig = versionedCatalog["moulconfig"]
+    shadowImpl(moulconfig) {
         exclude("org.jetbrains.kotlin")
         exclude("org.jetbrains.kotlinx")
     }
-    "minecraftTestClientRuntimeLibraries"(
-        "org.notenoughupdates.moulconfig:modern-$moulconfigVersion:${libs.versions.moulconfig.get()}"
-    )
+
+    "minecraftTestClientRuntimeLibraries"(moulconfig)
 
     shadowImpl(libs.libautoupdate) {
         exclude(module = "gson")
@@ -180,18 +180,15 @@ dependencies {
     testImplementation(libs.mockk)
     testImplementation(libs.mockk.agent)
 
-    implementation(target.hypixelModApiVersion)
-    runtimeOnly(target.hypixelModApiFabricVersion)
-    "productionRuntimeMods"(target.hypixelModApiFabricVersion)
+    implementation(versionedCatalog["hypixel-modapi"])
+    runtimeOnly(versionedCatalog["hypixel-modapi-fabric"])
+    "productionRuntimeMods"(versionedCatalog["hypixel-modapi-fabric"])
 
-    val reiVersion = when (target) {
-        ProjectTarget.MODERN_26200 -> "26.2.820"
-        ProjectTarget.MODERN_26100 -> "26.1.819"
-    }
-    val reiApi = "me.shedaniel:RoughlyEnoughItems-api:$reiVersion"
-    compileOnly(reiApi) { isTransitive = false }
-    "minecraftTestClientRuntimeLibraries"(reiApi) {
-        isTransitive = false
+    versionedCatalog.libraries.getOrNull("rei")?.let {
+        compileOnly(it) { isTransitive = false }
+        "minecraftTestClientRuntimeLibraries"(it) {
+            isTransitive = false
+        }
     }
     compileOnly(libs.basicMath)
     "minecraftTestClientRuntimeLibraries"(libs.basicMath)
@@ -213,10 +210,10 @@ dependencies {
     shadowImpl(libs.httpclient)
     "minecraftTestClientRuntimeLibraries"(libs.httpclient)
 
-    target.renderChestVersion?.let {
-        includeImplementation("net.azureaaron:render-chest:$it")
-        "productionRuntimeMods"("net.azureaaron:render-chest:$it")
-        "minecraftTestClientRuntimeLibraries"("net.azureaaron:render-chest:$it") {
+    versionedCatalog.libraries.getOrNull("renderchest")?.let {
+        includeImplementation(it)
+        "productionRuntimeMods"(it)
+        "minecraftTestClientRuntimeLibraries"(it) {
             isTransitive = false
         }
     }
@@ -297,19 +294,15 @@ kotlin {
 tasks.processResources {
     from(includeBackupRepo)
     from(includeBackupNeuRepo)
-    val fabLoaderVersion = target.fabricLoaderVersion.split(":").last()
-    val fapiVersion = target.fabricApiVersion.split(":").last()
-    val fabLangKotlinVersion = target.fabricLanguageKotlinVersion.split(":").last()
-    val hypixelModApiVersion = target.hypixelModApiFabricVersion.split(":").last()
     val minecraftVersion = target.minecraftVersion.fabricModJsonVersion
-    val renderChestVersion = target.renderChestVersion ?: ""
+    val renderChestVersion = versionedCatalog.versions.getOrNull("renderchest")?.requiredVersion.orEmpty()
     val props = buildMap {
         put("version", version)
         put("minecraft", minecraftVersion)
-        put("fapi", fapiVersion)
-        put("fabloader", fabLoaderVersion)
-        put ("fablangkotlin", fabLangKotlinVersion)
-        put("hypixelmodapi", hypixelModApiVersion)
+        put("fapi", versionedCatalog.versions["fabric-api"].requiredVersion)
+        put("fabloader", versionedCatalog.versions["fabric-loader"].requiredVersion)
+        put("fablangkotlin", versionedCatalog.versions["fabricLanguageKotlin"].requiredVersion)
+        put("hypixelmodapi", versionedCatalog.versions["hypixel-modapi-fabric"].requiredVersion)
         put("renderchest", renderChestVersion)
     }
 
