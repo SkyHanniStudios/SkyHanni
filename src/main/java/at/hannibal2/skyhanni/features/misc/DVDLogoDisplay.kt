@@ -7,6 +7,7 @@ import at.hannibal2.skyhanni.events.achievements.AchievementRegistrationEvent
 import at.hannibal2.skyhanni.features.achievements.AchievementManager
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ConditionalUtils
+import at.hannibal2.skyhanni.utils.RenderUtils
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderable
 import at.hannibal2.skyhanni.utils.SoundUtils
 import at.hannibal2.skyhanni.utils.SoundUtils.playSound
@@ -15,6 +16,7 @@ import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.animated.DVDLogoRenderable
 import at.hannibal2.skyhanni.utils.renderables.animated.DVDLogoRenderable.Companion.dvdLogo
 import at.hannibal2.skyhanni.utils.renderables.animated.LogoTrajectory
+import at.hannibal2.skyhanni.utils.renderables.container.VerticalContainerRenderable.Companion.vertical
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
 
 @SkyHanniModule
@@ -41,11 +43,12 @@ object DVDLogoDisplay {
             SoundUtils.createSound(it, 1f, isWarning = false)
         }
 
+        val lines = config.text.get().replace("&", "§").split("\\n").map {
+            Renderable.text(it, scale = config.textSize.get().toDouble(), horizontalAlign = RenderUtils.HorizontalAlignment.CENTER)
+        }
+
         renderable = Renderable.dvdLogo(
-            Renderable.text(
-                config.text.get().replace("&", "§"),
-                scale = config.textSize.get().toDouble(),
-            ),
+            Renderable.vertical(lines, horizontalAlign = RenderUtils.HorizontalAlignment.CENTER),
             movementSpeed = config.speed.get(),
             syncPosition = config.position,
             initialTrajectory = startTrajectory,
