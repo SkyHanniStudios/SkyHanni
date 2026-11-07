@@ -2,9 +2,11 @@ package at.hannibal2.skyhanni.features.foraging
 
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
+import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.config.commands.CommandCategory
 import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
 import at.hannibal2.skyhanni.config.features.foraging.ForagingTrackerConfig
+import at.hannibal2.skyhanni.config.features.foraging.ForagingTrackerConfig.TreeGiftDisplayMode
 import at.hannibal2.skyhanni.config.storage.ProfileSpecificStorage
 import at.hannibal2.skyhanni.data.IslandTypeTag
 import at.hannibal2.skyhanni.data.ItemAddManager
@@ -17,6 +19,7 @@ import at.hannibal2.skyhanni.events.SackChangeEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
+import at.hannibal2.skyhanni.utils.ConfigUtils
 import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.ItemCategory
 import at.hannibal2.skyhanni.utils.ItemUtils.getInternalNameOrNull
@@ -76,7 +79,7 @@ object ForagingTracker : SkyHanniBucketedItemTracker<TreeType, ForagingTracker.B
     )
 
     /**
-     * REGEX-TEST:                                 §r§9§lTREE GIFT
+     * WRAPPED-REGEX-TEST: "                                §r§9§lTREE GIFT"
      */
     val giftHeaderPattern by patternGroup.pattern(
         "header",
@@ -84,9 +87,9 @@ object ForagingTracker : SkyHanniBucketedItemTracker<TreeType, ForagingTracker.B
     )
 
     /**
-     * REGEX-TEST:                  §r§7You helped cut §r§a100% §r§7of the §r§aFig Tree§r§7.
-     * REGEX-TEST:              §r§7You helped cut §r§a100% §r§7of the §r§aMangrove Tree§r§7.
-     * REGEX-TEST:                  §r§7You helped cut §r§c15.2% §r§7of the §r§aFig Tree§r§7.
+     * WRAPPED-REGEX-TEST: "                 §r§7You helped cut §r§a100% §r§7of the §r§aFig Tree§r§7."
+     * WRAPPED-REGEX-TEST: "             §r§7You helped cut §r§a100% §r§7of the §r§aMangrove Tree§r§7."
+     * WRAPPED-REGEX-TEST: "                 §r§7You helped cut §r§c15.2% §r§7of the §r§aFig Tree§r§7."
      */
     val percentageContributedPattern by patternGroup.pattern(
         "contribution-percentage",
@@ -95,7 +98,7 @@ object ForagingTracker : SkyHanniBucketedItemTracker<TreeType, ForagingTracker.B
 
     /**
      * REGEX-TEST: §f                       §e+5 rewards gained! §8(hover)
-     * REGEX-TEST:                             §r§e+0 rewards gained!
+     * WRAPPED-REGEX-TEST: "                            §r§e+0 rewards gained!"
      */
     val rewardsGainedPattern by patternGroup.pattern(
         "rewards-gained",
@@ -120,7 +123,7 @@ object ForagingTracker : SkyHanniBucketedItemTracker<TreeType, ForagingTracker.B
     )
 
     /**
-     * REGEX-TEST:                                 §r§d§lBONUS GIFT
+     * WRAPPED-REGEX-TEST: "                                §r§d§lBONUS GIFT"
      */
     val bonusGiftSeparatorPattern by patternGroup.pattern(
         "bonus-gift.separator",
@@ -128,15 +131,16 @@ object ForagingTracker : SkyHanniBucketedItemTracker<TreeType, ForagingTracker.B
     )
 
     /**
-     * REGEX-TEST:                           §r§7§r§aStretching Sticks §r§8(§r§a20%§r§8)
-     * REGEX-TEST:           §r§7§r§aEnchanted Book (§r§d§lFirst Impression I§r§a) §r§8(§r§a0.4%§r§8)
-     * REGEX-TEST:           §r§7§r§aEnchanted Book (§r§d§lFirst Impression I§r§a) §r§8(§r§a0.4%§r§8)
-     * REGEX-TEST:                            §r§7§r§fSweep Booster §r§8(§r§a1%§r§8)
-     * REGEX-TEST:                     §r§7§r§fForaging Wisdom Booster §r§8(§r§a0.5%§r§8)
-     * REGEX-TEST:                   §r§7§r§aEnchanted Book (§r§d§lMissile I§r§a) §r§8(§r§a0.2%§r§8)
-     * REGEX-TEST:                           §r§7§r§cTree the Fish §r§8(§r§a0.05%§r§8)
-     * REGEX-TEST:                             §r§6Chameleon §r§8(§r§a0.08%§r§8)
-     * REGEX-FAIL:                      §r§7A §r§dPhanflare §r§7fell from the Tree!
+     * WRAPPED-REGEX-TEST: "                          §r§7§r§aStretching Sticks §r§8(§r§a20%§r§8)"
+     * WRAPPED-REGEX-TEST: "          §r§7§r§aEnchanted Book (§r§d§lFirst Impression I§r§a) §r§8(§r§a0.4%§r§8)"
+     * WRAPPED-REGEX-TEST: "          §r§7§r§aEnchanted Book (§r§d§lFirst Impression I§r§a) §r§8(§r§a0.4%§r§8)"
+     * WRAPPED-REGEX-TEST: "                           §r§7§r§fSweep Booster §r§8(§r§a1%§r§8)"
+     * WRAPPED-REGEX-TEST: "                    §r§7§r§fForaging Wisdom Booster §r§8(§r§a0.5%§r§8)"
+     * WRAPPED-REGEX-TEST: "                  §r§7§r§aEnchanted Book (§r§d§lMissile I§r§a) §r§8(§r§a0.2%§r§8)"
+     * WRAPPED-REGEX-TEST: "                          §r§7§r§cTree the Fish §r§8(§r§a0.05%§r§8)"
+     * WRAPPED-REGEX-TEST: "                            §r§6Chameleon §r§8(§r§a0.08%§r§8)"
+     * WRAPPED-REGEX-TEST: "                    §r§7§r§fEnchanted Book (Karma I§r§f) §r§8(§r§a0.02%§r§8)"
+     * WRAPPED-REGEX-FAIL: "                     §r§7A §r§dPhanflare §r§7fell from the Tree!"
      */
     val bonusGiftRewardPattern by patternGroup.pattern(
         "bonus-gift.reward",
@@ -146,10 +150,11 @@ object ForagingTracker : SkyHanniBucketedItemTracker<TreeType, ForagingTracker.B
     /**
      * REGEX-TEST: §aEnchanted Book (§r§d§lMissile I§r§a)
      * REGEX-TEST: §aEnchanted Book (§r§d§lFirst Impression I§r§a)
+     * REGEX-TEST: §fEnchanted Book (Karma I§r§f)
      */
     val enchantedBookPattern by patternGroup.pattern(
         "bonus-gift.enchanted-book",
-        " *(?:§.)+Enchanted Book \\((?:§.)+(?<book>.*) (?<tier>[IVCLX])(?:§.)+\\)"
+        " *(?:§.)+Enchanted Book \\((?:§.)*(?<book>.*) (?<tier>[IVCLX])(?:§.)+\\)"
     )
 
     /**
@@ -373,7 +378,7 @@ object ForagingTracker : SkyHanniBucketedItemTracker<TreeType, ForagingTracker.B
                 }
                 loot.clear()
             }
-            if (config.compactGiftChats) blockedReason = "TREE_GIFT"
+            if (config.displayTreeGifts != FULL_GIFT) blockedReason = "TREE_GIFT"
         }
         if (!openLootLoop) return
 
@@ -438,7 +443,7 @@ object ForagingTracker : SkyHanniBucketedItemTracker<TreeType, ForagingTracker.B
     }
 
     private fun SkyHanniChatEvent.Allow.tryBlock() {
-        if (!config.compactGiftChats || !openLootLoop) return
+        if (config.displayTreeGifts == FULL_GIFT || !openLootLoop) return
         blockedReason = "TREE_GIFT"
     }
 
@@ -482,7 +487,8 @@ object ForagingTracker : SkyHanniBucketedItemTracker<TreeType, ForagingTracker.B
 
     private fun sendTreeGiftStats() {
         val lastTreeType = treeType ?: return
-        if (config.compactGiftChats) {
+        if (config.displayTreeGifts == COMPACT_GIFT) {
+            @Suppress("MaxLineLength")
             val message = "§9$lastTreeType Tree Gift. §7You helped cut $lastPercentString §7and gained §e$lastRewardCount rewards§a!"
             val component = message.asComponent()
             component.hover = lastHover
@@ -510,13 +516,20 @@ object ForagingTracker : SkyHanniBucketedItemTracker<TreeType, ForagingTracker.B
     }
 
     @HandleEvent(onlyOnIslandTypeTag = [IslandTypeTag.FORAGING_CUSTOM_TREES])
-    fun onItemChange(event: ItemInHandChangeEvent) {
+    fun onItemInHandChange(event: ItemInHandChangeEvent) {
         val isAxe = event.newItem.getItemStack().getItemCategoryOrNull() == ItemCategory.AXE
         if (isAxe != hasHeldAxe) {
             if (!isAxe) {
                 lastAxeHeldTime = SimpleTimeMark.now()
             }
             hasHeldAxe = isAxe
+        }
+    }
+
+    @HandleEvent
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+        event.move(since = 149, "foraging.tracker.compactGiftChats", "foraging.tracker.displayTreeGifts") { element ->
+            ConfigUtils.migrateBooleanToEnum(element, TreeGiftDisplayMode.COMPACT_GIFT, TreeGiftDisplayMode.FULL_GIFT)
         }
     }
 }

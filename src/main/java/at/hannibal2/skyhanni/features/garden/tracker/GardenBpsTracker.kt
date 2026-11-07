@@ -5,7 +5,6 @@ import at.hannibal2.skyhanni.config.features.garden.GardenBpsTrackerConfig.Garde
 import at.hannibal2.skyhanni.config.features.misc.tracker.generic.GardenTrackerSettings
 import at.hannibal2.skyhanni.config.features.misc.tracker.individual.TimedPerTrackerConfig
 import at.hannibal2.skyhanni.config.storage.ProfileSpecificStorage
-import at.hannibal2.skyhanni.data.ClickType
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.events.garden.farming.CropClickEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
@@ -25,7 +24,7 @@ import com.google.gson.annotations.Expose
 import kotlin.time.Duration.Companion.seconds
 
 @SkyHanniModule
-object GardenBpsTracker : SkyhanniTimedTracker<GardenBpsTracker.TimedData>("Garden BPS Tracker") {
+object GardenBpsTracker : SkyhanniTimedTracker<GardenBpsTracker.TimedData>("Garden Block Break Tracker") {
     override val config get() = GardenApi.config.gardenBpsTracker
     override val perTrackerConfig: TimedPerTrackerConfig<GardenTrackerSettings> get() = config.perTrackerConfig
     override val storageAccessor: (ProfileSpecificStorage) -> TimedData = { it.garden.gardenBpsTracker }
@@ -41,7 +40,6 @@ object GardenBpsTracker : SkyhanniTimedTracker<GardenBpsTracker.TimedData>("Gard
 
     @HandleEvent
     fun onCropBreak(event: CropClickEvent) {
-        if (event.clickType != ClickType.LEFT_CLICK) return
         blockBreaksLastFiveTicks++
     }
 

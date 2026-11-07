@@ -111,7 +111,7 @@ object DarkMonolithFeatures : SkyHanniItemTracker<DarkMonolithFeatures.Data>("Da
     }
 
     @HandleEvent
-    fun onWorldChange(event: IslandChangeEvent) {
+    fun onIslandChange(event: IslandChangeEvent) {
         data.reset()
         if (event.newIsland == IslandType.DWARVEN_MINES) {
             firstUpdate()
@@ -182,13 +182,13 @@ object DarkMonolithFeatures : SkyHanniItemTracker<DarkMonolithFeatures.Data>("Da
         event.tryBeacon()
     }
 
-    private fun SkyHanniRenderWorldEvent.tryBeacon() = with(darkMonolithConfig.beacon) {
+    private fun SkyHanniRenderWorldEvent.tryBeacon(): Unit = with(darkMonolithConfig.beacon) {
         if (!enabled) return
         val foundVec = data.foundEggVec ?: return
         renderBeaconBeam(foundVec, color.toColor())
     }
 
-    private fun SkyHanniRenderWorldEvent.tryHighlight() = with(darkMonolithConfig.highlight) {
+    private fun SkyHanniRenderWorldEvent.tryHighlight(): Unit = with(darkMonolithConfig.highlight) {
         if (!enabled) return
         val axis = data.renderBox ?: return
         drawFilledBoundingBox(axis, color.toColor())
@@ -197,13 +197,13 @@ object DarkMonolithFeatures : SkyHanniItemTracker<DarkMonolithFeatures.Data>("Da
     @HandleEvent
     fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         val base = "mining.darkMonolith"
-        event.move(130, "$base.tracker", "$base.tracker.enabled")
-        event.move(130, "$base.trackerPosition", "$base.tracker.position")
-        event.move(130, "$base.perTrackerConfig", "$base.perTrackerConfig.perTrackerConfig")
+        event.move(150, "$base.tracker", "$base.tracker.enabled")
+        event.move(150, "$base.trackerPosition", "$base.tracker.position")
+        event.move(150, "$base.perTrackerConfig", "$base.perTrackerConfig.perTrackerConfig")
     }
 
     @HandleEvent
-    fun onDebug(event: DebugDataCollectEvent) {
+    fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Dark Monolith")
         event.addIrrelevant {
             add("knownEggs: ${data.knownEggs.size}")

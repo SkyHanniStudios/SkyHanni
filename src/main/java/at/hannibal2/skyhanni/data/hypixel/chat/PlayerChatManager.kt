@@ -4,6 +4,7 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.IslandTypeTag
 import at.hannibal2.skyhanni.data.hypixel.chat.event.AbstractSourcedChatEvent
 import at.hannibal2.skyhanni.data.hypixel.chat.event.CoopChatEvent
+import at.hannibal2.skyhanni.data.hypixel.chat.event.Direction
 import at.hannibal2.skyhanni.data.hypixel.chat.event.GuildChatEvent
 import at.hannibal2.skyhanni.data.hypixel.chat.event.NpcChatEvent
 import at.hannibal2.skyhanni.data.hypixel.chat.event.PartyChatEvent
@@ -34,10 +35,13 @@ object PlayerChatManager {
      * REGEX-TEST: [58] §7nea89o§7: haiiiii
      * REGEX-TEST: [266] ♫ §b[MVP§d+§b] lrg89§f: a
      * REGEX-TEST: [302] ♫ [MVP+] lrg89: problematic
+     * REGEX-TEST: [233] §6✿ §a[VIP] dawnbound§f: thats not mine too
+     * REGEX-TEST: [323] §b[MVP§2+§b] xatarna§f: can somebody get these beggars out of here
+     * REGEX-FAIL: Finding player...
      */
     private val globalPattern by patternGroup.pattern(
         "global",
-        "^(?:\\[(?<level>\\d+)] )?(?<author>(?:[^ ] )?(?:(?:§.)?\\[[^\\]]+\\] )?[^ ]+?)(?<chatColor>§f|§7|): (?<message>.*)\$",
+        "^(?:\\[(?<level>\\d+)] )?(?<author>(?:(?:§.)*[^ ] )?(?:(?:§.)*\\[[^\\]]+\\] )?[^ ]+?)(?<chatColor>§f|§7|): (?<message>.*)\$",
     )
 
     /**
@@ -80,7 +84,7 @@ object PlayerChatManager {
      */
     private val privateMessagePattern by patternGroup.pattern(
         "privatemessage",
-        "^(?!From stash: )(?<direction>From|To) (?<author>[^:]*): (?<message>.*)",
+        "^(?!From stash: )(?<direction>From|To) (?<rank>\\[[ዞ\\w+]+\\] )?(?<author>[^:]*): (?<message>.*)",
     )
 
     /**
@@ -143,7 +147,7 @@ object PlayerChatManager {
             return
         }
         privateMessagePattern.matchStyledMatcher(chatComponent) {
-            val direction = groupOrThrow("direction").getText()
+            val direction = Direction.fromString(groupOrThrow("direction").getText())
             val author = groupOrThrow("author")
             val message = groupOrThrow("message")
             PrivateMessageChatEvent.Allow(direction, author, message, event.chatComponent).postChat(event)
@@ -196,7 +200,7 @@ object PlayerChatManager {
             return
         }
         privateMessagePattern.matchStyledMatcher(chatComponent) {
-            val direction = groupOrThrow("direction").getText()
+            val direction = Direction.fromString(groupOrThrow("direction").getText())
             val author = groupOrThrow("author")
             val message = groupOrThrow("message")
             PrivateMessageChatEvent.Modify(direction, author, message, event.chatComponent).postChat(event)

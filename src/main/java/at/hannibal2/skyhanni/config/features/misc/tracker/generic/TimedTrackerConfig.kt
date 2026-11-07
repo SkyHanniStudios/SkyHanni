@@ -25,7 +25,7 @@ class TimedTrackerConfig {
     @Expose
     @ConfigOption(
         name = "Sessions to Keep",
-        desc = "If there are more than these many session entries, delete the oldest. Set to 0 to never delete.",
+        desc = "If there are more than this many session entries, delete the oldest. Set to 0 to never delete.",
     )
     @ConfigEditorSlider(minValue = 0f, maxValue = 30f, minStep = 1f)
     var session: Int = 5
@@ -33,7 +33,7 @@ class TimedTrackerConfig {
     @Expose
     @ConfigOption(
         name = "Days to Keep",
-        desc = "If there are more than these many day entries, delete the oldest. Set to 0 to never delete.",
+        desc = "If there are more than this many day entries, delete the oldest. Set to 0 to never delete.",
     )
     @ConfigEditorSlider(minValue = 0f, maxValue = 30f, minStep = 1f)
     var days: Int = 8
@@ -41,7 +41,7 @@ class TimedTrackerConfig {
     @Expose
     @ConfigOption(
         name = "Weeks to Keep",
-        desc = "If there are more than these many week entries, delete the oldest. Set to 0 to never delete.",
+        desc = "If there are more than this many week entries, delete the oldest. Set to 0 to never delete.",
     )
     @ConfigEditorSlider(minValue = 0f, maxValue = 30f, minStep = 1f)
     var weeks: Int = 5
@@ -49,7 +49,7 @@ class TimedTrackerConfig {
     @Expose
     @ConfigOption(
         name = "Months to Keep",
-        desc = "If there are more than these many month entries, delete the oldest. Set to 0 to never delete.",
+        desc = "If there are more than this many month entries, delete the oldest. Set to 0 to never delete.",
     )
     @ConfigEditorSlider(minValue = 0f, maxValue = 30f, minStep = 1f)
     var months: Int = 13
@@ -57,7 +57,7 @@ class TimedTrackerConfig {
     @Expose
     @ConfigOption(
         name = "Years to Keep",
-        desc = "If there are more than these many year entries, delete the oldest. Set to 0 to never delete.",
+        desc = "If there are more than this many year entries, delete the oldest. Set to 0 to never delete.",
     )
     @ConfigEditorSlider(minValue = 0f, maxValue = 30f, minStep = 1f)
     var years: Int = 0

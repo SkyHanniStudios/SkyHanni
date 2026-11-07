@@ -18,13 +18,15 @@ import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ConditionalUtils.onToggle
 import at.hannibal2.skyhanni.utils.DelayedRun
 import at.hannibal2.skyhanni.utils.InventoryUtils
-import at.hannibal2.skyhanni.utils.ItemUtils.getSingleLineLore
+import at.hannibal2.skyhanni.utils.ItemUtils.getLore
+import at.hannibal2.skyhanni.utils.ItemUtils.toSingleLineLore
 import at.hannibal2.skyhanni.utils.LorenzRarity
 import at.hannibal2.skyhanni.utils.NumberUtil.formatLong
 import at.hannibal2.skyhanni.utils.RegexUtils.groupOrNull
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.RenderDisplayConfig
+import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.StringUtils
 import at.hannibal2.skyhanni.utils.StringUtils.removeResets
@@ -42,7 +44,6 @@ import at.hannibal2.skyhanni.utils.tracker.data.TrackerData
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.annotations.Expose
-import net.minecraft.world.item.ItemStack
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
@@ -217,11 +218,11 @@ object CFStrayTracker : SkyHanniTracker<CFStrayTracker.Data>("Stray Tracker") {
         return if (goldenList.isEmpty()) "" else ("\n" + goldenList.joinToString("\n"))
     }
 
-    fun handleStrayClicked(slotNumber: Int, itemStack: ItemStack): Boolean {
+    fun handleStrayClicked(slotNumber: Int, itemStack: SafeItemStack): Boolean {
         if (!isEnabled() || claimedStraysSlots.contains(slotNumber)) return false
 
         claimedStraysSlots.add(slotNumber)
-        val loreLine = itemStack.getSingleLineLore()
+        val loreLine = itemStack.getLore().toSingleLineLore()
 
         // "Base" strays - Common -> Epic, raw choc only reward.
         strayLorePattern.matchMatcher(loreLine) {
@@ -336,9 +337,9 @@ object CFStrayTracker : SkyHanniTracker<CFStrayTracker.Data>("Stray Tracker") {
             migrateJsonStringKeyToRarityKey(element, LorenzRarity::class.java)
         }
         val base = "inventory.chocolateFactory"
-        event.move(130, "$base.strayRabbitTracker", "$base.strayTracker.enabled")
-        event.move(130, "$base.strayTrackerConfig", "$base.strayTracker.perTrackerConfig")
-        event.move(130, "$base.strayRabbitTrackerPosition", "$base.strayTracker.position")
+        event.move(150, "$base.strayRabbitTracker", "$base.strayTracker.enabled")
+        event.move(150, "$base.strayTrackerConfig", "$base.strayTracker.perTrackerConfig")
+        event.move(150, "$base.strayRabbitTrackerPosition", "$base.strayTracker.position")
     }
 
     @HandleEvent(ConfigLoadEvent::class)

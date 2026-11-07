@@ -37,7 +37,7 @@ import at.hannibal2.skyhanni.utils.tracker.data.ItemTrackerData
 import com.google.gson.annotations.Expose
 
 @SkyHanniModule
-object GiftProfitTracker : SkyHanniItemTracker<GiftProfitTracker.Data>("Gift Profit Tracker") {
+object GiftProfitTracker : SkyHanniItemTracker<GiftProfitTracker.Data>("Gift Tracker") {
     override val config get() = SkyHanniMod.feature.event.gifting.giftProfitTracker
     override val storageAccessor: (ProfileSpecificStorage) -> Data = { it.giftProfitTracker }
     override val renderConfig = RenderDisplayConfig(

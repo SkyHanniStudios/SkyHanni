@@ -19,6 +19,7 @@ import at.hannibal2.skyhanni.utils.NeuItems.getItemStackOrNull
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 import at.hannibal2.skyhanni.utils.NumberUtil.roundTo
 import at.hannibal2.skyhanni.utils.RenderDisplayConfig
+import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.collection.RenderableCollectionUtils.addSearchString
@@ -29,7 +30,6 @@ import at.hannibal2.skyhanni.utils.tracker.SessionUptime
 import at.hannibal2.skyhanni.utils.tracker.SkyHanniItemTracker
 import at.hannibal2.skyhanni.utils.tracker.data.ItemTrackerData
 import com.google.gson.annotations.Expose
-import net.minecraft.world.item.ItemStack
 import kotlin.time.Duration.Companion.seconds
 
 @SkyHanniModule
@@ -39,14 +39,14 @@ object HuntingProfitTracker : SkyHanniItemTracker<HuntingProfitTracker.Data>("Hu
     override val renderConfig = RenderDisplayConfig(
         outsideInventory = true,
         inOwnInventory = true,
-        condition = { isEnabled() && config.enabled && (isRecentPickup || heldItemEnabled()) },
+        condition = { isEnabled() && config.enabled && (config.alwaysShow || isRecentPickup || heldItemEnabled()) },
     )
 
     private var lastHuntTime = SimpleTimeMark.farPast()
 
     data class Data(
         @Expose var totalMobsCaught: Long = 0,
-        @Expose var totalShardsGained: Long = 0
+        @Expose var totalShardsGained: Long = 0,
     ) : ItemTrackerData<SessionUptime.Normal>() {
 
         override fun getDescription(item: TrackedItem): List<String> {
@@ -115,7 +115,7 @@ object HuntingProfitTracker : SkyHanniItemTracker<HuntingProfitTracker.Data>("Hu
     }
 
     @HandleEvent
-    fun onItemChange(event: ItemInHandChangeEvent) {
+    fun onItemInHandChange(event: ItemInHandChangeEvent) {
         val isTool = isHuntingTool(event.newItem.getItemStackOrNull())
         if (isTool != hasHeldTool) {
             hasHeldTool = isTool
@@ -132,7 +132,7 @@ object HuntingProfitTracker : SkyHanniItemTracker<HuntingProfitTracker.Data>("Hu
     private var lastToolHeldTime: SimpleTimeMark = SimpleTimeMark.farPast()
     private var hasHeldTool: Boolean = false
 
-    private fun isHuntingTool(itemStack: ItemStack?): Boolean {
+    private fun isHuntingTool(itemStack: SafeItemStack?): Boolean {
         val itemCategoryOrNull = itemStack?.getItemCategoryOrNull()
 
         // Check if the item is one of the general hunting tool categories

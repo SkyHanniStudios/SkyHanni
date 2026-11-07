@@ -87,9 +87,10 @@ abstract class SkyHanniTracker<Data : TrackerData<*>>(private val staticName: St
     // Separate detector used only to drive isInventoryOpen(); RenderDisplayHelper manages
     // its own inventory detection internally for the render condition.
     private val inventoryDetector = InventoryDetector(
-        { update() },
-        { update() },
-    ) { true }
+        checkInventoryName = { true },
+        onOpenInventory = { update() },
+        onCloseInventory = { update() },
+    )
 
     init {
         RenderDisplayHelper(renderConfig) {
@@ -167,14 +168,6 @@ abstract class SkyHanniTracker<Data : TrackerData<*>>(private val staticName: St
         update()
     }
 
-    fun modifyEachMode(modifyFunction: (Data) -> Unit) {
-        val sharedTracker = getSharedTracker() ?: return
-        DisplayMode.entries.forEach { mode ->
-            sharedTracker.tryModify(mode, modifyFunction)
-        }
-        update()
-    }
-
     fun firstUpdate() = if (display.isEmpty()) update() else Unit
 
     private fun renderDisplay(position: at.hannibal2.skyhanni.config.core.config.Position) {
@@ -206,7 +199,10 @@ abstract class SkyHanniTracker<Data : TrackerData<*>>(private val staticName: St
         if (showSessionUptime()) add(buildSessionUptime())
         if (isInventoryOpen()) {
             buildDisplayModeView()
-            if (getDisplayMode() == DisplayMode.SESSION) add(buildSessionResetButton())
+            if (getDisplayMode() == DisplayMode.SESSION) {
+                add(buildSessionResetButton())
+                add(buildSessionPauseButton())
+            }
         }
     }
 
@@ -239,7 +235,7 @@ abstract class SkyHanniTracker<Data : TrackerData<*>>(private val staticName: St
     open fun pauseSessionUptime() {
         if (!this.trackUptime) return
         val sharedTracker = getSharedTracker() ?: return
-        sharedTracker.modify { it.getActiveStopwatch()?.pause(true) }
+        sharedTracker.modify { it.getActiveStopwatch()?.pause(false) }
         if (!customUptimeControl) unpausedTrackers.remove(this)
         update()
     }
@@ -313,6 +309,13 @@ abstract class SkyHanniTracker<Data : TrackerData<*>>(private val staticName: St
                 sessionResetTime = SimpleTimeMark.now()
             }
         },
+    )
+
+    protected fun buildSessionPauseButton() = Renderable.clickable(
+        if (isPaused()) "§aResume session!" else "§cPause session!",
+        tips = if (isPaused()) listOf("§aThis will resume your", "§acurrent session of", "§a$name")
+        else listOf("§cThis will pause your", "§ccurrent session of", "§c$name"),
+        onLeftClick = { if (isPaused()) startSessionUptime() else pauseSessionUptime() },
     )
 
     private fun reset(displayMode: DisplayMode, message: String) = getSharedTracker()?.let {

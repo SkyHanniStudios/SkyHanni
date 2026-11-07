@@ -38,7 +38,7 @@ class GhostProfitTrackerConfig : TopLevelTrackerConfig {
         desc = "§7This feature will currently not work properly when having max Ghost Bestiary."
     )
     @ConfigEditorInfoText(infoTitle = "Warning")
-    var useless: String? = null
+    val useless: String? = null
 
     @Expose
     @ConfigOption(name = "Tracker Settings", desc = "")

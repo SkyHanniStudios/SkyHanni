@@ -7,6 +7,7 @@ import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
 import at.hannibal2.skyhanni.config.storage.ProfileSpecificStorage
 import at.hannibal2.skyhanni.data.ItemAddManager
 import at.hannibal2.skyhanni.data.jsonobjects.repo.FishingProfitItemsJson
+import at.hannibal2.skyhanni.data.model.SkyblockStat
 import at.hannibal2.skyhanni.events.ItemAddEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
@@ -58,18 +59,18 @@ object FishingProfitTracker : SkyHanniItemTracker<FishingProfitTracker.Data>("Fi
     )
 
     /**
-     * REGEX-TEST: §5⛃ §r§5§lGOOD CATCH! §r§fYou caught §r§636,064 Coins§r§f!
-     * REGEX-TEST: §6⛃ §r§6§lGREAT CATCH! §r§fYou caught §r§6133,431 Coins§r§f!
+     * REGEX-TEST:  GOOD CATCH! You caught 36,064 Coins!
+     * REGEX-TEST:  GREAT CATCH! You caught 133,431 Coins!
      */
     private val coinsChatPattern by RepoPattern.pattern(
-        "fishing.tracker.chat.coins",
-        "§(?<colorCode>.*)⛃ §r(?<catch>.*) CATCH! §r§fYou caught §r§6(?<coins>[\\d,]+) Coins§r§f!",
+        "fishing.tracker.chat.coins.colorless",
+        "${SkyblockStat.TREASURE_CHANCE.hypixelIcon} (?<catch>.*) CATCH! You caught (?<coins>[\\d,]+) Coins!",
     )
 
     private var lastCatchTime = SimpleTimeMark.farPast()
 
     data class Data(
-        @Expose var totalCatchAmount: Long = 0L
+        @Expose var totalCatchAmount: Long = 0L,
     ) : ItemTrackerData<SessionUptime.Normal>() {
         override fun getDescription(timesGained: Long): List<String> {
             val percentage = timesGained.toDouble() / totalCatchAmount
@@ -206,9 +207,9 @@ object FishingProfitTracker : SkyHanniItemTracker<FishingProfitTracker.Data>("Fi
 
     @HandleEvent
     fun onChat(event: SkyHanniChatEvent.Allow) {
-        coinsChatPattern.matchMatcher(event.message) {
+        coinsChatPattern.matchMatcher(event.cleanMessage) {
             tryAddItem(NeuInternalName.SKYBLOCK_COIN, group("coins").formatInt(), command = false)
-            addCatch()
+            // Don't need to addCatch() here since FishingCatchEvent will be posted and increment it there
         }
     }
 

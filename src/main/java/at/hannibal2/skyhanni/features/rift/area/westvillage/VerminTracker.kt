@@ -82,7 +82,7 @@ object VerminTracker : SkyHanniTracker<VerminTracker.Data>("Vermin Tracker") {
     private val TURBOMAX_VACUUM = "TURBOMAX_VACUUM".toInternalName()
 
     data class Data(
-        @Expose var count: MutableMap<VerminType, Int> = mutableMapOf()
+        @Expose var count: MutableMap<VerminType, Int> = mutableMapOf(),
     ) : TrackerData<SessionUptime.Normal>()
 
     enum class VerminType(val order: Int, val vermin: String, val pattern: Pattern) {

@@ -8,7 +8,6 @@ import at.hannibal2.skyhanni.config.storage.ProfileSpecificStorage
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.jsonobjects.repo.ExcludedSeaCreatureAreasJson
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
-import at.hannibal2.skyhanni.events.fishing.FishingBobberCastEvent
 import at.hannibal2.skyhanni.events.fishing.SeaCreatureFishEvent
 import at.hannibal2.skyhanni.features.fishing.FishingApi
 import at.hannibal2.skyhanni.features.fishing.SeaCreatureManager
@@ -30,10 +29,11 @@ import at.hannibal2.skyhanni.utils.tracker.SessionUptime
 import at.hannibal2.skyhanni.utils.tracker.SkyHanniTracker
 import at.hannibal2.skyhanni.utils.tracker.data.TrackerData
 import com.google.gson.annotations.Expose
+import kotlin.concurrent.atomics.AtomicBoolean
 
 @SkyHanniModule
 object SeaCreatureTracker : SkyHanniTracker<SeaCreatureTracker.Data>("Sea Creature Tracker") {
-    private var needMigration = true
+    private val isMigrating = AtomicBoolean(false)
 
     override val config get() = SkyHanniMod.feature.fishing.seaCreatureTracker
     override val storageAccessor: (ProfileSpecificStorage) -> Data = { it.fishing.seaCreatureTracker }
@@ -72,12 +72,10 @@ object SeaCreatureTracker : SkyHanniTracker<SeaCreatureTracker.Data>("Sea Creatu
     }
 
     @HandleEvent
-    fun onProfileJoin() {
-        needMigration = true
-    }
+    fun onProfileJoin() = tryToMigrate()
 
     override fun drawDisplayF(data: Data): List<Searchable> = buildList {
-        tryToMigrate(data.amount)
+        if (isMigrating.load()) return@buildList
 
         addSearchString("§7Sea Creature Tracker:")
 
@@ -106,26 +104,31 @@ object SeaCreatureTracker : SkyHanniTracker<SeaCreatureTracker.Data>("Sea Creatu
         addSearchString(" §7- §e${total.addSeparators()} §7Total Sea Creatures")
     }
 
-    // Hypixel renames sea creatures from time to time. This migration process fixes the invalid config entries.
-    private fun tryToMigrate(data: MutableMap<String, Int>) {
-        if (!needMigration) return
-        needMigration = false
-
-        val map = mutableMapOf(
-            "Phlhlegblast" to "Plhlegblast",
-            "Sea Emperor" to "The Sea Emperor",
-            "The Sea Emperor" to "The Loch Emperor",
-        )
-
-        for ((oldName, newName) in map) {
-            // only migrate once the repo contains the new name
-            if (SeaCreatureManager.allFishingMobs.containsKey(newName)) {
-                data[oldName]?.let {
-                    ChatUtils.debug("Sea Creature Tracker migrated $it $oldName to $newName")
-                    data[newName] = it + (data[newName] ?: 0)
-                    data.remove(oldName)
+    /**
+     * Hypixel renames sea creatures from time to time. This migration process fixes the invalid
+     * config entries.
+     */
+    private fun tryToMigrate() {
+        if (!isMigrating.compareAndSet(expectedValue = false, newValue = true)) {
+            ChatUtils.debug("Sea Creature Tracker: Already migrating")
+            return
+        }
+        try {
+            ChatUtils.debug("Sea Creature Tracker: Attempting migration")
+            modify { data ->
+                SeaCreatureManager.allFishingMobs.forEach { (newName, seaCreature) ->
+                    seaCreature.oldNames.forEach { oldName ->
+                        data.amount[oldName]?.let { amount ->
+                            data.amount.remove(oldName)
+                            data.amount[newName] = (data.amount[newName] ?: 0) + amount
+                            ChatUtils.debug("Sea Creature Tracker: Migrated $amount $oldName to $newName")
+                        }
+                    }
                 }
             }
+            ChatUtils.debug("Sea Creature Tracker: Finished migration")
+        } finally {
+            isMigrating.store(false)
         }
     }
 
@@ -172,12 +175,11 @@ object SeaCreatureTracker : SkyHanniTracker<SeaCreatureTracker.Data>("Sea Creatu
         ConditionalUtils.onToggle(config.showPercentage) {
             update()
         }
+        tryToMigrate()
     }
 
     @HandleEvent
-    fun onBobberThrow(event: FishingBobberCastEvent) {
-        firstUpdate()
-    }
+    fun onBobberCast() = firstUpdate()
 
     private fun shouldShowDisplay(): Boolean {
         if (!config.enabled) return false
@@ -196,13 +198,11 @@ object SeaCreatureTracker : SkyHanniTracker<SeaCreatureTracker.Data>("Sea Creatu
         val data = event.getConstant<ExcludedSeaCreatureAreasJson>("fishing/ExcludedSeaCreatureAreas")
         excludedIslands = data.excludedIslands?.toSet().orEmpty()
         excludedGraphAreas = data.excludedGraphAreas?.toSet().orEmpty()
+        tryToMigrate()
     }
 
-    private fun inDisabledArea() = when {
-        SkyBlockUtils.currentIsland in excludedIslands -> true
-        SkyBlockUtils.graphArea in excludedGraphAreas -> true
-        else -> false
-    }
+    private fun inDisabledArea() = SkyBlockUtils.currentIsland in excludedIslands ||
+        SkyBlockUtils.graphArea in excludedGraphAreas
 
     @HandleEvent
     fun onCommandRegistration(event: CommandRegistrationEvent) {

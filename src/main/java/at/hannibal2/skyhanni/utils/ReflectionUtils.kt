@@ -124,9 +124,10 @@ object ReflectionUtils {
         samMethodType: MethodType,
         instantiatedMethodType: MethodType,
     ): T = runCatching {
-        val handle = MethodHandles.lookup().unreflect(method)
+        val lookup = MethodHandles.privateLookupIn(method.declaringClass, MethodHandles.lookup())
+        val handle = lookup.unreflect(method)
         LambdaMetafactory.metafactory(
-            MethodHandles.lookup(),
+            lookup,
             samName,
             MethodType.methodType(functionalClass, instance::class.java),
             samMethodType,

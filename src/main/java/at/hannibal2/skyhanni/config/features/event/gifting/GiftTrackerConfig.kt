@@ -23,7 +23,7 @@ class GiftTrackerConfig : TopLevelTrackerConfig {
             "§cUse §e/shaddusedgifts §cto manually add gifts used."
     )
     @ConfigEditorInfoText
-    var note: String = ""
+    val note: String = ""
 
     @Expose
     @ConfigOption(name = "Holding Gift", desc = "Only show the tracker while holding a gift.")

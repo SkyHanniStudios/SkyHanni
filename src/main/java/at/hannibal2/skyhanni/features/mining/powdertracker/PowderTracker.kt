@@ -46,19 +46,20 @@ object PowderTracker : SkyHanniTracker<PowderTracker.Data>("Powder Tracker") {
     private val patternGroup = RepoPattern.group("mining.powder.tracker")
 
     /**
-     * WRAPPED-REGEX-TEST: "  §r§6§lCHEST LOCKPICKED "
+     * WRAPPED-REGEX-TEST: "  CHEST LOCKPICKED "
+     * WRAPPED-REGEX-TEST: "  CHEST LOCKPICKED"
      */
     private val pickedPattern by patternGroup.pattern(
-        "picked",
-        " {2}§r§6§lCHEST LOCKPICKED ",
+        "picked.colorless",
+        " *CHEST LOCKPICKED *",
     )
 
     /**
-     * REGEX-TEST: §b§lCOMPACT! §r§fYou found an §r§aEnchanted Hard Stone§r§f!
+     * REGEX-TEST: COMPACT! You found an Enchanted Hard Stone!
      */
     private val compactedPattern by patternGroup.pattern(
-        "compacted",
-        "§b§lCOMPACT! §r§fYou found an §r§aEnchanted Hard Stone§r§f!",
+        "compacted.colorless",
+        "COMPACT! You found an Enchanted Hard Stone!",
     )
 
     private var lastChestPicked = SimpleTimeMark.farPast()
@@ -118,7 +119,7 @@ object PowderTracker : SkyHanniTracker<PowderTracker.Data>("Powder Tracker") {
     @HandleEvent
     fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!isEnabled()) return
-        val msg = event.message
+        val msg = event.cleanMessage
 
         pickedPattern.matchMatcher(msg) {
             modify {

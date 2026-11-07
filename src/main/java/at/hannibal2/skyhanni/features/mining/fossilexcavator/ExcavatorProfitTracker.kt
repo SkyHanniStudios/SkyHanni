@@ -21,6 +21,7 @@ import at.hannibal2.skyhanni.utils.RenderDisplayConfig
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.StringUtils
 import at.hannibal2.skyhanni.utils.collection.RenderableCollectionUtils.addSearchString
+import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.Searchable
 import at.hannibal2.skyhanni.utils.renderables.toSearchable
@@ -28,7 +29,6 @@ import at.hannibal2.skyhanni.utils.tracker.SessionUptime
 import at.hannibal2.skyhanni.utils.tracker.SkyHanniItemTracker
 import at.hannibal2.skyhanni.utils.tracker.data.ItemTrackerData
 import com.google.gson.annotations.Expose
-import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.screens.inventory.ContainerScreen
 
 @SkyHanniModule
@@ -195,7 +195,7 @@ object ExcavatorProfitTracker : SkyHanniItemTracker<ExcavatorProfitTracker.Data>
     private fun shouldShowDisplay(): Boolean {
         if (!config.enabled) return false
         if (!isEnabled()) return false
-        if (Minecraft.getInstance().screen !is ContainerScreen) return true
+        if (MinecraftCompat.screen !is ContainerScreen) return true
         // Only show in excavation menu
         return FossilExcavatorApi.inExcavatorMenu
     }

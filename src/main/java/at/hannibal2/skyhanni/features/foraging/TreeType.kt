@@ -6,6 +6,7 @@ import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 enum class TreeType(private val displayName: String) {
     FIG("Fig"),
     MANGROVE("Mangrove"),
+    HELIX("Helix"),
     ;
 
     override fun toString() = displayName

@@ -60,8 +60,8 @@ class GardenBpsTrackerConfig : TopLevelTrackerConfig {
         @HandleEvent
         fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
             val base = "garden.gardenBpsTracker"
-            event.move(130, "$base.showDisplay", "$base.enabled")
-            event.move(130, "$base.pos", "$base.position")
+            event.move(150, "$base.showDisplay", "$base.enabled")
+            event.move(150, "$base.pos", "$base.position")
         }
     }
 }
