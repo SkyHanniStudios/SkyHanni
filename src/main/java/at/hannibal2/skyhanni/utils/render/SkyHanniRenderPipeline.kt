@@ -20,7 +20,6 @@ import com.mojang.renderpearl.api.pipeline.PrimitiveTopology
 import net.minecraft.client.renderer.BindGroupLayouts
 //?}
 
-
 //? if < 26.2
 //private typealias PrimitiveTopology = VertexFormat.Mode
 
@@ -35,6 +34,7 @@ enum class SkyHanniRenderPipeline(
     sampler: String? = null,
     uniforms: Map<String, UniformType> = emptyMap(),
     depthWrite: Boolean = true,
+    @Suppress("unused") // Iris compatibility is optional
     val irisProgram: IrisProgram = BASIC,
 ) {
     LINES(
