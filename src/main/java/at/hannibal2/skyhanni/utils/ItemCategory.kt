@@ -8,85 +8,101 @@ import at.hannibal2.skyhanni.utils.ItemUtils.getItemCategoryOrNull
  * Deprecated entries should not be removed, they are kept to avoid errors with unupdated items.
  */
 enum class ItemCategory {
+    // Weapons
     SWORD,
     LONGSWORD,
     BOW,
     SHORT_BOW,
     WAND,
     FISHING_ROD,
-
     @Legacy("No longer exists")
     FISHING_WEAPON,
-    ROD_PART,
     AXE,
     GAUNTLET,
-
-    @Legacy("No longer exists", ReplaceWith("ItemCategory.FARMING_TOOL"))
-    HOE,
-    PICKAXE,
-    SHOVEL,
-    DRILL,
-    SHEARS,
     DEPLOYABLE,
     VACUUM,
-    ABIPHONE,
+    LASSO,
+
+    // Tools
+    ROD_PART,
+    PICKAXE,
+    DRILL,
+    SHOVEL,
+    SHEARS,
+    @Legacy("No longer exists", ReplaceWith("ItemCategory.FARMING_TOOL"))
+    HOE,
+    FARMING_TOOL,
+    CHISEL,
+    WATERING_CAN,
+    FISHING_NET,
+    TRAP,
+
+    // Armor
+    HELMET,
+    CHESTPLATE,
+    LEGGINGS,
+    BOOTS,
+
+    // Equipment
     BELT,
     NECKLACE,
     CLOAK,
     GLOVES,
     BRACELET,
-    HELMET,
-    CHESTPLATE,
-    LEGGINGS,
-    BOOTS,
-    HATCESSORY,
+
+    // Accessories
     ACCESSORY,
     CARNIVAL_MASK,
     POWER_STONE,
-    TRAVEL_SCROLL,
+    HATCESSORY,
     REFORGE_STONE,
+    DYE,
+
+    // Consumables
     BAIT,
-    PET,
-    TROPHY_FISH,
     ARROW,
     ARROW_POISON,
-
-    // TODO This was previously used as a fake category for uncategorized dungeon items.
-    //  Remove it after ensuring it doesn't break anything.
-    @Deprecated("Legacy fake category", ReplaceWith("ItemCategory.NONE"))
-    ITEM,
     PET_ITEM,
     ENCHANTED_BOOK,
     POTION,
-    RIFT_TIMECHARM,
-    COSMETIC,
-    MEMENTO,
-    PORTAL,
-    SACK,
-    CHISEL,
-    DYE,
-    ORE,
-    BLOCK,
-    DWARVEN_METAL,
-    GEMSTONE,
-    LASSO,
-    FISHING_NET,
-    SALT,
-    TRAP,
+    TRAVEL_SCROLL,
+    ABILITY_SCROLL,
     BOOSTER,
+    CAPSULE,
+    RIFT_TIMECHARM,
+    SALT,
     WATER_SHARD,
     FOREST_SHARD,
     COMBAT_SHARD,
     GARDEN_CHIP,
     MUTATION,
-    WATERING_CAN,
-    FARMING_TOOL,
-    TROPHY,
-    CAPSULE,
-    RABBIT,
-    ABILITY_SCROLL,
 
+    // Creatures
+    PET,
+    RABBIT,
     SEA_CREATURE,
+    TROPHY_FISH,
+    TROPHY,
+
+    // Resources
+    ORE,
+    BLOCK,
+    DWARVEN_METAL,
+    GEMSTONE,
+
+    // Collectibles
+    MEMENTO,
+    COSMETIC,
+    PORTAL,
+
+    // Other
+    SACK,
+
+    // Legacy / Uncategorized
+    // TODO This was previously used as a fake category for uncategorized dungeon items.
+    //  Remove it after ensuring it doesn't break anything.
+    @Deprecated("Legacy fake category", ReplaceWith("ItemCategory.NONE"))
+    ITEM,
 
     NONE,
     ;
