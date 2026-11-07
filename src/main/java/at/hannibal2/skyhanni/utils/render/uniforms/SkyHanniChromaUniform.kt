@@ -10,8 +10,8 @@ import java.nio.ByteBuffer
 import net.minecraft.client.renderer.DynamicGpuDataStorage
 import net.minecraft.client.renderer.DynamicGpuDataStorageMapped
 //?} else {
-/*import net.minecraft.client.renderer.DynamicUniformStorage
-*///?}
+//import net.minecraft.client.renderer.DynamicUniformStorage
+//?}
 
 class SkyHanniChromaUniform : AutoCloseable {
     private val uniformSize = Std140SizeCalculator().putFloat().putFloat().putFloat().putInt().get()

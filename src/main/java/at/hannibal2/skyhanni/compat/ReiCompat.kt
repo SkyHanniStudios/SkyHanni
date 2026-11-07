@@ -1,9 +1,8 @@
-@file:Suppress("NoEmptyFile")
-
 package at.hannibal2.skyhanni.compat
 
+import at.hannibal2.skyhanni.utils.SafeItemStack
+
 //? if rei_compat {
-/*import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.compat.MouseCompat
 import at.hannibal2.skyhanni.utils.system.PlatformUtils
@@ -17,12 +16,12 @@ import me.shedaniel.rei.api.common.plugins.PluginManager
 import net.minecraft.client.gui.components.events.ContainerEventHandler
 import net.minecraft.client.gui.components.events.GuiEventListener
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+//?}
 
 object ReiCompat {
-    private val isReiLoaded by lazy { PlatformUtils.isModInstalled("roughlyenoughitems") }
-
     @JvmStatic
     fun searchHasFocus(): Boolean {
+        //? if rei_compat {
         if (!isReiReady()) return false
         if (MinecraftCompat.screen == null) return false
         return try {
@@ -30,9 +29,12 @@ object ReiCompat {
         } catch (e: Throwable) {
             false
         }
+        //?} else
+        //return false
     }
 
     fun getHoveredStackFromRei(): SafeItemStack? {
+        //? if rei_compat {
         if (!isReiReady()) return null
         return try {
             getItemStackFromItemList() ?: (MinecraftCompat.screen as? AbstractContainerScreen<*>)
@@ -40,7 +42,12 @@ object ReiCompat {
         } catch (e: Throwable) {
             null
         }
+        //?} else
+        //return null
     }
+
+    //? if rei_compat {
+    private val isReiLoaded by lazy { PlatformUtils.isModInstalled("roughlyenoughitems") }
 
     private fun isReiReady(): Boolean {
         if (!isReiLoaded) return false
@@ -69,5 +76,5 @@ object ReiCompat {
     }
 
     private fun currentMousePoint(): Point = Point(MouseCompat.getX(), MouseCompat.getY())
+    //?}
 }
-*///?}

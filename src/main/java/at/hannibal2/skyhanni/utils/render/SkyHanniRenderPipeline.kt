@@ -1,6 +1,7 @@
 package at.hannibal2.skyhanni.utils.render
 
 import at.hannibal2.skyhanni.SkyHanniMod
+import at.hannibal2.skyhanni.compat.IrisCompat.IrisProgram
 import at.hannibal2.skyhanni.utils.render.SkyHanniRenderPipelineUtils.MATRICES_PROJECTION_SNIPPET
 import at.hannibal2.skyhanni.utils.render.SkyHanniRenderPipelineUtils.PosColorNormal
 import at.hannibal2.skyhanni.utils.render.SkyHanniRenderPipelineUtils.commonChromaUniforms
@@ -19,10 +20,6 @@ import com.mojang.renderpearl.api.pipeline.PrimitiveTopology
 import net.minecraft.client.renderer.BindGroupLayouts
 //?}
 
-//? if iris_compat {
-/*import at.hannibal2.skyhanni.compat.IrisCompat
-import at.hannibal2.skyhanni.compat.IrisCompat.IrisProgram
-*///?}
 
 //? if < 26.2
 //private typealias PrimitiveTopology = VertexFormat.Mode
@@ -38,23 +35,20 @@ enum class SkyHanniRenderPipeline(
     sampler: String? = null,
     uniforms: Map<String, UniformType> = emptyMap(),
     depthWrite: Boolean = true,
-    //? if iris_compat
-    //val irisProgram: IrisProgram = BASIC,
+    val irisProgram: IrisProgram = BASIC,
 ) {
     LINES(
         snippet = RenderPipelines.LINES_SNIPPET,
         vFormat = PosColorNormal,
         vDrawMode = PrimitiveTopology.LINES,
-        //? if iris_compat
-        //irisProgram = IrisProgram.LINES,
+        irisProgram = IrisProgram.LINES,
     ),
     LINES_XRAY(
         snippet = RenderPipelines.LINES_SNIPPET,
         vFormat = PosColorNormal,
         vDrawMode = PrimitiveTopology.LINES,
         depthWrite = false,
-        //? if iris_compat
-        //irisProgram = IrisProgram.LINES,
+        irisProgram = IrisProgram.LINES,
     ),
     FILLED(
         snippet = RenderPipelines.DEBUG_FILLED_SNIPPET,
@@ -104,8 +98,7 @@ enum class SkyHanniRenderPipeline(
         vertexShaderPath = "textured_chroma",
         sampler = "Sampler0",
         uniforms = commonChromaUniforms,
-        //? if iris_compat
-        //irisProgram = IrisProgram.TEXTURED,
+        irisProgram = IrisProgram.TEXTURED,
     ),
     ROUNDED_RECT_DEFERRED(
         snippet = MATRICES_PROJECTION_SNIPPET,
@@ -135,8 +128,7 @@ enum class SkyHanniRenderPipeline(
         vertexShaderPath = "rounded_texture_deferred",
         sampler = "Sampler0",
         depthWrite = false,
-        //? if iris_compat
-        //irisProgram = IrisProgram.TEXTURED,
+        irisProgram = IrisProgram.TEXTURED,
     ),
     RADIAL_GRADIENT_CIRCLE_DEFERRED(
         snippet = MATRICES_PROJECTION_SNIPPET,
@@ -152,8 +144,7 @@ enum class SkyHanniRenderPipeline(
         vertexShaderPath = "gui_textured_translucent",
         sampler = "Sampler0",
         depthWrite = false,
-        //? if iris_compat
-        //irisProgram = IrisProgram.TEXTURED,
+        irisProgram = IrisProgram.TEXTURED,
     ),
     ;
 

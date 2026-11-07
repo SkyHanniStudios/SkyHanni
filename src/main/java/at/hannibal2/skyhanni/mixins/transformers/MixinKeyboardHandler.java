@@ -1,5 +1,6 @@
 package at.hannibal2.skyhanni.mixins.transformers;
 
+import at.hannibal2.skyhanni.compat.ReiCompat;
 import at.hannibal2.skyhanni.events.minecraft.CharEvent;
 import at.hannibal2.skyhanni.events.minecraft.KeyDownEvent;
 import at.hannibal2.skyhanni.events.minecraft.KeyPressEvent;
@@ -15,10 +16,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-//? if rei_compat {
-/*import at.hannibal2.skyhanni.compat.ReiCompat;
-*///?}
-
 @Mixin(KeyboardHandler.class)
 public abstract class MixinKeyboardHandler {
     @Inject(method = "keyPress", at = @At("HEAD"))
@@ -29,8 +26,7 @@ public abstract class MixinKeyboardHandler {
         //System.out.println("Key: " + key + " Scancode: " + scancode + " Action: " + action + " Modifiers: " + modifiers);
 
         // Don't send key events if REI search bar is selected
-        //? if rei_compat
-        //if (ReiCompat.searchHasFocus()) return;
+        if (ReiCompat.searchHasFocus()) return;
 
         /*
          * action = 0: Key released

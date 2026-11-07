@@ -125,8 +125,8 @@ stonecutter active "26.3"
 stonecutter parameters {
     constants {
         this["iris_compat"] = eval(current.version, "< 26.3")
-        this["rei_compat"] = eval(current.version, "< 26.3")
-        this["render_chest"] = eval(current.version, "= 26.2")
+        this["rei_compat"] = eval(current.version, "<= 26.3")
+        this["render_chest"] = eval(current.version, "<= 26.3")
     }
 
     replacements {

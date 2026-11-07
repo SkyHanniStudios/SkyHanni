@@ -13,10 +13,7 @@ import net.minecraft.world.inventory.ContainerInput
 import net.minecraft.world.inventory.Slot
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
-
-//? if rei_compat {
-/*import at.hannibal2.skyhanni.compat.ReiCompat
-*///?}
+import at.hannibal2.skyhanni.compat.ReiCompat
 
 fun LocalPlayer.getItemOnCursor(): SafeItemStack? {
     val stack = this.containerMenu.carried
@@ -37,10 +34,7 @@ object InventoryCompat {
         val stack = screen.hoveredSlot?.item
         if (stack != null) return stack
 
-        //? if rei_compat {
-        /*return ReiCompat.getHoveredStackFromRei()
-        *///?} else
-        return null
+        return ReiCompat.getHoveredStackFromRei()
     }
 
     fun slotUnderCursor(): Slot? {
