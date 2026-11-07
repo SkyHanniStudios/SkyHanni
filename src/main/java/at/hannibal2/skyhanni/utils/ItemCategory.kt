@@ -56,7 +56,6 @@ enum class ItemCategory {
     POWER_STONE,
     HATCESSORY,
     REFORGE_STONE,
-    DYE,
 
     // Consumables
     BAIT,
@@ -75,7 +74,6 @@ enum class ItemCategory {
     FOREST_SHARD,
     COMBAT_SHARD,
     GARDEN_CHIP,
-    MUTATION,
 
     // Creatures
     PET,
@@ -98,6 +96,8 @@ enum class ItemCategory {
     // Other
     SACK,
     ABIPHONE,
+    MUTATION,
+    DYE,
     // TODO This was previously used as a fake category for uncategorized dungeon items.
     //  Remove it after ensuring it doesn't break anything.
     @Deprecated("Legacy fake category", ReplaceWith("ItemCategory.NONE"))
