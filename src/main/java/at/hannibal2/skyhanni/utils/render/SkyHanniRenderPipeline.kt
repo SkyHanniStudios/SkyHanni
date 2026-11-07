@@ -42,11 +42,13 @@ enum class SkyHanniRenderPipeline(
         vFormat = PosColorNormal,
         vDrawMode = PrimitiveTopology.LINES,
         irisProgram = IrisProgram.LINES,
+        blend = BlendFunction.TRANSLUCENT,
     ),
     LINES_XRAY(
         snippet = RenderPipelines.LINES_SNIPPET,
         vFormat = PosColorNormal,
         vDrawMode = PrimitiveTopology.LINES,
+        blend = BlendFunction.TRANSLUCENT,
         depthWrite = false,
         irisProgram = IrisProgram.LINES,
     ),
