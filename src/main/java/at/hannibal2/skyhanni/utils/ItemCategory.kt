@@ -15,8 +15,6 @@ enum class ItemCategory {
     SHORT_BOW,
     WAND,
     FISHING_ROD,
-    @Legacy("No longer exists")
-    FISHING_WEAPON,
     AXE,
     GAUNTLET,
     DEPLOYABLE,
@@ -29,8 +27,6 @@ enum class ItemCategory {
     DRILL,
     SHOVEL,
     SHEARS,
-    @Legacy("No longer exists", ReplaceWith("ItemCategory.FARMING_TOOL"))
-    HOE,
     FARMING_TOOL,
     CHISEL,
     WATERING_CAN,
@@ -98,6 +94,12 @@ enum class ItemCategory {
     ABIPHONE,
     MUTATION,
     DYE,
+
+    // Legacy
+    @Legacy("No longer exists", ReplaceWith("ItemCategory.FARMING_TOOL"))
+    HOE,
+    @Legacy("No longer exists")
+    FISHING_WEAPON,
     // TODO This was previously used as a fake category for uncategorized dungeon items.
     //  Remove it after ensuring it doesn't break anything.
     @Deprecated("Legacy fake category", ReplaceWith("ItemCategory.NONE"))
