@@ -3,9 +3,9 @@ package at.hannibal2.skyhanni.compat
 import at.hannibal2.skyhanni.utils.SafeItemStack
 
 //? if rei_compat {
-import at.hannibal2.skyhanni.utils.system.PlatformUtils
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.compat.MouseCompat
+import at.hannibal2.skyhanni.utils.system.PlatformUtils
 import me.shedaniel.math.Point
 import me.shedaniel.rei.api.client.REIRuntime
 import me.shedaniel.rei.api.client.gui.widgets.Slot

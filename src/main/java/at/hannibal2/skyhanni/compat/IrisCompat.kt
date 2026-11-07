@@ -17,7 +17,6 @@ object IrisCompat {
         BASIC,
         LINES,
         TEXTURED,
-        ;
     }
 
     //? if iris_compat {
