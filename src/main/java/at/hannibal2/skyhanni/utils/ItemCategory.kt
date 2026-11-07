@@ -12,12 +12,12 @@ enum class ItemCategory {
 
     // Accessories
     ACCESSORY,
-    CARNIVAL_MASK,
     HATCESSORY,
     POWER_STONE,
 
     // Armor
     BOOTS,
+    CARNIVAL_MASK,
     CHESTPLATE,
     HELMET,
     LEGGINGS,
@@ -58,6 +58,11 @@ enum class ItemCategory {
     SALT,
     TRAP,
 
+    // Mining Tools
+    DRILL,
+    GAUNTLET,
+    PICKAXE,
+
     // Other
     ABIPHONE,
     MUTATION,
@@ -73,9 +78,8 @@ enum class ItemCategory {
 
     // Tools
     CHISEL,
-    DRILL,
     FARMING_TOOL,
-    PICKAXE,
+    FISHING_ROD,
     SHEARS,
     SHOVEL,
     WATERING_CAN,
@@ -92,8 +96,6 @@ enum class ItemCategory {
     AXE,
     BOW,
     DEPLOYABLE,
-    FISHING_ROD,
-    GAUNTLET,
     LONGSWORD,
     SHORT_BOW,
     SWORD,
