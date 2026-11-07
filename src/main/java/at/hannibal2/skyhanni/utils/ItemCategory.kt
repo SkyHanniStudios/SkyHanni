@@ -6,106 +6,110 @@ import at.hannibal2.skyhanni.utils.ItemUtils.getItemCategoryOrNull
 
 /**
  * Deprecated entries should not be removed, they are kept to avoid errors with unupdated items.
+ * Please add new Categories in alphabetical order and new entries to the Categories alphabetically.
  */
 enum class ItemCategory {
-    // Weapons
-    SWORD,
-    LONGSWORD,
-    BOW,
-    SHORT_BOW,
-    WAND,
-    FISHING_ROD,
-    AXE,
-    GAUNTLET,
-    DEPLOYABLE,
-    VACUUM,
-    LASSO,
-
-    // Tools
-    ROD_PART,
-    PICKAXE,
-    DRILL,
-    SHOVEL,
-    SHEARS,
-    FARMING_TOOL,
-    CHISEL,
-    WATERING_CAN,
-    FISHING_NET,
-    TRAP,
-
-    // Armor
-    HELMET,
-    CHESTPLATE,
-    LEGGINGS,
-    BOOTS,
-
-    // Equipment
-    BELT,
-    NECKLACE,
-    CLOAK,
-    GLOVES,
-    BRACELET,
 
     // Accessories
     ACCESSORY,
     CARNIVAL_MASK,
-    POWER_STONE,
     HATCESSORY,
-    REFORGE_STONE,
+    POWER_STONE,
+
+    // Armor
+    BOOTS,
+    CHESTPLATE,
+    HELMET,
+    LEGGINGS,
+
+    // Collectibles
+    COSMETIC,
+    DYE,
+    MEMENTO,
+    PORTAL,
+    RABBIT,
+    RIFT_TIMECHARM,
 
     // Consumables
-    BAIT,
     ARROW,
     ARROW_POISON,
-    PET_ITEM,
-    ENCHANTED_BOOK,
+    BAIT,
+    COMBAT_SHARD,
+    FOREST_SHARD,
+    GARDEN_CHIP,
     POTION,
     TRAVEL_SCROLL,
-    ABILITY_SCROLL,
-    BOOSTER,
-    CAPSULE,
-    RIFT_TIMECHARM,
-    SALT,
     WATER_SHARD,
-    FOREST_SHARD,
-    COMBAT_SHARD,
-    GARDEN_CHIP,
 
     // Creatures
     PET,
-    RABBIT,
     SEA_CREATURE,
-    TROPHY_FISH,
-    TROPHY,
+
+    // Equipment
+    BELT,
+    BRACELET,
+    CLOAK,
+    GLOVES,
+    NECKLACE,
+
+    // Hunting Tools
+    CAPSULE,
+    FISHING_NET,
+    LASSO,
+    SALT,
+    TRAP,
+
+    // Other
+    ABIPHONE,
+    MUTATION,
+    SACK,
 
     // Resources
-    ORE,
     BLOCK,
     DWARVEN_METAL,
     GEMSTONE,
+    ORE,
+    TROPHY,
+    TROPHY_FISH,
 
-    // Collectibles
-    MEMENTO,
-    COSMETIC,
-    PORTAL,
+    // Tools
+    CHISEL,
+    DRILL,
+    FARMING_TOOL,
+    PICKAXE,
+    SHEARS,
+    SHOVEL,
+    WATERING_CAN,
 
-    // Other
-    SACK,
-    ABIPHONE,
-    MUTATION,
-    DYE,
+    // Upgrades
+    ABILITY_SCROLL,
+    BOOSTER,
+    ENCHANTED_BOOK,
+    PET_ITEM,
+    REFORGE_STONE,
+    ROD_PART,
+
+    // Weapons
+    AXE,
+    BOW,
+    DEPLOYABLE,
+    FISHING_ROD,
+    GAUNTLET,
+    LONGSWORD,
+    SHORT_BOW,
+    SWORD,
+    VACUUM,
+    WAND,
 
     // Legacy
-    @Legacy("No longer exists", ReplaceWith("ItemCategory.FARMING_TOOL"))
-    HOE,
     @Legacy("No longer exists")
     FISHING_WEAPON,
+    @Legacy("No longer exists", ReplaceWith("ItemCategory.FARMING_TOOL"))
+    HOE,
     // TODO This was previously used as a fake category for uncategorized dungeon items.
     //  Remove it after ensuring it doesn't break anything.
     @Deprecated("Legacy fake category", ReplaceWith("ItemCategory.NONE"))
     ITEM,
-
-    NONE,
     ;
 
     fun isDeprecated(): Boolean = this.javaClass.getField(name).getAnnotation(Deprecated::class.java) != null
