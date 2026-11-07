@@ -13,7 +13,7 @@ import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import java.awt.Color
 
-//? if renderchest {
+//? if render_chest {
 import net.azureaaron.renderchest.api.CustomGlowCallback
 import net.azureaaron.renderchest.api.GlowConstants
 //?}
@@ -31,16 +31,14 @@ object RenderLivingEntityHelper {
 
     private var currentGlowEvent: RenderEntityOutlineEvent? = null
 
-    //? if renderchest {
+    //? if render_chest {
     init {
         CustomGlowCallback.EVENT.register { entity, _ ->
             // Minecraft already renders all glow as opaque, and non-opaque values are reserved by Render Chest.
             getEntityGlowColor(entity)?.let(ARGB::opaque) ?: GlowConstants.NO_GLOW
         }
     }
-    //?}
-
-    //? if < 26.2 {
+    //?} elif < 26.2 {
     /*@JvmStatic
     var isUsingCustomGlow = false
         private set
