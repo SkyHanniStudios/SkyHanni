@@ -11,7 +11,7 @@ object TestDVD : RenderableTestSuite.TestRenderable("dvd") {
     private val dvdRenderable by lazy {
         Renderable.dvdLogo(
             renderable = Renderable.text("§zDVD Logo Test", scale = 3.0),
-            movementSpeed = 80f,
+            movementSpeed = 1.5f,
         )
     }
 
