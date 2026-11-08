@@ -287,6 +287,7 @@ abstract class AbstractRepoManager<E : AbstractRepoReloadEvent> {
         }
 
         withContext(Dispatchers.IO) {
+            repoTgzFile.parentFile?.mkdirs()
             Files.copy(inputStream, repoTgzFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
         }
         if (!repoFileSystem.loadFromTgz(progress, repoTgzFile)) {
