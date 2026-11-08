@@ -93,7 +93,7 @@ class LivingSeaCreatureData(
         return canBeSeenCache
     }
 
-    @Suppress("HandleEventInspection")
+    @Suppress("MissingHandleEvent")
     fun updateNonWorld() {
         lastUpdate = SimpleTimeMark.now()
         val mob = mob ?: return
@@ -101,7 +101,7 @@ class LivingSeaCreatureData(
         if (!updateCanBeSeen()) return
     }
 
-    @Suppress("HandleEventInspection")
+    @Suppress("MissingHandleEvent")
     fun updateWorld(renderWorld: SkyHanniRenderWorldEvent) {
         val mob = mob ?: return
         if (!canBeSeenCache) return

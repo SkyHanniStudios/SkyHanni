@@ -1,4 +1,4 @@
-package style
+package events
 
 import SkyHanniRule
 import dev.detekt.api.Config
@@ -35,13 +35,9 @@ class PrivateEventListener(config: Config) : SkyHanniRule(
         (firstModifier ?: funKeyword).insertTextBefore("private ")
     }
 
-    private fun isEffectivelyPrivate(function: KtNamedFunction): Boolean {
-        if (function.hasModifier(KtTokens.PRIVATE_KEYWORD)) return true
-
-        // If the function is inside a private class, it is effectively private
-        val containingClass = function.getParentOfType<KtClassOrObject>(true)
-        return containingClass?.hasModifier(KtTokens.PRIVATE_KEYWORD) == true
-    }
+    private fun isEffectivelyPrivate(function: KtNamedFunction): Boolean =
+        function.hasModifier(KtTokens.PRIVATE_KEYWORD) ||
+            function.getParentOfType<KtClassOrObject>(true)?.hasModifier(KtTokens.PRIVATE_KEYWORD) == true
 
     companion object {
         private val VISIBILITY_MODIFIERS = listOf(KtTokens.PUBLIC_KEYWORD, KtTokens.INTERNAL_KEYWORD, KtTokens.PROTECTED_KEYWORD)

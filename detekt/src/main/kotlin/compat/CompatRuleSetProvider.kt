@@ -1,22 +1,15 @@
 package compat
 
+import SkyHanniRuleSetProvider
 import com.google.auto.service.AutoService
-import dev.detekt.api.RuleName
-import dev.detekt.api.RuleSet
-import dev.detekt.api.RuleSetId
+import dev.detekt.api.Config
+import dev.detekt.api.Rule
 import dev.detekt.api.RuleSetProvider
 
 @AutoService(RuleSetProvider::class)
-class CompatRuleSetProvider : RuleSetProvider {
-    override val ruleSetId: RuleSetId = RuleSetId("CompatRules")
-
-    override fun instance(): RuleSet {
-        return RuleSet(
-            ruleSetId,
-            mapOf(
-                RuleName("MinecraftCompat") to ::MinecraftCompat,
-                RuleName("VanillaItemStackImport") to ::VanillaItemStackImport,
-            ),
-        )
-    }
+class CompatRuleSetProvider : SkyHanniRuleSetProvider("CompatRules") {
+    override fun rules(): Map<String, (Config) -> Rule> = mapOf(
+        "MinecraftCompat" to ::MinecraftCompat,
+        "VanillaItemStackImport" to ::VanillaItemStackImport,
+    )
 }

@@ -49,6 +49,28 @@ SkyHanniStyle:
   OnlyOnIslandSpecificity:
     active: true
     autoCorrect: true
+
+EventRules:
   PrivateEventListener:
     active: true
     autoCorrect: true
+  MissingHandleEvent:
+    active: true
+  RedundantHandleEvent:
+    active: true
+    autoCorrect: true
+  MissingPrimaryFunction:
+    active: true
+    autoCorrect: true
+  DuplicatePrimaryFunction:
+    active: true
+  MismatchedPrimaryFunction:
+    active: true
+    autoCorrect: true
+
+ModuleRules:
+  MissingSkyHanniModule:
+    active: true
+    autoCorrect: true
+  SkyHanniModuleOnlyOnObjects:
+    active: true

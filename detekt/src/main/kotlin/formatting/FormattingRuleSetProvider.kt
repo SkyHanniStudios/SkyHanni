@@ -1,23 +1,16 @@
 package formatting
 
+import SkyHanniRuleSetProvider
 import com.google.auto.service.AutoService
-import dev.detekt.api.RuleName
-import dev.detekt.api.RuleSet
-import dev.detekt.api.RuleSetId
+import dev.detekt.api.Config
+import dev.detekt.api.Rule
 import dev.detekt.api.RuleSetProvider
 
 @AutoService(RuleSetProvider::class)
-class FormattingRuleSetProvider : RuleSetProvider {
-    override val ruleSetId: RuleSetId = RuleSetId("FormattingRules")
-
-    override fun instance(): RuleSet {
-        return RuleSet(
-            ruleSetId,
-            mapOf(
-                RuleName("CustomAnnotationSpacing") to ::CustomAnnotationSpacing,
-                RuleName("CustomCommentSpacing") to ::CustomCommentSpacing,
-                RuleName("StorageVarOrVal") to ::StorageVarOrVal,
-            ),
-        )
-    }
+class FormattingRuleSetProvider : SkyHanniRuleSetProvider("FormattingRules") {
+    override fun rules(): Map<String, (Config) -> Rule> = mapOf(
+        "CustomAnnotationSpacing" to ::CustomAnnotationSpacing,
+        "CustomCommentSpacing" to ::CustomCommentSpacing,
+        "StorageVarOrVal" to ::StorageVarOrVal,
+    )
 }
