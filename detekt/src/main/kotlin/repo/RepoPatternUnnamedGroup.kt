@@ -2,7 +2,10 @@ package repo
 
 import SkyHanniRule
 import dev.detekt.api.Config
+import org.jetbrains.kotlin.psi.KtEscapeStringTemplateEntry
+import org.jetbrains.kotlin.psi.KtLiteralStringTemplateEntry
 import org.jetbrains.kotlin.psi.KtPropertyDelegate
+import org.jetbrains.kotlin.psi.KtStringTemplateExpression
 
 class RepoPatternUnnamedGroup(config: Config, private val ctx: RepoPatternContext) : SkyHanniRule(
     config,
@@ -16,10 +19,42 @@ class RepoPatternUnnamedGroup(config: Config, private val ctx: RepoPatternContex
         val repoPatternElement = ctx.getRepoPatternElement(delegate) ?: return
 
         if (repoPatternElement.rawPattern.hasUnnamedGroup()) {
-            (repoPatternElement.patternElement ?: delegate).reportIssue(
+            val patternElement = repoPatternElement.patternElement
+            (patternElement ?: delegate).reportIssue(
                 "Repo pattern `${repoPatternElement.variableName}` must not contain unnamed capture groups.",
                 delegate,
             )
+            (patternElement as? KtStringTemplateExpression)?.let(::makeGroupsNonCapturing)
+        }
+    }
+
+    private fun makeGroupsNonCapturing(template: KtStringTemplateExpression) {
+        if (!canCorrect(template)) return
+        val chars = mutableListOf<Pair<Char, Int>>()
+        for (entry in template.entries) {
+            when (entry) {
+                is KtLiteralStringTemplateEntry -> entry.text.forEachIndexed { index, char ->
+                    if (char != '\n') chars += char to entry.textRange.startOffset + index
+                }
+                is KtEscapeStringTemplateEntry -> entry.unescapedValue.forEach { chars += it to entry.textRange.startOffset }
+                else -> return
+            }
+        }
+        var index = 0
+        var inClass = false
+        while (index < chars.size) {
+            val (char, offset) = chars[index]
+            when {
+                char == '\\' -> index++
+                inClass -> if (char == ']') inClass = false
+                char == '[' -> {
+                    inClass = true
+                    if (chars.getOrNull(index + 1)?.first == '^') index++
+                    if (chars.getOrNull(index + 1)?.first == ']') index++
+                }
+                char == '(' && chars.getOrNull(index + 1)?.first != '?' -> correct(template, offset + 1, offset + 1, "?:")
+            }
+            index++
         }
     }
 

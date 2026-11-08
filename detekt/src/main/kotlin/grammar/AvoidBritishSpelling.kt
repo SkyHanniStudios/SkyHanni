@@ -27,15 +27,23 @@ class AvoidBritishSpelling(config: Config) : SkyHanniRule(
                 var index = entry.text.indexOf(british, ignoreCase = true)
                 while (index >= 0) {
                     val start = entry.textRange.startOffset + index
+                    val found = entry.text.substring(index, index + british.length)
                     entry.reportRange(
                         TextRange(start, start + british.length),
                         "Avoid using the word '$british' in code, '$american' is preferred instead.",
                         expression,
                     )
+                    correct(entry, start, start + british.length, american.withCaseOf(found))
                     index = entry.text.indexOf(british, index + british.length, ignoreCase = true)
                 }
             }
         }
         super.visitStringTemplateExpression(expression)
+    }
+
+    private fun String.withCaseOf(original: String): String = when {
+        original.all { !it.isLetter() || it.isUpperCase() } -> uppercase()
+        original.first().isUpperCase() -> replaceFirstChar(Char::uppercaseChar)
+        else -> this
     }
 }

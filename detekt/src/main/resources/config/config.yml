@@ -1,6 +1,7 @@
 GrammarRules:
   AvoidBritishSpelling:
     active: true
+    autoCorrect: true
 
 CompatRules:
   MinecraftCompat:
@@ -29,6 +30,7 @@ RepoRules:
     active: true
   RepoPatternUnnamedGroup:
     active: true
+    autoCorrect: true
   RepoPatternPassesShapeRequirement:
     active: true
 
