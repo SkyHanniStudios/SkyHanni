@@ -22,7 +22,7 @@ object LesserOrbHider {
     private val LESSER_TEXTURE by SkullTextureHolder.texture("LESSER_ORB")
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onArmorChange(event: EntityEquipmentChangeEvent<ArmorStand>) {
+    private fun onEntityEquipmentChange(event: EntityEquipmentChangeEvent<ArmorStand>) {
         val entity = event.entity
         val itemStack = event.newItemStack ?: return
 
@@ -32,7 +32,7 @@ object LesserOrbHider {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onCheckRender(event: CheckRenderEntityEvent<ArmorStand>) {
+    private fun onCheckRender(event: CheckRenderEntityEvent<ArmorStand>) {
         if (!isEnabled()) return
 
         if (event.entity in hiddenEntities) {
@@ -41,7 +41,7 @@ object LesserOrbHider {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onParticle(event: ParticleEvent) {
+    private fun onParticle(event: ParticleEvent) {
         if (!isEnabled()) return
         if (event.type != ParticleTypes.DUST) return
 

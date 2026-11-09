@@ -25,12 +25,12 @@ object ActiveBossTransparency {
     private var lastHitCarrierBoss = false
 
     @HandleEvent
-    fun onEntityTransparencyActive(event: EntityTransparencyActiveEvent) {
+    private fun onEntityTransparencyActive(event: EntityTransparencyActiveEvent) {
         event.setActive(isActive())
     }
 
     @HandleEvent
-    fun onMobDeSpawn(event: MobEvent.DeSpawn.SkyblockMob) {
+    private fun onMobDeSpawn(event: MobEvent.DeSpawn.SkyblockMob) {
         if (lastClickedMob == event.mob) {
             lastClickedMob = null
             lastHitCarrierBoss = false
@@ -38,7 +38,7 @@ object ActiveBossTransparency {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onClickEntity(event: EntityClickEvent) {
+    private fun onEntityClick(event: EntityClickEvent) {
         if (event.action != EntityClickEvent.ActionType.ATTACK) return
         val mob = event.clickedEntity.mob ?: return
 
@@ -47,7 +47,7 @@ object ActiveBossTransparency {
     }
 
     @HandleEvent
-    fun onEntityTransparencyTick(event: EntityTransparencyTickEvent<LivingEntity>) {
+    private fun onEntityTransparencyTick(event: EntityTransparencyTickEvent<LivingEntity>) {
         if (!isActive()) return
         val entity = event.entity
 

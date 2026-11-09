@@ -28,27 +28,27 @@ object DnaAnalyzerSolver {
     private var errorCount = 0
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onInventoryOpen(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         inInventory = event.inventoryName.endsWith(" DNA")
         errorCount = 0
     }
 
     @HandleEvent
-    fun onInventoryClose() {
+    private fun onInventoryClose() {
         inInventory = false
         fakeInventory = false
         currentBoard = null
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onTooltip(event: ToolTipTextEvent) {
+    private fun onTooltip(event: ToolTipTextEvent) {
         if (!isEnabled() || !config.hideTooltips) return
         if (event.slot?.containerSlot !in 9..44) return
         event.cancel()
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         if (!isEnabled()) return
         if (event.slotId == 49 && config.blockAccidentalClosing) {
             event.cancel()
@@ -60,7 +60,7 @@ object DnaAnalyzerSolver {
     private var currentBoard: DnaBoard? = null
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onInventoryUpdated(event: InventoryUpdatedEvent) {
+    private fun onInventoryUpdated(event: InventoryUpdatedEvent) {
         if (!isEnabled()) return
         val initialBoard = MutableList(9) { MutableList(4) { Colors.GREEN } }
         for ((i, stack) in event.inventoryItems) {
@@ -85,7 +85,7 @@ object DnaAnalyzerSolver {
     }
 
     @HandleEvent(GuiContainerEvent.BackgroundDrawnEvent::class, onlyOnSkyblock = true)
-    fun onBackgroundDrawn() {
+    private fun onBackgroundDrawn() {
         if (!isEnabled()) return
         val board = currentBoard ?: return
 
@@ -97,7 +97,7 @@ object DnaAnalyzerSolver {
     }
 
     @HandleEvent
-    fun onRepoReload(event: RepositoryReloadEvent) {
+    private fun onRepoReload(event: RepositoryReloadEvent) {
         val data = event.getConstant<GardenJson>("Garden")
         dnaSolverAllowsEnds = data.dnaSolverAllowsEnds
     }

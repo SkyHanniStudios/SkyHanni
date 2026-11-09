@@ -33,7 +33,7 @@ object GoldenGoblinHighlight {
     private var lastGoblin: Mob? = null
 
     @HandleEvent
-    fun onEvent(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!isEnabled()) return
         if (!MiningNotifications.goldenGoblinSpawn.matches(event.message) &&
             !MiningNotifications.diamondGoblinSpawn.matches(event.message)
@@ -43,7 +43,7 @@ object GoldenGoblinHighlight {
     }
 
     @HandleEvent
-    fun onMobEvent(event: MobEvent.Spawn.SkyblockMob) {
+    private fun onMobEvent(event: MobEvent.Spawn.SkyblockMob) {
         if (!isEnabled()) return
         if (!goblinPattern.matches(event.mob.name)) return
         lastGoblin = event.mob

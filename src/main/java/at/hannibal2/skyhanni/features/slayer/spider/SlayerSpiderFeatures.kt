@@ -9,7 +9,6 @@ import at.hannibal2.skyhanni.data.mob.MobCategory
 import at.hannibal2.skyhanni.events.MobEvent
 import at.hannibal2.skyhanni.events.entity.EntityClickEvent
 import at.hannibal2.skyhanni.events.entity.EntityMoveEvent
-import at.hannibal2.skyhanni.events.minecraft.WorldChangeEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.MobUtils.mob
 import net.minecraft.world.entity.monster.spider.Spider
@@ -22,7 +21,7 @@ object SlayerSpiderFeatures {
     val stuckMobs = mutableSetOf<Mob>()
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
+    private fun onMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
         val mob = event.mob
         if (mob.isRightTier()) {
             allTier.add(mob)
@@ -32,7 +31,7 @@ object SlayerSpiderFeatures {
     private fun Mob.isRightTier() = category == MobCategory.SLAYER && (levelOrTier in 3..5) && name == "Tarantula Broodfather"
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onClickEntity(event: EntityClickEvent) {
+    private fun onEntityClick(event: EntityClickEvent) {
         if (event.action != EntityClickEvent.ActionType.ATTACK) return
         val mob = event.clickedEntity.mob ?: return
         if (mob in allTier) {
@@ -41,7 +40,7 @@ object SlayerSpiderFeatures {
     }
 
     @HandleEvent
-    fun onChat(event: SystemMessageEvent.Allow) {
+    private fun onSystemMessage(event: SystemMessageEvent.Allow) {
         if (event.message != "§cYou need to kill the Broodfather's hatchlings before it can be damaged again!") return
 
         val mob = lastClicked ?: return
@@ -51,7 +50,7 @@ object SlayerSpiderFeatures {
     }
 
     @HandleEvent
-    fun onPlayerMove(event: EntityMoveEvent<Spider>) {
+    private fun onPlayerMove(event: EntityMoveEvent<Spider>) {
         val mob = event.entity.mob ?: return
         if (mob in stuckMobs) {
             stuckMobs.remove(mob)
@@ -59,8 +58,8 @@ object SlayerSpiderFeatures {
         }
     }
 
-    @HandleEvent(WorldChangeEvent::class)
-    fun onWorldChange() {
+    @HandleEvent
+    private fun onWorldChange() {
         allTier.clear()
         lastClicked = null
         stuckMobs.clear()

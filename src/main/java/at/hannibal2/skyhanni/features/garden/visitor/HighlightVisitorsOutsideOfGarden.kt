@@ -34,7 +34,7 @@ object HighlightVisitorsOutsideOfGarden {
     private val config get() = VisitorApi.config
 
     @HandleEvent
-    fun onRepoReload(event: RepositoryReloadEvent) {
+    private fun onRepoReload(event: RepositoryReloadEvent) {
         visitorJson = event.getConstant<GardenJson>(
             "Garden",
         ).visitors.values.groupBy {
@@ -67,7 +67,7 @@ object HighlightVisitorsOutsideOfGarden {
     // TODO: optimize to not get entities every second
     @OptIn(AllEntitiesGetter::class)
     @HandleEvent(SecondPassedEvent::class)
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         if (!config.highlightVisitors) return
         val color = LorenzColor.DARK_RED.toColor().addAlpha(50)
         EntityUtils.getEntities<LivingEntity>()
@@ -88,7 +88,7 @@ object HighlightVisitorsOutsideOfGarden {
         location.getEntitiesNearby<LivingEntity>(2.0).any { isVisitor(it) }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onClickEntity(event: EntityClickEvent) {
+    private fun onEntityClick(event: EntityClickEvent) {
         if (!shouldBlock) return
         if (PlayerUtils.isSneaking()) return
         val entity = event.clickedEntity

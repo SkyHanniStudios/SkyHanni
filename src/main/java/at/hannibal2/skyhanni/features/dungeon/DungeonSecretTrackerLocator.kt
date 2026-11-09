@@ -53,7 +53,7 @@ object DungeonSecretTrackerLocator {
     private val SECRET_COMPASS = "SECRET_TRACKER".toInternalName()
 
     @HandleEvent(receiveCancelled = true, onlyOnIsland = IslandType.CATACOMBS)
-    fun onParticle(event: ParticleEvent) {
+    private fun onParticle(event: ParticleEvent) {
         if (!isEnabled()) return
         val type = event.type
         if (type != ParticleTypes.HAPPY_VILLAGER) return
@@ -67,7 +67,7 @@ object DungeonSecretTrackerLocator {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CATACOMBS)
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!isEnabled()) return
         val location = secretLocation ?: return
         val distance = location.distance(event.exactPlayerEyeLocation())
@@ -82,7 +82,7 @@ object DungeonSecretTrackerLocator {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CATACOMBS)
-    fun onChatMessage(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!isEnabled()) return
         secretTrackerMessagePattern.findMatcher(event.cleanMessage) {
             val distance1 = group("distance").toInt()
@@ -103,7 +103,7 @@ object DungeonSecretTrackerLocator {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CATACOMBS)
-    fun onItemClick(event: ItemClickEvent) {
+    private fun onItemClick(event: ItemClickEvent) {
         if (!isEnabled()) return
         if (event.clickType != InteractClickType.RIGHT_CLICK) return
         val item = event.itemInHand ?: return
@@ -117,7 +117,7 @@ object DungeonSecretTrackerLocator {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         reset()
         lastAbilityUse = SimpleTimeMark.farPast()
     }

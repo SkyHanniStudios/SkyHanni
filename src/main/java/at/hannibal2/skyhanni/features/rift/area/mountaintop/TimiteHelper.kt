@@ -5,8 +5,6 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.InteractClickType
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.events.BlockClickEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.features.rift.RiftApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -45,7 +43,7 @@ object TimiteHelper {
     private var doubleTimeShooting = false
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onBlockHit(event: BlockClickEvent) {
+    private fun onBlockClick(event: BlockClickEvent) {
         if (!isEnabled() || !config.evolutionTimer) return
         if (InventoryUtils.itemInHandId != TIME_GUN) return
         if (event.clickType != InteractClickType.RIGHT_CLICK) return
@@ -74,7 +72,7 @@ object TimiteHelper {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onGuiRender(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay() {
         if (!isEnabled() || !config.evolutionTimer) return
         if (InventoryUtils.itemInHandId != TIME_GUN) return
         if (lastClick + 400.milliseconds < SimpleTimeMark.now()) {
@@ -99,7 +97,7 @@ object TimiteHelper {
     private val locations = mutableMapOf<LorenzVec, SimpleTimeMark>()
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed() {
         if (!isEnabled() || !config.expiryTimer) return
 
         val map = BlockUtils.nearbyBlocks(
@@ -121,19 +119,19 @@ object TimiteHelper {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!isEnabled() || !config.expiryTimer) return
 
-        for (location in locations.entries) {
-            val timeLeft = location.value + 31.seconds
+        for ((location, mark) in locations) {
+            val timeLeft = mark + 31.seconds
             if (timeLeft.timeUntil() < 6.seconds) {
-                event.drawDynamicText(location.key, "§c${timeLeft.timeUntil().format()}", 1.5)
+                event.drawDynamicText(location, "§c${timeLeft.timeUntil().format()}", 1.5)
             }
         }
     }
 
     @HandleEvent
-    fun onWorldChange() = locations.clear()
+    private fun onWorldChange() = locations.clear()
 
     private fun isEnabled() = RiftApi.inMountainTop() && config.enabled
 }

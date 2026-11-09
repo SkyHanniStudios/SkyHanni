@@ -20,9 +20,6 @@ import at.hannibal2.skyhanni.data.garden.cropmilestones.CustomGoals.getCustomGoa
 import at.hannibal2.skyhanni.data.title.TitleContext
 import at.hannibal2.skyhanni.data.title.TitleManager
 import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.IslandChangeEvent
-import at.hannibal2.skyhanni.events.garden.GardenToolChangeEvent
-import at.hannibal2.skyhanni.events.garden.farming.CropMilestoneUpdateEvent
 import at.hannibal2.skyhanni.features.garden.CropType
 import at.hannibal2.skyhanni.features.garden.FarmingFortuneDisplay
 import at.hannibal2.skyhanni.features.garden.GardenApi
@@ -65,7 +62,7 @@ object GardenCropMilestoneDisplay {
     private var displayCrop: CropType? = null
 
     @HandleEvent
-    fun onConfigLoad() {
+    private fun onConfigLoad() {
         onToggle(
             config.showMaxTier,
             config.highestTimeFormat,
@@ -77,7 +74,7 @@ object GardenCropMilestoneDisplay {
     }
 
     @HandleEvent(GuiRenderEvent.GuiOverlayRenderEvent::class, onlyOnIsland = IslandType.GARDEN)
-    fun onGuiRenderOverlay() {
+    private fun onGuiRenderOverlay() {
         if (!isEnabled()) return
         if (GardenApi.hideExtraGuis()) return
 
@@ -105,23 +102,23 @@ object GardenCropMilestoneDisplay {
     }
 
     @HandleEvent(priority = HandleEvent.LOW)
-    fun onProfileJoin() {
+    private fun onProfileJoin() {
         update()
     }
 
     // TODO make sure how we can replace this event without breaking logic
     @HandleEvent(priority = HandleEvent.LOW)
-    fun onIslandChange(event: IslandChangeEvent) {
+    private fun onIslandChange() {
         update()
     }
 
-    @HandleEvent(CropMilestoneUpdateEvent::class)
-    fun onCropMilestoneUpdate() {
+    @HandleEvent
+    private fun onCropMilestoneUpdate() {
         update()
     }
 
-    @HandleEvent(GardenToolChangeEvent::class)
-    fun onToolChange() {
+    @HandleEvent
+    private fun onGardenToolChange() {
         update()
     }
 
@@ -391,7 +388,7 @@ object GardenCropMilestoneDisplay {
     private fun isEnabled() = GardenApi.inGarden() && config.progress
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(3, "garden.cropMilestoneProgress", "garden.cropMilestones.progress")
         event.move(3, "garden.cropMilestoneWarnClose", "garden.cropMilestones.warnClose")
         event.move(3, "garden.cropMilestoneHighestTimeFormat", "garden.cropMilestones.highestTimeFormat")

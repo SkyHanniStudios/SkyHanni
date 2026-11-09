@@ -137,7 +137,7 @@ object DungeonSpiritLeapOverlay {
     }
 
     @HandleEvent
-    private fun onKeyPress(event: KeyDownEvent) {
+    private fun onKeyDown(event: KeyDownEvent) {
         if (!isEnabled() || !config.spiritLeapKeybindConfig.enableKeybind) return
         if (!inventory.isInside()) return
         val index = getKeybindIndex(event.keyCode)

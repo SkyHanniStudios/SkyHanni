@@ -89,7 +89,7 @@ object ExperimentationTableApi {
      */
     private val experimentsDropPattern by patternGroup.pattern(
         "drop",
-        "^(?: |§. ?)(?:§.)*\\+(?:§.)+(?:\\[Lvl 1] (?:§r)?)?(?<reward>.*)\$",
+        "^(?: |§. ?)(?:§.)*\\+(?:§.)+(?:\\[Lvl 1] (?:§r)?)?(?<reward>.*)$",
     )
 
     /**
@@ -195,7 +195,7 @@ object ExperimentationTableApi {
      */
     private val expOverRewardsLorePattern by patternGroup.pattern(
         "inventory.experiment-over.rewards",
-        "§8 \\+(?:§.| )*(?:\\[Lvl \\d+] )?(?<reward>.*?)(?=\\s\\((?:Stakes|Pairs)\\)|\$)(?:\\s\\((?:Stakes|Pairs)\\))?",
+        "§8 \\+(?:§.| )*(?:\\[Lvl \\d+] )?(?<reward>.*?)(?=\\s\\((?:Stakes|Pairs)\\)|$)(?:\\s\\((?:Stakes|Pairs)\\))?",
     )
 
     /**
@@ -364,7 +364,7 @@ object ExperimentationTableApi {
         }
     }
 
-    @Suppress("MismatchedPrimaryFunctionName")
+    @Suppress("MismatchedPrimaryFunction")
     @HandleEvent(
         onlyOnIsland = IslandType.PRIVATE_ISLAND,
         eventTypes = [WorldChangeEvent::class, ItemAddInInventoryEvent::class],

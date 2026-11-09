@@ -2,7 +2,6 @@ package at.hannibal2.skyhanni.features.garden.visitor
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.IslandType
-import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
 import at.hannibal2.skyhanni.events.garden.visitor.VisitorOpenEvent
 import at.hannibal2.skyhanni.features.garden.GardenApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -35,14 +34,14 @@ object GardenCharmedVisitors {
     private var openVisitor: VisitorApi.Visitor? = null
 
     @HandleEvent
-    fun onVisitorOpen(event: VisitorOpenEvent) {
+    private fun onVisitorOpen(event: VisitorOpenEvent) {
         val visitor = event.visitor
         openVisitor = visitor
         checkCharmed(visitor)
     }
 
-    @HandleEvent(InventoryUpdatedEvent::class)
-    fun onInventoryUpdate() {
+    @HandleEvent
+    private fun onInventoryUpdated() {
         if (!VisitorApi.inInventory) return
         val visitor = openVisitor ?: return
         checkCharmed(visitor)
@@ -60,17 +59,17 @@ object GardenCharmedVisitors {
     }
 
     @HandleEvent
-    fun onInventoryClose() {
+    private fun onInventoryClose() {
         openVisitor = null
     }
 
     @HandleEvent
-    fun onProfileJoin() {
+    private fun onProfileJoin() {
         updateDisplay()
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onGuiRender() {
+    private fun onGuiRender() {
         if (!config.enabled) return
         config.position.renderRenderables(display, posLabel = "Charmed Visitors")
     }
