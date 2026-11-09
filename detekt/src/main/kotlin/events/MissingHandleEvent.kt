@@ -33,7 +33,7 @@ class MissingHandleEvent(config: Config, private val index: PrimaryFunctionIndex
             val eventType = eventParameterType(function) ?: eventReceiverType(function)?.takeIf { parameterless }
             val text = when {
                 eventType != null -> "Function seems to handle ${eventType.displayName()}. Add @HandleEvent if this is an event handler."
-                parameterless && function.receiverTypeReference == null -> index.lookup(this, function.project, name).firstOrNull()?.let {
+                parameterless && function.receiverTypeReference == null -> index.lookup(this, name)?.firstOrNull()?.let {
                     "Function name matches @PrimaryFunction of ${it.shortClassName}. " +
                         "Either add @HandleEvent if this is an event handler, or rename the function."
                 }

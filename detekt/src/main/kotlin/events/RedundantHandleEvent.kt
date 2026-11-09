@@ -26,7 +26,7 @@ class RedundantHandleEvent(config: Config, private val index: PrimaryFunctionInd
                 eventParameterType(function) == null &&
                 eventReceiverType(function) == null &&
                 symbol.explicitEventTypes().isEmpty() &&
-                index.lookup(this, function.project, name).isEmpty()
+                index.lookup(this, name)?.isEmpty() == true
         }
         if (redundant) {
             (function.nameIdentifier ?: function).reportIssue(

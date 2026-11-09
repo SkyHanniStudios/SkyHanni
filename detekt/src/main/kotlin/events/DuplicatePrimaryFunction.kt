@@ -21,7 +21,7 @@ class DuplicatePrimaryFunction(config: Config, private val index: PrimaryFunctio
             val symbol = classOrObject.classSymbol ?: return@analyze null
             if (!isSkyHanniEventClass(symbol)) return@analyze null
             val name = symbol.primaryFunctionName() ?: return@analyze null
-            val duplicates = index.lookup(this, classOrObject.project, name).filter { it != symbol.classId }
+            val duplicates = index.lookup(this, name).orEmpty().filter { it != symbol.classId }
             if (duplicates.isEmpty()) return@analyze null
             val anchor: PsiElement? = symbol.annotations[SkyHanniFqNames.PRIMARY_FUNCTION_ID].firstOrNull()
                 ?.psi?.valueArguments?.firstOrNull()?.getArgumentExpression()

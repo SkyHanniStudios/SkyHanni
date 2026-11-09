@@ -2,7 +2,6 @@
 <SmellBaseline>
   <ManuallySuppressedIssues>
     <ID>MayBeConst:MutationsWebsite.kt$MutationsWebsite$private val link = "https://skymutations.eu/"</ID>
-    <ID>AvoidBritishSpelling:StorageVarOrVal.kt:StorageVarOrVal.Companion$"ChromaColour"</ID>
   </ManuallySuppressedIssues>
   <CurrentIssues>
     <ID>ArrayPrimitive:LorenzVec.kt:Array&lt;Double&gt;</ID>
