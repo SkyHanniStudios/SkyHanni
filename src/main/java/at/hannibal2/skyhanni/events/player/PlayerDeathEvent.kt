@@ -2,6 +2,7 @@ package at.hannibal2.skyhanni.events.player
 
 import at.hannibal2.skyhanni.api.event.SkyHanniEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
+import at.hannibal2.skyhanni.skyhannimodule.PrimaryFunction
 import at.hannibal2.skyhanni.utils.PlayerUtils
 
 abstract class AbstractPlayerDeathEvent(
@@ -12,12 +13,14 @@ abstract class AbstractPlayerDeathEvent(
 }
 
 object PlayerDeathEvent {
+    @PrimaryFunction("onPlayerDeath")
     class Allow(
         name: String,
         reason: String,
         val chatEvent: SkyHanniChatEvent.Allow,
     ) : AbstractPlayerDeathEvent(name, reason)
 
+    @PrimaryFunction("onPlayerDeathModify")
     class Modify(
         name: String,
         reason: String,

@@ -145,7 +145,7 @@ object IslandAreaFeatures {
 
     private fun isEnabled() = SkyBlockUtils.inSkyBlock && IslandGraphs.currentIslandGraph != null
 
-    @HandleEvent(AreaNodesUpdatedEvent::class)
+    @HandleEvent
     fun onAreaNodesUpdated() {
         smallAreas = areaNodes
             .filter { GraphNodeTag.SMALL_AREA in it.node.tags }
