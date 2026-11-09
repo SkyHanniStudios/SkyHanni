@@ -14,16 +14,23 @@ import dev.detekt.api.modifiedText
 import imports.ImportOrdering
 import org.jetbrains.kotlin.KtPsiSourceFileLinesMapping
 import org.jetbrains.kotlin.diagnostics.DiagnosticUtils.getLineAndColumnRangeInPsiFile
+import org.jetbrains.kotlin.kdoc.psi.impl.KDocName
+import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.psi.KtAnnotated
 import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.psi.KtDeclaration
 import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.psi.KtImportDirective
+import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 import org.jetbrains.kotlin.psi.KtPsiFactory
 import org.jetbrains.kotlin.psi.KtValueArgument
 import org.jetbrains.kotlin.psi.KtValueArgumentList
+import org.jetbrains.kotlin.psi.psiUtil.collectDescendantsOfType
 import org.jetbrains.kotlin.psi.psiUtil.elementsInRange
 import org.jetbrains.kotlin.psi.psiUtil.getNonStrictParentOfType
+import org.jetbrains.kotlin.psi.psiUtil.getStrictParentOfType
+import org.jetbrains.kotlin.psi.psiUtil.isAncestor
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 import java.net.URI
@@ -170,6 +177,37 @@ abstract class SkyHanniRule(config: Config, description: String, url: URI? = nul
         anchor.insertTextBefore("@${fqName.substringAfterLast('.')}$argumentList$separator")
         containingKtFile.addImport(fqName)
         return true
+    }
+
+    protected fun KtAnnotationEntry.removeAnnotation(fqName: String): Boolean {
+        val shortName = fqName.substringAfterLast('.')
+        val file = containingKtFile
+        val others = file.collectDescendantsOfType<KtAnnotationEntry> { it != this && it.shortName?.asString() == shortName }
+        if (!deleteText()) return false
+        if (others.isEmpty()) file.removeImport(fqName)
+        return true
+    }
+
+    protected fun KtValueArgument.removeArgument(): Boolean {
+        val list = parent as? KtValueArgumentList ?: return false
+        if (list.arguments.any { it != this && it.getArgumentName() == null }) return false
+        return if (list.arguments.size == 1) list.replaceText("") else deleteArgument()
+    }
+
+    protected fun KtFile.removeImport(fqName: String): Boolean {
+        val directive = importDirectives.firstOrNull { it.importedFqName?.asString() == fqName && it.aliasName == null } ?: return false
+        return directive.deleteText()
+    }
+
+    protected fun KtFile.removeImportIfUnused(classId: ClassId, removed: PsiElement) {
+        listOf(classId, classId.outermostClassId).distinct().forEach { id ->
+            val shortName = id.shortClassName.asString()
+            val inCode = collectDescendantsOfType<KtNameReferenceExpression> {
+                it.getReferencedName() == shortName && it.getStrictParentOfType<KtImportDirective>() == null && !removed.isAncestor(it)
+            }
+            val inDocs = collectDescendantsOfType<KDocName> { it.getQualifiedName().firstOrNull() == shortName }
+            if (inCode.isEmpty() && inDocs.isEmpty()) removeImport(id.asSingleFqName().asString())
+        }
     }
 
     protected fun lineStartOffsets(lines: List<String>): IntArray {

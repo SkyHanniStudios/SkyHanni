@@ -3,9 +3,9 @@ package modules
 import SkyHanniAnalysisRule
 import dev.detekt.api.Config
 import org.jetbrains.kotlin.analysis.api.analyze
+import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.psi.KtClass
 import utils.SkyHanniFqNames
-import utils.SkyHanniSymbols.hasAnnotation
 import utils.SkyHanniSymbols.isInSkyHanniPackage
 
 class SkyHanniModuleOnlyOnObjects(config: Config) : SkyHanniAnalysisRule(
@@ -16,7 +16,10 @@ class SkyHanniModuleOnlyOnObjects(config: Config) : SkyHanniAnalysisRule(
     override fun visitClass(klass: KtClass) {
         super.visitClass(klass)
         if (klass.name == null || !klass.isInSkyHanniPackage()) return
-        val annotated = analyze(klass) { klass.classSymbol?.hasAnnotation(SkyHanniFqNames.SKYHANNI_MODULE_ID) == true }
-        if (annotated) (klass.nameIdentifier ?: klass).reportIssue("@SkyHanniModule can only be applied to objects.", klass)
+        val entry = analyze(klass) {
+            klass.classSymbol?.annotations?.get(SkyHanniFqNames.SKYHANNI_MODULE_ID)?.firstOrNull()?.psi as? KtAnnotationEntry
+        } ?: return
+        (klass.nameIdentifier ?: klass).reportIssue("@SkyHanniModule can only be applied to objects.", klass)
+        entry.removeAnnotation(SkyHanniFqNames.SKYHANNI_MODULE)
     }
 }

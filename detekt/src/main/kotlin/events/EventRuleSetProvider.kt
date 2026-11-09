@@ -14,7 +14,7 @@ class EventRuleSetProvider : SkyHanniRuleSetProvider("EventRules") {
             "PrivateEventListener" to ::PrivateEventListener,
             "MissingHandleEvent" to { config -> MissingHandleEvent(config, index) },
             "RedundantHandleEvent" to { config -> RedundantHandleEvent(config, index) },
-            "MissingPrimaryFunction" to ::MissingPrimaryFunction,
+            "MissingPrimaryFunction" to { config -> MissingPrimaryFunction(config, index) },
             "DuplicatePrimaryFunction" to { config -> DuplicatePrimaryFunction(config, index) },
             "MismatchedPrimaryFunction" to ::MismatchedPrimaryFunction,
             "UnusedEventParameter" to { config -> UnusedEventParameter(config, index) },

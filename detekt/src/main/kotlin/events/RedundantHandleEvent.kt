@@ -8,7 +8,7 @@ import utils.SkyHanniFqNames
 import utils.SkyHanniSymbols.eventParameterType
 import utils.SkyHanniSymbols.eventReceiverType
 import utils.SkyHanniSymbols.explicitEventTypes
-import utils.SkyHanniSymbols.hasAnnotation
+import utils.SkyHanniSymbols.handleEventEntry
 import utils.SkyHanniSymbols.isObjectMember
 
 class RedundantHandleEvent(config: Config, private val index: PrimaryFunctionIndex) : SkyHanniAnalysisRule(
@@ -20,19 +20,19 @@ class RedundantHandleEvent(config: Config, private val index: PrimaryFunctionInd
         super.visitNamedFunction(function)
         if (!function.isObjectMember()) return
         val name = function.name ?: return
-        val redundant = analyze(function) {
+        val entry = analyze(function) {
             val symbol = function.symbol
-            symbol.hasAnnotation(SkyHanniFqNames.HANDLE_EVENT_ID) &&
-                eventParameterType(function) == null &&
+            val entry = symbol.handleEventEntry() ?: return@analyze null
+            val redundant = eventParameterType(function) == null &&
                 eventReceiverType(function) == null &&
                 symbol.explicitEventTypes().isEmpty() &&
                 index.lookup(this, name)?.isEmpty() == true
-        }
-        if (redundant) {
-            (function.nameIdentifier ?: function).reportIssue(
-                "Function should not be annotated with @HandleEvent if it does not take a SkyHanniEvent.",
-                function,
-            )
-        }
+            entry.takeIf { redundant }
+        } ?: return
+        (function.nameIdentifier ?: function).reportIssue(
+            "Function should not be annotated with @HandleEvent if it does not take a SkyHanniEvent.",
+            function,
+        )
+        entry.removeAnnotation(SkyHanniFqNames.HANDLE_EVENT)
     }
 }

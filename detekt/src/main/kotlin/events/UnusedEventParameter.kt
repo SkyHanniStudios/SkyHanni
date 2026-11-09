@@ -30,20 +30,23 @@ class UnusedEventParameter(config: Config, private val index: PrimaryFunctionInd
         if (!function.isObjectMember()) return
         val name = function.name ?: return
         val parameter = function.valueParameters.singleOrNull() ?: return
-        val source = analyze(function) {
+        val (source, eventId) = analyze(function) {
             if (!function.symbol.hasAnnotation(SkyHanniFqNames.HANDLE_EVENT_ID)) return@analyze null
             val eventId = (eventParameterType(function) as? KaClassType)?.classId ?: return@analyze null
             if (isUsed(parameter, function) || isReferencedInFile(function)) return@analyze null
             val primary = index.lookup(this, name) ?: return@analyze null
-            when {
+            val source = when {
                 primary.isNotEmpty() -> "@PrimaryFunction(\"$name\")".takeIf { primary == listOf(eventId) }
                 function.symbol.explicitEventTypes() == listOf(eventId) -> "eventType"
                 else -> null
             }
+            source?.let { it to eventId }
         } ?: return
         if (function.hasOverloadSibling(name)) return
         parameter.reportIssue("Parameter '${parameter.name}' is never used and the event type is already known from $source.", function)
-        if (function.hasModifier(KtTokens.PRIVATE_KEYWORD)) function.valueParameterList?.replaceText("()")
+        if (!function.hasModifier(KtTokens.PRIVATE_KEYWORD)) return
+        val list = function.valueParameterList ?: return
+        if (list.replaceText("()")) function.containingKtFile.removeImportIfUnused(eventId, list)
     }
 
     @OptIn(KaExperimentalApi::class)

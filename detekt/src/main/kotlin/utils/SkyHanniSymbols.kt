@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.analysis.api.symbols.KaSymbolModality
 import org.jetbrains.kotlin.analysis.api.types.KaClassType
 import org.jetbrains.kotlin.analysis.api.types.KaType
 import org.jetbrains.kotlin.name.ClassId
+import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
@@ -33,6 +34,16 @@ object SkyHanniSymbols {
         classKind == KaClassKind.INTERFACE || modality == KaSymbolModality.ABSTRACT || modality == KaSymbolModality.SEALED
 
     fun KaClassSymbol.displayName(): String = classId?.shortClassName?.asString() ?: "event"
+
+    fun KaClassSymbol.primaryFunctionCandidate(): String? {
+        val id = classId ?: return null
+        val ownName = id.shortClassName.asString()
+        val base = if (ownName.endsWith("Event")) ownName else id.outerClassId?.shortClassName?.asString() ?: return null
+        return base.removeSuffix("Event").removePrefix("SkyHanni").takeIf(String::isNotEmpty)?.let { "on$it" }
+    }
+
+    fun KaAnnotated.handleEventEntry(): KtAnnotationEntry? =
+        annotations[SkyHanniFqNames.HANDLE_EVENT_ID].firstOrNull()?.psi as? KtAnnotationEntry
 
     fun KaType.displayName(): String = (this as? KaClassType)?.classId?.shortClassName?.asString() ?: "event"
 

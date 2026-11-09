@@ -56,12 +56,16 @@ EventRules:
     autoCorrect: true
   MissingHandleEvent:
     active: true
+    autoCorrect: true
   RedundantHandleEvent:
     active: true
+    autoCorrect: true
   MissingPrimaryFunction:
     active: true
+    autoCorrect: true
   DuplicatePrimaryFunction:
     active: true
+    autoCorrect: true
   MismatchedPrimaryFunction:
     active: true
     autoCorrect: true
@@ -75,3 +79,4 @@ ModuleRules:
     autoCorrect: true
   SkyHanniModuleOnlyOnObjects:
     active: true
+    autoCorrect: true

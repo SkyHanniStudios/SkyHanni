@@ -42,5 +42,6 @@ class MissingHandleEvent(config: Config, private val index: PrimaryFunctionIndex
             text?.takeUnless { isReferencedInFile(function) }
         } ?: return
         (function.nameIdentifier ?: function).reportIssue(message, function)
+        function.addAnnotation(SkyHanniFqNames.HANDLE_EVENT)
     }
 }
