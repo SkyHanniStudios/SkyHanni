@@ -1,5 +1,6 @@
 package utils
 
+import org.jetbrains.kotlin.analysis.api.KaExperimentalApi
 import org.jetbrains.kotlin.analysis.api.KaSession
 import org.jetbrains.kotlin.analysis.api.annotations.KaAnnotated
 import org.jetbrains.kotlin.analysis.api.annotations.KaAnnotationValue
@@ -11,8 +12,10 @@ import org.jetbrains.kotlin.analysis.api.types.KaClassType
 import org.jetbrains.kotlin.analysis.api.types.KaType
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.psi.KtClassOrObject
+import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtObjectDeclaration
+import org.jetbrains.kotlin.psi.psiUtil.collectDescendantsOfType
 import org.jetbrains.kotlin.psi.psiUtil.containingClassOrObject
 
 object SkyHanniSymbols {
@@ -61,10 +64,14 @@ object SkyHanniSymbols {
 
     fun KtNamedFunction.isObjectMember(): Boolean = containingClassOrObject is KtObjectDeclaration
 
+    @OptIn(KaExperimentalApi::class)
+    fun KaSession.isReferencedInFile(function: KtNamedFunction): Boolean =
+        function.containingKtFile
+            .collectDescendantsOfType<KtNameReferenceExpression> { it.getReferencedName() == function.name }
+            .any { it.resolveSymbol()?.psi == function }
+
     fun KtClassOrObject.isInSkyHanniPackage(): Boolean {
         val packageName = getClassId()?.packageFqName?.asString() ?: return false
         return packageName == SkyHanniFqNames.ROOT_PACKAGE || packageName.startsWith("${SkyHanniFqNames.ROOT_PACKAGE}.")
     }
-
-    fun primaryFunctionCandidate(className: String): String = "on${className.removeSuffix("Event")}"
 }

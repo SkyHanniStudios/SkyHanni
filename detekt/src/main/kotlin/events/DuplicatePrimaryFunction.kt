@@ -6,7 +6,6 @@ import dev.detekt.api.Config
 import org.jetbrains.kotlin.analysis.api.analyze
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import utils.SkyHanniFqNames
-import utils.SkyHanniSymbols.isAbstractDeclaration
 import utils.SkyHanniSymbols.isSkyHanniEventClass
 import utils.SkyHanniSymbols.primaryFunctionName
 
@@ -20,7 +19,7 @@ class DuplicatePrimaryFunction(config: Config, private val index: PrimaryFunctio
         if (classOrObject.name == null) return
         val finding = analyze(classOrObject) {
             val symbol = classOrObject.classSymbol ?: return@analyze null
-            if (symbol.isAbstractDeclaration() || !isSkyHanniEventClass(symbol)) return@analyze null
+            if (!isSkyHanniEventClass(symbol)) return@analyze null
             val name = symbol.primaryFunctionName() ?: return@analyze null
             val duplicates = index.lookup(this, classOrObject.project, name).filter { it != symbol.classId }
             if (duplicates.isEmpty()) return@analyze null

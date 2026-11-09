@@ -58,10 +58,8 @@ EventRules:
     active: true
   RedundantHandleEvent:
     active: true
-    autoCorrect: true
   MissingPrimaryFunction:
     active: true
-    autoCorrect: true
   DuplicatePrimaryFunction:
     active: true
   MismatchedPrimaryFunction:
