@@ -5,13 +5,13 @@ import dev.detekt.api.Config
 import org.jetbrains.kotlin.analysis.api.KaSession
 import org.jetbrains.kotlin.analysis.api.analyze
 import org.jetbrains.kotlin.analysis.api.symbols.KaClassSymbol
-import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtValueArgument
 import org.jetbrains.kotlin.psi.psiUtil.containingClassOrObject
 import utils.SkyHanniSymbols.displayName
 import utils.SkyHanniSymbols.eventParameterType
 import utils.SkyHanniSymbols.eventReceiverType
+import utils.SkyHanniSymbols.eventTypeArguments
 import utils.SkyHanniSymbols.explicitEventTypes
 import utils.SkyHanniSymbols.handleEventEntry
 import utils.SkyHanniSymbols.isObjectMember
@@ -41,7 +41,7 @@ class MismatchedPrimaryFunction(config: Config) : SkyHanniAnalysisRule(
             if (siblings.any { it.name == expected }) return@analyze null
             if (siblings.filterIsInstance<KtNamedFunction>().any { handledEvent(it)?.classId == event.classId }) return@analyze null
             val explicit = function.symbol.explicitEventTypes()
-            val eventTypeArgument = function.symbol.handleEventEntry()?.eventTypeArgument()
+            val eventTypeArgument = function.symbol.handleEventEntry()?.eventTypeArguments()?.singleOrNull()
                 ?.takeIf { explicit == listOfNotNull(event.classId) }
             Mismatch(expected, event.displayName(), !isReferencedInFile(function), eventTypeArgument)
         } ?: return
@@ -53,20 +53,10 @@ class MismatchedPrimaryFunction(config: Config) : SkyHanniAnalysisRule(
         if (function.nameIdentifier?.replaceText(mismatch.expected) == true) mismatch.redundantEventType?.removeArgument()
     }
 
-    private fun KtAnnotationEntry.eventTypeArgument(): KtValueArgument? =
-        valueArguments.filterIsInstance<KtValueArgument>().firstOrNull { argument ->
-            val argumentName = argument.getArgumentName()?.asName?.asString()
-            argumentName == EVENT_TYPE || (argumentName == null && valueArguments.indexOf(argument) == 0)
-        }
-
     private fun KaSession.handledEvent(function: KtNamedFunction): KaClassSymbol? {
         val symbol = function.symbol
         symbol.handleEventEntry() ?: return null
         return symbol.explicitEventTypes().firstOrNull()?.let { findClass(it) }
             ?: (eventParameterType(function) ?: eventReceiverType(function))?.expandedSymbol
-    }
-
-    companion object {
-        private const val EVENT_TYPE = "eventType"
     }
 }

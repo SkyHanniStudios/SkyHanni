@@ -18,6 +18,7 @@ class EventRuleSetProvider : SkyHanniRuleSetProvider("EventRules") {
             "DuplicatePrimaryFunction" to { config -> DuplicatePrimaryFunction(config, index) },
             "MismatchedPrimaryFunction" to ::MismatchedPrimaryFunction,
             "UnusedEventParameter" to { config -> UnusedEventParameter(config, index) },
+            "RedundantEventType" to { config -> RedundantEventType(config, index) },
         )
     }
 }

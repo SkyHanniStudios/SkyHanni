@@ -72,6 +72,9 @@ EventRules:
   UnusedEventParameter:
     active: true
     autoCorrect: true
+  RedundantEventType:
+    active: true
+    autoCorrect: true
 
 ModuleRules:
   MissingSkyHanniModule:

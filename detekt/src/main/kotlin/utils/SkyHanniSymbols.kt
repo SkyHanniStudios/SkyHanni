@@ -16,6 +16,7 @@ import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtObjectDeclaration
+import org.jetbrains.kotlin.psi.KtValueArgument
 import org.jetbrains.kotlin.psi.psiUtil.collectDescendantsOfType
 import org.jetbrains.kotlin.psi.psiUtil.containingClassOrObject
 
@@ -44,6 +45,12 @@ object SkyHanniSymbols {
 
     fun KaAnnotated.handleEventEntry(): KtAnnotationEntry? =
         annotations[SkyHanniFqNames.HANDLE_EVENT_ID].firstOrNull()?.psi as? KtAnnotationEntry
+
+    fun KtAnnotationEntry.eventTypeArguments(): List<KtValueArgument> =
+        valueArguments.filterIsInstance<KtValueArgument>().filterIndexed { index, argument ->
+            val name = argument.getArgumentName()?.asName?.asString()
+            name in EVENT_TYPE_ARGUMENTS || (name == null && index == 0)
+        }
 
     fun KaType.displayName(): String = (this as? KaClassType)?.classId?.shortClassName?.asString() ?: "event"
 
