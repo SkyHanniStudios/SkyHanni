@@ -60,6 +60,8 @@ EventRules:
         active: true
     MismatchedPrimaryFunction:
         active: true
+    UnusedEventParameter:
+        active: true
 
 ModuleRules:
     MissingSkyHanniModule:

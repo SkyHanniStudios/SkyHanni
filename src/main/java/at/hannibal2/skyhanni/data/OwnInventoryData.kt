@@ -49,9 +49,8 @@ object OwnInventoryData {
     )
 
     @HandleEvent(priority = HandleEvent.LOW, receiveCancelled = true, onlyOnSkyblock = true)
-    fun onItemPickupReceivePacket(event: PacketReceivedEvent) {
-        val packet = event.packet
-        when (packet) {
+    private fun onItemPickupReceivePacket(event: PacketReceivedEvent) {
+        when (val packet = event.packet) {
             is ClientboundTakeItemEntityPacket -> {
                 dirty = true
             }
@@ -88,7 +87,7 @@ object OwnInventoryData {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onClickEntity(event: PacketSentEvent) {
+    private fun onPacketSent(event: PacketSentEvent) {
         val packet = event.packet
 
         if (packet is ServerboundContainerClickPacket) {
@@ -97,7 +96,7 @@ object OwnInventoryData {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onTick() {
+    private fun onTick() {
         if (inventorySnapshot.isEmpty()) {
             inventorySnapshot = getCurrentItems()
         }
@@ -128,7 +127,7 @@ object OwnInventoryData {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         inventorySnapshot = InventorySnapshot()
     }
 
@@ -159,14 +158,14 @@ object OwnInventoryData {
     }
 
     @HandleEvent(InventoryCloseEvent::class)
-    fun onInventoryClose() {
+    private fun onInventoryClose() {
         val item = MinecraftCompat.localPlayerOrNull?.getItemOnCursor() ?: return
         val internalNameOrNull = item.getInternalNameOrNull() ?: return
         ignoreItem(500.milliseconds, internalNameOrNull)
     }
 
     @HandleEvent
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         ignoreItem(500.milliseconds) { true }
 
         val itemName = event.item?.hoverName.formattedTextCompatLeadingWhiteLessResets()
@@ -219,7 +218,7 @@ object OwnInventoryData {
     }
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         sackToInventoryChatPattern.matchMatcher(event.message) {
             val name = group("name")
             ignoreItem(500.milliseconds) { it.repoItemName.contains(name) }

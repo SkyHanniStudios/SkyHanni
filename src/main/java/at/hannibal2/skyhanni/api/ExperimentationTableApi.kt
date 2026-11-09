@@ -364,11 +364,12 @@ object ExperimentationTableApi {
         }
     }
 
+    @Suppress("MismatchedPrimaryFunctionName")
     @HandleEvent(
         onlyOnIsland = IslandType.PRIVATE_ISLAND,
         eventTypes = [WorldChangeEvent::class, ItemAddInInventoryEvent::class],
     )
-    fun refreshBottlesInInventory() {
+    private fun refreshBottlesInInventory() {
         currentBottlesInInventory = getBottlesInOwnInventory().takeIf {
             it != currentBottlesInInventory
         } ?: return
