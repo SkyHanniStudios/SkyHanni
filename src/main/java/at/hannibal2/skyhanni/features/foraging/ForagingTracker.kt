@@ -12,7 +12,6 @@ import at.hannibal2.skyhanni.data.ItemAddManager
 import at.hannibal2.skyhanni.data.jsonobjects.repo.TreeGiftBonusDropsJson
 import at.hannibal2.skyhanni.events.ItemAddEvent
 import at.hannibal2.skyhanni.events.ItemInHandChangeEvent
-import at.hannibal2.skyhanni.events.OwnInventoryItemUpdateEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.events.SackChangeEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
@@ -121,13 +120,13 @@ object ForagingTracker : SkyHanniBucketedItemTracker<ForagingTrackerLegacy.TreeT
     }
 
     @HandleEvent
-    fun onItemAdd(event: ItemAddEvent) {
+    private fun onItemAdd(event: ItemAddEvent) {
         if (!isInIsland() || event.source != ItemAddManager.Source.COMMAND) return
         event.addItemFromEvent()
     }
 
     @HandleEvent
-    fun onSackChange(event: SackChangeEvent) {
+    private fun onSackChange(event: SackChangeEvent) {
         if (!isInIsland()) return
         event.addLogs()
     }
@@ -176,7 +175,7 @@ object ForagingTracker : SkyHanniBucketedItemTracker<ForagingTrackerLegacy.TreeT
     private val loot = mutableMapOf<NeuInternalName, Int>()
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!isInIsland()) return
         event.tryReadLoot()
         event.tryBlock()
@@ -185,8 +184,8 @@ object ForagingTracker : SkyHanniBucketedItemTracker<ForagingTrackerLegacy.TreeT
     private val STRETCHING_STICKS = "STRETCHING_STICKS".toInternalName()
     private var currentStretchingSticks = 0
 
-    @HandleEvent(OwnInventoryItemUpdateEvent::class)
-    fun onOwnInventoryItemUpdate() {
+    @HandleEvent
+    private fun onOwnInventoryItemUpdate() {
         if (!isInIsland()) return
         val treeType = treeType ?: return
 
@@ -209,7 +208,7 @@ object ForagingTracker : SkyHanniBucketedItemTracker<ForagingTrackerLegacy.TreeT
     private var dropsJsonCategories: List<DropCategoryData> = emptyList()
 
     @HandleEvent
-    fun onRepoReload(event: RepositoryReloadEvent) {
+    private fun onRepoReload(event: RepositoryReloadEvent) {
         dropsJson = event.getConstant<TreeGiftBonusDropsJson>("foraging/TreeGiftBonusDrops")
         val dropsJson = dropsJson ?: return
         dropsJsonCategories = buildList {
@@ -362,7 +361,7 @@ object ForagingTracker : SkyHanniBucketedItemTracker<ForagingTrackerLegacy.TreeT
     }
 
     @HandleEvent
-    fun onIslandLeave() {
+    private fun onIslandLeave() {
         if (!isInIsland()) return
         firstUpdate()
     }
@@ -370,7 +369,7 @@ object ForagingTracker : SkyHanniBucketedItemTracker<ForagingTrackerLegacy.TreeT
     private fun isInIsland() = IslandTypeTag.FORAGING_CUSTOM_TREES.isInIsland()
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shresetforagingtracker") {
             description = "Resets the Foraging Tracker."
             category = CommandCategory.USERS_RESET
@@ -379,7 +378,7 @@ object ForagingTracker : SkyHanniBucketedItemTracker<ForagingTrackerLegacy.TreeT
     }
 
     @HandleEvent
-    fun onItemInHandChange(event: ItemInHandChangeEvent) {
+    private fun onItemInHandChange(event: ItemInHandChangeEvent) {
         if (!isInIsland()) return
         val isAxe = event.newItem.getItemStack().getItemCategoryOrNull() == ItemCategory.AXE
         if (isAxe != hasHeldAxe) {

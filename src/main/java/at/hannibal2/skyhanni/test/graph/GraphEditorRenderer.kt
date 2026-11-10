@@ -1,7 +1,6 @@
 package at.hannibal2.skyhanni.test.graph
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ColorUtils
@@ -45,14 +44,14 @@ object GraphEditorRenderer {
     private val edgeSelectedColor = LorenzColor.DARK_RED.addOpacity(150)
 
     @HandleEvent(priority = HandleEvent.HIGHEST)
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!isEnabled()) return
         nodes.forEach { event.drawNode(it) }
         edges.forEach { event.drawEdge(it) }
     }
 
-    @HandleEvent(GuiRenderEvent.GuiOverlayRenderEvent::class)
-    fun onGuiRenderOverlay() {
+    @HandleEvent
+    private fun onGuiRenderOverlay() {
         if (!isEnabled()) return
         GraphEditor.config.infoDisplay.renderRenderables(buildDisplay(), posLabel = "Graph Info")
     }
@@ -66,11 +65,9 @@ object GraphEditorRenderer {
         }
 
         val config = GraphEditor.config
-        if (inTextMode) {
-            add("§eExit Text Mode: §6${config.exitKey.name()}")
-        } else {
-            add("§eExit Graph Editor: §6${config.exitKey.name()}")
-        }
+        val exitFormat = if (inTextMode) "Text Mode" else "Graph Editor"
+        add("§eExit $exitFormat: §6${config.exitKey.name()}")
+
         if (!inNodeMoveMode && !inTextMode) {
             add("§ePlace: §6${config.placeKey.name()}")
             add("§eSelect Nearest: §6${config.selectKey.name()}")

@@ -13,9 +13,7 @@ import at.hannibal2.skyhanni.data.ProfileStorageData
 import at.hannibal2.skyhanni.data.jsonobjects.repo.GardenJson
 import at.hannibal2.skyhanni.events.BlockClickEvent
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.IslandJoinEvent
-import at.hannibal2.skyhanni.events.ProfileDataReadyEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.events.garden.GardenToolChangeEvent
 import at.hannibal2.skyhanni.events.garden.farming.CropClickEvent
@@ -101,12 +99,12 @@ object GardenApi {
     private var extraFarmingTools = emptySet<NeuInternalName>()
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onItemInHandChange() {
+    private fun onItemInHandChange() {
         checkItemInHand()
     }
 
-    @HandleEvent(InventoryCloseEvent::class)
-    fun onInventoryClose() {
+    @HandleEvent
+    private fun onInventoryClose() {
         if (!inGarden()) return
         checkItemInHand()
         DelayedRun.runDelayed(500.milliseconds) {
@@ -117,7 +115,7 @@ object GardenApi {
     }
 
     @HandleEvent
-    fun onTick(event: SkyHanniTickEvent) {
+    private fun onTick(event: SkyHanniTickEvent) {
         if (!inGarden()) return
         if (event.isMod(10, 1)) {
             inBarn = barnArea.isPlayerInside()
@@ -130,14 +128,14 @@ object GardenApi {
     }
 
     @HandleEvent
-    fun onIslandJoin(event: IslandJoinEvent) {
+    private fun onIslandJoin(event: IslandJoinEvent) {
         if (event.island != IslandType.GARDEN) return
         checkItemInHand()
         checkCurrentPlot()
     }
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Garden API")
         if (!inGarden()) return event.addIrrelevant("Not in garden")
 
@@ -181,8 +179,6 @@ object GardenApi {
     private fun isOtherTool(internalName: NeuInternalName): Boolean =
         internalName in extraFarmingTools
 
-    fun NeuInternalName.isFarmingTool() = getCropType() != null || isOtherTool(this)
-
     fun inGarden() = IslandType.GARDEN.isInIsland()
 
     fun isCurrentlyFarming() =
@@ -224,8 +220,8 @@ object GardenApi {
         HoppityCollectionStats.inInventory ||
         PesthunterProfit.isInInventory()
 
-    @HandleEvent(ProfileDataReadyEvent::class)
-    fun onProfileDataReady() {
+    @HandleEvent
+    private fun onProfileDataReady() {
         GardenBestCropTime.reset()
     }
 
@@ -247,7 +243,7 @@ object GardenApi {
     val toolkitInventory = InventoryDetector { toolkitInventoryPattern }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onBlockClick(event: BlockClickEvent) {
+    private fun onBlockClick(event: BlockClickEvent) {
         // TODO Reevaluate this if Hypixel ever adds right click harvest crops
         if (event.clickType != InteractClickType.LEFT_CLICK) return
 
@@ -308,7 +304,7 @@ object GardenApi {
     }
 
     @HandleEvent
-    fun onRepoReload(event: RepositoryReloadEvent) {
+    private fun onRepoReload(event: RepositoryReloadEvent) {
         val data = event.getConstant<GardenJson>("Garden")
         gardenExpTiers = data.gardenExp
         totalAmountVisitorsExisting = data.visitors.size
@@ -316,7 +312,7 @@ object GardenApi {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shresetcropspeed") {
             description = "Resets garden crop speed data and best crop time data"
             category = CommandCategory.USERS_RESET

@@ -13,10 +13,7 @@ import at.hannibal2.skyhanni.data.model.graph.GraphNode
 import at.hannibal2.skyhanni.data.model.graph.GraphNodeTag
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
 import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
-import at.hannibal2.skyhanni.events.IslandGraphReloadEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
-import at.hannibal2.skyhanni.events.minecraft.WorldChangeEvent
 import at.hannibal2.skyhanni.features.misc.pathfind.NavigationFeedback
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
@@ -181,13 +178,13 @@ object FastFairySoulsPathfinder {
         private fun isDataEnabled() = data?.let { !it.disabled } ?: false
     }
 
-    @HandleEvent(WorldChangeEvent::class)
-    fun onWorldChange() {
+    @HandleEvent
+    private fun onWorldChange() {
         data = null
     }
 
     @HandleEvent
-    fun onTick(event: SkyHanniTickEvent) {
+    private fun onTick(event: SkyHanniTickEvent) {
         if (!isEnabled()) return
         if (event.isMod(5)) {
             if (calculating) {
@@ -197,8 +194,8 @@ object FastFairySoulsPathfinder {
         }
     }
 
-    @HandleEvent(SecondPassedEvent::class)
-    fun onSecondPassed() {
+    @HandleEvent
+    private fun onSecondPassed() {
         if (!isEnabled()) return
 
         data?.let {
@@ -210,7 +207,7 @@ object FastFairySoulsPathfinder {
     }
 
     @HandleEvent
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         if (event.inventoryName != "Fairy Souls Guide") return
 
         for (stack in event.inventoryItems.values) {
@@ -297,20 +294,20 @@ object FastFairySoulsPathfinder {
     }
 
     @HandleEvent
-    fun onSystemMessage(event: SystemMessageEvent.Allow) {
+    private fun onSystemMessage(event: SystemMessageEvent.Allow) {
         if (duplicatePattern.matches(event.cleanMessage) || newPattern.matches(event.cleanMessage)) {
             data?.foundNearby()
         }
     }
 
-    @HandleEvent(IslandGraphReloadEvent::class)
-    fun onIslandGraphReload() {
+    @HandleEvent
+    private fun onIslandGraphReload() {
         if (isEnabled()) reload()
         else data = null
     }
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Fairy Souls Pathfinder")
 
         if (!isEnabled()) return event.addIrrelevant("disabled")
@@ -337,7 +334,7 @@ object FastFairySoulsPathfinder {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shsoulsreset") {
             description = "Reset known Fairy Souls for the current island."
             category = CommandCategory.USERS_RESET

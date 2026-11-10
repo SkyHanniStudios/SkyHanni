@@ -3,7 +3,6 @@ package at.hannibal2.skyhanni.features.hunting
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
-import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.AllEntitiesGetter
 import at.hannibal2.skyhanni.utils.EntityUtils
@@ -35,7 +34,7 @@ object LassoDisplay {
 
     // TODO: use entity events
     @OptIn(AllEntitiesGetter::class)
-    @HandleEvent(SkyHanniTickEvent::class, onlyOnSkyblock = true)
+    @HandleEvent(onlyOnSkyblock = true)
     private fun onTick() {
         if (!config.lassoDisplay) return
         var isReel = false

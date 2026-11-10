@@ -13,7 +13,6 @@ import at.hannibal2.skyhanni.data.SkyHanniNotification
 import at.hannibal2.skyhanni.data.jsonobjects.repo.ItemsJson
 import at.hannibal2.skyhanni.data.jsonobjects.repo.neu.NeuItemJson
 import at.hannibal2.skyhanni.data.model.SkyblockStat
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
 import at.hannibal2.skyhanni.events.NeuRepositoryReloadEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
@@ -154,12 +153,9 @@ object ItemUtils {
         itemBaseStats = allItems
     }
 
-    // Might not contain all actual item stats, compare with getRawBaseStats()
-    fun NeuInternalName.getBaseStats(): Map<SkyblockStat, Int> = itemBaseStats[this].orEmpty()
-
     fun NeuInternalName.getRawBaseStats(): Map<String, Int> = itemBaseStatsRaw[this].orEmpty()
 
-    @HandleEvent(ConfigLoadEvent::class)
+    @HandleEvent
     private fun onConfigLoad() {
         ConditionalUtils.onToggle(SkyHanniMod.feature.misc.replaceRomanNumerals) {
             itemNameCache.clear()
@@ -183,7 +179,7 @@ object ItemUtils {
     )
 
     /**
-     * For use in [ItemUtilsTest].
+     * For use [ItemUtilsTest]
      */
     internal fun SafeItemStack.cacheInternalName(internalName: NeuInternalName) {
         internalNameCache[IdentityCharacteristics(this)] = internalName
@@ -571,13 +567,6 @@ object ItemUtils {
     fun SafeItemStack.getItemRarityOrNull(): LorenzRarity? {
         this.updateCategoryAndRarity()
         return cachedData.itemRarity
-    }
-
-    // Taken from NEU
-    fun SafeItemStack.editItemInfo(displayName: String, lore: List<String>): SafeItemStack {
-        this.setCustomItemName(displayName)
-        this.setLoreString(lore)
-        return this
     }
 
     fun SafeItemStack.editItemInfo(displayName: Component, lore: List<Component>): SafeItemStack {
@@ -998,11 +987,6 @@ object ItemUtils {
             List(loreList.size) { loreList.getStringOrDefault(it) }
         }
     }
-
-    fun CompoundTag.getCompoundList(key: String): List<CompoundTag> =
-        NbtCompat.getCompoundTagList(this, key).let { loreList ->
-            List(loreList.size) { loreList.getCompoundOrDefault(it) }
-        }
 
     fun CompoundTag.containsCompound(key: String): Boolean {
         return NbtCompat.containsCompound(this, key)

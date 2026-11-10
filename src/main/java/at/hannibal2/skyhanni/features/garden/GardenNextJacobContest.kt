@@ -14,12 +14,8 @@ import at.hannibal2.skyhanni.data.jsonobjects.elitedev.EliteFarmingContest
 import at.hannibal2.skyhanni.data.model.SkyblockStat
 import at.hannibal2.skyhanni.data.model.TabWidget
 import at.hannibal2.skyhanni.data.title.TitleManager
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.WidgetUpdateEvent
 import at.hannibal2.skyhanni.features.garden.GardenApi.getItemStackCopy
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -217,13 +213,13 @@ object GardenNextJacobContest {
         }
     }
 
-    @HandleEvent(SecondPassedEvent::class)
+    @HandleEvent
     private fun onSecondPassed() {
         if (!isEnabled() || calendarDetector.isInside()) return
         update()
     }
 
-    @HandleEvent(InventoryCloseEvent::class, onlyOnIsland = IslandType.GARDEN)
+    @HandleEvent(onlyOnIsland = IslandType.GARDEN)
     private fun onInventoryClose() {
         if (!isEnabled()) return
         update()
@@ -321,7 +317,7 @@ object GardenNextJacobContest {
         SkyHanniMod.configManager.saveConfig(ConfigFileType.JACOB_CONTESTS, "Save contests")
     }
 
-    @HandleEvent(ConfigLoadEvent::class)
+    @HandleEvent
     private fun onConfigLoad() {
         val savedContests = SkyHanniMod.jacobContestsData.knownContests
         val savedYear = savedContests.firstOrNull()?.endTime?.toSkyBlockTime()?.year ?: return
@@ -450,14 +446,14 @@ object GardenNextJacobContest {
         )
     }
 
-    @HandleEvent(GuiRenderEvent.GuiOverlayRenderEvent::class)
+    @HandleEvent
     private fun onGuiRenderOverlay() {
         if (!isEnabled()) return
         val display = display ?: simpleDisplay ?: return
         config.position.renderRenderable(display, posLabel = "Next Jacob Contest")
     }
 
-    @HandleEvent(GuiRenderEvent.ChestGuiOverlayRenderEvent::class)
+    @HandleEvent
     private fun onChestGuiRender() {
         if (!config.display || !calendarDetector.isInside()) return
         val display = display ?: return

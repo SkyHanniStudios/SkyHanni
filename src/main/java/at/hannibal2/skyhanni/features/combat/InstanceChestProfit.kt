@@ -7,11 +7,8 @@ import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.ProfileStorageData
 import at.hannibal2.skyhanni.events.GuiContainerEvent
 import at.hannibal2.skyhanni.events.GuiKeyPressEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
 import at.hannibal2.skyhanni.events.RenderItemTipEvent
-import at.hannibal2.skyhanni.events.dungeon.DungeonEnterEvent
-import at.hannibal2.skyhanni.events.kuudra.KuudraEnterEvent
 import at.hannibal2.skyhanni.features.combat.InstanceChestAPI.CroesusChestType
 import at.hannibal2.skyhanni.features.combat.InstanceChestAPI.isInCroesusMenu
 import at.hannibal2.skyhanni.features.combat.InstanceChestAPI.isInstanceChestGUI
@@ -212,7 +209,7 @@ object InstanceChestProfit {
         profileStorage?.instanceChestFavoriteItems = favoriteItems
     }
 
-    @HandleEvent(InventoryCloseEvent::class)
+    @HandleEvent
     private fun onInventoryClose() {
         alreadyProcessedChests.clear()
         croesusDisplayList.clear()
@@ -409,11 +406,11 @@ object InstanceChestProfit {
         add(Renderable.emptyText())
         add(Renderable.text("§d§lAll Chest Profits"))
 
-        for (it in chestProfits.entries.sortedByDescending { it.value }) {
-            color = if (it.value < 0) "§c"
+        for ((chest, profit) in chestProfits.entries.sortedByDescending { it.value }) {
+            color = if (profit < 0) "§c"
             else "§a"
 
-            add(Renderable.text("${it.key} $color${it.value.formatCoin()}"))
+            add(Renderable.text("$chest $color${profit.formatCoin()}"))
         }
     }
 
@@ -430,26 +427,23 @@ object InstanceChestProfit {
 
     @HandleEvent
     private fun onChestGuiRender() {
-        if (config.enabled && InventoryUtils.inInventory())
-            if (isInstanceChestGUI()) {
-                chestDisplay?.let {
-                    config.position.renderRenderable(it, posLabel = "Instance Chest Profit")
-                }
-            }
-        if (config.croesusAllChestsOverlay && InventoryUtils.inInventory())
-            if (isInCroesusMenu()) {
-                croesusDisplay?.let {
-                    config.croesusPosition.renderRenderable(it, posLabel = "Croesus Chest Profit")
-                }
-            }
+        if (!InventoryUtils.inInventory()) return
+
+        if (config.enabled && isInstanceChestGUI()) chestDisplay?.let {
+            config.position.renderRenderable(it, posLabel = "Instance Chest Profit")
+        }
+
+        if (config.croesusAllChestsOverlay && isInCroesusMenu()) croesusDisplay?.let {
+            config.croesusPosition.renderRenderable(it, posLabel = "Croesus Chest Profit")
+        }
     }
 
-    @HandleEvent(DungeonEnterEvent::class)
+    @HandleEvent
     private fun onDungeonEnter() {
         chestProfits.clear()
     }
 
-    @HandleEvent(KuudraEnterEvent::class)
+    @HandleEvent
     private fun onKuudraEnter() {
         chestProfits.clear()
     }

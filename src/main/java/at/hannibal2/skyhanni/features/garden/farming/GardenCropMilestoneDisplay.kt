@@ -19,14 +19,13 @@ import at.hannibal2.skyhanni.data.garden.cropmilestones.CropMilestonesApi.percen
 import at.hannibal2.skyhanni.data.garden.cropmilestones.CustomGoals.getCustomGoal
 import at.hannibal2.skyhanni.data.title.TitleContext
 import at.hannibal2.skyhanni.data.title.TitleManager
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.features.garden.CropType
 import at.hannibal2.skyhanni.features.garden.FarmingFortuneDisplay
 import at.hannibal2.skyhanni.features.garden.GardenApi
 import at.hannibal2.skyhanni.features.garden.GardenApi.getCurrentlyFarmedCrop
 import at.hannibal2.skyhanni.features.garden.farming.GardenCropSpeed.setSpeed
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
-import at.hannibal2.skyhanni.utils.ConditionalUtils.onToggle
+import at.hannibal2.skyhanni.utils.ConditionalUtils
 import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 import at.hannibal2.skyhanni.utils.NumberUtil.formatPercentage
@@ -62,18 +61,16 @@ object GardenCropMilestoneDisplay {
     private var displayCrop: CropType? = null
 
     @HandleEvent
-    private fun onConfigLoad() {
-        onToggle(
-            config.showMaxTier,
-            config.highestTimeFormat,
-            config.overflow.cropMilestoneDisplay,
-        ) {
-            GardenBestCropTime.updateTimeTillNextCrop()
-            update()
-        }
+    private fun onConfigLoad() = ConditionalUtils.onToggle(
+        config.showMaxTier,
+        config.highestTimeFormat,
+        config.overflow.cropMilestoneDisplay,
+    ) {
+        GardenBestCropTime.updateTimeTillNextCrop()
+        update()
     }
 
-    @HandleEvent(GuiRenderEvent.GuiOverlayRenderEvent::class, onlyOnIsland = IslandType.GARDEN)
+    @HandleEvent(onlyOnIsland = IslandType.GARDEN)
     private fun onGuiRenderOverlay() {
         if (!isEnabled()) return
         if (GardenApi.hideExtraGuis()) return

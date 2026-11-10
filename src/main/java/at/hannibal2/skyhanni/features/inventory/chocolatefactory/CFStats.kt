@@ -2,7 +2,6 @@ package at.hannibal2.skyhanni.features.inventory.chocolatefactory
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.features.event.hoppity.HoppityApi
 import at.hannibal2.skyhanni.features.event.hoppity.summary.HoppityEventSummary
 import at.hannibal2.skyhanni.features.inventory.chocolatefactory.data.ChocolateAmount
@@ -33,14 +32,14 @@ object CFStats {
 
     private var display: Renderable? = null
 
-    @HandleEvent(SecondPassedEvent::class, onlyOnSkyblock = true)
-    fun onSecondPassed() {
+    @HandleEvent(onlyOnSkyblock = true)
+    private fun onSecondPassed() {
         if (!CFApi.chocolateFactoryPaused) return
         updateDisplay()
     }
 
     @HandleEvent
-    fun onChestGuiRender() {
+    private fun onChestGuiRender() {
         if (!CFApi.inChocolateFactory && !CFApi.chocolateFactoryPaused) return
         if (!config.statsDisplay) return
 
@@ -212,7 +211,7 @@ object CFStats {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.transform(42, "event.chocolateFactory.statsDisplayList") { element ->
             addToDisplayList(element, "TIME_TOWER", "TIME_TO_PRESTIGE")
         }

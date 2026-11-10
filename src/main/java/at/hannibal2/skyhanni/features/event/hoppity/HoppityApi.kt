@@ -8,9 +8,7 @@ import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.jsonobjects.repo.HoppityEggLocationsJson
 import at.hannibal2.skyhanni.events.DialogueResponseSentEvent
 import at.hannibal2.skyhanni.events.GuiContainerEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
-import at.hannibal2.skyhanni.events.IslandChangeEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.hoppity.EggFoundEvent
@@ -221,20 +219,18 @@ object HoppityApi {
         (item.`is`(Items.PLAYER_HEAD) || item.isStainedGlassPane()) &&
             item.hoverName.string.isNotEmpty() && item.getLore().isNotEmpty()
 
-    private fun postApiEggFoundEvent(type: HoppityEggType, event: SkyHanniChatEvent.Allow, note: String? = null) {
-        EggFoundEvent(
-            type,
-            chatEvent = event,
-            note = note,
-        ).post()
-    }
+    private fun postApiEggFoundEvent(
+        type: HoppityEggType,
+        event: SkyHanniChatEvent.Allow,
+        note: String? = null,
+    ) = EggFoundEvent(type, chatEvent = event, note = note).post()
 
     @HandleEvent
     private fun onRepoReload(event: RepositoryReloadEvent) {
         allowedHoppityIslands = event.getConstant<HoppityEggLocationsJson>("HoppityEggLocations").apiEggLocations.keys.toSet()
     }
 
-    @HandleEvent(IslandChangeEvent::class)
+    @HandleEvent
     private fun onIslandChange() {
         onHoppityIsland = SkyBlockUtils.inSkyBlock && allowedHoppityIslands.any { it.isInIsland() }
     }
@@ -247,7 +243,7 @@ object HoppityApi {
         lastHoppityCallAccept = SimpleTimeMark.now()
     }
 
-    @HandleEvent(InventoryCloseEvent::class)
+    @HandleEvent
     private fun onInventoryClose() {
         processedStraySlots.clear()
         if (lastHoppityCallAccept == null) return

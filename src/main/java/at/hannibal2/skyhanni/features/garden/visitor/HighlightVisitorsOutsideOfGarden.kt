@@ -5,7 +5,6 @@ import at.hannibal2.skyhanni.config.features.garden.visitor.VisitorConfig.Visito
 import at.hannibal2.skyhanni.data.jsonobjects.repo.GardenJson
 import at.hannibal2.skyhanni.data.jsonobjects.repo.GardenVisitor
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.entity.EntityClickEvent
 import at.hannibal2.skyhanni.mixins.hooks.RenderLivingEntityHelper
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -66,7 +65,7 @@ object HighlightVisitorsOutsideOfGarden {
 
     // TODO: optimize to not get entities every second
     @OptIn(AllEntitiesGetter::class)
-    @HandleEvent(SecondPassedEvent::class)
+    @HandleEvent
     private fun onSecondPassed() {
         if (!config.highlightVisitors) return
         val color = LorenzColor.DARK_RED.toColor().addAlpha(50)

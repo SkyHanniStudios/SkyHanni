@@ -6,7 +6,6 @@ import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.config.enums.OutsideSBFeature
 import at.hannibal2.skyhanni.config.features.mining.MiningEventConfig
 import at.hannibal2.skyhanni.data.IslandType
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.features.mining.eventtracker.MiningEventType.Companion.CompressFormat
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ConfigUtils
@@ -28,18 +27,14 @@ object MiningEventDisplay {
     private val islandEventData = mutableMapOf<IslandType, MiningIslandEventInfo>()
 
     @HandleEvent(onlyOnSkyblockOrFeatures = [OutsideSBFeature.MINING_EVENT_DISPLAY])
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         updateDisplay()
     }
 
-    @HandleEvent(GuiRenderEvent.GuiOverlayRenderEvent::class, onlyOnSkyblockOrFeatures = [OutsideSBFeature.MINING_EVENT_DISPLAY])
-    fun onGuiRenderOverlay() {
-        val shouldDisplay = if (SkyBlockUtils.inSkyBlock) {
-            MiningEventTracker.isMiningIsland() || config.outsideMining
-        } else {
-            // The @HandleEvent predicate already ensures the OutsideSBFeature is enabled, so always show.
-            true
-        }
+    @HandleEvent(onlyOnSkyblockOrFeatures = [OutsideSBFeature.MINING_EVENT_DISPLAY])
+    private fun onGuiRenderOverlay() {
+        // The @HandleEvent predicate already ensures the OutsideSBFeature is enabled, so always show when not in SB
+        val shouldDisplay = !SkyBlockUtils.inSkyBlock || MiningEventTracker.isMiningIsland() || config.outsideMining
         if (!config.enabled || !shouldDisplay) return
 
         config.position.renderRenderables(display, posLabel = "Mining Event Tracker")
@@ -135,7 +130,7 @@ object MiningEventDisplay {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.transform(46, "mining.miningEvent.compressedFormat") {
             ConfigUtils.migrateBooleanToEnum(it, CompressFormat.COMPACT_TEXT, CompressFormat.DEFAULT)
         }

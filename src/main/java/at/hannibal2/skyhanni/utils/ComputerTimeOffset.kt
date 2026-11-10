@@ -3,7 +3,6 @@ package at.hannibal2.skyhanni.utils
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
-import at.hannibal2.skyhanni.events.ProfileJoinEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.EnumUtils.next
@@ -151,11 +150,11 @@ object ComputerTimeOffset {
         )
     }
 
-    @HandleEvent(ProfileJoinEvent::class)
-    fun onProfileJoin() = DelayedRun.runDelayed(5.seconds, ::tryCheckOffset)
+    @HandleEvent
+    private fun onProfileJoin() = DelayedRun.runDelayed(5.seconds, ::tryCheckOffset)
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Computer Time Offset")
 
         if (state != State.NORMAL) {

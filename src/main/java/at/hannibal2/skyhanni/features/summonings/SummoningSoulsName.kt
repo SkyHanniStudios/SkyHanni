@@ -3,7 +3,6 @@ package at.hannibal2.skyhanni.features.summonings
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
-import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.AllEntitiesGetter
 import at.hannibal2.skyhanni.utils.EntityUtils
@@ -30,8 +29,8 @@ object SummoningSoulsName {
     private val mobsLastLocation = TimeLimitedCache<Int, LorenzVec>(6.minutes)
     private val mobsName = TimeLimitedCache<Int, String>(6.minutes)
 
-    @HandleEvent(SkyHanniTickEvent::class)
-    fun onTick() {
+    @HandleEvent
+    private fun onTick() {
         if (!isEnabled()) return
 
         // TODO use packets instead of this
@@ -74,7 +73,7 @@ object SummoningSoulsName {
     }
 
     @HandleEvent
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!isEnabled()) return
 
         for ((entity, name) in souls) {
@@ -84,7 +83,7 @@ object SummoningSoulsName {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         souls.clear()
         mobsLastLocation.clear()
         mobsName.clear()
