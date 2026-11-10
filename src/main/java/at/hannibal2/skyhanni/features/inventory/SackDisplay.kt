@@ -6,7 +6,6 @@ import at.hannibal2.skyhanni.config.features.inventory.SackDisplayConfig.NumberF
 import at.hannibal2.skyhanni.config.features.inventory.SackDisplayConfig.PriceFormatEntry
 import at.hannibal2.skyhanni.config.features.inventory.SackDisplayConfig.SortingTypeEntry
 import at.hannibal2.skyhanni.data.SackApi
-import at.hannibal2.skyhanni.events.GuiContainerEvent
 import at.hannibal2.skyhanni.events.SackOpenEvent
 import at.hannibal2.skyhanni.features.inventory.bazaar.BazaarApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule

@@ -7,8 +7,6 @@ import at.hannibal2.skyhanni.data.ElectionApi
 import at.hannibal2.skyhanni.data.Perk
 import at.hannibal2.skyhanni.data.Perk.Companion.toPerk
 import at.hannibal2.skyhanni.data.model.SkyblockStat.MAGIC_FIND
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderable
 import at.hannibal2.skyhanni.utils.TimeUtils.format

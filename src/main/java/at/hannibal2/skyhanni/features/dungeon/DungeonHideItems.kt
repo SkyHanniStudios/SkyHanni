@@ -26,6 +26,7 @@ import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.entity.item.ItemEntity
 import kotlin.time.Duration.Companion.milliseconds
 
+
 @SkyHanniModule
 object DungeonHideItems {
 
@@ -47,6 +48,7 @@ object DungeonHideItems {
 
     private fun isSkeletonSkull(entity: ArmorStand): Boolean = entity.getStandHelmet()?.cleanName == "Skeleton Skull"
 
+    @Suppress("CyclomaticComplexMethod")
     @HandleEvent(onlyOnIsland = IslandType.CATACOMBS)
     private fun onCheckRenderEntity(event: CheckRenderEntityEvent<Entity>) {
         val entity = event.entity

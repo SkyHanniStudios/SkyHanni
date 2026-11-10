@@ -1,7 +1,6 @@
 package at.hannibal2.skyhanni.data
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.events.InventoryOpenEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.LorenzColor
@@ -12,17 +11,17 @@ object HighlightOnHoverSlot {
     val currentSlots = mutableMapOf<Pair<Int, Int>, List<Int>>()
 
     @HandleEvent
-    fun onInventoryOpen(event: InventoryOpenEvent) {
+    private fun onInventoryOpen() {
         currentSlots.clear()
     }
 
     @HandleEvent
-    fun onInventoryClose() {
+    private fun onInventoryClose() {
         currentSlots.clear()
     }
 
     @HandleEvent(priority = HandleEvent.LOW, onlyOnSkyblock = true)
-    fun onBackgroundDrawn() {
+    private fun onBackgroundDrawn() {
         val list = currentSlots.flatMapTo(mutableSetOf()) { it.value }
         for (slot in InventoryUtils.getItemsInOpenChest()) {
             if (slot.index in list) {

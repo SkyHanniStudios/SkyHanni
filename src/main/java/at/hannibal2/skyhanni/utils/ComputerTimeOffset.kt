@@ -15,7 +15,6 @@ import java.net.InetAddress
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.INFINITE
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds

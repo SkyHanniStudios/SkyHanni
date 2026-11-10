@@ -3,9 +3,6 @@ package at.hannibal2.skyhanni.features.garden.farming.lane
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.title.TitleContext
 import at.hannibal2.skyhanni.data.title.TitleManager
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.garden.GardenToolChangeEvent
-import at.hannibal2.skyhanni.events.garden.farming.FarmingLaneSwitchEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.features.garden.GardenApi
 import at.hannibal2.skyhanni.features.garden.farming.lane.FarmingLaneApi.getValue

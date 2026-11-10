@@ -32,7 +32,7 @@ object LesserOrbHider {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    private fun onCheckRender(event: CheckRenderEntityEvent<ArmorStand>) {
+    private fun onCheckRenderEntity(event: CheckRenderEntityEvent<ArmorStand>) {
         if (!isEnabled()) return
 
         if (event.entity in hiddenEntities) {
