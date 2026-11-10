@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" ?>
 <SmellBaseline>
   <ManuallySuppressedIssues>
     <ID>MayBeConst:MutationsWebsite.kt$MutationsWebsite$private val link = "https://skymutations.eu/"</ID>
@@ -305,17 +305,10 @@
     <ID>NoNameShadowing:Renderable.kt:Renderable.Companion.&lt;no name provided&gt;$verticalAlign</ID>
     <ID>NoNameShadowing:Renderable.kt:Renderable.Companion.&lt;no name provided&gt;$width</ID>
     <ID>NoNameShadowing:ReplaceRomanNumerals.kt:ReplaceRomanNumerals${ it.isValidRomanNumeral() &amp;&amp; it.removeFormatting().romanToDecimal() != 2000 }</ID>
-    <ID>NoUnusedImports:CarnivalQuickStart.kt:at.hannibal2.skyhanni.features.event.carnival.CarnivalQuickStart.kt</ID>
     <ID>NoUnusedImports:CarnivalShopHelper.kt:at.hannibal2.skyhanni.features.inventory.CarnivalShopHelper.kt</ID>
     <ID>NoUnusedImports:CraftMaterialCollector.kt:at.hannibal2.skyhanni.features.inventory.bazaar.CraftMaterialCollector.kt</ID>
     <ID>NoUnusedImports:ExcavatorTooltipHider.kt:at.hannibal2.skyhanni.features.mining.fossilexcavator.ExcavatorTooltipHider.kt</ID>
     <ID>NoUnusedImports:GuiIngameHook.kt:at.hannibal2.skyhanni.mixins.hooks.GuiIngameHook.kt</ID>
-    <ID>PrivateEventListener:AbiphoneFeatures.kt:AbiphoneFeatures$@HandleEvent fun onConfigFix</ID>
-    <ID>PrivateEventListener:AbiphoneFeatures.kt:AbiphoneFeatures$@HandleEvent fun onKeyPress</ID>
-    <ID>PrivateEventListener:AbiphoneFeatures.kt:AbiphoneFeatures$@HandleEvent fun onNeuRepoReload</ID>
-    <ID>PrivateEventListener:AbiphoneFeatures.kt:AbiphoneFeatures$@HandleEvent fun onWorldChange</ID>
-    <ID>PrivateEventListener:AbiphoneFeatures.kt:AbiphoneFeatures$@HandleEvent(onlyOnSkyblock = true) fun onTabCompletion</ID>
-    <ID>PrivateEventListener:AbiphoneFeatures.kt:AbiphoneFeatures$@HandleEvent(priority = HandleEvent.HIGHEST) fun onChat</ID>
     <ID>PrivateEventListener:AcceptLastPartyInvite.kt:AcceptLastPartyInvite$@HandleEvent fun onChat</ID>
     <ID>PrivateEventListener:AcceptLastPartyInvite.kt:AcceptLastPartyInvite$@HandleEvent fun onMessageSendToServer</ID>
     <ID>PrivateEventListener:AccessoryBagApi.kt:AccessoryBagApi$@HandleEvent(onlyOnSkyblock = true) fun onInventoryUpdated</ID>
@@ -1509,21 +1502,6 @@
     <ID>PrivateEventListener:HoeLevelDisplay.kt:HoeLevelDisplay$@HandleEvent(onlyOnIsland = IslandType.GARDEN) fun onTick</ID>
     <ID>PrivateEventListener:HoppityAchievements.kt:HoppityAchievements$@HandleEvent fun onAchievementRegistration</ID>
     <ID>PrivateEventListener:HoppityAchievements.kt:HoppityAchievements$@HandleEvent(onlyOnSkyblock = true) fun onInventoryFullyOpened</ID>
-    <ID>PrivateEventListener:HoppityApi.kt:HoppityApi$@HandleEvent fun onInventoryFullyOpened</ID>
-    <ID>PrivateEventListener:HoppityApi.kt:HoppityApi$@HandleEvent fun onInventoryUpdated</ID>
-    <ID>PrivateEventListener:HoppityApi.kt:HoppityApi$@HandleEvent fun onRepoReload</ID>
-    <ID>PrivateEventListener:HoppityApi.kt:HoppityApi$@HandleEvent(InventoryCloseEvent::class) fun onInventoryClose</ID>
-    <ID>PrivateEventListener:HoppityApi.kt:HoppityApi$@HandleEvent(IslandChangeEvent::class) fun onIslandChange</ID>
-    <ID>PrivateEventListener:HoppityApi.kt:HoppityApi$@HandleEvent(onlyOnSkyblock = true) fun onCommandSend</ID>
-    <ID>PrivateEventListener:HoppityApi.kt:HoppityApi$@HandleEvent(onlyOnSkyblock = true, priority = HandleEvent.HIGH) fun onChat</ID>
-    <ID>PrivateEventListener:HoppityApi.kt:HoppityApi$@HandleEvent(priority = HIGHEST) fun onEggFound</ID>
-    <ID>PrivateEventListener:HoppityApi.kt:HoppityApi$@HandleEvent(priority = HandleEvent.HIGH) fun onSlotClick</ID>
-    <ID>PrivateEventListener:HoppityCallWarning.kt:HoppityCallWarning$@HandleEvent fun onConfigLoad</ID>
-    <ID>PrivateEventListener:HoppityCallWarning.kt:HoppityCallWarning$@HandleEvent fun onGuiRenderOverlay</ID>
-    <ID>PrivateEventListener:HoppityCallWarning.kt:HoppityCallWarning$@HandleEvent fun onSecondPassed</ID>
-    <ID>PrivateEventListener:HoppityCallWarning.kt:HoppityCallWarning$@HandleEvent fun onWorldChange</ID>
-    <ID>PrivateEventListener:HoppityCallWarning.kt:HoppityCallWarning$@HandleEvent(onlyOnSkyblock = true) fun onCommandSend</ID>
-    <ID>PrivateEventListener:HoppityCallWarning.kt:HoppityCallWarning$@HandleEvent(priority = HandleEvent.HIGHEST) fun onChat</ID>
     <ID>PrivateEventListener:HoppityCollectionData.kt:HoppityCollectionData$@HandleEvent fun onNeuRepoReload</ID>
     <ID>PrivateEventListener:HoppityEggDisplayManager.kt:HoppityEggDisplayManager$@HandleEvent fun onEntityTransparencyActive</ID>
     <ID>PrivateEventListener:HoppityEggDisplayManager.kt:HoppityEggDisplayManager$@HandleEvent fun onEntityTransparencyTick</ID>
@@ -2813,7 +2791,6 @@
     <ID>RepoPatternRegexTestMissing:MobFilter.kt:MobFilter$by patternGroup.pattern( "filter.summon", "^(?&lt;owner&gt;\\w+)'s (?&lt;name&gt;.*) \\d+.*", )</ID>
     <ID>RepoPatternRegexTestMissing:MobFilter.kt:MobFilter$by patternGroup.pattern( "pattern.dungeon.woke.golem", "(?:§c§lWoke|§5§lSleeping) Golem§r", )</ID>
     <ID>RepoPatternRegexTestMissing:MobFilter.kt:MobFilter$by patternGroup.pattern( "pattern.petcare", "^\\[\\w+ (?&lt;level&gt;\\d+)\\] (?&lt;name&gt;.*)", )</ID>
-    <ID>RepoPatternRegexTestMissing:MobFilter.kt:MobFilter$by patternGroup.pattern( "pattern.summon.owner", ".*Spawned by: (?&lt;name&gt;.*).*", )</ID>
     <ID>RepoPatternRegexTestMissing:MobFilter.kt:MobFilter$by patternGroup.pattern("displaynpc.name", "[a-z0-9]{10}")</ID>
     <ID>RepoPatternRegexTestMissing:NewYearCakeReminder.kt:NewYearCakeReminder$by RepoPattern.pattern( "event.winter.newyearcake.reminder.sidebar", "§dNew Year Event!§f (?&lt;time&gt;.*)", )</ID>
     <ID>RepoPatternRegexTestMissing:PartyApi.kt:PartyApi$by patternGroup.pattern( "kuudrafinder.join", "§dParty Finder §f&gt; (?&lt;name&gt;.*?) §ejoined the group! \\(§[a-fA-F0-9]+Combat Level \\d+§e\\)", )</ID>
