@@ -25,7 +25,6 @@ import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.DelayedRun
-import at.hannibal2.skyhanni.utils.EntityUtils
 import at.hannibal2.skyhanni.utils.InventoryDetector
 import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.ItemCategory
@@ -40,9 +39,7 @@ import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.StringUtils.removeColor
 import at.hannibal2.skyhanni.utils.collection.TimeLimitedCache
-import at.hannibal2.skyhanni.utils.compat.formattedTextCompat
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
-import net.minecraft.world.entity.decoration.ArmorStand
 import org.lwjgl.glfw.GLFW
 import kotlin.time.Duration.Companion.seconds
 
@@ -140,16 +137,6 @@ object PestApi {
     val noPestsChatPattern by patternGroup.pattern(
         "chat.no-pests",
         "§cThere are not any Pests on your Garden right now! Keep farming!",
-    )
-
-    /**
-     * REGEX-TEST: §9§lPEST TRAP #3§r
-     * REGEX-TEST: §5§lMOUSE TRAP #2§r
-     * REGEX-TEST: §6§lVERMIN TRAP #2
-     */
-    private val pestTrapPattern by patternGroup.pattern(
-        "entity.pest-trap",
-        "(?:§.)+§l(?<type>PEST|MOUSE|VERMIN) TRAP(?: #(?<number>\\d+))?(?:§.)*",
     )
 
     /**
@@ -285,7 +272,7 @@ object PestApi {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    private fun onScoreboardChange(event: ScoreboardUpdateEvent) {
+    private fun onScoreboardUpdate(event: ScoreboardUpdateEvent) {
         if (!firstScoreboardCheck) return
         checkScoreboardLines(event.added)
     }
@@ -333,7 +320,7 @@ object PestApi {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    private fun onMobFirstSeen(event: MobEvent.FirstSeen.SkyblockMob) {
+    private fun onSkyblockMobFirstSeen(event: MobEvent.FirstSeen.SkyblockMob) {
         val type = PestType.getByNameOrNull(event.mob.name) ?: return
         val plot = GardenPlotApi.plots.find { it.box.isInside(event.mob.centerCords) } ?: return
         if (lastCheckedPlot != plot.id) gardenPestTypes[plot] = listOf()
@@ -361,26 +348,11 @@ object PestApi {
 
     fun getInfestedPlots() = GardenPlotApi.plots.filter { it.pests > 0 || it.isPestCountInaccurate }
 
-    fun getPlotsWithoutPests() = GardenPlotApi.plots.filter { it.pests == 0 || !it.isPestCountInaccurate }
-
     fun getNearestInfestedPlot(ignoreSinglePestPlots: Boolean = false) = getInfestedPlots()
         .filterNot {
             ignoreSinglePestPlots && !it.isPestCountInaccurate && it.pests == 1
         }
         .minByOrNull { it.middle.distanceSqToPlayer() }
-
-    fun isNearPestTrap() = EntityUtils.getEntitiesNearby<ArmorStand>(10.0).any {
-        pestTrapPattern.matches(it.displayName.formattedTextCompat())
-    }
-
-    fun GardenPlot.getPestTypesInPlot() = gardenPestTypes.getOrDefault(this, listOf())
-
-    private fun removePests(removedPests: Int) {
-        if (removedPests < 1) return
-        repeat(removedPests) {
-            removeNearestPest()
-        }
-    }
 
     private fun removeNearestPest() {
         val plot = getNearestInfestedPlot() ?: return updatePests()
@@ -483,7 +455,7 @@ object PestApi {
     }
 
     @HandleEvent
-    private fun onCommand(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shtestpestkill") {
             description = "Simulates a pest kill"
             category = CommandCategory.DEVELOPER_TEST

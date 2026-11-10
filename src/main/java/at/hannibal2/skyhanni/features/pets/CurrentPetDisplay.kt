@@ -463,7 +463,7 @@ object CurrentPetDisplay {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    private fun onTooltip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!PetStorageExpShare.isInventory(InventoryUtils.openInventoryName())) return
         val slot = event.slot?.containerSlot ?: return
         if (!PetStorageExpShare.isSlotDisabled(slot)) return

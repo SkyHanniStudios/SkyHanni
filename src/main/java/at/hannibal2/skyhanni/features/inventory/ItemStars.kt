@@ -14,7 +14,6 @@ import at.hannibal2.skyhanni.utils.RegexUtils.findMatcher
 import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.SkyBlockItemModifierUtils.getDungeonStarCount
 import at.hannibal2.skyhanni.utils.SkyBlockItemModifierUtils.getStarCount
-import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLeadingWhiteLessResets
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import net.minecraft.network.chat.Component
@@ -35,9 +34,9 @@ object ItemStars {
         "^(?<name>.+) (?<stars>(?:(?:§.)?✪)+)",
     )
 
-    @HandleEvent(priority = HandleEvent.LOW)
-    fun onTooltip(event: ToolTipTextEvent) {
-        if (!isEnabled()) return
+    @HandleEvent(onlyOnSkyblock = true, priority = HandleEvent.LOW)
+    private fun onToolTip(event: ToolTipTextEvent) {
+        if (!config.itemStars) return
         val stack = event.itemStack
         if (stack.count != 1) return
         val stars = stack.grabStarCount() ?: return
@@ -48,7 +47,7 @@ object ItemStars {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onRenderItemTip(event: RenderItemTipEvent) {
+    private fun onRenderItemTip(event: RenderItemTipEvent) {
         if (!CRIMSON_ARMOR.isSelected()) return
         val stack = event.stack
         if (stack.getInternalNameOrNull()?.isKuudraArmor() != true) return
@@ -63,6 +62,4 @@ object ItemStars {
         val tier = internalName.getArmorKuudraTier() ?: return baseStars
         return (baseStars ?: 0) + (tier - 1) * 10
     }
-
-    private fun isEnabled() = SkyBlockUtils.inSkyBlock && config.itemStars
 }

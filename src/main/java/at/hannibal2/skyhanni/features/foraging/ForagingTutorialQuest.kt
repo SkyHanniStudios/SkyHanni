@@ -87,7 +87,7 @@ object ForagingTutorialQuest {
     }
 
     @HandleEvent
-    private fun onPlayerSpawn(event: MobEvent.Spawn.DisplayNpc) {
+    private fun onDisplayNpcSpawn(event: MobEvent.Spawn.DisplayNpc) {
         "§cRequires §6(?<quest>.*) Quest".toPattern().matchMatcher(event.mob.name) {
             stepByName(group("quest"))
         }

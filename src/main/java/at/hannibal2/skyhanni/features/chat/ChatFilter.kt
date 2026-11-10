@@ -46,10 +46,10 @@ object ChatFilter {
         "(?: §b>§c>§a>§r §r)?.* §6(?:joined|(?:spooked|slid) into) the lobby!(?:§r §a<§c<§b<)?".toPattern(),
 
         // Hypixel SMP
-        "§2[\\s]*?§aYou can now create your own Hypixel SMP server![\\s]*?".toPattern(),
+        "§2\\s*?§aYou can now create your own Hypixel SMP server!\\s*?".toPattern(),
 
         // Snow Particles in the Lobby
-        "[\\s]*?.*§bFor the best experience, click the text below to enable Snow[\\s]§.*§bParticles in this lobby![\\s]*?.*§3§lClick to enable Snow Particles[\\s]*?".toPattern(),
+        "\\s*?.*§bFor the best experience, click the text below to enable Snow\\s§.*§bParticles in this lobby!\\s*?.*§3§lClick to enable Snow Particles\\s*?".toPattern(),
 
         // mystery box
         "§b✦ §r.* §r§7found a §r§e.* §r§bMystery Box§r§7!".toPattern(),
@@ -602,7 +602,7 @@ object ChatFilter {
     // </editor-fold>
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         var blockReason = block(event.message)
         if (blockReason == null && config.powderMining.enabled) blockReason = powderMiningBlock(event)
         if (blockReason == null && config.crystalNucleus.enabled) blockReason = crystalNucleusBlock(event)
@@ -611,7 +611,7 @@ object ChatFilter {
     }
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Modify) {
+    private fun onChatModify(event: SkyHanniChatEvent.Modify) {
         if (config.powderMining.enabled) powderMiningBlock(event)
         if (config.crystalNucleus.enabled) crystalNucleusBlock(event)
     }
@@ -772,7 +772,7 @@ object ChatFilter {
         (messagesStartsWithMap[key].orEmpty()).any { this.startsWith(it) }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(3, "chat.hypixelHub", "chat.filterType.hypixelHub")
         event.move(3, "chat.empty", "chat.filterType.empty")
         event.move(3, "chat.warping", "chat.filterType.warping")

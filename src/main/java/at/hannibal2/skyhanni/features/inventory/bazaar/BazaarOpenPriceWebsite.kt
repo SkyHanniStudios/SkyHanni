@@ -32,7 +32,7 @@ object BazaarOpenPriceWebsite {
     }
 
     @HandleEvent
-    fun replaceItem(event: ReplaceItemEvent) {
+    private fun onReplaceItem(event: ReplaceItemEvent) {
         if (!isEnabled()) return
         BazaarApi.currentlyOpenedProduct ?: return
         if (event.inventory is Inventory) return
@@ -43,7 +43,7 @@ object BazaarOpenPriceWebsite {
     }
 
     @HandleEvent(priority = HandleEvent.HIGH)
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         if (!isEnabled()) return
         val lastItem = BazaarApi.currentlyOpenedProduct ?: return
 

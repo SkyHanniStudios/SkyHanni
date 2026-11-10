@@ -41,7 +41,7 @@ object DnaAnalyzerSolver {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    private fun onTooltip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!isEnabled() || !config.hideTooltips) return
         if (event.slot?.containerSlot !in 9..44) return
         event.cancel()
@@ -84,7 +84,7 @@ object DnaAnalyzerSolver {
         currentBoard = DnaBoard(initialBoard)
     }
 
-    @HandleEvent(GuiContainerEvent.BackgroundDrawnEvent::class, onlyOnSkyblock = true)
+    @HandleEvent(onlyOnSkyblock = true)
     private fun onBackgroundDrawn() {
         if (!isEnabled()) return
         val board = currentBoard ?: return

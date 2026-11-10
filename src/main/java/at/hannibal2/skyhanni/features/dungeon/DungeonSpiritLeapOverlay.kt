@@ -64,7 +64,7 @@ object DungeonSpiritLeapOverlay {
     data class PlayerStackInfo(val playerInfo: DungeonApi.TeamMember?, val stack: SafeItemStack, val slotNumber: Int)
 
     @HandleEvent
-    private fun onGuiContainerPreDraw(event: GuiContainerEvent.PreDraw) {
+    private fun onPreDraw(event: GuiContainerEvent.PreDraw) {
         if (!isEnabled()) return
 
         val gui = event.gui

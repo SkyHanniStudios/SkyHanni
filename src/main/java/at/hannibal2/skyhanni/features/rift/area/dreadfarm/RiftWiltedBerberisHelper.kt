@@ -111,14 +111,14 @@ object RiftWiltedBerberisHelper {
     }
 
     @HandleEvent
-    fun onRepoReload(event: RepositoryReloadEvent) {
+    private fun onRepoReload(event: RepositoryReloadEvent) {
         fieldCenters = event.getConstant<WiltedBerberisLocationsJson>("rift/WiltedBerberisLocations")
             .fieldCenters.associate { it.position to it.count }
         fieldSequences = fieldCenters.keys.associateWith { BerberisSequence(it) }
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onTick(event: SkyHanniTickEvent) {
+    private fun onTick(event: SkyHanniTickEvent) {
         if (!isEnabled()) return
         if (!event.isMod(5)) return
 
@@ -161,7 +161,7 @@ object RiftWiltedBerberisHelper {
             .minByOrNull { it.distanceIgnoreY(location) }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT, receiveCancelled = true)
-    fun onParticle(event: ParticleEvent) {
+    private fun onParticle(event: ParticleEvent) {
         if (!isEnabled()) return
         if (!hasFarmingToolInHand) return
 
@@ -237,7 +237,7 @@ object RiftWiltedBerberisHelper {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onPlaySound(event: PlaySoundEvent) {
+    private fun onPlaySound(event: PlaySoundEvent) {
         if (!isMuteOthersSoundsEnabled()) return
 
         if (event.soundName in berberisSounds) {
@@ -246,7 +246,7 @@ object RiftWiltedBerberisHelper {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onBlockClick(event: BlockClickEvent) {
+    private fun onBlockClick(event: BlockClickEvent) {
         if (!isEnabled() || !config.respawnSequence) return
         if (event.clickType != InteractClickType.LEFT_CLICK) return
         if (event.blockState.block != Blocks.DEAD_BUSH) return
@@ -261,7 +261,7 @@ object RiftWiltedBerberisHelper {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onBlockChange(event: ServerBlockChangeEvent) {
+    private fun onServerBlockChange(event: ServerBlockChangeEvent) {
         if (!isEnabled() || !config.respawnSequence) return
         if (event.old != "dead_bush" || event.new != "air") return
 
@@ -275,7 +275,7 @@ object RiftWiltedBerberisHelper {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!isEnabled()) return
         if (!hasFarmingToolInHand) return
 
@@ -368,7 +368,7 @@ object RiftWiltedBerberisHelper {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(60, "rift.area.dreadfarm.wiltedBerberis.hideparticles", "rift.area.dreadfarm.wiltedBerberis.hideParticles")
     }
 

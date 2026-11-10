@@ -1,7 +1,6 @@
 package at.hannibal2.skyhanni.features.inventory.chocolatefactory
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.features.event.hoppity.HoppityApi
 import at.hannibal2.skyhanni.features.event.hoppity.HoppityCollectionData
@@ -55,7 +54,7 @@ object CFBarnManager {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         HoppityEggsManager.newRabbitFound.matchMatcher(event.message) {
             val profileStorage = profileStorage ?: return@matchMatcher
             profileStorage.currentRabbits += 1
@@ -75,7 +74,7 @@ object CFBarnManager {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Modify) {
+    private fun onChatModify(event: SkyHanniChatEvent.Modify) {
         HoppityEggsManager.duplicateRabbitFound.matchMatcher(event.message) {
             event.duplicateFoundMessage(group("amount"))
         }
@@ -124,8 +123,8 @@ object CFBarnManager {
         if (message != changedMessage) replaceComponent(changedMessage.asComponent(), "duplicate_egg")
     }
 
-    @HandleEvent(InventoryCloseEvent::class)
-    fun onInventoryClose() {
+    @HandleEvent
+    private fun onInventoryClose() {
         sentBarnFullWarning = false
     }
 

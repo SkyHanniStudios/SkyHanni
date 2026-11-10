@@ -12,7 +12,7 @@ import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 object EstimatedItemValueTooltip {
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onTooltip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!SkyHanniMod.feature.inventory.estimatedItemValues.showTooltip) return
         event.itemStack.getInternalNameOrNull() ?: return
 

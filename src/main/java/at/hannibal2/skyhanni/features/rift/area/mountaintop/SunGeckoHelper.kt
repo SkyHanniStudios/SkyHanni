@@ -211,7 +211,7 @@ object SunGeckoHelper {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    private fun onActionBar(event: ActionBarUpdateEvent) {
+    private fun onActionBarUpdate(event: ActionBarUpdateEvent) {
         if (!isEnabled()) return
         sunGeckoActionBar.findMatcher(event.actionBar) {
             val firstHalf = group("firstHalf")

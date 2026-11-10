@@ -86,7 +86,7 @@ object FarmingWeightData {
     }
 
     @HandleEvent
-    private fun onCollectionUpdate(event: CropCollectionAddEvent) {
+    private fun onCropCollectionAdd(event: CropCollectionAddEvent) {
         if (event.cropCollectionType == MOOSHROOM_COW) {
             if (lastGainedCrop?.isAnyOf(CACTUS, SUGAR_CANE) == true) {
                 addWeight(event.amount / (event.crop.getFactor() * 2))
@@ -268,9 +268,9 @@ object FarmingWeightData {
         val apiResponse = ApiUtils.getJsonResponse(weightStatic).assertSuccess() ?: return
         val apiResponseData = apiResponse.data ?: return
         val apiData = ConfigManager.gson.fromJson<EliteWeightsJson>(apiResponseData)
-        for (crop in apiData.crops) {
-            val cropType = CropType.getByNameOrNull(crop.key) ?: continue
-            cropWeightValues[cropType] = crop.value
+        for ((crop, weight) in apiData.crops) {
+            val cropType = CropType.getByNameOrNull(crop) ?: continue
+            cropWeightValues[cropType] = weight
         }
         hasFetchedCropWeights = true
     }

@@ -10,7 +10,6 @@ import at.hannibal2.skyhanni.data.ProfileStorageData
 import at.hannibal2.skyhanni.data.jsonobjects.other.SkyShardsExportData
 import at.hannibal2.skyhanni.data.jsonobjects.other.SkyShardsExportJson
 import at.hannibal2.skyhanni.events.GuiKeyPressEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.minecraft.ToolTipTextEvent
 import at.hannibal2.skyhanni.events.minecraft.add
 import at.hannibal2.skyhanni.features.inventory.attribute.AttributeShardsData
@@ -38,7 +37,6 @@ import net.minecraft.ChatFormatting
 import org.lwjgl.glfw.GLFW
 import java.util.zip.GZIPInputStream
 import kotlin.io.encoding.Base64
-import kotlin.io.encoding.ExperimentalEncodingApi
 
 @SkyHanniModule
 object ShardTrackerDisplay {
@@ -130,7 +128,7 @@ object ShardTrackerDisplay {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    private fun onGuiRenderTop(event: GuiRenderEvent.GuiOnTopRenderEvent) {
+    private fun onGuiRenderTop() {
         if (!isEnabled()) return
         renderables?.let {
             config.position.renderRenderables(it, posLabel = "Shard Tracker")
@@ -155,7 +153,7 @@ object ShardTrackerDisplay {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    private fun onTooltip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!isEnabled()) return
         if (!isInsideShardsMenu()) return
         if (config.selectShardKeybind == GLFW.GLFW_KEY_UNKNOWN) return
@@ -178,7 +176,6 @@ object ShardTrackerDisplay {
         trackedShards.clear()
     }
 
-    @OptIn(ExperimentalEncodingApi::class)
     fun importFromSkyShards() {
         if (!isEnabled()) {
             ChatUtils.chatAndOpenConfig(

@@ -36,7 +36,7 @@ object PlayerDeathManager {
     }
 
     @HandleEvent
-    private fun onModifyChat(event: SkyHanniChatEvent.Modify) {
+    private fun onChatModify(event: SkyHanniChatEvent.Modify) {
         val (name, reason) = handleDeath(event.cleanMessage) ?: return
         PlayerDeathEvent.Modify(name, reason, event).post()
     }

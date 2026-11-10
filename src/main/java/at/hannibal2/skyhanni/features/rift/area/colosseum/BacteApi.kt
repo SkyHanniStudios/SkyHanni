@@ -59,13 +59,13 @@ object BacteApi {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    private fun onMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
+    private fun onSkyblockMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
         if (event.mob.name != "Bacte") return
         bacte = event.mob
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    private fun onMobDespawn(event: MobEvent.DeSpawn.SkyblockMob) {
+    private fun onSkyblockMobDeSpawn(event: MobEvent.DeSpawn.SkyblockMob) {
         if (event.mob == bacte) {
             currentPhase = Phase.NOT_ACTIVE
             bacte = null

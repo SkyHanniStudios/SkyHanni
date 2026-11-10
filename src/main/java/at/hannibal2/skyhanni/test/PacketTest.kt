@@ -100,7 +100,7 @@ object PacketTest {
     }
 
     @HandleEvent(priority = HandleEvent.LOW, receiveCancelled = true)
-    private fun onPacketReceive(event: PacketReceivedEvent) {
+    private fun onPacketReceived(event: PacketReceivedEvent) {
         if (!enabled) return
         val packet = event.packet
         packet.print()

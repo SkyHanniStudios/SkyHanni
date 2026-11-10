@@ -30,7 +30,7 @@ object TentacleWaypoint {
     private const val TENTACLE_FLOOR_Y = 68
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    private fun onEntityHealthUpdate(event: MobEvent.Spawn.Special) {
+    private fun onSpecialSpawn(event: MobEvent.Spawn.Special) {
         if (!isEnabled()) return
         val entity = event.mob.baseEntity as? Slime ?: return
         if (event.mob.name != "Bacte Tentacle") return
@@ -43,7 +43,7 @@ object TentacleWaypoint {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    private fun onEntityDamage(event: MobEvent.Hurt.Special) {
+    private fun onSpecialHurt(event: MobEvent.Hurt.Special) {
         if (!isEnabled()) return
         val entity = event.mob.baseEntity as? Slime ?: return
 

@@ -23,6 +23,7 @@ object MinisterInCalendar {
 
     private const val MINISTER_SLOT = 38
     private var ministerItemStack: SafeItemStack? = null
+    private val enabled get() = SkyHanniMod.feature.inventory.ministerInCalendar
 
     private val prefix = listOf(
         "§8(From SkyHanni)",
@@ -38,8 +39,8 @@ object MinisterInCalendar {
     )
 
     @HandleEvent
-    fun onInventoryOpen(event: InventoryOpenEvent) {
-        if (!isEnabled()) return
+    private fun onInventoryOpen() {
+        if (!enabled) return
         if (!CalendarApi.inMainCalendar) return
         val minister = ElectionApi.currentMinister ?: return
 
@@ -52,15 +53,15 @@ object MinisterInCalendar {
     }
 
     @HandleEvent
-    fun onInventoryClose() {
-        if (!isEnabled()) return
+    private fun onInventoryClose() {
+        if (!enabled) return
         if (!CalendarApi.inMainCalendar) return
         ministerItemStack = null
     }
 
     @HandleEvent
-    fun replaceItem(event: ReplaceItemEvent) {
-        if (!isEnabled()) return
+    private fun onReplaceItem(event: ReplaceItemEvent) {
+        if (!enabled) return
         if (event.inventory !is SimpleContainer || event.slot != MINISTER_SLOT) return
         if (!CalendarApi.inMainCalendar) return
         event.replace(ministerItemStack ?: return)
@@ -88,6 +89,4 @@ object MinisterInCalendar {
 
         return item.setLoreString(ministerLore).setCustomItemName(ministerDisplayName)
     }
-
-    fun isEnabled() = SkyHanniMod.feature.inventory.ministerInCalendar
 }

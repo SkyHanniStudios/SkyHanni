@@ -13,7 +13,7 @@ import at.hannibal2.skyhanni.utils.compat.findHealthReal
 object OtherPlayersSlayerApi {
 
     @HandleEvent
-    fun onMobDespawn(event: MobEvent.DeSpawn.SkyblockMob) {
+    private fun onSkyblockMobDeSpawn(event: MobEvent.DeSpawn.SkyblockMob) {
         val mob = event.mob
 
         // no death, rather despawn because too far away

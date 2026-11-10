@@ -30,7 +30,7 @@ object VisitorRewardWarning {
     private val config get() = VisitorApi.config.rewardWarning
 
     @HandleEvent
-    fun onForegroundDrawn(event: GuiContainerEvent.ForegroundDrawnEvent) {
+    private fun onForegroundDrawn(event: GuiContainerEvent.ForegroundDrawnEvent) {
         if (!VisitorApi.inInventory) return
 
         val visitor = VisitorApi.getVisitor(lastClickedNpc) ?: return
@@ -55,7 +55,7 @@ object VisitorRewardWarning {
     }
 
     @HandleEvent(priority = HandleEvent.HIGH)
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         if (!VisitorApi.inInventory) return
         val stack = event.slot?.item ?: return
 
@@ -87,7 +87,7 @@ object VisitorRewardWarning {
     }
 
     @HandleEvent(priority = HandleEvent.HIGH)
-    fun onTooltip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!GardenApi.onBarnPlot) return
         if (!VisitorApi.inInventory) return
         val visitor = VisitorApi.getVisitor(lastClickedNpc) ?: return

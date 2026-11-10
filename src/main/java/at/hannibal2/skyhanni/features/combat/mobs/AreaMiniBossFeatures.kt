@@ -26,7 +26,7 @@ object AreaMiniBossFeatures {
     val currentMobs = mutableSetOf<Mob>()
 
     @HandleEvent
-    fun onMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
+    private fun onSkyblockMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
         val type = AreaMiniBossType.entries.find { it.displayName == event.mob.name } ?: return
         miniBossType = type
         val time = SimpleTimeMark.now()
@@ -42,12 +42,12 @@ object AreaMiniBossFeatures {
     }
 
     @HandleEvent
-    fun onMobDespawn(event: MobEvent.DeSpawn.SkyblockMob) {
+    private fun onSkyblockMobDeSpawn(event: MobEvent.DeSpawn.SkyblockMob) {
         currentMobs.remove(event.mob)
     }
 
     @HandleEvent
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!SlayerApi.isInAnyArea) return
         if (!config.areaBossRespawnTimer) return
 
@@ -68,7 +68,7 @@ object AreaMiniBossFeatures {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         miniBossType = null
     }
 

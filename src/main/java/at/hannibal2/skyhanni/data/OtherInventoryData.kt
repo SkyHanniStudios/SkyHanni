@@ -1,7 +1,6 @@
 package at.hannibal2.skyhanni.data
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.events.GuiContainerEvent
 import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
 import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
@@ -30,9 +29,7 @@ object OtherInventoryData {
         get() = currentInventory?.title.orEmpty()
 
     @HandleEvent
-    private fun onCloseWindow(event: GuiContainerEvent.CloseWindowEvent) {
-        close()
-    }
+    private fun onCloseWindow() = close()
 
     @HandleEvent
     private fun onPacketSent(event: PacketSentEvent) {
@@ -85,7 +82,7 @@ object OtherInventoryData {
     )
 
     @HandleEvent
-    private fun onInventoryDataReceiveEvent(event: PacketReceivedEvent) {
+    private fun onPacketReceived(event: PacketReceivedEvent) {
         val packet = event.packet
 
         if (packet is ClientboundContainerClosePacket) {

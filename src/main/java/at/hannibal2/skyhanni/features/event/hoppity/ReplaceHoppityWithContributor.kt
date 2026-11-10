@@ -1,8 +1,6 @@
 package at.hannibal2.skyhanni.features.event.hoppity
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.events.NeuRepositoryReloadEvent
-import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.events.minecraft.ToolTipTextEvent
 import at.hannibal2.skyhanni.events.minecraft.add
 import at.hannibal2.skyhanni.features.inventory.chocolatefactory.CFApi
@@ -23,18 +21,13 @@ import net.minecraft.network.chat.Component
 object ReplaceHoppityWithContributor {
 
     private val config get() = CFApi.config
-
     private val replaceMap = mutableMapOf<String, String>()
 
     @HandleEvent(priority = 5)
-    fun onNeuRepoReload(event: NeuRepositoryReloadEvent) {
-        update()
-    }
+    private fun onNeuRepoReload() = update()
 
     @HandleEvent(priority = HandleEvent.LOW)
-    fun onRepoReload(event: RepositoryReloadEvent) {
-        update()
-    }
+    private fun onRepoReload() = update()
 
     fun update() {
         replaceMap.clear()
@@ -54,7 +47,7 @@ object ReplaceHoppityWithContributor {
     }
 
     @HandleEvent(priority = HandleEvent.LOWEST)
-    fun onTooltip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!isEnabled()) return
         if (!HoppityCollectionStats.inInventory) return
 

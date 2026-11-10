@@ -101,7 +101,7 @@ object HoeLevelDisplay {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    private fun onChat(event: SkyHanniChatEvent.Modify) {
+    private fun onChatModify(event: SkyHanniChatEvent.Modify) {
         val heldItem = InventoryUtils.getItemInHand() ?: return
         val leveledUpTool = levelUpPattern.matchMatcher(event.cleanMessage) {
             group("tool")
@@ -145,7 +145,7 @@ object HoeLevelDisplay {
     }
 
     @HandleEvent
-    private fun onUserLuck(event: UserLuckCalculateEvent) {
+    private fun onUserLuckCalculate(event: UserLuckCalculateEvent) {
         if (!config.overflow) return
         val luck = calculateLuck()
         if (luck < 1) return

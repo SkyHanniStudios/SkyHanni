@@ -96,7 +96,7 @@ object TimiteTracker {
     )
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    private fun onItem(event: ItemAddEvent) {
+    private fun onItemAdd(event: ItemAddEvent) {
         if (event.internalName in validItems) {
             tracker.addItem(event.internalName, event.amount, event.source == ItemAddManager.Source.COMMAND)
         }

@@ -100,9 +100,9 @@ object HoppityLiveDisplay {
     private var displayCardRenderables: List<Renderable> = emptyList()
     private var lastToggleMark: SimpleTimeMark = SimpleTimeMark.farPast()
 
-    @Suppress("MismatchPrimaryFunction")
+    @Suppress("MismatchedPrimaryFunction")
     @HandleEvent(onlyOnSkyblock = true, eventTypes = [InventoryCloseEvent::class, InventoryFullyOpenedEvent::class])
-    fun reCheckInventoryState() {
+    private fun reCheckInventoryState() {
         if (isInInventory() != lastKnownInInvState) {
             lastKnownInInvState = !lastKnownInInvState
             lastKnownStatHash = 0

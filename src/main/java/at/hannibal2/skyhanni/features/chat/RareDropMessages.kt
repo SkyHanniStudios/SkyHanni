@@ -122,7 +122,7 @@ object RareDropMessages {
     private val config get() = SkyHanniMod.feature.chat.rareDropMessages
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Modify) {
+    private fun onChatModify(event: SkyHanniChatEvent.Modify) {
         if (!config.petRarity) return
 
         petPatterns.matchMatchers(event.message) {
@@ -143,7 +143,7 @@ object RareDropMessages {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onItemAdd(event: ItemAddEvent) {
+    private fun onItemAdd(event: ItemAddEvent) {
         if (event.amount != 1 || event.source != ItemAddManager.Source.ITEM_ADD) return
         if (!config.enchantedBook || !config.enchantedBookMissingMessage) return
         val internalName = event.internalName
@@ -187,13 +187,13 @@ object RareDropMessages {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(71, "chat.petRarityDropMessage", "chat.rareDropMessages.petRarity")
     }
 
     @Suppress("MaxLineLength")
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shtestenchantedbookname") {
             description = "Test Enchanted Book Name feature"
             category = CommandCategory.DEVELOPER_TEST

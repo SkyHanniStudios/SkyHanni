@@ -30,7 +30,7 @@ object ActiveBossTransparency {
     }
 
     @HandleEvent
-    private fun onMobDeSpawn(event: MobEvent.DeSpawn.SkyblockMob) {
+    private fun onSkyblockMobDeSpawn(event: MobEvent.DeSpawn.SkyblockMob) {
         if (lastClickedMob == event.mob) {
             lastClickedMob = null
             lastHitCarrierBoss = false

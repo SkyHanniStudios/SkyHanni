@@ -17,7 +17,7 @@ object BlazeSlayerClearView {
     private var nearBlaze = false
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         if (!event.repeatSeconds(3)) return
         nearBlaze = DamageIndicatorManager.getDistanceTo(
             BossType.SLAYER_BLAZE_1,
@@ -36,14 +36,14 @@ object BlazeSlayerClearView {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onParticle(event: ParticleEvent) {
+    private fun onParticle(event: ParticleEvent) {
         if (isEnabled()) {
             event.cancel()
         }
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onCheckRender(event: CheckRenderEntityEvent<Fireball>) {
+    private fun onCheckRenderEntity(event: CheckRenderEntityEvent<Fireball>) {
         if (isEnabled()) {
             event.cancel()
         }
@@ -52,7 +52,7 @@ object BlazeSlayerClearView {
     private fun isEnabled() = SlayerApi.config.blazes.clearView && nearBlaze
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(3, "slayer.blazeClearView", "slayer.blazes.clearView")
     }
 }

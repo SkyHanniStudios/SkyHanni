@@ -385,7 +385,7 @@ object DragonFeatures {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_END)
-    private fun onScoreBoard(event: ScoreboardUpdateEvent) {
+    private fun onScoreboardUpdate(event: ScoreboardUpdateEvent) {
         val index = event.new.indexOfFirstOrNull { scoreDragonPattern.matches(it) } ?: return
         if (eggSpawned) {
             dragonSpawned = true

@@ -75,12 +75,10 @@ object DragonFightAPI {
     }
 
     @HandleEvent
-    private fun onWorldChange() {
-        reset()
-    }
+    private fun onWorldChange() = reset()
 
     @HandleEvent
-    private fun onScoreboardChange(event: ScoreboardUpdateEvent) {
+    private fun onScoreboardUpdate(event: ScoreboardUpdateEvent) {
         for (line in event.added.map { it.removeColor() }) {
             scoreboardHPPattern.matchMatcher(line) {
                 currentHp = group("hp").formatInt()

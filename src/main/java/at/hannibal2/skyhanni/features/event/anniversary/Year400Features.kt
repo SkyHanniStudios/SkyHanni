@@ -148,7 +148,7 @@ object Year400Features {
     }
 
     @HandleEvent
-    private fun onRealPlayerDeSpawnEvent(event: MobEvent.DeSpawn.Player) {
+    private fun onPlayerDeSpawn(event: MobEvent.DeSpawn.Player) {
         playerColors.remove(event.mob)
     }
 

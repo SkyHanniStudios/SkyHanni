@@ -70,7 +70,7 @@ object CarryTracker {
     )
 
     @HandleEvent
-    fun onSlayerDeath(event: SlayerDeathEvent) {
+    private fun onSlayerDeath(event: SlayerDeathEvent) {
         val slayerType = event.slayerType
         val tier = event.tier
         val owner = event.owner
@@ -90,7 +90,7 @@ object CarryTracker {
     private var lastTradedPlayer: String? = null
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         tradeCompletedPattern.matchMatcher(event.message) {
             lastTradedPlayer = group("name").cleanPlayerName()
         }
@@ -106,13 +106,13 @@ object CarryTracker {
     }
 
     @HandleEvent
-    fun onRepoReload(event: RepositoryReloadEvent) {
+    private fun onRepoReload(event: RepositoryReloadEvent) {
         val data = event.getConstant<CarryTrackerJson>("CarryTracker")
         slayerNames = data.slayerNames.mapKeys { SlayerType.valueOf(it.key) }
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onGuiRenderTop() {
+    private fun onGuiRenderTop() {
         if (InventoryUtils.inAnyInventory()) {
             InventoryGuiScaleCompat.withOriginalHudScale {
                 renderDisplay()
@@ -127,7 +127,7 @@ object CarryTracker {
     }
 
     @HandleEvent
-    fun onCommandRegister(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shcarry") {
             description = "Keep track of carries you do."
             legacyCallbackArgs { onCommand(it) }

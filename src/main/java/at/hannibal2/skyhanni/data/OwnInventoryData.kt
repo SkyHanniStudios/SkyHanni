@@ -2,7 +2,6 @@ package at.hannibal2.skyhanni.data
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.events.GuiContainerEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.OwnInventoryArmorUpdateEvent
 import at.hannibal2.skyhanni.events.OwnInventoryItemUpdateEvent
 import at.hannibal2.skyhanni.events.OwnInventoryMenuUpdateEvent
@@ -49,7 +48,7 @@ object OwnInventoryData {
     )
 
     @HandleEvent(priority = HandleEvent.LOW, receiveCancelled = true, onlyOnSkyblock = true)
-    private fun onItemPickupReceivePacket(event: PacketReceivedEvent) {
+    private fun onPacketReceived(event: PacketReceivedEvent) {
         when (val packet = event.packet) {
             is ClientboundTakeItemEntityPacket -> {
                 dirty = true
@@ -157,7 +156,7 @@ object OwnInventoryData {
         }
     }
 
-    @HandleEvent(InventoryCloseEvent::class)
+    @HandleEvent
     private fun onInventoryClose() {
         val item = MinecraftCompat.localPlayerOrNull?.getItemOnCursor() ?: return
         val internalNameOrNull = item.getInternalNameOrNull() ?: return

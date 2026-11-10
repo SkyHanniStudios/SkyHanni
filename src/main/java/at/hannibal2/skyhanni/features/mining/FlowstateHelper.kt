@@ -65,7 +65,7 @@ object FlowstateHelper {
     private var flowstateCache: Int? = null
 
     @HandleEvent(onlyOnSkyblock = true)
-    private fun onBlockMined(event: OreMinedEvent) {
+    private fun onOreMined(event: OreMinedEvent) {
         if (!IslandTypeTag.CUSTOM_MINING.isInIsland()) return
         if (flowstateCache == null) return
 
@@ -256,7 +256,7 @@ object FlowstateHelper {
     }
 
     @HandleEvent
-    private fun onUserLuck(event: UserLuckCalculateEvent) {
+    private fun onUserLuckCalculate(event: UserLuckCalculateEvent) {
         if (personalBest < 500) return
         val luck = calculateFlowstateLuck(personalBest)
         event.addLuck(luck)

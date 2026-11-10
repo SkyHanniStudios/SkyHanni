@@ -100,7 +100,7 @@ object EnigmaSoulWaypoints {
     )
 
     @HandleEvent
-    private fun replaceItem(event: ReplaceItemEvent) {
+    private fun onReplaceItem(event: ReplaceItemEvent) {
         if (!isEnabled()) return
 
         if (inventoryUnfound.isEmpty()) return

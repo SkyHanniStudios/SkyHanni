@@ -14,12 +14,12 @@ object CommonSeaCreatureHider {
     private val config get() = SkyHanniMod.feature.fishing.commonSeaCreatureHider
 
     @HandleEvent
-    fun onEntityTransparencyActive(event: EntityTransparencyActiveEvent) {
+    private fun onEntityTransparencyActive(event: EntityTransparencyActiveEvent) {
         event.setActive(isEnabled())
     }
 
     @HandleEvent
-    fun onEntityTransparency(event: EntityTransparencyTickEvent<LivingEntity>) {
+    private fun onEntityTransparencyTick(event: EntityTransparencyTickEvent<LivingEntity>) {
         if (!isEnabled()) return
 
         val entity = event.entity
@@ -30,8 +30,7 @@ object CommonSeaCreatureHider {
         }
     }
 
-    fun isEnabled() =
-        config.enabled &&
-            FishingApi.isFishing(checkRodInHand = false) &&
-            (!config.onlyWhileHoldingRod || FishingApi.holdingRod)
+    fun isEnabled() = config.enabled &&
+        FishingApi.isFishing(checkRodInHand = false) &&
+        (!config.onlyWhileHoldingRod || FishingApi.holdingRod)
 }

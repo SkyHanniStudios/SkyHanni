@@ -46,7 +46,7 @@ object HideExCoopMembers {
     )
 
     @HandleEvent
-    private fun onTooltip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!config.hideExCoopMembers || !CollectionApi.collectionInventory.isInside()) return
         val hiddenMembers = storage?.hiddenCoopMembers.takeIf { !it.isNullOrEmpty() } ?: return
         val index = event.slot?.index ?: return

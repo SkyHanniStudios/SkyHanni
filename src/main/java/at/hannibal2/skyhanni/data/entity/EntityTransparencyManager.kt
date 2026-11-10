@@ -26,7 +26,7 @@ object EntityTransparencyManager {
     private val entityTransparencyOverrides = mutableMapOf<LivingEntity, Int>()
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onTick() {
+    private fun onTick() {
         if (!active) return
         this.entities = EntityUtils.getEntitiesNearby<LivingEntity>(80.0).associateNotNull status@{ entity ->
             val event = EntityTransparencyTickEvent(entity).apply { post() }
@@ -64,8 +64,8 @@ object EntityTransparencyManager {
     }
 
     @HandleEvent
-    fun onCheckRender(event: CheckRenderEntityEvent<LivingEntity>) = processEntityTransparency(event.entity, event::cancel)
+    private fun onCheckRenderEntity(event: CheckRenderEntityEvent<LivingEntity>) = processEntityTransparency(event.entity, event::cancel)
 
     @HandleEvent
-    fun onRender(event: EntityRenderLayersEvent.Pre<LivingEntity>) = processEntityTransparency(event.entity, event::cancel)
+    private fun onRender(event: EntityRenderLayersEvent.Pre<LivingEntity>) = processEntityTransparency(event.entity, event::cancel)
 }

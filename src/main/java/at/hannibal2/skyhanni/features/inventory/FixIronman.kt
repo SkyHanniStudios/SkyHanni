@@ -52,7 +52,7 @@ object FixIronman {
     private val sbLevelingInventory = InventoryDetector { sbLevelingPattern }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onTooltipEvent(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         // We don't need to always fix this
         if (!TimeUtils.isAprilFoolsDay) return
 
@@ -78,7 +78,7 @@ object FixIronman {
     }
 
     @HandleEvent
-    fun onChat(event: SystemMessageEvent.Modify) {
+    private fun onSystemMessageModify(event: SystemMessageEvent.Modify) {
         // We don't need to always fix this
         if (!TimeUtils.isAprilFoolsDay) return
 

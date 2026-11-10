@@ -21,7 +21,7 @@ object SlayerSpiderFeatures {
     val stuckMobs = mutableSetOf<Mob>()
 
     @HandleEvent(onlyOnSkyblock = true)
-    private fun onMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
+    private fun onSkyblockMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
         val mob = event.mob
         if (mob.isRightTier()) {
             allTier.add(mob)

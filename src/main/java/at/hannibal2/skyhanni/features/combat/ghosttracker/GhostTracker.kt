@@ -11,14 +11,12 @@ import at.hannibal2.skyhanni.data.ProfileStorageData
 import at.hannibal2.skyhanni.data.jsonobjects.repo.GhostDropsJson
 import at.hannibal2.skyhanni.data.model.SkyblockStat
 import at.hannibal2.skyhanni.data.model.TabWidget
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
 import at.hannibal2.skyhanni.events.IslandChangeEvent
 import at.hannibal2.skyhanni.events.ItemAddEvent
 import at.hannibal2.skyhanni.events.PurseChangeCause
 import at.hannibal2.skyhanni.events.PurseChangeEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.events.SackChangeEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.SkillExpGainEvent
 import at.hannibal2.skyhanni.events.WidgetUpdateEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
@@ -176,7 +174,7 @@ object GhostTracker {
     }
 
     @HandleEvent
-    private fun onSkillExp(event: SkillExpGainEvent) {
+    private fun onSkillExpGain(event: SkillExpGainEvent) {
         if (!inArea) return
         if (event.gained > 10_000) return
         tracker.modify {
@@ -184,7 +182,7 @@ object GhostTracker {
         }
     }
 
-    @HandleEvent(SecondPassedEvent::class)
+    @HandleEvent
     private fun onSecondPassed() {
         if (!isEnabled()) return
         if (!TabWidget.BESTIARY.isActive && lastNoWidgetWarningTime.passedSince() > 1.minutes) {
@@ -372,7 +370,7 @@ object GhostTracker {
         override fun toString(): String = display
     }
 
-    @HandleEvent(ConfigLoadEvent::class)
+    @HandleEvent
     private fun onConfigLoad() {
         val storage = storage ?: return
         if (storage.migratedTotalKills) return

@@ -5,7 +5,6 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.ProfileStorageData
 import at.hannibal2.skyhanni.data.jsonobjects.repo.neu.NeuCarnivalTokenCostJson
 import at.hannibal2.skyhanni.data.jsonobjects.repo.neu.NeuMiscJson
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.InventoryOpenEvent
 import at.hannibal2.skyhanni.events.NeuRepositoryReloadEvent
 import at.hannibal2.skyhanni.events.render.gui.ReplaceItemEvent
@@ -18,7 +17,6 @@ import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 import at.hannibal2.skyhanni.utils.NumberUtil.formatInt
 import at.hannibal2.skyhanni.utils.RegexUtils.firstMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.groupOrNull
-import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
@@ -45,6 +43,8 @@ object CarnivalShopHelper {
     private var tokensNeeded: Int = 0
     private var overviewInfoItemStack: SafeItemStack? = null
     private var shopSpecificInfoItemStack: SafeItemStack? = null
+
+    private val config get() = SkyHanniMod.feature.event.carnival
 
     private val patternGroup = RepoPattern.group("inventory.carnival-shop-helper")
 
@@ -98,9 +98,9 @@ object CarnivalShopHelper {
         }
     }
 
-    @HandleEvent
-    fun replaceItem(event: ReplaceItemEvent) {
-        if (!isEnabled() || repoEventShops.isEmpty() || event.slot != CUSTOM_STACK_LOCATION) return
+    @HandleEvent(onlyOnSkyblock = true)
+    private fun onReplaceItem(event: ReplaceItemEvent) {
+        if (!config.tokenShopHelper || repoEventShops.isEmpty() || event.slot != CUSTOM_STACK_LOCATION) return
         tryReplaceShopSpecificStack(event)
         tryReplaceOverviewStack(event)
     }
@@ -116,7 +116,7 @@ object CarnivalShopHelper {
     }
 
     @HandleEvent
-    fun onNeuRepoReload(event: NeuRepositoryReloadEvent) {
+    private fun onNeuRepoReload(event: NeuRepositoryReloadEvent) {
         val repoTokenShops = event.getConstant<NeuMiscJson>("carnivalshops").carnivalTokenShops
         repoEventShops = repoTokenShops.map { (key, value) ->
             EventShop(key.replace("_", " "), value.values.toMutableList())
@@ -126,7 +126,7 @@ object CarnivalShopHelper {
     }
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    private fun onInventoryClose() {
         currentProgress = null
         currentEventType = ""
         tokensOwned = 0
@@ -223,9 +223,9 @@ object CarnivalShopHelper {
         )
     }
 
-    @HandleEvent
-    fun onInventoryOpen(event: InventoryOpenEvent) {
-        if (!isEnabled() || repoEventShops.isEmpty()) return
+    @HandleEvent(onlyOnSkyblock = true)
+    private fun onInventoryOpen(event: InventoryOpenEvent) {
+        if (!config.tokenShopHelper || repoEventShops.isEmpty()) return
 
         val matchedShop = repoEventShops.firstOrNull { it.shopName.equals(event.inventoryName, ignoreCase = true) } ?: return
         currentEventType = matchedShop.shopName
@@ -255,6 +255,4 @@ object CarnivalShopHelper {
         val purchasedUpgrades = EssenceUtils.extractPurchasedUpgrades(inventoryItems, SLOT_RANGE)
         currentProgress = EventShopProgress(currentEventType, purchasedUpgrades)
     }
-
-    private fun isEnabled() = SkyBlockUtils.inSkyBlock && SkyHanniMod.feature.event.carnival.tokenShopHelper
 }

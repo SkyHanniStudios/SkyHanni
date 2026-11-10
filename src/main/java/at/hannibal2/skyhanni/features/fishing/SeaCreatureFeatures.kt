@@ -35,7 +35,7 @@ object SeaCreatureFeatures {
     private val entityIds = TimeLimitedSet<Int>(6.minutes)
 
     @HandleEvent
-    private fun onMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
+    private fun onSkyblockMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
         if (!isEnabled()) return
         val mob = event.mob
 

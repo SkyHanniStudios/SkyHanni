@@ -14,7 +14,7 @@ object CFTooltip {
     private val config get() = CFApi.config
 
     @HandleEvent(priority = HandleEvent.HIGH)
-    fun onTooltip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!CFApi.inChocolateFactory) return
         if (!config.extraTooltipStats) return
 
