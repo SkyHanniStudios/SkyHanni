@@ -12,13 +12,14 @@ import at.hannibal2.skyhanni.utils.StringUtils.cleanPlayerName
 import at.hannibal2.skyhanni.utils.StringUtils.removeColor
 import at.hannibal2.skyhanni.utils.StringUtils.stripHypixelMessage
 
+// TODO get rid of the manual processing here, and use the same core that [SkipTabListLineEvent] is using to modify.
 @SkyHanniModule
 object DungeonRankTabListColor {
 
     private val config get() = SkyHanniMod.feature.dungeon.tabList
 
     @HandleEvent
-    fun onTabListText(event: TabListLineRenderEvent) {
+    fun onTabListLineRender(event: TabListLineRenderEvent) {
         if (!isEnabled()) return
 
         DungeonApi.playerDungeonTeamPattern.matchMatcher(event.text.stripHypixelMessage().removeColor()) {

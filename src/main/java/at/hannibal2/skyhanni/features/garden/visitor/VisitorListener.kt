@@ -32,6 +32,7 @@ import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import net.minecraft.network.protocol.game.ServerboundAttackPacket
 import net.minecraft.network.protocol.game.ServerboundInteractPacket
 import net.minecraft.world.entity.decoration.ArmorStand
+import org.jetbrains.annotations.VisibleForTesting
 import kotlin.time.Duration.Companion.seconds
 
 @SkyHanniModule
@@ -66,7 +67,9 @@ object VisitorListener {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    private fun onWidgetUpdate(event: WidgetUpdateEvent) {
+    @VisibleForTesting
+    @Suppress("PrivateEventListener")
+    fun onWidgetUpdate(event: WidgetUpdateEvent) {
         if (!event.isWidget(TabWidget.VISITORS)) return
 
         if (event.isClear()) return

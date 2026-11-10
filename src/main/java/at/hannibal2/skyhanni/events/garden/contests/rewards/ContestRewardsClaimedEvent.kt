@@ -4,7 +4,9 @@ import at.hannibal2.skyhanni.api.event.SkyHanniEvent
 import at.hannibal2.skyhanni.config.storage.Resettable
 import at.hannibal2.skyhanni.features.garden.AnitaMedalProfit
 import at.hannibal2.skyhanni.features.garden.CropType
+import at.hannibal2.skyhanni.skyhannimodule.PrimaryFunction
 
+@PrimaryFunction("onContestRewardsClaimed")
 class ContestRewardsClaimedEvent(val rewards: ContestRewardSet, val messages: List<String>) : SkyHanniEvent()
 
 data class ContestRewardSet(

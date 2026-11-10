@@ -49,7 +49,7 @@ object ExperimentsDryStreakDisplay {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
+    fun onChestGuiRender() {
         if (!isEnabled() || !ExperimentationTableApi.inTable) return
 
         display = display.takeIfNotEmpty() ?: drawDisplay()
@@ -60,7 +60,7 @@ object ExperimentsDryStreakDisplay {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onTableRareUncover(event: TableRareUncoverEvent) {
+    private fun onTableRareUncover() {
         if (!isEnabled()) return
         val storage = storage ?: return
         val attemptsFormat = "attempt".pluralize(storage.attemptsSince)
@@ -88,7 +88,7 @@ object ExperimentsDryStreakDisplay {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onTableTaskCompleted(event: TableTaskCompletedEvent) {
+    fun onTableTaskComplete(event: TableTaskCompletedEvent) {
         if (ignoreNextFinish) {
             ignoreNextFinish = false
             return

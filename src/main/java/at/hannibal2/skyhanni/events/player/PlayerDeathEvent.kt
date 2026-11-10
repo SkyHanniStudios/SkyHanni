@@ -5,6 +5,8 @@ import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.skyhannimodule.PrimaryFunction
 import at.hannibal2.skyhanni.utils.PlayerUtils
 
+// TODO migrate to MobEvent subtype?
+//  Would be interesting to incorporate the Modify aspect of this, as as parameter for those events.
 abstract class AbstractPlayerDeathEvent(
     val name: String,
     val reason: String,

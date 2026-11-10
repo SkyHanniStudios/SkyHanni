@@ -4,11 +4,11 @@ import at.hannibal2.skyhanni.api.event.SkyHanniEvent
 import at.hannibal2.skyhanni.skyhannimodule.PrimaryFunction
 import at.hannibal2.skyhanni.utils.SafeItemStack
 
-@PrimaryFunction("onInventoryArmorUpdate")
+@PrimaryFunction("onOwnInventoryArmorUpdate")
 data class OwnInventoryArmorUpdateEvent(val itemStack: SafeItemStack, val slot: Int) : SkyHanniEvent()
 
-@PrimaryFunction("onInventoryItemUpdate")
+@PrimaryFunction("onOwnInventoryItemUpdate")
 data class OwnInventoryItemUpdateEvent(val itemStack: SafeItemStack, val slot: Int) : SkyHanniEvent()
 
-@PrimaryFunction("onInventoryMenuUpdate")
+@PrimaryFunction("onOwnInventoryMenuUpdate")
 data class OwnInventoryMenuUpdateEvent(val itemStack: SafeItemStack) : SkyHanniEvent()

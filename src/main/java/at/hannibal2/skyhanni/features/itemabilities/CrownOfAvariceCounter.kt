@@ -85,7 +85,7 @@ object CrownOfAvariceCounter {
     }
 
     @HandleEvent
-    fun onInventoryArmorUpdate(event: OwnInventoryArmorUpdateEvent) {
+    fun onOwnInventoryArmorUpdate(event: OwnInventoryArmorUpdateEvent) {
         if (!isEnabled() || event.slot != 5) return
         val item = event.itemStack
         if (item.getInternalNameOrNull() != internalName) return

@@ -72,12 +72,12 @@ object CropMoneyDisplay {
         display = null
     }
 
-    @HandleEvent(PetChangeEvent::class, onlyOnIsland = IslandType.GARDEN)
+    @HandleEvent(onlyOnIsland = IslandType.GARDEN)
     fun onPetChange() {
         update()
     }
 
-    @HandleEvent(GuiRenderEvent.GuiOverlayRenderEvent::class)
+    @HandleEvent
     fun onGuiRenderOverlay() {
         if (!isEnabled()) return
 

@@ -5,7 +5,7 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.events.GuiContainerEvent
 import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.InventoryCloseEvent
-import at.hannibal2.skyhanni.events.bazaar.BazaarOpenedProductEvent
+import at.hannibal2.skyhanni.events.bazaar.BazaarProductOpenedEvent
 import at.hannibal2.skyhanni.features.inventory.bazaar.BazaarApi.getBazaarDataOrError
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.DelayedRun
@@ -44,7 +44,7 @@ object BazaarBestSellMethod {
     }
 
     @HandleEvent
-    fun onBazaarOpenedProduct(event: BazaarOpenedProductEvent) {
+    fun onBazaarProductOpened(event: BazaarProductOpenedEvent) {
         if (!isEnabled()) return
         display = getDisplay(event.openedProduct)
 

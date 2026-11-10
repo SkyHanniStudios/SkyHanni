@@ -18,11 +18,9 @@ import at.hannibal2.skyhanni.config.features.pets.display.visual.VisualPetDispla
 import at.hannibal2.skyhanni.data.Perk
 import at.hannibal2.skyhanni.data.PetData
 import at.hannibal2.skyhanni.data.ProfileStorageData
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
 import at.hannibal2.skyhanni.events.minecraft.ToolTipTextEvent
 import at.hannibal2.skyhanni.events.minecraft.add
-import at.hannibal2.skyhanni.events.pets.PetChangeEvent
 import at.hannibal2.skyhanni.events.render.gui.GameOverlayRenderPostEvent
 import at.hannibal2.skyhanni.events.render.gui.RenderingTickEvent
 import at.hannibal2.skyhanni.features.rift.RiftApi
@@ -31,7 +29,6 @@ import at.hannibal2.skyhanni.utils.ConditionalUtils
 import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.LorenzRarity
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
-import at.hannibal2.skyhanni.utils.NeuItems.getItemStackOrNull
 import at.hannibal2.skyhanni.utils.RenderUtils
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderable
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
@@ -60,12 +57,6 @@ private typealias ESTextMode = TextPetDisplayConfig.ExpSharePetTextConfig.TextMo
 private typealias ETextCenter = TextPetDisplayConfig.EquippedPetTextConfig.CenterTarget
 private typealias EXPSharePlace = ExpSharePetOrganizationConfig.ExpShareLocationOption
 private typealias EXPShareGO = ExpSharePetOrganizationConfig.GroupOrientation
-
-internal fun PetDisplayConfig.requiresExactCurrentPetXp(): Boolean {
-    val enabledTexts = text.equippedPet.enabledTexts.get()
-    return TextPetDisplayConfig.TextElement.OVERFLOW_XP in enabledTexts ||
-        TextPetDisplayConfig.TextElement.TOTAL_XP in enabledTexts
-}
 
 @SkyHanniModule
 object CurrentPetDisplay {
@@ -456,8 +447,8 @@ object CurrentPetDisplay {
         previewRenderCache = null
     }
 
-    @HandleEvent(ConfigLoadEvent::class)
-    fun onConfigLoad() {
+    @HandleEvent
+    private fun onConfigLoad() {
         val currentConfig = config
         if (observedConfig === currentConfig) return
         observedConfig = currentConfig
@@ -466,13 +457,13 @@ object CurrentPetDisplay {
         }
     }
 
-    @HandleEvent(PetChangeEvent::class)
-    fun onPetChange() {
+    @HandleEvent
+    private fun onPetChange() {
         invalidateRenderable()
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onTooltip(event: ToolTipTextEvent) {
+    private fun onTooltip(event: ToolTipTextEvent) {
         if (!PetStorageExpShare.isInventory(InventoryUtils.openInventoryName())) return
         val slot = event.slot?.containerSlot ?: return
         if (!PetStorageExpShare.isSlotDisabled(slot)) return
@@ -483,7 +474,7 @@ object CurrentPetDisplay {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onRenderOverlayPost(event: GameOverlayRenderPostEvent) {
+    private fun onRenderOverlayPost(event: GameOverlayRenderPostEvent) {
         if (event.type != RenderLayer.HOTBAR) return
         if (RiftApi.inRift() || !config.general.enabled.get()) return
         val widgetWarning = PetStorageApi.getPetWidgetWarning(
@@ -505,7 +496,7 @@ object CurrentPetDisplay {
     }
 
     @HandleEvent
-    fun onRenderingTick(event: RenderingTickEvent) {
+    private fun onRenderingTick(event: RenderingTickEvent) {
         if (event.startPhase) return
         if (!PetDisplayConfigGuiManager.isOpen()) return
         if (!config.general.enabled.get()) return
@@ -515,7 +506,7 @@ object CurrentPetDisplay {
     }
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Pet Display")
         event.addIrrelevant {
             val currentPet = CurrentPetApi.currentPet
@@ -531,7 +522,7 @@ object CurrentPetDisplay {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(3, "misc.petDisplay", "misc.pets.display")
         event.move(9, "misc.petDisplayPos", "misc.pets.displayPos")
         event.move(138, "misc.pets.display", "misc.pets.display.general.enabled")

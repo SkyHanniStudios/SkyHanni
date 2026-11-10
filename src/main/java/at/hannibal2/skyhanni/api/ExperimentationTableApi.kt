@@ -433,7 +433,7 @@ object ExperimentationTableApi {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onClick(event: WorldClickEvent) {
+    fun onWorldClick(event: WorldClickEvent) {
         if (!inDistanceToTable(15.0)) return
         if (event.clickType != InteractClickType.RIGHT_CLICK) return
 

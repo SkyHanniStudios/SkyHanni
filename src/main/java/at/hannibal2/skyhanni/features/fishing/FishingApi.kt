@@ -296,7 +296,7 @@ object FishingApi {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    private fun onClick(event: WorldClickEvent) {
+    private fun onWorldClick(event: WorldClickEvent) {
         if (event.clickType != InteractClickType.RIGHT_CLICK || !holdingRod || !bobberHasTouchedLiquid) return
         if (lastReelTime.passedSince() < .3.seconds) return
         lastReelTime = SimpleTimeMark.now()

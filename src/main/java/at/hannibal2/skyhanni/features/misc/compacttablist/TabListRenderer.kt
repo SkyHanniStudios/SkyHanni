@@ -196,7 +196,7 @@ object TabListRenderer {
     )
 
     @HandleEvent
-    fun onSkipTablistLine(event: SkipTabListLineEvent) {
+    fun onSkipTabListLine(event: SkipTabListLineEvent) {
         if (config.hideFiresales && event.lastSubTitle != null && fireSalePattern.matches(event.lastSubTitle.component)) {
             event.cancel()
         }

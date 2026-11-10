@@ -45,6 +45,8 @@ object VanquisherApi {
         }
     }
 
+    // Faz, what's goin on here? 🥺🥺
+    @Suppress("MissingPrimaryFunction")
     data object VanquisherOwnMessageEvent : SkyHanniEvent()
 
     private val patternGroup = RepoPattern.group("combat.crimsonisle.vanquisherapi")
