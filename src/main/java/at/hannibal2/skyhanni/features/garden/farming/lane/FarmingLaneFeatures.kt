@@ -52,12 +52,12 @@ object FarmingLaneFeatures {
     }
 
     @HandleEvent
-    private fun onFarmingLaneSwitch(event: FarmingLaneSwitchEvent) {
+    private fun onFarmingLaneSwitch() {
         display = emptyList()
     }
 
     @HandleEvent
-    private fun onGardenToolChange(event: GardenToolChangeEvent) {
+    private fun onGardenToolChange() {
         display = emptyList()
     }
 
@@ -211,7 +211,7 @@ object FarmingLaneFeatures {
     private fun LorenzVec.capAtBuildHeight(): LorenzVec = if (y > 76) copy(y = 76.0) else this
 
     @HandleEvent(onlyOnIsland = GARDEN)
-    private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay() {
         if (!config.distanceDisplay) return
 
         config.distanceDisplayPosition.renderStrings(display, posLabel = "Lane Display")

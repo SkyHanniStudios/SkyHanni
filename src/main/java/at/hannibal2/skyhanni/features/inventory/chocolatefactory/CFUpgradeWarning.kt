@@ -1,7 +1,6 @@
 package at.hannibal2.skyhanni.features.inventory.chocolatefactory
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.events.ProfileJoinEvent
 import at.hannibal2.skyhanni.features.fame.ReminderUtils
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
@@ -50,7 +49,7 @@ object CFUpgradeWarning {
     }
 
     @HandleEvent
-    private fun onProfileJoin(event: ProfileJoinEvent) {
+    private fun onProfileJoin() {
         lastUpgradeWarning = SimpleTimeMark.farPast()
     }
 

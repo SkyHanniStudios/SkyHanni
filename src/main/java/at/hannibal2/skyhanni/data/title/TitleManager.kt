@@ -339,14 +339,14 @@ object TitleManager {
     }
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    fun onGuiRenderOverlay() {
         if (InventoryUtils.inInventory()) return
         val globalTitle = currentTitles[TitleLocation.GLOBAL] ?: return
         globalTitle.tryRenderGlobalTitle()
     }
 
     @HandleEvent
-    fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
+    fun onChestGuiRender() {
         if (!InventoryUtils.inInventory()) return
         val inventoryTitle = currentTitles[TitleLocation.INVENTORY] ?: return
         inventoryTitle.tryRenderInventoryTitle()

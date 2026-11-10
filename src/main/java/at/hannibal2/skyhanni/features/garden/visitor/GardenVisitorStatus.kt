@@ -14,7 +14,6 @@ import at.hannibal2.skyhanni.utils.InventoryUtils.getAmountInInventory
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToIgnoreY
 import at.hannibal2.skyhanni.utils.StringUtils.removeColor
 import at.hannibal2.skyhanni.utils.getLorenzVec
-import net.minecraft.advancements.triggers.InventoryChangeTrigger.TriggerInstance.hasItems
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.decoration.ArmorStand

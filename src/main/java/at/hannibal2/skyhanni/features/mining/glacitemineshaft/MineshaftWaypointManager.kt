@@ -84,7 +84,7 @@ object MineshaftWaypointManager {
     }
 
     @HandleEvent
-    private fun onCorpseLooted(event: CorpseLootedEvent) {
+    private fun onCorpseLooted() {
         val closestWaypoint = waypoints.filter { it.isCorpse && it.location.distanceToPlayer() <= 5 }
             .minByOrNull { it.location.distanceToPlayer() } ?: return
 

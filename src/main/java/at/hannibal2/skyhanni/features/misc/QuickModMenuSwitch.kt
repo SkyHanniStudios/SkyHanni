@@ -143,7 +143,7 @@ object QuickModMenuSwitch {
     }
 
     @HandleEvent(onlyOnSkyblockOrFeatures = [OutsideSBFeature.QUICK_MOD_MENU_SWITCH])
-    fun onScreenDrawn(event: ScreenDrawnEvent) {
+    fun onScreenDrawn() {
         if (!config.enabled) return
 
         DrawContextUtils.pushPop {

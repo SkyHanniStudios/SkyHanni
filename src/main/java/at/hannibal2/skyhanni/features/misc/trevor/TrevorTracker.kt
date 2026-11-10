@@ -135,7 +135,7 @@ object TrevorTracker {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_FARMING_ISLANDS)
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    fun onGuiRenderOverlay() {
         if (!shouldDisplay()) return
         config.position.renderRenderables(display, posLabel = "Trevor Tracker")
     }

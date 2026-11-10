@@ -4,7 +4,6 @@ import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.IslandTypeTag
 import at.hannibal2.skyhanni.events.ColdUpdateEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.DelayedRun
 import at.hannibal2.skyhanni.utils.GuiRenderUtils
@@ -25,7 +24,7 @@ object ColdOverlay {
     private val textureLocation = createResourceLocation("minecraft", "textures/misc/powder_snow_outline.png")
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    fun onGuiRenderOverlay() {
         if (!isEnabled()) return
         val alpha = getColdAlpha()
         if (alpha == 0f) return

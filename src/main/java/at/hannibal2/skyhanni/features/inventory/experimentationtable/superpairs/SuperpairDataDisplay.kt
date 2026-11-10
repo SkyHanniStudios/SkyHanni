@@ -9,8 +9,6 @@ import at.hannibal2.skyhanni.api.TaskType
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.data.IslandType
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.experiments.TableSuperpairDataUpdatedEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.LorenzColor
 import at.hannibal2.skyhanni.utils.RenderUtils.renderStrings
@@ -29,13 +27,13 @@ object SuperpairDataDisplay {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onSuperpairDataUpdated(event: TableSuperpairDataUpdatedEvent) {
+    fun onSuperpairDataUpdated() {
         if (!config.superpairs.display) return
         display = drawDisplay()
     }
 
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
+    fun onChestGuiRender() {
         if (!config.superpairs.display || !ExperimentationTableApi.inTable) return
 
         display = display.takeIfNotEmpty()

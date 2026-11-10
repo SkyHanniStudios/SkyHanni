@@ -7,7 +7,6 @@ import at.hannibal2.skyhanni.data.SkyHanniNotification
 import at.hannibal2.skyhanni.data.jsonobjects.repo.EnforcedConfigValuesJson
 import at.hannibal2.skyhanni.data.jsonobjects.repo.EnforcedValueData
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
-import at.hannibal2.skyhanni.events.render.gui.GuiScreenOpenEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.ChatUtils
@@ -39,7 +38,7 @@ object EnforcedConfigValues {
     }
 
     @HandleEvent
-    fun onGuiOpen(event: GuiScreenOpenEvent) {
+    fun onGuiOpen() {
         enforceOntoConfig(SkyHanniMod.feature)
     }
 

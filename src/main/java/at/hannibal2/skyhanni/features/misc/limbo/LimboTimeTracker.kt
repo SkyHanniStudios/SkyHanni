@@ -125,7 +125,7 @@ object LimboTimeTracker {
     }
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    fun onGuiRenderOverlay() {
         if (!config.showTimeInLimbo || !inLimbo) return
         val duration = limboJoinTime.passedSince().format()
         val display = Renderable.text("§eIn Limbo since §b$duration")

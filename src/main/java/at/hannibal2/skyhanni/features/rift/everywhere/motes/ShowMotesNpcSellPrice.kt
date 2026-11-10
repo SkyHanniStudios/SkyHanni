@@ -3,9 +3,6 @@ package at.hannibal2.skyhanni.features.rift.everywhere.motes
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.features.rift.motes.RiftInventoryValueConfig.NumberFormatEntry
 import at.hannibal2.skyhanni.data.IslandType
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
-import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
 import at.hannibal2.skyhanni.events.minecraft.ToolTipTextEvent
@@ -46,7 +43,7 @@ object ShowMotesNpcSellPrice {
     private val slotList = mutableListOf<Int>()
 
     @HandleEvent
-    fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
+    fun onChestGuiRender() {
         if (!isInventoryValueEnabled()) return
         if (inInventory) {
             config.inventoryValue.position.renderRenderables(
@@ -84,12 +81,12 @@ object ShowMotesNpcSellPrice {
     }
 
     @HandleEvent
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    fun onInventoryFullyOpened() {
         reset()
     }
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    fun onInventoryClose() {
         reset()
     }
 

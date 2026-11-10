@@ -1,7 +1,6 @@
 package at.hannibal2.skyhanni.features.event.hoppity
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.config.features.event.hoppity.HoppityUnclaimedEggsConfig.UnclaimedEggsOrder.SOONEST_FIRST
 import at.hannibal2.skyhanni.data.mob.MobFilter.isRealPlayer
 import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.entity.EntityTransparencyActiveEvent

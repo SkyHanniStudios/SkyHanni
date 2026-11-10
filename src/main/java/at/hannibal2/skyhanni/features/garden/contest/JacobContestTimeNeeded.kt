@@ -32,7 +32,7 @@ object JacobContestTimeNeeded {
     private var currentBracket = ContestBracket.GOLD
 
     @HandleEvent(priority = HandleEvent.LOW, onlyOnSkyblock = true)
-    fun onInventoryUpdated(event: InventoryUpdatedEvent) {
+    fun onInventoryUpdated() {
         if (FarmingContestApi.inInventory) {
             update()
         }
@@ -195,7 +195,7 @@ object JacobContestTimeNeeded {
     } else getLatestBlocksPerSecond()
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
+    fun onChestGuiRender() {
         if (!config.enabled) return
         if (!FarmingContestApi.inInventory) return
         config.position.renderRenderables(display, posLabel = "Jacob Contest Time Needed")

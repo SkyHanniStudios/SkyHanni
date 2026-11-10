@@ -1,9 +1,6 @@
 package at.hannibal2.skyhanni.features.event.hoppity
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.features.inventory.chocolatefactory.CFApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -46,7 +43,7 @@ object HoppityCallWarning {
     private val callLength = 7.seconds
 
     @HandleEvent
-    private fun onConfigLoad(event: ConfigLoadEvent) {
+    private fun onConfigLoad() {
         val soundProperty = config.hoppityCallSound
         ConditionalUtils.onToggle(soundProperty) {
             warningSound = SoundUtils.createSound(soundProperty.get(), 1f, isWarning = true)
@@ -63,7 +60,7 @@ object HoppityCallWarning {
     }
 
     @HandleEvent
-    private fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed() {
         if (!isEnabled()) return
         if (!activeWarning) return
         if (nextWarningTime == null || finalWarningTime == null) return
@@ -76,7 +73,7 @@ object HoppityCallWarning {
     }
 
     @HandleEvent
-    private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay() {
         if (!isEnabled() || !activeWarning) return
         // Calculate a fluctuating alpha value based on the sine of time, for a smooth oscillation
         val randomizationAlphaDouble = ((2 + sin(Instant.now().toEpochMilli().toDouble() / 1000)) * 255 / 4)

@@ -8,7 +8,6 @@ import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
 import at.hannibal2.skyhanni.config.features.combat.end.EnderNodeConfig.EnderNodeDisplayEntry
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.ProfileStorageData
-import at.hannibal2.skyhanni.events.OwnInventoryItemUpdateEvent
 import at.hannibal2.skyhanni.events.SackChangeEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -148,7 +147,7 @@ object EnderNodeTracker {
     }
 
     @HandleEvent
-    fun onOwnInventoryItemUpdate(event: OwnInventoryItemUpdateEvent) {
+    fun onOwnInventoryItemUpdate() {
         if (!isEnabled()) return
         if (!ProfileStorageData.loaded) return
 

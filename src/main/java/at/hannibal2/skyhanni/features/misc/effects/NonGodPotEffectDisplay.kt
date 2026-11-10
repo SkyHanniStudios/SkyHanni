@@ -132,7 +132,7 @@ object NonGodPotEffectDisplay {
 
 
     @HandleEvent
-    private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay() {
         if (!isEnabled() || !config.displayEnabled) return
         if (RiftApi.inRift()) return
 

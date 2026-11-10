@@ -166,7 +166,7 @@ object BroodmotherFeatures {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.SPIDER_DEN)
-    private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay() {
         if (!isCountdownEnabled()) return
         val display = if (broodmotherSpawnTime.isInPast() && !broodmotherSpawnTime.isFarPast()) {
             Renderable.text("§4Broodmother spawning now!")
@@ -175,7 +175,7 @@ object BroodmotherFeatures {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.SPIDER_DEN)
-    private fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed() {
         if (!isCountdownEnabled()) return
 
         if (broodmotherSpawnTime.isFarPast()) {

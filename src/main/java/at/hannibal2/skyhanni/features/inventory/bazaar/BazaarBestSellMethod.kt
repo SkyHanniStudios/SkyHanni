@@ -3,8 +3,6 @@ package at.hannibal2.skyhanni.features.inventory.bazaar
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.events.GuiContainerEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.bazaar.BazaarProductOpenedEvent
 import at.hannibal2.skyhanni.features.inventory.bazaar.BazaarApi.getBazaarDataOrError
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -33,7 +31,7 @@ object BazaarBestSellMethod {
     private var nextCloseWillResetItem = false
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    fun onInventoryClose() {
         display = null
         if (lastClickedItem != null) {
             if (nextCloseWillResetItem) {
@@ -79,7 +77,7 @@ object BazaarBestSellMethod {
     }
 
     @HandleEvent
-    fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
+    fun onChestGuiRender() {
         if (!isEnabled()) return
 
         val display = display ?: return

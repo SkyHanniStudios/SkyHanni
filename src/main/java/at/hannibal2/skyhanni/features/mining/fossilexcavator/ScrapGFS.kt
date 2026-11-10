@@ -80,7 +80,7 @@ object ScrapGFS {
     }
 
     @HandleEvent(onlyOnIsland = DWARVEN_MINES)
-    private fun onOwnInventoryItemUpdate(event: OwnInventoryItemUpdateEvent) {
+    private fun onOwnInventoryItemUpdate() {
         if (!enabled) return
         susScrapInInventory = getSusScrapCurrentlyInInventory()
         uiDirty = true

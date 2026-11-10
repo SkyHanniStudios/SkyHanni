@@ -461,7 +461,7 @@ enum class TabWidget(
         private var lastTabComponents: List<Component> = emptyList()
 
         @HandleEvent(onlyOnSkyblock = true)
-        private fun onSecondPassed(event: SecondPassedEvent) {
+        private fun onSecondPassed() {
             if (sentSinceWorldChange) return
             if (SkyBlockUtils.lastWorldSwitch.passedSince() < FORCE_UPDATE_DELAY) return
             sentSinceWorldChange = true
@@ -483,7 +483,7 @@ enum class TabWidget(
 
         // TODO remove this workaround once the WidgetUpdateEvent gets send when the tab list gets first loaded, as intended.
         @HandleEvent(priority = HandleEvent.HIGHEST)
-        private fun onIslandChange(event: IslandChangeEvent) {
+        private fun onIslandChange() {
             for (widget in entries) {
                 widget.sendOnThisIsland = false
             }
@@ -530,7 +530,7 @@ enum class TabWidget(
         }
 
         @HandleEvent(priority = HandleEvent.LOW)
-        private fun onRepoReload(event: RepositoryReloadEvent) {
+        private fun onRepoReload() {
             extraPatterns = patternGroup.getUnusedPatterns()
         }
 

@@ -159,12 +159,12 @@ object CraftMaterialCollector {
         neededMaterials.sumOf { it.internalName.getPrice() * it.amount * multiplier }
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    fun onInventoryClose() {
         inRecipeInventory = false
     }
 
     @HandleEvent
-    fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
+    fun onChestGuiRender() {
         if (!isEnabled()) return
         if (!inRecipeInventory && !purchasing) return
 

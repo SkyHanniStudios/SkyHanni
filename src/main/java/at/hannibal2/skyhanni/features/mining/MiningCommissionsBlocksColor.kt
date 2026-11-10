@@ -124,7 +124,7 @@ object MiningCommissionsBlocksColor {
     }
 
     @HandleEvent
-    fun onConfigLoad(event: ConfigLoadEvent) {
+    fun onConfigLoad() {
         color = config.color.get().toDyeColor()
         config.sneakQuickToggle.onToggle {
             oldSneakState = false

@@ -98,7 +98,7 @@ object MiningNotifications {
     }
 
     @HandleEvent
-    fun onConfigLoad(event: ConfigLoadEvent) {
+    fun onConfigLoad() {
         ConditionalUtils.onToggle(config.coldThreshold) {
             if (MiningApi.cold != config.coldThreshold.get()) hasSentCold = false
         }

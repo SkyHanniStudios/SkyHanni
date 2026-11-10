@@ -47,7 +47,7 @@ object KloonHacking {
     private val RETRO_ENCABULATING_VISOR = "RETRO_ENCABULATING_VISOR".toInternalName()
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onSecondPassed(event: SecondPassedEvent) {
+    fun onSecondPassed() {
         checkHelmet()
     }
 
@@ -76,13 +76,13 @@ object KloonHacking {
     }
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    fun onInventoryClose() {
         inTerminalInventory = false
         inColorInventory = false
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
+    fun onBackgroundDrawn() {
         if (inTerminalInventory) {
             if (!config.solver) return
             var i = 0

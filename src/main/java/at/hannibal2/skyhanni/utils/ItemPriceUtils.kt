@@ -147,7 +147,7 @@ object ItemPriceUtils {
     private fun getShLowestBin(internalName: NeuInternalName): Long = lowestBins[internalName] ?: -1L
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    fun onSecondPassed() {
         if (ApiUtils.isLowestBinApiDisabled()) return
         if (lastLowestBinRefresh.passedSince() < 2.minutes) return
         lastLowestBinRefresh = SimpleTimeMark.now()

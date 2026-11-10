@@ -172,7 +172,7 @@ enum class CarnivalGoal(
             entries.filter { it.type.item == item }.firstOrNull { it.lorePattern.matches(lore.firstOrNull()) }
 
         @HandleEvent
-        fun onProfileJoin(event: ProfileJoinEvent) {
+        fun onProfileJoin() {
             dirty = true
         }
 
@@ -197,7 +197,7 @@ enum class CarnivalGoal(
         private var display = emptyList<Renderable>()
 
         @HandleEvent
-        fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+        fun onGuiRenderOverlay() {
             if (!isEnabled()) return
             if (dirty) {
                 display = buildList {

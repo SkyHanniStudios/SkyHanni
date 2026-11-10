@@ -29,7 +29,7 @@ object MiningEventDisplay {
     private val islandEventData = mutableMapOf<IslandType, MiningIslandEventInfo>()
 
     @HandleEvent(onlyOnSkyblockOrFeatures = [OutsideSBFeature.MINING_EVENT_DISPLAY])
-    fun onSecondPassed(event: SecondPassedEvent) {
+    fun onSecondPassed() {
         updateDisplay()
     }
 

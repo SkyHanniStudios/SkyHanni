@@ -59,7 +59,7 @@ object SackDisplay {
     }
 
     @HandleEvent
-    fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
+    fun onBackgroundDrawn() {
         if (!SackApi.inventory.isInside()) return
         if (!config.highlightFull) return
         for (slot in InventoryUtils.getItemsInOpenChest()) {

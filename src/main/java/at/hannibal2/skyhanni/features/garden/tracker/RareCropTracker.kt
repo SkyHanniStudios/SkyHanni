@@ -164,7 +164,7 @@ object RareCropTracker {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onIslandJoin(event: IslandJoinEvent) {
+    fun onIslandJoin() {
         tracker.firstUpdate()
     }
 

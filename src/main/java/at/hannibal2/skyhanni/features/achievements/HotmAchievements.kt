@@ -3,7 +3,6 @@ package at.hannibal2.skyhanni.features.achievements
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.achievements.Achievement
 import at.hannibal2.skyhanni.data.hotx.HotmData
-import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
 import at.hannibal2.skyhanni.events.achievements.AchievementRegistrationEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.chat.TextHelper.asComponent
@@ -25,7 +24,7 @@ object HotmAchievements {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    fun onInventoryFullyOpened() {
         if (AchievementManager.isCompleted(PICKAXE_ABILITY_ACHIEVEMENT)) return
         if (!HotmData.inInventory) return
         var count = 0

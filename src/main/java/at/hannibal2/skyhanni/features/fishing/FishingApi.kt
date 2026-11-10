@@ -223,7 +223,7 @@ object FishingApi {
     }
 
     @HandleEvent
-    private fun onProfileJoin(event: ProfileJoinEvent) {
+    private fun onProfileJoin() {
         checkAndUpdateBaitFromInventory()
     }
 

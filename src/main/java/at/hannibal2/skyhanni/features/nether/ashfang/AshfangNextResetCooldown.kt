@@ -2,7 +2,6 @@ package at.hannibal2.skyhanni.features.nether.ashfang
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderable
 import at.hannibal2.skyhanni.utils.TimeUnit
@@ -18,7 +17,7 @@ object AshfangNextResetCooldown {
     private val ashfangResetTime = 46.1.seconds
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    fun onGuiRenderOverlay() {
         if (!isEnabled() || AshfangManager.lastSpawnTime.isFarPast()) return
         val nextSpawn = AshfangManager.lastSpawnTime + ashfangResetTime
 

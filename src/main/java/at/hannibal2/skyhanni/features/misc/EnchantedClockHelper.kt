@@ -137,7 +137,7 @@ object EnchantedClockHelper {
     }
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    fun onSecondPassed() {
         if (!isEnabled()) return
         val readyNowBoosts = loadBoostsReadyNow().takeIf { it.isNotEmpty() } ?: return
 

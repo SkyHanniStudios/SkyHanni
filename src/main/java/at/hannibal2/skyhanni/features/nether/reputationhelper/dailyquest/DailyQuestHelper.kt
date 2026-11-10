@@ -102,7 +102,7 @@ object DailyQuestHelper {
     }
 
     @HandleEvent
-    fun onConfigLoad(event: ConfigLoadEvent) {
+    fun onConfigLoad() {
         ConditionalUtils.onToggle(config.enabled) {
             if (IslandType.CRIMSON_ISLE.isInIsland()) {
                 QuestLoader.loadFromTabList()

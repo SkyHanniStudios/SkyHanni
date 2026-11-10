@@ -1,8 +1,6 @@
 package at.hannibal2.skyhanni.features.rift.area.wyldwoods
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.entity.EntityEquipmentChangeEvent
 import at.hannibal2.skyhanni.features.rift.RiftApi
 import at.hannibal2.skyhanni.mixins.hooks.RenderLivingEntityHelper
@@ -29,7 +27,7 @@ object RiftOdonata {
     private val emptyBottle = "EMPTY_ODONATA_BOTTLE".toInternalName()
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    fun onSecondPassed() {
         if (isEnabled()) {
             checkHand()
         }
@@ -54,7 +52,7 @@ object RiftOdonata {
     // This only gets called on config change, so the performance impact is minimal
     @OptIn(AllEntitiesGetter::class)
     @HandleEvent
-    fun onConfigLoad(event: ConfigLoadEvent) {
+    fun onConfigLoad() {
         config.highlight.onToggle {
             getEntities<ArmorStand>().forEach(::tryAdd)
         }

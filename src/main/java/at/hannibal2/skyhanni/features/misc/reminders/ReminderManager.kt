@@ -153,7 +153,7 @@ object ReminderManager {
     }
 
     @HandleEvent
-    private fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed() {
         val remindersToSend = mutableListOf<Component>()
         val firedReasons = mutableListOf<String>()
 

@@ -10,7 +10,6 @@ import at.hannibal2.skyhanni.config.storage.ProfileSpecificStorage
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.ProfileStorageData
 import at.hannibal2.skyhanni.events.ConfigLoadEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.ProfileJoinEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.garden.visitor.VisitorAcceptEvent
@@ -290,7 +289,7 @@ object GardenVisitorDropStatistics {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    fun onGuiRenderOverlay() {
         if (!config.enabled.get()) return
         if (GardenApi.hideExtraGuis()) return
         if (config.onlyOnBarn.get() && !GardenApi.onBarnPlot) return

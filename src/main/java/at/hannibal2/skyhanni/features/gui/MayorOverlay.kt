@@ -78,7 +78,7 @@ enum class MayorOverlay(private val configLine: String, private val createLines:
         var display: Renderable? = null
 
         @HandleEvent(onlyOnSkyblockOrFeatures = [OutsideSBFeature.MAYOR_OVERLAY])
-        fun onSecondPassed(event: SecondPassedEvent) {
+        fun onSecondPassed() {
             if (!config.enabled) return
             with(config) {
                 display = Renderable.vertical(mayorOverlay.map { it.createLines() }, spacing = spacing)
@@ -86,7 +86,7 @@ enum class MayorOverlay(private val configLine: String, private val createLines:
         }
 
         @HandleEvent(onlyOnSkyblockOrFeatures = [OutsideSBFeature.MAYOR_OVERLAY])
-        fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+        fun onGuiRenderOverlay() {
             if (!config.enabled) return
             display?.let { config.position.renderRenderable(it, posLabel = "Mayor Overlay") }
         }
