@@ -60,7 +60,7 @@ class ConfigManager {
 
     lateinit var processor: BlockingMoulConfigProcessor
     private var disableSaving = false
-    private val pendingSaves: MutableSet<ConfigFileType> = ConcurrentHashMap.newKeySet()
+    private val pendingSaves = ConcurrentHashMap<ConfigFileType, String>()
 
     private fun setConfigHolder(type: ConfigFileType, value: Any) {
         require(value.javaClass == type.clazz)
@@ -215,13 +215,13 @@ class ConfigManager {
             pendingSaves.remove(fileType)
             writeConfig(fileType, reason)
         } else {
-            pendingSaves.add(fileType)
+            pendingSaves[fileType] = reason
         }
     }
 
     fun savePendingConfigs() {
         for (fileType in ConfigFileType.entries) {
-            if (pendingSaves.remove(fileType)) writeConfig(fileType, "pending save")
+            pendingSaves.remove(fileType)?.let { writeConfig(fileType, it) }
         }
     }
 
