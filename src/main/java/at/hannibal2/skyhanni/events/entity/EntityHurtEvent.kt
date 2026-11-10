@@ -4,4 +4,6 @@ import at.hannibal2.skyhanni.api.event.GenericSkyHanniEvent
 import net.minecraft.world.damagesource.DamageSource
 import net.minecraft.world.entity.Entity
 
+// TODO, I'm redoing all of these already. -Dae
+@Suppress("MissingPrimaryFunction")
 class EntityHurtEvent<T : Entity>(val entity: T, val source: DamageSource, val amount: Float) : GenericSkyHanniEvent<T>(entity.javaClass)

@@ -2,8 +2,6 @@ package at.hannibal2.skyhanni.features.garden
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.IslandType
-import at.hannibal2.skyhanni.events.garden.pests.PestKillEvent
-import at.hannibal2.skyhanni.events.garden.visitor.VisitorOpenEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
 import at.hannibal2.skyhanni.features.garden.tracker.CropFeverTracker
 import at.hannibal2.skyhanni.features.garden.tracker.GardenBpsTracker
