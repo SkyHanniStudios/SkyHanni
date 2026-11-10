@@ -1518,6 +1518,12 @@
     <ID>PrivateEventListener:HoppityApi.kt:HoppityApi$@HandleEvent(onlyOnSkyblock = true, priority = HandleEvent.HIGH) fun onChat</ID>
     <ID>PrivateEventListener:HoppityApi.kt:HoppityApi$@HandleEvent(priority = HIGHEST) fun onEggFound</ID>
     <ID>PrivateEventListener:HoppityApi.kt:HoppityApi$@HandleEvent(priority = HandleEvent.HIGH) fun onSlotClick</ID>
+    <ID>PrivateEventListener:HoppityCallWarning.kt:HoppityCallWarning$@HandleEvent fun onConfigLoad</ID>
+    <ID>PrivateEventListener:HoppityCallWarning.kt:HoppityCallWarning$@HandleEvent fun onGuiRenderOverlay</ID>
+    <ID>PrivateEventListener:HoppityCallWarning.kt:HoppityCallWarning$@HandleEvent fun onSecondPassed</ID>
+    <ID>PrivateEventListener:HoppityCallWarning.kt:HoppityCallWarning$@HandleEvent fun onWorldChange</ID>
+    <ID>PrivateEventListener:HoppityCallWarning.kt:HoppityCallWarning$@HandleEvent(onlyOnSkyblock = true) fun onCommandSend</ID>
+    <ID>PrivateEventListener:HoppityCallWarning.kt:HoppityCallWarning$@HandleEvent(priority = HandleEvent.HIGHEST) fun onChat</ID>
     <ID>PrivateEventListener:HoppityCollectionData.kt:HoppityCollectionData$@HandleEvent fun onNeuRepoReload</ID>
     <ID>PrivateEventListener:HoppityEggDisplayManager.kt:HoppityEggDisplayManager$@HandleEvent fun onEntityTransparencyActive</ID>
     <ID>PrivateEventListener:HoppityEggDisplayManager.kt:HoppityEggDisplayManager$@HandleEvent fun onEntityTransparencyTick</ID>
