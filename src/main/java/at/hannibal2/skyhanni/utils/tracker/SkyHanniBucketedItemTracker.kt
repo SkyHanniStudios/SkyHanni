@@ -19,7 +19,7 @@ abstract class SkyHanniBucketedItemTracker<E : Enum<E>, BucketedData : BucketedI
     drawDisplay: (BucketedData) -> List<Searchable>,
     extraDisplayModes: Map<DisplayMode, (ProfileSpecificStorage) -> BucketedData> = emptyMap(),
     trackerConfig: () -> GenericIndividualTrackerConfig<ItemTrackerGenericConfig>,
-    customUptimeControl: Boolean = false
+    customUptimeControl: Boolean = false,
 ) : SkyHanniItemTracker<BucketedData>(
     name,
     createNewSession,
@@ -93,7 +93,7 @@ abstract class SkyHanniBucketedItemTracker<E : Enum<E>, BucketedData : BucketedI
                 label = sourceLabel,
                 current = data.selectedBucket,
                 onChange = { new ->
-                    modifyEachMode {
+                    modify {
                         it.selectedBucket = new
                     }
                 },

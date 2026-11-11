@@ -6,8 +6,6 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.model.SkyblockStat
 import at.hannibal2.skyhanni.data.model.SkyblockStatList
 import at.hannibal2.skyhanni.events.GuiContainerEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -17,6 +15,7 @@ import at.hannibal2.skyhanni.utils.ItemUtils.getInternalName
 import at.hannibal2.skyhanni.utils.ItemUtils.getItemCategoryOrNull
 import at.hannibal2.skyhanni.utils.ItemUtils.getItemRarityOrNull
 import at.hannibal2.skyhanni.utils.ItemUtils.getLoreComponent
+import at.hannibal2.skyhanni.utils.KeyboardManager
 import at.hannibal2.skyhanni.utils.LorenzColor
 import at.hannibal2.skyhanni.utils.LorenzRarity
 import at.hannibal2.skyhanni.utils.NumberUtil.toStringWithPlus
@@ -25,6 +24,7 @@ import at.hannibal2.skyhanni.utils.RenderUtils
 import at.hannibal2.skyhanni.utils.RenderUtils.drawSlotText
 import at.hannibal2.skyhanni.utils.RenderUtils.highlight
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderables
+import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.SkyBlockItemModifierUtils.getReforgeModifier
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.SoundUtils
@@ -38,52 +38,61 @@ import at.hannibal2.skyhanni.utils.renderables.primitives.emptyText
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import net.minecraft.world.inventory.AbstractContainerMenu
-import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 import java.awt.Color
 import java.util.concurrent.atomic.AtomicBoolean
 
 @SkyHanniModule
 object ReforgeHelper {
-
     private val config get() = SkyHanniMod.feature.inventory.helper.reforge
 
     private val patternGroup = RepoPattern.group("reforge")
 
-    private val reforgeMenu by patternGroup.pattern(
+    // <editor-fold desc="Patterns">
+    private val reforgeMenuPattern by patternGroup.pattern(
         "menu.blacksmith",
         "Reforge Item",
     )
-    private val reforgeHexMenu by patternGroup.pattern(
+
+    private val reforgeHexMenuPattern by patternGroup.pattern(
         "menu.hex",
         "The Hex ➜ Reforges",
     )
 
-    /**
-     * REGEX-TEST: §aYou reforged your §r§9Gentle Dreadlord Sword §r§ainto a §r§9Heroic Dreadlord Sword§r§a!
-     */
-    private val reforgeChatMessage by patternGroup.pattern(
-        "chat.success",
-        "§aYou reforged your .* §r§ainto a .*!|§aYou applied a .* §r§ato your .*!",
+    private val clickToReforgePattern by patternGroup.pattern(
+        "lore.click-to-reforge",
+        "Click to reforge!",
     )
 
     /**
-     * REGEX-TEST: §cWait a moment before reforging again!
+     * REGEX-TEST: You reforged your Gentle Dreadlord Sword into a Heroic Dreadlord Sword!
+     * REGEX-TEST: You applied a Recombobulator 3000 to your Heroic Dreadlord Sword!
      */
-    private val reforgeChatFail by patternGroup.pattern(
-        "chat.fail",
-        "§cWait a moment before reforging again!|§cWhoa! Slow down there!",
+    private val reforgeChatSuccessPattern by patternGroup.pattern(
+        "chat.success.colorless",
+        "You reforged your .+ into an? .+!|You applied an? .+ to your .+!",
     )
+
+    /**
+     * REGEX-TEST: Wait a moment before reforging again!
+     * REGEX-TEST: Whoa! Slow down there!
+     */
+    private val reforgeChatFailPattern by patternGroup.pattern(
+        "chat.fail.colorless",
+        "Wait a moment before reforging again!|Whoa! Slow down there!",
+    )
+    // </editor-fold>
 
     private var isInReforgeMenu = false
     private var isInHexReforgeMenu = false
+    private var rareReforgeBlocked = false
 
-    private fun isReforgeMenu(chestName: String) = reforgeMenu.matches(chestName)
-    private fun isHexReforgeMenu(chestName: String) = reforgeHexMenu.matches(chestName)
+    private fun isReforgeMenu(chestName: String) = reforgeMenuPattern.matches(chestName)
+    private fun isHexReforgeMenu(chestName: String) = reforgeHexMenuPattern.matches(chestName)
 
     private fun isEnabled() = SkyBlockUtils.inSkyBlock && config.enabled && isInReforgeMenu
 
-    private var itemToReforge: ItemStack? = null
+    private var itemToReforge: SafeItemStack? = null
     private var inventoryContainer: AbstractContainerMenu? = null
 
     private var currentReforge: ReforgeApi.Reforge? = null
@@ -127,8 +136,12 @@ object ReforgeHelper {
     @HandleEvent
     fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         if (!isEnabled()) return
-        if (event.slot?.index == reforgeButton) {
-            if (event.slot.item?.getLoreComponent()?.last()?.string != "Click to reforge!") return
+        rareReforgeBlocked = false
+
+        if (event.slotId == reforgeButton) {
+            val lastLine = event.item?.getLoreComponent()?.lastOrNull()?.string
+            if (!clickToReforgePattern.matches(lastLine)) return
+            if (handleNonBasicReforgeBlock(event)) return
             if (handleReforgeButtonClick(event)) return
         }
 
@@ -147,7 +160,7 @@ object ReforgeHelper {
             waitDelay = true
             event.cancel()
         } else {
-            if (event.clickedButton == 2) return true
+            if (event.mouseType.isMiddleClick()) return true
             if (waitDelay) {
                 waitDelay = false
             } else {
@@ -157,11 +170,24 @@ object ReforgeHelper {
         return false
     }
 
+    private fun handleNonBasicReforgeBlock(event: GuiContainerEvent.SlotClickEvent): Boolean {
+        if (!config.blockNonBasicReforge) return false
+        val current = currentReforge ?: return false
+        if (current in ReforgeApi.basicReforges) return false
+        if (KeyboardManager.isModifierKeyDown()) return false
+
+        rareReforgeBlocked = true
+        SoundUtils.playBeepSound()
+        event.cancel()
+        return true
+    }
+
     @HandleEvent
     fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!isEnabled()) return
+        val message = event.cleanMessage
         when {
-            reforgeChatMessage.matches(event.message) -> {
+            reforgeChatSuccessPattern.matches(message) -> {
                 DelayedRun.runDelayed(2.ticks) {
                     itemUpdate()
                     waitForChat.set(false)
@@ -171,7 +197,7 @@ object ReforgeHelper {
                 }
             }
 
-            reforgeChatFail.matches(event.message) -> {
+            reforgeChatFailPattern.matches(message) -> {
                 DelayedRun.runDelayed(2.ticks) {
                     waitForChat.set(false)
                 }
@@ -202,12 +228,12 @@ object ReforgeHelper {
         isInReforgeMenu = true
         waitForChat.set(false)
         DelayedRun.runNextTick {
-            inventoryContainer = MinecraftCompat.localPlayer.containerMenu
+            inventoryContainer = MinecraftCompat.localPlayerOrThrow.containerMenu
         }
     }
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    fun onInventoryClose() {
         if (!isInReforgeMenu) return
         isInReforgeMenu = false
         isInHexReforgeMenu = false
@@ -217,6 +243,7 @@ object ReforgeHelper {
         sortAfter = null
         itemToReforge = null
         display = emptyList()
+        rareReforgeBlocked = false
     }
 
     private fun updateDisplay() {
@@ -377,7 +404,7 @@ object ReforgeHelper {
     }
 
     @HandleEvent
-    fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
+    fun onChestGuiRender() {
         if (!isEnabled()) return
         config.position.renderRenderables(display, posLabel = "Reforge Overlay")
     }
@@ -387,16 +414,30 @@ object ReforgeHelper {
         if (!isEnabled()) return
         if (currentReforge == null) return
 
+        if (rareReforgeBlocked) {
+            inventoryContainer?.getSlot(reforgeButton)?.let {
+                val modifier = KeyboardManager.getModifierKeyName(true)
+                event.drawSlotText(
+                    it.x - 55, it.y + 20,
+                    "§cThis item has a non-Blacksmith reforge! ($modifier to bypass)",
+                    1f
+                )
+            }
+        }
+
         inventoryContainer?.getSlot(reforgeItem)?.let {
             event.drawSlotText(it.x - 5, it.y, "§e${currentReforge?.name}", 1f)
         }
     }
 
     @HandleEvent
-    fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
+    fun onBackgroundDrawn() {
         if (hoveredReforge != null && isInHexReforgeMenu) {
             if (hoveredReforge != currentReforge) {
-                colorReforgeStone(hoverColor, hoveredReforge?.rawReforgeStoneName ?: "Random Basic Reforge")
+                colorReforgeStone(
+                    hoverColor,
+                    hoveredReforge?.rawReforgeStoneName ?: "Random Basic Reforge",
+                )
             } else {
                 inventoryContainer?.getSlot(reforgeItem)?.highlight(hoverColor)
             }
@@ -423,12 +464,12 @@ object ReforgeHelper {
 
     private fun colorReforgeStone(color: Color, reforgeStone: String?) {
         val inventory = inventoryContainer?.slots ?: return
-        val slot = inventory.firstOrNull { it?.item?.cleanName() == reforgeStone }
+        val slot = inventory.firstOrNull { it?.item?.cleanName == reforgeStone }
         if (slot != null) {
             slot.highlight(color)
         } else {
-            inventory[HEX_REFORGE_NEXT_DOWN_BUTTON].takeIf { it.item?.item == Items.PLAYER_HEAD }?.highlight(color)
-            inventory[HEX_REFORGE_NEXT_UP_BUTTON].takeIf { it.item?.item == Items.PLAYER_HEAD }?.highlight(color)
+            inventory[HEX_REFORGE_NEXT_DOWN_BUTTON].takeIf { it.item.`is`(Items.PLAYER_HEAD) }?.highlight(color)
+            inventory[HEX_REFORGE_NEXT_UP_BUTTON].takeIf { it.item.`is`(Items.PLAYER_HEAD) }?.highlight(color)
         }
     }
 
@@ -453,4 +494,3 @@ object ReforgeHelper {
         return listOf(table)
     }
 }
-

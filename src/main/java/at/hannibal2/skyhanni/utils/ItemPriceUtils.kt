@@ -42,8 +42,9 @@ object ItemPriceUtils {
         priceSource: ItemPriceSource = ItemPriceSource.BAZAAR_INSTANT_BUY,
         pastRecipes: List<PrimitiveRecipe> = emptyList(),
     ): Double? {
+        SkyblockCurrency.getByInternalNameOrNull(this)?.coinValue?.let { return it }
+
         when (this) {
-            SKYBLOCK_COIN -> return 1.0
             NeuInternalName.GEMSTONE_COLLECTION -> return 0.0
             NeuInternalName.JASPER_CRYSTAL -> return 0.0
             NeuInternalName.RUBY_CRYSTAL -> return 0.0
@@ -147,20 +148,19 @@ object ItemPriceUtils {
 
     @HandleEvent
     fun onSecondPassed(event: SecondPassedEvent) {
-        if (ApiUtils.isMoulberryLowestBinDisabled()) return
+        if (ApiUtils.isLowestBinApiDisabled()) return
         if (lastLowestBinRefresh.passedSince() < 2.minutes) return
         lastLowestBinRefresh = SimpleTimeMark.now()
 
-        SkyHanniMod.launchIOCoroutine("neu lowest bin item price fetch", timeout = 1.minutes) {
+        SkyHanniMod.launchIOCoroutine("elitesb lowest bin item price fetch", timeout = 1.minutes) {
             val (_, data) = ApiUtils.getTypedJsonResponse<JsonObject>(lowBinStatic).assertSuccessWithData() ?: return@launchIOCoroutine
             lowestBins = ConfigManager.gson.fromJson<Map<NeuInternalName, Long>>(data)
         }
     }
 
     private val lowBinStatic = ApiStaticGetPath(
-        "https://moulberry.codes/lowestbin.json.gz",
-        "NEU Lowest Bin",
-        tryForceGzip = true
+        "https://api.eliteskyblock.com/resources/auctions/neu?mode=smooth",
+        "EliteSkyblock Lowest Bin"
     )
 
     fun NeuInternalName.getPriceName(amount: Number, pricePer: Double = getPrice()): String {
@@ -197,17 +197,17 @@ object ItemPriceUtils {
                 debugItemPrice(null)
             }
         }
-        event.registerBrigadier("shfetchmoulblbins") {
-            description = "Test fetching Moulberry's lowest bin data."
+        event.registerBrigadier("shreloadlbins") {
+            description = "Reload EliteSkyblock's lowest bin data."
             category = CommandCategory.DEVELOPER_DEBUG
             simpleCallback {
-                SkyHanniMod.launchIOCoroutine("shfetchmoulblbins command", timeout = 1.minutes) {
+                SkyHanniMod.launchIOCoroutine("shreloadlbins command", timeout = 1.minutes) {
                     val timeNow = SimpleTimeMark.now()
                     val (_, fetchedLowestBins) = ApiUtils.getJsonResponse(lowBinStatic).assertSuccessWithData()
-                        ?: ErrorManager.skyHanniError("Failed to fetch Moulberry's lowest bin data!")
+                        ?: ErrorManager.skyHanniError("Failed to fetch EliteSkyblock's lowest bin data!")
                     lowestBins = ConfigManager.gson.fromJson<Map<NeuInternalName, Long>>(fetchedLowestBins)
                     val formatString = buildString {
-                        appendLine("§aFetched Moulberry's lowest bin data in §b${timeNow.passedSince().format()}§a!")
+                        appendLine("§aFetched EliteSkyblock's lowest bin data in §b${timeNow.passedSince().format()}§a!")
                         appendLine("    §7Total Items: §6${lowestBins.size}")
                     }
                     ChatUtils.chat(formatString, prefixColor = "§a")
