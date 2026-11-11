@@ -2,22 +2,27 @@ import at.skyhanni.sharedvariables.ProjectTarget
 import at.skyhanni.sharedvariables.SHVersionInfo
 import dev.detekt.gradle.Detekt
 import dev.detekt.gradle.DetektCreateBaselineTask
-import jdk.internal.net.http.common.TimeSource.source
-import jdk.jfr.internal.JVM.exclude
-import jdk.jfr.internal.JVM.include
 import net.fabricmc.loom.api.fabricapi.FabricApiExtension
 import net.fabricmc.loom.task.RemapSourcesJarTask
 import net.fabricmc.loom.task.ValidateAccessWidenerTask
 import net.fabricmc.loom.task.prod.ClientProductionRunTask
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
-import org.gradle.process.ExecSpec
+import org.gradle.build.event.BuildEventsListenerRegistry
+import org.gradle.kotlin.dsl.support.serviceOf
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.CompilerPluginConfig
+import org.jetbrains.kotlin.gradle.plugin.InternalSubpluginOption
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import skyhannibuildsystem.BuildProgress
+import skyhannibuildsystem.BuildProgressService
 import skyhannibuildsystem.ChangelogVerification
+import skyhannibuildsystem.JavacProgressArgument
 import skyhannibuildsystem.DownloadBackupRepo
 import skyhannibuildsystem.PublishToModrinth
-import sun.jvmstat.monitor.MonitoredVmUtil.jvmArgs
+import skyhannibuildsystem.progress.DetektProgressListener
+import skyhannibuildsystem.progress.KspProgressProbe
+import com.google.devtools.ksp.gradle.KspAATask
 import kotlin.jvm.java
 import org.gradle.jvm.tasks.Jar as GradleJar
 
@@ -74,6 +79,27 @@ val shadowImpl = configurations.create("shadowImpl") {
 }
 
 val shadowOnly = configurations.create("shadowOnly")
+
+val buildSrcJar = files(rootProject.layout.projectDirectory.file("buildSrc/build/libs/buildSrc.jar"))
+
+val buildProgressService = gradle.sharedServices.registerIfAbsent("buildProgress", BuildProgressService::class.java) {}
+serviceOf<BuildEventsListenerRegistry>().onTaskCompletion(buildProgressService)
+val buildProgressDirectory = layout.projectDirectory.dir(BuildProgress.DIRECTORY).asFile
+val buildProgressTimings = System.getenv("CI") != null || findProperty(BuildProgress.TIMING_PROPERTY) == "true"
+val kspProcessorCount = rootProject.layout.projectDirectory
+    .file("annotation-processors/src/main/resources/META-INF/services/com.google.devtools.ksp.processing.SymbolProcessorProvider")
+    .asFile.readLines().count(String::isNotBlank)
+
+val buildProgressPlugin = configurations.create("buildProgressPlugin") {
+    isCanBeConsumed = false
+    isTransitive = false
+}
+
+val buildProgressJavacPlugin = configurations.create("buildProgressJavacPlugin") {
+    isCanBeConsumed = false
+    isTransitive = false
+    extendsFrom(buildProgressPlugin)
+}
 
 val mixinTestRuntime = configurations.create("mixinTestRuntime") {
     isCanBeConsumed = false
@@ -140,6 +166,9 @@ dependencies {
 
     compileOnly(libs.jbAnnotations)
     ksp(project(":annotation-processors"))?.let { compileOnly(it) }
+    buildProgressPlugin(buildSrcJar)
+    buildProgressJavacPlugin(libs.kotlin.stdlib)
+    detektPlugins(buildSrcJar)
 
     ksp(libs.autoservice.ksp)
     implementation(libs.autoservice.annotations)
@@ -245,7 +274,13 @@ afterEvaluate {
         arg("skyhanni.mcver", target.minecraftVersion.versionName)
         arg("skyhanni.buildpaths", project.file("buildpaths-excluded.txt").absolutePath)
         arg("skyhanni.cachedir", layout.buildDirectory.get().asFile.absolutePath)
+        arg(KspProgressProbe.REPORT_FILE_OPTION, buildProgressDirectory.resolve("kspKotlin.txt").absolutePath)
+        arg(KspProgressProbe.PROCESSOR_COUNT_OPTION, kspProcessorCount.toString())
     }
+}
+
+tasks.withType<KspAATask> {
+    BuildProgress.watch(this, buildProgressDirectory.resolve("$name.txt"), buildProgressService, objects, buildProgressTimings)
 }
 
 val testForkCpuDivisor = 2
@@ -369,6 +404,11 @@ excludeBuildPaths(file("buildpaths-excluded.txt"), sourceSets.main)
 excludeBuildPaths(file("buildpaths-excluded.txt"), sourceSets.test)
 
 tasks.withType<KotlinCompile> {
+    val reportFile = buildProgressDirectory.resolve("$name.txt")
+    val reportFileOption = InternalSubpluginOption(BuildProgress.KOTLIN_REPORT_FILE_OPTION, reportFile.absolutePath)
+    pluginClasspath.from(buildProgressPlugin)
+    pluginOptions.add(CompilerPluginConfig().apply { addPluginArgument(BuildProgress.KOTLIN_PLUGIN_ID, reportFileOption) })
+    BuildProgress.watch(this, reportFile, buildProgressService, objects, buildProgressTimings)
     compilerOptions {
         val jvmTargetStr = target.minecraftVersion.formattedKotlinJvmTarget
         jvmTarget.set(JvmTarget.fromTarget(jvmTargetStr))
@@ -393,6 +433,10 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
+    val reportFile = buildProgressDirectory.resolve("$name.txt")
+    options.annotationProcessorPath = (options.annotationProcessorPath ?: files()) + buildProgressJavacPlugin
+    options.compilerArgumentProviders.add(JavacProgressArgument(reportFile))
+    BuildProgress.watch(this, reportFile, buildProgressService, objects, buildProgressTimings)
 }
 
 tasks.withType<GradleJar> {
@@ -486,6 +530,10 @@ tasks.withType<Detekt>().configureEach {
     val isTargetVersion = target == primaryTarget
     val skipDetekt = project.findProperty("skipDetekt") == "true"
     onlyIf { isTargetVersion && !skipDetekt }
+
+    val detektBasePath = basePath.map(::File).getOrElse(rootProject.layout.projectDirectory.asFile)
+    val reportFile = detektBasePath.resolve(BuildProgress.DIRECTORY).resolve(BuildProgress.DETEKT_REPORT_FILE_NAME)
+    BuildProgress.watch(this, reportFile, buildProgressService, objects, buildProgressTimings, DetektProgressListener.SESSION_STATUS)
 
     val isDetektMain = name == "detektMain"
     val outputFileName = if (isDetektMain) "main" else "detekt"
