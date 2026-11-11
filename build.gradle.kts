@@ -22,6 +22,7 @@ import skyhannibuildsystem.DownloadBackupRepo
 import skyhannibuildsystem.PublishToModrinth
 import skyhannibuildsystem.progress.DetektProgressListener
 import skyhannibuildsystem.progress.KspProgressProbe
+import skyhannibuildsystem.progress.TestProgressListener
 import com.google.devtools.ksp.gradle.KspAATask
 import kotlin.jvm.java
 import org.gradle.jvm.tasks.Jar as GradleJar
@@ -283,11 +284,14 @@ tasks.withType<KspAATask> {
     BuildProgress.watch(this, buildProgressDirectory.resolve("$name.txt"), buildProgressService, objects, buildProgressTimings)
 }
 
-val testForkCpuDivisor = 2
+val testForkWorkerDivisor = 2
 
 tasks.withType<Test> {
     useJUnitPlatform()
-    maxParallelForks = (Runtime.getRuntime().availableProcessors() / testForkCpuDivisor).coerceAtLeast(1)
+    maxParallelForks = (gradle.startParameter.maxWorkerCount / testForkWorkerDivisor).coerceAtLeast(1)
+    val reportFile = buildProgressDirectory.resolve("$name.txt")
+    addTestListener(TestProgressListener(reportFile))
+    BuildProgress.watch(this, reportFile, buildProgressService, objects, buildProgressTimings)
     testLogging {
         showStackTraces = true
         exceptionFormat = TestExceptionFormat.FULL
