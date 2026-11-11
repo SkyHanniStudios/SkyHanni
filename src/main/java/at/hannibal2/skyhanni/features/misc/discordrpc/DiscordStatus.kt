@@ -14,24 +14,23 @@ import at.hannibal2.skyhanni.data.garden.cropmilestones.CropMilestonesApi.getMax
 import at.hannibal2.skyhanni.data.garden.cropmilestones.CropMilestonesApi.getMilestoneCounter
 import at.hannibal2.skyhanni.data.garden.cropmilestones.CropMilestonesApi.isMaxMilestone
 import at.hannibal2.skyhanni.data.garden.cropmilestones.CropMilestonesApi.percentToNextMilestone
-import at.hannibal2.skyhanni.data.jsonobjects.repo.StackingEnchantData
 import at.hannibal2.skyhanni.features.dungeon.DungeonApi
 import at.hannibal2.skyhanni.features.garden.GardenApi
 import at.hannibal2.skyhanni.features.garden.GardenApi.getCropType
 import at.hannibal2.skyhanni.features.gui.customscoreboard.CustomScoreboardUtils
 import at.hannibal2.skyhanni.features.misc.compacttablist.AdvancedPlayerList
-import at.hannibal2.skyhanni.features.misc.items.EstimatedItemValue
+import at.hannibal2.skyhanni.features.misc.items.enchants.Enchant
 import at.hannibal2.skyhanni.features.misc.pathfind.AreaNode
 import at.hannibal2.skyhanni.features.nether.kuudra.KuudraApi
 import at.hannibal2.skyhanni.features.rift.RiftApi
 import at.hannibal2.skyhanni.features.slayer.SlayerType
 import at.hannibal2.skyhanni.utils.InventoryUtils
+import at.hannibal2.skyhanni.utils.ItemUtils.cleanName
 import at.hannibal2.skyhanni.utils.ItemUtils.extraAttributes
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 import at.hannibal2.skyhanni.utils.NumberUtil.formatInt
 import at.hannibal2.skyhanni.utils.NumberUtil.formatPercentage
 import at.hannibal2.skyhanni.utils.PlayerUtils
-import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SkyBlockTime
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.StringUtils
@@ -42,10 +41,6 @@ import at.hannibal2.skyhanni.utils.TimeUtils.formatted
 import at.hannibal2.skyhanni.utils.compat.getCompoundOrDefault
 import at.hannibal2.skyhanni.utils.compat.getIntOrDefault
 import kotlin.time.Duration.Companion.minutes
-
-var lastKnownDisplayStrings: MutableMap<DiscordStatus, String> =
-    mutableMapOf() // if the displayMessageSupplier is ever a placeholder, return from this instead
-
 
 // There is no consistent way to get the full username of the owner of an island you are visiting (as far as I know)
 // so this will be removed until/unless they add it back
@@ -61,8 +56,6 @@ var lastKnownDisplayStrings: MutableMap<DiscordStatus, String> =
 //     }
 //     return "Someone"
 // }
-
-var beenAfkFor = SimpleTimeMark.now()
 
 private fun getCropMilestoneDisplay(): String {
     val crop = InventoryUtils.getItemInHand()?.getCropType()
@@ -87,7 +80,6 @@ private fun getPetDisplay(): String = CurrentPetApi.currentPet?.getUserFriendlyN
     ?: "No pet equipped"
 
 enum class DiscordStatus(private val displayMessageSupplier: DiscordStatus.() -> String?) {
-
     NONE({ null }),
 
     LOCATION(
@@ -165,7 +157,7 @@ enum class DiscordStatus(private val displayMessageSupplier: DiscordStatus.() ->
     ITEM(
         {
             val heldItem = InventoryUtils.getItemInHand()
-            val heldItemName = heldItem?.hoverName?.string?.removeColor()
+            val heldItemName = heldItem?.cleanName
 
             if (heldItem == null || heldItemName == "Air") "No item in hand"
             else String.format(java.util.Locale.US, "Holding $heldItemName")
@@ -206,10 +198,11 @@ enum class DiscordStatus(private val displayMessageSupplier: DiscordStatus.() ->
         {
             val article = if (SlayerApi.activeType == SlayerType.INFERNO) "an" else "a"
             when (SlayerApi.state) {
-                SlayerApi.ActiveQuestState.GRINDING -> "Spawning $article ${SlayerApi.activeType?.displayName}"
-                SlayerApi.ActiveQuestState.BOSS_FIGHT -> "Slaying $article ${SlayerApi.activeType?.displayName}"
-                SlayerApi.ActiveQuestState.SLAIN -> "Finished slaying $article ${SlayerApi.activeType?.displayName}"
-                SlayerApi.ActiveQuestState.FAILED -> "Lost to $article ${SlayerApi.activeType?.displayName}"
+                GRINDING -> "Spawning $article ${SlayerApi.activeType?.displayName}"
+                BOSS_FIGHT -> "Slaying $article ${SlayerApi.activeType?.displayName}"
+                SLAIN -> "Finished slaying $article ${SlayerApi.activeType?.displayName}"
+                FAILED -> "Lost to $article ${SlayerApi.activeType?.displayName}"
+                COCOONED -> "Waiting for $article ${SlayerApi.activeType?.displayName} cocoon to hatch"
                 else -> AutoStatus.SLAYER.placeholderText
             }
         },
@@ -254,7 +247,7 @@ enum class DiscordStatus(private val displayMessageSupplier: DiscordStatus.() ->
         {
             // Logic for getting the currently held stacking enchant is from Skytils
             val itemInHand = InventoryUtils.getItemInHand()
-            val itemName = itemInHand?.hoverName?.string?.removeColor().orEmpty()
+            val itemName = itemInHand?.cleanName.orEmpty()
 
             fun getProgressPercent(amount: Int, levels: List<Int>): String {
                 var percent = "MAXED"
@@ -277,16 +270,16 @@ enum class DiscordStatus(private val displayMessageSupplier: DiscordStatus.() ->
             if (extraAttributes != null) {
                 val enchantments = extraAttributes.getCompoundOrDefault("enchantments")
                 var stackingEnchant = ""
-                for (enchant in EstimatedItemValue.stackingEnchants) {
-                    if (extraAttributes.contains(enchant.value.statName)) {
-                        stackingEnchant = enchant.key
+                for ((name, enchant) in DiscordRPCManager.stackingEnchants) {
+                    if (enchant.nbtNum in extraAttributes) {
+                        stackingEnchant = name
                         break
                     }
                 }
-                val stackingData = EstimatedItemValue.stackingEnchants[stackingEnchant] ?: StackingEnchantData()
-                val levels = stackingData.levels
+                val stackingData = DiscordRPCManager.stackingEnchants[stackingEnchant] ?: Enchant.Stacking()
+                val levels = stackingData.stackLevel
                 val level = enchantments.getIntOrDefault(stackingEnchant)
-                val amount = extraAttributes.getIntOrDefault(stackingData.statName)
+                val amount = extraAttributes.getIntOrDefault(stackingData.nbtNum)
                 val stackingPercent = getProgressPercent(amount, levels)
 
                 stackingReturn =
@@ -318,15 +311,20 @@ enum class DiscordStatus(private val displayMessageSupplier: DiscordStatus.() ->
 
     AFK(
         {
-            if (beenAfkFor.passedSince() > 5.minutes) {
-                val format = beenAfkFor.passedSince().format(maxUnits = 1, longName = true)
+            if (DiscordRPCManager.beenAfkFor.passedSince() > 5.minutes) {
+                val format = DiscordRPCManager.beenAfkFor.passedSince().format(maxUnits = 1, longName = true)
                 "AFK for $format"
             } else AutoStatus.AFK.placeholderText
         },
-    )
+    ),
     ;
 
     fun getDisplayString(): String = displayMessageSupplier().orEmpty()
+
+    companion object {
+        // if the displayMessageSupplier is ever a placeholder, return from this instead
+        internal val lastKnownDisplayStrings: MutableMap<DiscordStatus, String> = mutableMapOf()
+    }
 }
 
 enum class AutoStatus(val placeholderText: String, val correspondingDiscordStatus: DiscordStatus) {

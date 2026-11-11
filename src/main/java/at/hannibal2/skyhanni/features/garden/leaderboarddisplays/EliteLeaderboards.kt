@@ -16,21 +16,23 @@ import at.hannibal2.skyhanni.features.garden.pests.PestType
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ConditionalUtils
 import at.hannibal2.skyhanni.utils.ConditionalUtils.afterChange
+import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
+import at.hannibal2.skyhanni.utils.compat.InventoryGuiScaleCompat
 import at.hannibal2.skyhanni.utils.json.fromJson
 import kotlin.reflect.KClass
 
 enum class EliteLeaderboards(
     private val displayName: String,
     val display: EliteLeaderboardDisplayBase<*, *>,
-    val leaderboardType: KClass<out EliteLeaderboardType>
+    val leaderboardType: KClass<out EliteLeaderboardType>,
 ) {
     WEIGHT("Farming Weight", WeightDisplay(), EliteLeaderboardType.Weight::class),
     CROP("Crop Collection", CropDisplay(), EliteLeaderboardType.Crop::class),
-    PEST("Pest Kills", PestDisplay(), EliteLeaderboardType.Pest::class)
+    PEST("Pest Kills", PestDisplay(), EliteLeaderboardType.Pest::class),
     ;
 
-    val isEnabled get() = config.enabled && this in config.display.get()
+    val isEnabled get() = config.enabled.get() && this in config.display.get()
     val position get() = config.displayPositions[ordinal]
     override fun toString() = displayName
 
@@ -52,9 +54,19 @@ enum class EliteLeaderboards(
         }
 
         @HandleEvent
-        fun onGuiRender() {
+        fun onGuiRenderTop() {
             if (config.displayPositions.isEmpty()) return
-            if (!config.enabled) return
+            if (!config.enabled.get()) return
+            if (InventoryUtils.inAnyInventory()) {
+                InventoryGuiScaleCompat.withOriginalHudScale {
+                    renderDisplays()
+                }
+            } else {
+                renderDisplays()
+            }
+        }
+
+        private fun renderDisplays() {
             config.display.get().forEach { leaderboard ->
                 leaderboard.display.renderDisplay(leaderboard.position)
             }
@@ -200,7 +212,7 @@ enum class EliteLeaderboards(
 
         enum class FarmingWeightTextEntry(private val displayName: String) {
             WEIGHT_POSITION("§6Farming Weight: §e104,481.49 §7[§b#5§7]"),
-            OVERTAKE("§e170.21 §7(§b12h 32m 15s§7) §7behind §bChissl")
+            OVERTAKE("§e170.21 §7(§b12h 32m 15s§7) §7behind §bChissl"),
             ;
 
             override fun toString() = displayName
