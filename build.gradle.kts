@@ -280,6 +280,7 @@ afterEvaluate {
 }
 
 tasks.withType<KspAATask> {
+    kspClasspath.from(layout.buildDirectory.file("ksp-loader-${target.minecraftVersion.versionName}"))
     BuildProgress.watch(this, buildProgressDirectory.resolve("$name.txt"), buildProgressService, objects, buildProgressTimings)
 }
 

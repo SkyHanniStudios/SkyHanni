@@ -28,6 +28,7 @@ class ModuleProcessor(environment: SymbolProcessorEnvironment) : BaseProcessor(e
     private var skyHanniEvent: KSType? = null
 
     private val cache = KspIncrementalCache(options[CACHE_DIR_OPTION], mcVersion, "ksp-module-state")
+    private val failedFilePaths = mutableSetOf<String>()
 
     private fun Int.withPlural(string: String) = "$this $string${if (this == 1) "" else "s"}"
 
@@ -50,31 +51,19 @@ class ModuleProcessor(environment: SymbolProcessorEnvironment) : BaseProcessor(e
         validateModuleMembership(resolver)
 
         val filePaths = symbols.mapNotNull { it.containingFile?.filePath }.toSet()
-        val outputFile = cache.outputFile("at/hannibal2/skyhanni/skyhannimodule", "LoadedModules")
-        val dirtyFilePaths = cache.evaluate(filePaths, outputFile)
+        val dirtyFilePaths = cache.evaluate(filePaths)
 
-        val dirtyCount = symbols.count { it.containingFile?.filePath in (dirtyFilePaths ?: emptySet()) }
-        val cachedCount = symbols.size - dirtyCount
+        val dirtyCount = symbols.count { it.containingFile?.filePath in dirtyFilePaths }
         println(
             "Found ${symbols.size.withPlural("symbol")} with @SkyHanniModule for Minecraft $mcVersion " +
-                "($dirtyCount revalidated, $cachedCount from cache)",
+                "($dirtyCount revalidated, ${symbols.size - dirtyCount} validation skipped)",
         )
-
-        if (dirtyFilePaths == null) {
-            logger.warn("No @SkyHanniModule files changed, skipping LoadedModules regeneration")
-            cache.commit()
-            return emptyList()
-        }
-
-        if (dirtyFilePaths.isEmpty()) {
-            println("No @SkyHanniModule files changed but LoadedModules.kt is missing, regenerating")
-        }
 
         val validSymbols = symbols.mapNotNull {
             validateSymbol(it, it.containingFile?.filePath in dirtyFilePaths, primaryFunctionNames)
         }
-        if (validSymbols.isNotEmpty()) generateFile(validSymbols)
-        cache.commit()
+        generateFile(validSymbols)
+        cache.commit(failedFilePaths)
         return emptyList()
     }
 
@@ -131,6 +120,7 @@ class ModuleProcessor(environment: SymbolProcessorEnvironment) : BaseProcessor(e
     ): KSClassDeclaration? {
         if (!symbol.validate(enableNewFeatures = false)) {
             logger.warn("Symbol is not valid: $symbol")
+            symbol.containingFile?.filePath?.let(failedFilePaths::add)
             return null
         }
         if (symbol !is KSClassDeclaration) {
@@ -167,7 +157,7 @@ class ModuleProcessor(environment: SymbolProcessorEnvironment) : BaseProcessor(e
 
         when (parameterCount) {
             0 -> if (!hasPrimaryFunction && !hasExplicitEventSpec) {
-                logger.error(
+                reportInvalidHandler(
                     "Function $name must have an event parameter, a primary function " +
                         "name, or an explicit event specification because it is " +
                         "annotated with @HandleEvent",
@@ -176,14 +166,14 @@ class ModuleProcessor(environment: SymbolProcessorEnvironment) : BaseProcessor(e
             }
 
             1 -> if (eventParameterType == null || !event.isAssignableFrom(eventParameterType)) {
-                logger.error(
+                reportInvalidHandler(
                     "Function $name must have an event assignable from SkyHanniEvent " +
                         "because it is annotated with @HandleEvent",
                     function,
                 )
             }
 
-            else -> logger.error(
+            else -> reportInvalidHandler(
                 "Function $name has too many parameters. It must have exactly one " +
                     "event parameter, or be parameterless with a primary function " +
                     "name or an explicit event specification because it is annotated " +
@@ -191,6 +181,11 @@ class ModuleProcessor(environment: SymbolProcessorEnvironment) : BaseProcessor(e
                 function,
             )
         }
+    }
+
+    private fun reportInvalidHandler(message: String, function: KSFunctionDeclaration) {
+        function.containingFile?.filePath?.let(failedFilePaths::add)
+        logger.error(message, function)
     }
 
     private fun KSAnnotation.getQualifiedName(): String? =

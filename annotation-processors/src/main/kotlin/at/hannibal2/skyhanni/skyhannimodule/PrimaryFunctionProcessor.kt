@@ -10,33 +10,20 @@ import java.io.OutputStreamWriter
 
 class PrimaryFunctionProcessor(environment: SymbolProcessorEnvironment) : BaseProcessor(environment) {
 
-    private val cache = KspIncrementalCache(options[CACHE_DIR_OPTION], mcVersion, "ksp-primary-function-state")
-
     override fun processSymbols(resolver: Resolver): List<KSAnnotated> {
         val skyHanniEvent = resolver.getClassDeclarationByName("at.hannibal2.skyhanni.api.event.SkyHanniEvent")
-            ?.asStarProjectedType() ?: return emptyList()
+            ?.asStarProjectedType()
+        if (skyHanniEvent == null) {
+            logger.error("SkyHanniEvent could not be resolved, GeneratedEventPrimaryFunctionNames was not generated")
+            return emptyList()
+        }
 
         val symbols = resolver.getSymbolsWithAnnotation(PrimaryFunction::class.qualifiedName!!)
             .filterIsInstance<KSClassDeclaration>()
             .filter { skyHanniEvent.isAssignableFrom(it.asStarProjectedType()) }
             .toList()
 
-        val filePaths = symbols.mapNotNull { it.containingFile?.filePath }.toSet()
-        val outputFile = cache.outputFile("at/hannibal2/skyhanni/api/event", "GeneratedEventPrimaryFunctionNames")
-        val dirtyFilePaths = cache.evaluate(filePaths, outputFile)
-
-        if (dirtyFilePaths == null) {
-            logger.warn("No @PrimaryFunction files changed, skipping GeneratedEventPrimaryFunctionNames regeneration")
-            cache.commit()
-            return emptyList()
-        }
-
-        if (dirtyFilePaths.isEmpty()) {
-            logger.warn("No @PrimaryFunction files changed but GeneratedEventPrimaryFunctionNames.kt is missing, regenerating")
-        }
-
         generate(symbols)
-        cache.commit()
         return emptyList()
     }
 
