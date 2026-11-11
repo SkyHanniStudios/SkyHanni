@@ -16,14 +16,17 @@ import at.hannibal2.skyhanni.data.model.graph.Graph
 import at.hannibal2.skyhanni.features.fishing.trophy.TrophyRarity
 import at.hannibal2.skyhanni.features.garden.CropType
 import at.hannibal2.skyhanni.features.garden.pests.PestType
+import at.hannibal2.skyhanni.features.misc.update.ModrinthVersionType
 import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.LorenzRarity
 import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NeuInternalName
 import at.hannibal2.skyhanni.utils.NeuItems
+import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.Stopwatch
 import at.hannibal2.skyhanni.utils.StringUtils
+import at.hannibal2.skyhanni.utils.system.MCVersion
 import at.hannibal2.skyhanni.utils.system.ModVersion
 import at.hannibal2.skyhanni.utils.tracker.SessionUptime
 import at.hannibal2.skyhanni.utils.tracker.SessionUptimeTypeAdapter
@@ -36,7 +39,6 @@ import com.google.gson.stream.JsonWriter
 import com.mojang.serialization.JsonOps
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.ComponentSerialization
-import net.minecraft.world.item.ItemStack
 import java.time.LocalDate
 import java.util.UUID
 import kotlin.reflect.full.companionObjectInstance
@@ -133,7 +135,7 @@ enum class SkyHanniTypeAdapter(
         },
     ),
     NEU_ITEMSTACK(
-        ItemStack::class.java,
+        SafeItemStack::class.java,
         SimpleStringTypeAdapter(NeuItems::saveNBTData, NeuItems::loadNBTData),
     ),
     INTERNAL_NAME(NeuInternalName::class.java),
@@ -142,6 +144,10 @@ enum class SkyHanniTypeAdapter(
     CROP_TYPE(CropType::class.java, CropType.WHEAT),
     PEST_TYPE(PestType::class.java, PestType.UNKNOWN),
     MOD_VERSION(ModVersion::class.java),
+    MC_VERSION(
+        MCVersion::class.java,
+        SimpleStringTypeAdapter(MCVersion::asString, MCVersion::fromString),
+    ),
     ELITE_LEADERBOARD_TYPE(
         EliteLeaderboardType::class.java,
         EliteLeaderboardTypeAdapter(),
@@ -208,6 +214,7 @@ enum class SkyHanniTypeAdapter(
         },
     ),
     GRAPH(Graph::class.java),
+    MODRINTH_VERSION_TYPE(ModrinthVersionType::class.java),
     ;
 
     /** Shorthand constructor for plain enum adapters. Disambiguated from the primary by [Enum] vs [TypeAdapter] second arg. */
@@ -221,6 +228,10 @@ enum class SkyHanniTypeAdapter(
 fun GsonBuilder.registerSkyHanniAdapters(): GsonBuilder = apply {
     SkyHanniTypeAdapter.entries.forEach {
         val adapter = (it.adapter as TypeAdapter<Any>).nullSafe()
-        registerTypeAdapter(it.clazz, adapter)
+        if (it == SkyHanniTypeAdapter.NEU_ITEMSTACK) {
+            registerTypeHierarchyAdapter(it.clazz, adapter)
+        } else {
+            registerTypeAdapter(it.clazz, adapter)
+        }
     }
 }

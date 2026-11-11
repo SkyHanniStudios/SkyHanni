@@ -1,5 +1,6 @@
 package at.hannibal2.skyhanni.utils.system
 
+import at.hannibal2.skyhanni.utils.VersionConstants
 import at.hannibal2.skyhanni.utils.json.SkyHanniAdaptable
 
 data class ModVersion(
@@ -29,6 +30,8 @@ data class ModVersion(
     }
 
     companion object : SkyHanniAdaptable.Factory<ModVersion> {
+        val installed: ModVersion by lazy { fromString(VersionConstants.MOD_VERSION) }
+
         fun fromString(version: String): ModVersion = version.split('.').let { parts ->
             ModVersion(
                 parts.getOrNull(0)?.toIntOrNull() ?: 0,

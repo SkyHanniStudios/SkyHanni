@@ -53,7 +53,8 @@ object ComposterDisplay {
         ORGANIC_MATTER(" Organic Matter: (.*)", "WHEAT"),
         FUEL(" Fuel: (.*)", "OIL_BARREL"),
         TIME_LEFT(" Time Left: (.*)", "WATCH"),
-        STORED_COMPOST(" Stored Compost: (.*)", "COMPOST");
+        STORED_COMPOST(" Stored Compost: (.*)", "COMPOST"),
+        ;
 
         val displayItem by AutoUpdatingItemStack(icon)
 
@@ -174,7 +175,7 @@ object ComposterDisplay {
             } else "?"
         } ?: "§cJoin SkyBlock to show composter timer."
 
-        if (SkyBlockUtils.inSkyBlock && !GardenApi.inGarden() && !config.displayOutsideGarden) return
+        if (GardenApi.inGarden() || SkyBlockUtils.inSkyBlock && !config.displayOutsideGarden) return
         val outsideGardenDisplay = Renderable.horizontal {
             addItemStack(bucket)
             addString("§b$format")
