@@ -34,6 +34,7 @@ fabricLanguageKotlin = { module = "net.fabricmc:fabric-language-kotlin", version
 basicMath = { module = "me.shedaniel.cloth:basic-math", version.ref = "basicMath" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+kotlin-compiler-embeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable", version.ref = "kotlin" }
 changelog-builder = { module = "com.github.SkyHanniStudios:SkyHanniChangelogBuilder", version.ref = "changelog-builder" }
 methanol = { module = "com.github.mizosoft.methanol:methanol", version.ref = "methanol" }
 guava = { module = "com.google.guava:guava", version.ref = "guava" }

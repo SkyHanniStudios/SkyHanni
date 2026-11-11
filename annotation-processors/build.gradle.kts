@@ -13,6 +13,7 @@ repositories {
 
 dependencies {
     implementation(libs.ksp.api)
+    implementation(files(rootProject.layout.projectDirectory.file("buildSrc/build/libs/buildSrc.jar")))
 }
 
 tasks.withType<JavaCompile> {

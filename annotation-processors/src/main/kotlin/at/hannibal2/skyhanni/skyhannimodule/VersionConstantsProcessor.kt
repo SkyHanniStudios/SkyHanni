@@ -1,18 +1,12 @@
 package at.hannibal2.skyhanni.skyhannimodule
 
-import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Dependencies
-import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
+import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.KSAnnotated
 import java.io.OutputStreamWriter
 
-class VersionConstantsProcessor(
-    codeGenerator: CodeGenerator,
-    logger: KSPLogger,
-    modVersion: String,
-    private val mcVersion: String,
-) : BaseProcessor(codeGenerator, logger, modVersion) {
+class VersionConstantsProcessor(environment: SymbolProcessorEnvironment) : BaseProcessor(environment) {
 
     override fun processSymbols(resolver: Resolver): List<KSAnnotated> {
         val file = codeGenerator.createNewFile(Dependencies(false), "at.hannibal2.skyhanni.utils", "VersionConstants")
