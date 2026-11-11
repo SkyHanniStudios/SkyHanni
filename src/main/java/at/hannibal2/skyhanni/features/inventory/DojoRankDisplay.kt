@@ -14,6 +14,7 @@ import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 import at.hannibal2.skyhanni.utils.RegexUtils.firstMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderables
+import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.StringUtils.takeIfNotEmpty
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.takeIfNotEmpty
@@ -21,7 +22,6 @@ import at.hannibal2.skyhanni.utils.collection.RenderableCollectionUtils.addStrin
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLeadingWhiteLessResets
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
-import net.minecraft.world.item.ItemStack
 
 @SkyHanniModule
 object DojoRankDisplay {
@@ -47,7 +47,7 @@ object DojoRankDisplay {
         config.dojoRankDisplayPosition.renderRenderables(display, posLabel = "Dojo Rank Display")
     }
 
-    private fun drawDisplay(items: Collection<ItemStack>) = buildList {
+    private fun drawDisplay(items: Collection<SafeItemStack>) = buildList {
         if (belts.isEmpty()) {
             // TODO make clickable
             addString("§cUnable to get Belts data, please run /shupdaterepo")

@@ -20,7 +20,7 @@ object InWaterDisplay {
     fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
         if (!config.inWaterDisplay) return
 
-        val display = if (MinecraftCompat.localPlayer.isInWater) inWaterRenderable else outOfWaterRenderable
+        val display = if (MinecraftCompat.localPlayerOrThrow.isInWater) inWaterRenderable else outOfWaterRenderable
         config.inWaterPosition.renderRenderable(display, posLabel = "In Water Display")
     }
 }

@@ -1,33 +1,32 @@
 package at.hannibal2.skyhanni.skyhannimodule
 
-import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Dependencies
-import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
+import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.KSAnnotated
 import java.io.OutputStreamWriter
 
-class VersionConstantsProcessor(
-    codeGenerator: CodeGenerator,
-    logger: KSPLogger,
-    modVersion: String,
-    private val mcVersion: String,
-) : BaseProcessor(codeGenerator, logger, modVersion) {
+class VersionConstantsProcessor(environment: SymbolProcessorEnvironment) : BaseProcessor(environment) {
 
     override fun processSymbols(resolver: Resolver): List<KSAnnotated> {
         val file = codeGenerator.createNewFile(Dependencies(false), "at.hannibal2.skyhanni.utils", "VersionConstants")
         OutputStreamWriter(file).use {
-            it.write("package at.hannibal2.skyhanni.utils\n\n")
-            it.write("object VersionConstants {\n")
-            it.write("    const val MOD_VERSION = \"$modVersion\"\n")
-            it.write("    // Do not use this mc version as its reflective of the compile time version\n")
-            it.write("    // And might not be correct at run time\n")
-            it.write("    // We use it for the auto updater only\n")
-            it.write("    var MC_VERSION = \"$mcVersion\"\n")
-            it.write("        private set\n")
-            it.write("}\n")
+            it.appendLine(
+                """
+                |package at.hannibal2.skyhanni.utils
+                |
+                |object VersionConstants {
+                |    const val MOD_VERSION = "$modVersion"
+                |    /**
+                |     * Do not use this Minecraft version as it is reflective of the compile-time version
+                |     * and might not be correct at runtime. We use it for update checks only.
+                |     */
+                |    internal const val MC_VERSION = "$mcVersion"
+                |}
+                """.trimMargin(),
+            )
         }
-        logger.warn("Generated VersionConstants file with mod version $modVersion and mc version $mcVersion")
+        println("Generated VersionConstants file with mod version $modVersion and Minecraft version $mcVersion")
         return emptyList()
     }
 }

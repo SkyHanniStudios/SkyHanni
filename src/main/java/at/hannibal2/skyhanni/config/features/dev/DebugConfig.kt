@@ -2,6 +2,7 @@ package at.hannibal2.skyhanni.config.features.dev
 
 import at.hannibal2.skyhanni.config.core.config.Position
 import at.hannibal2.skyhanni.data.ElectionCandidate
+import at.hannibal2.skyhanni.features.misc.update.SkyHanniUpdateSource
 import com.google.gson.annotations.Expose
 import io.github.notenoughupdates.moulconfig.annotations.Accordion
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean
@@ -74,6 +75,14 @@ class DebugConfig {
     var copyInternalName: Int = GLFW.GLFW_KEY_UNKNOWN
 
     @Expose
+    @ConfigOption(
+        name = "Copy Cosmetics Skull Data",
+        desc = "Copies the cosmetic data for skins with different variants but no animations."
+    )
+    @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN)
+    var copyCosmeticsSkullData: Int = GLFW.GLFW_KEY_UNKNOWN
+
+    @Expose
     @ConfigOption(name = "Show NPC Price", desc = "Show NPC price in item lore.")
     @ConfigEditorBoolean
     var showNpcPrice: Boolean = false
@@ -127,6 +136,11 @@ class DebugConfig {
     var copyBestiaryData: Boolean = false
 
     @Expose
+    @ConfigOption(name = "Copy Sack Items", desc = "Copies sacks items from the inventory as json to clipboard.")
+    @ConfigEditorBoolean
+    var copySacksItems: Boolean = false
+
+    @Expose
     @ConfigOption(
         name = "Highlight Missing Repo Items",
         desc = "Highlights each item in the current inventory that is not in your current NEU repo.",
@@ -151,14 +165,26 @@ class DebugConfig {
     var printMissingBazaarItems: Boolean = false
 
     @Expose
-    @ConfigOption(name = "Always Outdated", desc = "For the sake of the auto updater, act like you are always outdated.")
+    @ConfigOption(
+        name = "Update Source",
+        desc = "Source to use to check for updates.\n" +
+            "§cDo not change this unless you know what you are doing!"
+    )
+    @ConfigEditorDropdown
+    val updateSource: Property<SkyHanniUpdateSource> = Property.of(SkyHanniUpdateSource.MODRINTH)
+
+    @Expose
+    @ConfigOption(
+        name = "Always Outdated",
+        desc = "When checking for updates, act like you are always outdated.",
+    )
     @ConfigEditorBoolean
     var alwaysOutdated: Boolean = false
 
     @Expose
     @ConfigOption(
         name = "SkyHanni Event Counter",
-        desc = "Count once per second how many skyhanni events gets triggered, show the total amount in console output.",
+        desc = "Count once per second how many SkyHanni events get triggered, show the total amount in console output.",
     )
     @ConfigEditorBoolean
     var eventCounter: Boolean = false
@@ -229,6 +255,11 @@ class DebugConfig {
     @Expose
     @ConfigLink(owner = DebugConfig::class, field = "addonsDebug")
     val addonsDebugPosition: Position = Position(300, 300)
+
+    @Expose
+    @ConfigOption(name = "Remaining Kills Debug", desc = "Enables Extra Debug messages for Remaining Slayer Kills.")
+    @ConfigEditorBoolean
+    var remainingKillsDebug: Boolean = false
 
     @Expose
     @ConfigOption(name = "Track Sound", desc = "")

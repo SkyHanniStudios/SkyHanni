@@ -6,7 +6,6 @@ import at.hannibal2.skyhanni.config.features.rift.area.mountaintop.SunGeckoConfi
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.mob.Mob
 import at.hannibal2.skyhanni.events.ActionBarUpdateEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
 import at.hannibal2.skyhanni.events.MobEvent
 import at.hannibal2.skyhanni.events.ScoreboardUpdateEvent
@@ -66,7 +65,6 @@ object SunGeckoHelper {
     private val sunGeckoActiveModifiers by patternGroup.pattern(
         "modifiers",
         "(?:§.)* {27}§r§c§lACTIVE MODIFIERS!",
-
     )
 
     private val sunGeckoChatLine by patternGroup.pattern(
@@ -148,7 +146,7 @@ object SunGeckoHelper {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onMobSpawn(event: MobEvent.Spawn) {
+    private fun onMobSpawn(event: MobEvent.Spawn) {
         val mob = event.mob
         val name = mob.name
         if (!name.contains("Sun Gecko")) return
@@ -174,7 +172,7 @@ object SunGeckoHelper {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onTick() {
+    private fun onTick() {
         if (!isEnabled() || !inTimeChamber) return
 
         updateDisplay()
@@ -195,7 +193,7 @@ object SunGeckoHelper {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onGuiRender(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay() {
         if (!isEnabled() || !inTimeChamber) return
 
         val display = display.takeIfNotEmpty() ?: return
@@ -203,7 +201,7 @@ object SunGeckoHelper {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onInventoryUpdated(event: InventoryUpdatedEvent) {
+    private fun onInventoryUpdated(event: InventoryUpdatedEvent) {
         if (!isEnabled()) return
         if (event.inventoryName != "Modifiers") return
         modifiers.clear()
@@ -217,7 +215,7 @@ object SunGeckoHelper {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onActionBar(event: ActionBarUpdateEvent) {
+    private fun onActionBar(event: ActionBarUpdateEvent) {
         if (!isEnabled()) return
         sunGeckoActionBar.findMatcher(event.actionBar) {
             val firstHalf = group("firstHalf")
@@ -255,7 +253,7 @@ object SunGeckoHelper {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onScoreboardUpdate(event: ScoreboardUpdateEvent) {
+    private fun onScoreboardUpdate(event: ScoreboardUpdateEvent) {
         if (!isEnabled()) return
         for (line in event.new) {
             if (line.startsWith(" Big damage in: §d")) {
@@ -266,7 +264,7 @@ object SunGeckoHelper {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!isEnabled()) return
         if (sunGeckoActiveModifiers.matches(event.message)) {
             scanningChat = true
@@ -284,9 +282,9 @@ object SunGeckoHelper {
         }
     }
 
+    // Do not use GraphAreaChangeEvent here, Time Chamber has multiple locations
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onAreaChanged(event: ScoreboardAreaChangeEvent) {
-        // Do not use GraphAreaChangeEvent here, Time Chamber has multiple locations
+    private fun onScoreboardAreaChange(event: ScoreboardAreaChangeEvent) {
         if (!isEnabled()) return
         reset()
         inTimeChamber = event.area == "Time Chamber"
