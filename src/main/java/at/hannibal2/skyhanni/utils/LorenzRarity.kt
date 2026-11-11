@@ -7,7 +7,7 @@ import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import java.util.Optional
 
-enum class LorenzRarity(val color: LorenzColor) {
+enum class LorenzRarity(val color: LorenzColor, val alternativeName: String? = null) {
 
     COMMON(WHITE),
     UNCOMMON(GREEN),
@@ -15,7 +15,7 @@ enum class LorenzRarity(val color: LorenzColor) {
     EPIC(DARK_PURPLE),
     LEGENDARY(GOLD),
     MYTHIC(LIGHT_PURPLE),
-    DIVINE(AQUA),
+    DIVINE(AQUA, "SUPREME"),
     SPECIAL(RED),
     VERY_SPECIAL(RED),
     ULTIMATE(DARK_RED),
@@ -59,7 +59,7 @@ enum class LorenzRarity(val color: LorenzColor) {
         /** Reverse of [LorenzRarity.neuPetIndex], null when out of range. */
         fun fromNeuPetIndex(index: Int): LorenzRarity? = entries.getOrNull(index)
 
-        fun getByName(name: String): LorenzRarity? = entries.find { it.name.equals(name, ignoreCase = true) }
+        fun getByName(name: String): LorenzRarity? = entries.find { it.name.equals(name, ignoreCase = true) || it.alternativeName.equals(name, ignoreCase = true) }
 
         fun getByNameOrError(name: String): LorenzRarity = getByName(name) ?: error("LorenzRarity not found by name: '$name'")
 
