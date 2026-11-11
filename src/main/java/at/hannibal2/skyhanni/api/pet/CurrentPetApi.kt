@@ -101,7 +101,7 @@ object CurrentPetApi {
         lastAssertion[source]?.passedSince()?.let { it <= 5.seconds } ?: false
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         val petData = pendingTabPetData ?: return
         if (shouldDelayTabAssertion()) return
         pendingTabPetData = null
@@ -115,13 +115,13 @@ object CurrentPetApi {
     }
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         chatSummonPattern.matchMatcher(event.message) {
-            val skintag = groupOrNull("skin")?.replace(" ", "") ?: (groupOrNull("altskin")?.replace(" ", ""))
+            val skinTag = groupOrNull("skin")?.replace(" ", "") ?: groupOrNull("altskin")?.replace(" ", "")
             val resolvedPet = PetStorageApi.resolvePetDataOrNull(
                 name = group("pet"),
                 rarity = LorenzRarity.getByColorCode(group("rarity")[0]) ?: return,
-                skinTag = skintag,
+                skinTag = skinTag,
                 skinTagKnown = true,
             ) ?: return
 
@@ -130,7 +130,7 @@ object CurrentPetApi {
     }
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         fun PetData.formatForCurrentDebug() = buildString {
             append(getUserFriendlyName())
             append(" uuid=$uuid")
