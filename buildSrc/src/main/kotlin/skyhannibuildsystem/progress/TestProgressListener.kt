@@ -9,26 +9,30 @@ import java.util.concurrent.atomic.AtomicInteger
 class TestProgressListener(private val reportFile: File) : TestListener {
 
     @Transient
-    private var report: ProgressReport? = null
+    private var state: State? = null
 
-    @Transient
-    private var completed: AtomicInteger? = null
+    private class State(reportFile: File) {
+        val report = ProgressReport(reportFile)
+        val classesStarted = AtomicInteger()
+        val testsCompleted = AtomicInteger()
+    }
 
-    private fun report() = report ?: ProgressReport(reportFile).also { report = it }
-
-    private fun completed() = completed ?: AtomicInteger().also { completed = it }
+    private fun state() = state ?: State(reportFile).also { state = it }
 
     override fun beforeSuite(suite: TestDescriptor) {
-        if (suite.parent == null) report().enter(TestHook.SUITE)
+        val className = suite.className ?: return
+        state().run { report.step(TestHook.SUITE, classesStarted.incrementAndGet(), total = 0, className.simpleName()) }
     }
 
     override fun afterSuite(suite: TestDescriptor, result: TestResult) {
-        if (suite.parent == null) report().enter(TestHook.FINISH, result.testCount.toInt())
+        if (suite.parent == null) state().report.enter(TestHook.FINISH, result.testCount.toInt())
     }
 
     override fun beforeTest(testDescriptor: TestDescriptor) = Unit
 
     override fun afterTest(testDescriptor: TestDescriptor, result: TestResult) {
-        report().step(TestHook.TEST, completed().incrementAndGet(), total = 0, testDescriptor.className?.substringAfterLast('.'))
+        state().run { report.step(TestHook.TEST, testsCompleted.incrementAndGet(), total = 0, testDescriptor.className?.simpleName()) }
     }
+
+    private fun String.simpleName() = substringAfterLast('.')
 }

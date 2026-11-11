@@ -17,7 +17,7 @@ dependencies {
     detektPlugins(libs.detektrules.ktlint)
 }
 
-val detektRuleClasses by configurations.creating {
+val detektRuleClasses = configurations.create("detektRuleClasses") {
     isCanBeConsumed = true
     isCanBeResolved = false
     extendsFrom(configurations.runtimeClasspath.get())

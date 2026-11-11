@@ -285,10 +285,12 @@ tasks.withType<KspAATask> {
 }
 
 val testForkWorkerDivisor = 2
+val maxTestForksPerTarget = 4
 
 tasks.withType<Test> {
     useJUnitPlatform()
-    maxParallelForks = (gradle.startParameter.maxWorkerCount / testForkWorkerDivisor).coerceAtLeast(1)
+    maxParallelForks = (gradle.startParameter.maxWorkerCount / (ProjectTarget.entries.size * testForkWorkerDivisor))
+        .coerceIn(1, maxTestForksPerTarget)
     val reportFile = buildProgressDirectory.resolve("$name.txt")
     addTestListener(TestProgressListener(reportFile))
     BuildProgress.watch(this, reportFile, buildProgressService, objects, buildProgressTimings)
