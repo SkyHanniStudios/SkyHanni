@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -13,7 +14,7 @@ repositories {
     mavenCentral()
     maven("https://jitpack.io") {
         content {
-            includeGroupByRegex("com\\.github\\..*")
+            includeGroupAndSubgroups("com.github")
         }
     }
 }
@@ -24,8 +25,18 @@ dependencies {
     implementation(libs.changelog.builder)
     implementation(files("../sharedVariables/build/libs/sharedVariables.jar"))
     implementation(libs.methanol)
+    compileOnly(libs.kotlin.compiler.embeddable) {
+        exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib")
+    }
+    compileOnly(libs.detekt.api) {
+        exclude(group = "org.jetbrains.kotlin")
+    }
 }
 
 tasks.withType<KotlinCompile> {
-    compilerOptions.jvmTarget.set(JvmTarget.fromTarget("25"))
+    compilerOptions {
+        jvmTarget.set(JvmTarget.fromTarget("25"))
+        languageVersion.set(KotlinVersion.KOTLIN_2_4)
+        apiVersion.set(KotlinVersion.KOTLIN_2_4)
+    }
 }
