@@ -7,7 +7,7 @@ import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import java.util.Optional
 
-enum class LorenzRarity(val color: LorenzColor, val alternativeName: String? = null) {
+enum class LorenzRarity(val color: LorenzColor, val alternateName: String? = null) {
 
     COMMON(WHITE),
     UNCOMMON(GREEN),
@@ -15,14 +15,14 @@ enum class LorenzRarity(val color: LorenzColor, val alternativeName: String? = n
     EPIC(DARK_PURPLE),
     LEGENDARY(GOLD),
     MYTHIC(LIGHT_PURPLE),
-    DIVINE(AQUA, "SUPREME"),
+    SUPREME(AQUA, "DIVINE"),
     SPECIAL(RED),
     VERY_SPECIAL(RED),
     ULTIMATE(DARK_RED),
     ;
 
     val chatColorCode get() = color.getChatColor()
-    val rawName = name.replace("_", " ")
+    val rawName = (alternateName ?: name).replace("_", " ")
     val formattedName = rawName.firstLetterUppercase()
 
     /** The number NEU pet internal names end in, e.g. `PHOENIX;7` is Special. */
@@ -55,12 +55,13 @@ enum class LorenzRarity(val color: LorenzColor, val alternativeName: String? = n
     fun isAtLeast(other: LorenzRarity): Boolean = this.ordinal >= other.ordinal
 
     companion object {
+        val DIVINE = SUPREME
 
         /** Reverse of [LorenzRarity.neuPetIndex], null when out of range. */
         fun fromNeuPetIndex(index: Int): LorenzRarity? = entries.getOrNull(index)
 
         fun getByName(name: String): LorenzRarity? = entries.find {
-            it.name.equals(name, ignoreCase = true) || it.alternativeName.equals(name, ignoreCase = true)
+            it.name.equals(name, ignoreCase = true) || it.alternateName.equals(name, ignoreCase = true)
         }
 
         fun getByNameOrError(name: String): LorenzRarity = getByName(name) ?: error("LorenzRarity not found by name: '$name'")
