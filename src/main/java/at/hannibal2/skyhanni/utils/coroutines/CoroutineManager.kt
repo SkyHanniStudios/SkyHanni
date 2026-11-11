@@ -3,6 +3,9 @@ package at.hannibal2.skyhanni.utils.coroutines
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.system.PlatformUtils
+import kotlin.coroutines.cancellation.CancellationException
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
@@ -18,9 +21,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
-import kotlin.coroutines.cancellation.CancellationException
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.seconds
 
 interface CoroutineManager {
     fun CoroutineSettings.launchCoroutine(block: suspend CoroutineScope.() -> Unit): Job
@@ -71,7 +71,7 @@ interface CompatCoroutineManager : CoroutineManager {
         )
     )
     fun launchCoroutineWithMutex(
-        name: String, mutex: Mutex, timeout: Duration = 10.seconds, block: suspend CoroutineScope.() -> Unit
+        name: String, mutex: Mutex, timeout: Duration = 10.seconds, block: suspend CoroutineScope.() -> Unit,
     ): Job = CoroutineSettings(name, timeout).withMutex(mutex).launchCoroutine(block)
 
     @Deprecated(
@@ -82,7 +82,7 @@ interface CompatCoroutineManager : CoroutineManager {
         )
     )
     fun launchIOCoroutineWithMutex(
-        name: String, mutex: Mutex, timeout: Duration = 10.seconds, block: suspend CoroutineScope.() -> Unit
+        name: String, mutex: Mutex, timeout: Duration = 10.seconds, block: suspend CoroutineScope.() -> Unit,
     ): Job = CoroutineSettings(name, timeout).withIOContext().withMutex(mutex).launchCoroutine(block)
 }
 

@@ -1,20 +1,15 @@
 package at.hannibal2.skyhanni.features.inventory.wardrobe
 
 import at.hannibal2.skyhanni.SkyHanniMod
-import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.features.inventory.customwardrobe.CustomWardrobeConfig
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
-import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
+import at.hannibal2.skyhanni.features.inventory.wardrobe.AbstractWardrobeApi.Companion.MAX_PAGES
+import at.hannibal2.skyhanni.features.inventory.wardrobe.AbstractWardrobeApi.Companion.MAX_SLOT_PER_PAGE
 import at.hannibal2.skyhanni.features.misc.items.EstimatedItemValue
-import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.ColorUtils
 import at.hannibal2.skyhanni.utils.ColorUtils.addAlpha
 import at.hannibal2.skyhanni.utils.ColorUtils.darker
 import at.hannibal2.skyhanni.utils.ColorUtils.toColor
-import at.hannibal2.skyhanni.utils.ConditionalUtils
 import at.hannibal2.skyhanni.utils.ConditionalUtils.transformIf
 import at.hannibal2.skyhanni.utils.ConfigUtils.jumpToEditor
 import at.hannibal2.skyhanni.utils.DelayedRun
@@ -25,9 +20,10 @@ import at.hannibal2.skyhanni.utils.KeyboardManager.isKeyHeld
 import at.hannibal2.skyhanni.utils.RenderUtils.HorizontalAlignment
 import at.hannibal2.skyhanni.utils.RenderUtils.VerticalAlignment
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderable
+import at.hannibal2.skyhanni.utils.SafeItemStack
+import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.compat.DrawContextUtils
-import at.hannibal2.skyhanni.utils.compat.SkyHanniContainerOverlayScreen
-import at.hannibal2.skyhanni.utils.compat.SkyHanniGuiContainer
+import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.compat.SkyHanniOverlayTheme
 import at.hannibal2.skyhanni.utils.compat.getTooltip
 import at.hannibal2.skyhanni.utils.compat.getTooltipCompat
@@ -44,8 +40,9 @@ import net.minecraft.client.Minecraft
 import net.minecraft.network.chat.Component
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.player.Inventory
-import net.minecraft.world.item.ItemStack
+import net.minecraft.world.inventory.ChestMenu
 import java.awt.Color
+import kotlin.math.min
 
 class CustomWardrobeTheme(config: CustomWardrobeConfig) : SkyHanniOverlayTheme(
     backgroundColor = config.color.backgroundColor.toColor(),
@@ -64,98 +61,146 @@ class CustomWardrobeTheme(config: CustomWardrobeConfig) : SkyHanniOverlayTheme(
     val buttonBottomBorder: Int = config.color.bottomBorderColor.toColor().rgb
 }
 
-@SkyHanniModule
-object CustomWardrobe : SkyHanniContainerOverlayScreen(
-    checkInventoryName = WardrobeApi.wardrobeDetector.checkInventoryName,
-) {
+@Suppress("TooManyFunctions")
+object CustomWardrobe {
 
     val config: CustomWardrobeConfig get() = SkyHanniMod.feature.inventory.customWardrobe
+    private val theme: CustomWardrobeTheme get() = CustomWardrobeTheme(config)
 
-    private val inventoryButtonPosition: Position = Position().ignoreScale()
-    private var inventoryButton: Renderable? = null
-    var editMode = false
+    internal var switchingScreens = false
+    val inCustomWardrobe get() = MinecraftCompat.screen is CustomWardrobeScreen
+    val editMode get() = MinecraftCompat.screen is CustomWardrobeEditScreen
+
+    private var displayRenderable: Renderable? = null
     private var waitingForInventoryUpdate = false
 
-    private const val GUI_NAME = "Custom Wardrobe"
+    private val position: Position = Position().ignoreScale()
+    private val loadingPosition: Position = Position().ignoreScale()
 
-    override val theme: CustomWardrobeTheme get() = CustomWardrobeTheme(config)
-    override val isPassthrough: Boolean get() = editMode
-    override val shouldActivate: Boolean get() = config.enabled.get()
-    override val configuredScale: Int get() = config.spacing.globalScale.get()
-    override fun allowMouseClick(): Boolean = CustomWardrobeKeybinds.allowMouseClick()
-    override fun allowKeyboardClick(): Boolean = CustomWardrobeKeybinds.allowKeyboardClick()
+    private var activeScale: Double = 1.0
+    private var currentMaxSize: Pair<Int, Int>? = null
+    private var lastScreenSize: Pair<Int, Int>? = null
 
-    // Edit button in normal wardrobe while in edit mode
-    @HandleEvent(onlyOnSkyblock = true)
-    fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
-        if (!WardrobeApi.inWardrobe() || !config.enabled.get() || !editMode) return
-        val gui = Minecraft.getInstance().screen as? SkyHanniGuiContainer ?: return
-        val renderable = inventoryButton ?: addReEnableButton().also { inventoryButton = it }
-        val posX = gui.leftPos + (1.05 * gui.imageWidth).toInt()
-        val posY = gui.topPos + (gui.imageHeight - renderable.height) / 2
-        inventoryButtonPosition.moveTo(posX, posY)
-            .renderRenderable(renderable, posLabel = GUI_NAME, addToGuiManager = false)
+    var renderableTopCorner: Pair<Int, Int> = 0 to 0
+        private set
+    var renderableDimensions: Pair<Int, Int> = 0 to 0
+        private set
+
+    internal const val GUI_NAME = "Custom Wardrobe"
+
+    // Called by MenuScreensHook
+    internal fun shouldReplace(inventoryName: String): Boolean {
+        if (!isEnabled()) return false
+        return ArmorWardrobeApi.matchesInventoryName(inventoryName)
     }
 
-    @HandleEvent(onlyOnSkyblock = true)
-    fun onInventoryClose(event: InventoryCloseEvent) {
-        waitingForInventoryUpdate = false
+    fun enterEditMode() {
+        val screen = MinecraftCompat.screen as? CustomWardrobeScreen ?: return
+        val player = MinecraftCompat.localPlayerOrNull ?: return
+
+        switchingScreens = true
+        MinecraftCompat.screen = CustomWardrobeEditScreen(
+            screen.menu,
+            player.inventory,
+            screen.title,
+        )
     }
 
-    override fun onOverlayClose() {
-        reset()
+    fun exitEditMode() {
+        val screen = MinecraftCompat.screen as? CustomWardrobeEditScreen ?: return
+        val player = MinecraftCompat.localPlayerOrNull ?: return
+        val handler = player.containerMenu as? ChestMenu ?: return
+
+        switchingScreens = true
+        MinecraftCompat.screen = CustomWardrobeScreen(
+            handler,
+            screen.title,
+        )
     }
 
-    override fun onOverlayDrawScreen(mouseX: Int, mouseY: Int) {
-        if (!waitingForInventoryUpdate || !config.loadingText.get()) return
+    fun renderWardrobeOverlay(screenWidth: Int, screenHeight: Int) {
+        val screenSize = screenWidth to screenHeight
+
+        if (screenSize != lastScreenSize) {
+            lastScreenSize = screenSize
+            if (updateScreenSize(screenSize)) {
+                return
+            }
+        }
+
         val renderable = displayRenderable ?: return
-        val (left, top) = renderableTopCorner
-        val loadingText = Renderable.text("§cLoading...", scale = activeScale / 100.0)
-        val loadingLeft = left + (renderable.width - loadingText.width) / 2
-        val loadingTop = top - loadingText.height
-        DrawContextUtils.pushPop {
-            DrawContextUtils.translate(loadingLeft.toFloat(), loadingTop.toFloat())
-            Renderable.withMousePosition(mouseX - loadingLeft, mouseY - loadingTop) {
-                loadingText.render(0, 0)
+
+        if (waitingForInventoryUpdate && config.loadingText.get()) {
+            val loadingRenderable = Renderable.text(
+                "§cLoading...",
+                scale = activeScale,
+            )
+            loadingPosition
+                .moveTo(
+                    position.x + (renderable.width - loadingRenderable.width) / 2,
+                    position.y - loadingRenderable.height,
+                )
+                .renderRenderable(
+                    loadingRenderable,
+                    posLabel = GUI_NAME,
+                    addToGuiManager = false,
+                )
+        }
+
+        DrawContextUtils.translatedPushPopResult(0f, 0f) {
+            position.renderRenderable(renderable, posLabel = GUI_NAME, addToGuiManager = false)
+            if (EstimatedItemValue.config.enabled) {
+                DrawContextUtils.translate(0f, 0f)
+                EstimatedItemValue.tryRendering()
             }
         }
     }
 
-    override fun onAfterRender() {
-        if (EstimatedItemValue.config.enabled) {
-            DrawContextUtils.translate(0f, 0f)
-            EstimatedItemValue.tryRendering()
-        }
+    internal fun onInventoryUpdate() {
+        waitingForInventoryUpdate = false
+        update()
     }
 
-    override fun onBrandingClick() {
-        config::enabled.jumpToEditor()
-        reset()
-        WardrobeApi.currentPage = null
+    internal fun update() {
+        displayRenderable = createRenderables()
     }
 
-    @HandleEvent
-    fun onConfigLoad(event: ConfigLoadEvent) {
-        with(config.spacing) {
-            ConditionalUtils.onToggle(
-                globalScale, outlineThickness, outlineBlur,
-                slotWidth, slotHeight, playerScale,
-                maxPlayersPerRow, horizontalSpacing, verticalSpacing,
-                buttonSlotsVerticalSpacing, buttonHorizontalSpacing, buttonVerticalSpacing,
-                buttonWidth, buttonHeight, backgroundPadding,
-            ) {
-                invalidateScale()
-                rebuildDisplay()
-            }
+    internal fun updateScreenSize(gui: Pair<Int, Int>): Boolean {
+        val renderable = currentMaxSize ?: run {
+            activeScale = config.spacing.globalScale.get() / 100.0
+            update()
+            updateRenderablePosition(gui)
+            return true
         }
+        val previousActiveScale = activeScale
+        val unscaledRenderableWidth = renderable.first / activeScale
+        val unscaledRenderableHeight = renderable.second / activeScale
+        val autoScaleWidth = 0.95 * gui.first / unscaledRenderableWidth
+        val autoScaleHeight = 0.95 * gui.second / unscaledRenderableHeight
+        val maxScale = min(autoScaleWidth, autoScaleHeight)
+
+        activeScale = (config.spacing.globalScale.get() / 100.0).coerceAtMost(maxScale)
+
+        if (activeScale != previousActiveScale) {
+            update()
+        }
+
+        updateRenderablePosition(gui)
+
+        return activeScale != previousActiveScale
     }
 
-    @HandleEvent
-    fun onInventoryUpdated(event: InventoryUpdatedEvent) {
-        if (!WardrobeApi.inWardrobe() || !config.enabled.get() || editMode) return
-        DelayedRun.runNextTick {
-            rebuildDisplay()
-        }
+    private fun updateRenderablePosition(gui: Pair<Int, Int>) {
+        val renderable = displayRenderable ?: return
+
+        val (width, height) = renderable.width to renderable.height
+        renderableDimensions = width to height
+
+        val left = (gui.first - width) / 2
+        val top = (gui.second - height) / 2
+
+        position.moveTo(left, top)
+        renderableTopCorner = left to top
     }
 
     private fun createWarning(list: List<WardrobeSlot>): Pair<String?, List<WardrobeSlot>> {
@@ -215,7 +260,7 @@ object CustomWardrobe : SkyHanniContainerOverlayScreen(
         return Renderable.vertical(loreList, spacing = 1)
     }
 
-    private fun getToolTip(stack: ItemStack, slot: WardrobeSlot): List<Component>? {
+    private fun getToolTip(stack: SafeItemStack, slot: WardrobeSlot): List<Component>? {
         try {
             return stack.getTooltip(Minecraft.getInstance().options.advancedItemTooltips)
         } catch (e: Exception) {
@@ -236,16 +281,16 @@ object CustomWardrobe : SkyHanniContainerOverlayScreen(
         containerHeight: Int,
         containerWidth: Int,
     ): Renderable {
-        val fakePlayer = FakePlayer()
+        val fakePlayer = FakePlayer.fromLocalPlayerOrThrow()
         var scale = playerWidth
         val animatedSlots = mutableMapOf<EquipmentSlot, EquipmentSlotAnimationState>()
 
         for (equipment in Inventory.EQUIPMENT_SLOT_MAPPING.values) {
             val armorOrdinal = equipment.ordinal - 2
             if (armorOrdinal !in 0..3) continue
-            val raw = slot.armor.reversed()[armorOrdinal]?.copy()?.removeEnchants() ?: ItemStack.EMPTY
+            val raw = slot.armor.reversed()[armorOrdinal]?.copy()?.removeEnchants() ?: SafeItemStack.EMPTY
             val frames = if (config.animatedSkins.get()) {
-                WardrobeApi.getArmorAnimatedFrames(raw) ?: WardrobeApi.getArmorDyeAnimatedFrames(raw)
+                ArmorWardrobeApi.getArmorAnimatedFrames(raw) ?: ArmorWardrobeApi.getArmorDyeAnimatedFrames(raw)
             } else null
             fakePlayer.equipment.set(equipment, frames?.firstOrNull()?.stack ?: raw)
             if (frames != null && frames.size > 1) {
@@ -270,36 +315,45 @@ object CustomWardrobe : SkyHanniContainerOverlayScreen(
         )
     }
 
-    override fun buildContent(): Renderable {
-        val (wardrobeWarning, list) = createWarning(WardrobeApi.slots)
+    private fun createRenderables(): Renderable {
+        val (wardrobeWarning, list) = createWarning(ArmorWardrobeApi.slots)
 
         val maxPlayersPerRow = config.spacing.maxPlayersPerRow.get().coerceAtLeast(1)
-        val containerWidth = (config.spacing.slotWidth.get() * (activeScale / 100.0)).toInt()
-        val containerHeight = (config.spacing.slotHeight.get() * (activeScale / 100.0)).toInt()
+        val maxPlayersRows = ((MAX_SLOT_PER_PAGE * MAX_PAGES - 1) / maxPlayersPerRow) + 1
+        val containerWidth = (config.spacing.slotWidth.get() * activeScale).toInt()
+        val containerHeight = (config.spacing.slotHeight.get() * activeScale).toInt()
         val playerWidth = (containerWidth * (config.spacing.playerScale.get() / 100.0))
-        val horizontalSpacing = (config.spacing.horizontalSpacing.get() * (activeScale / 100.0)).toInt()
-        val verticalSpacing = (config.spacing.verticalSpacing.get() * (activeScale / 100.0)).toInt()
-        val buttonVerticalSpacing = (config.spacing.buttonVerticalSpacing.get() * (activeScale / 100.0)).toInt()
+        val horizontalSpacing = (config.spacing.horizontalSpacing.get() * activeScale).toInt()
+        val verticalSpacing = (config.spacing.verticalSpacing.get() * activeScale).toInt()
+        val backgroundPadding = (config.spacing.backgroundPadding.get() * activeScale).toInt()
+        val buttonVerticalSpacing = (config.spacing.buttonVerticalSpacing.get() * activeScale).toInt()
 
         var maxRenderableWidth = maxPlayersPerRow * containerWidth + (maxPlayersPerRow - 1) * horizontalSpacing
+        var maxRenderableHeight = maxPlayersRows * containerHeight + (maxPlayersRows - 1) * verticalSpacing
 
         val button = addButtons()
 
         if (button.width > maxRenderableWidth) maxRenderableWidth = button.width
+        maxRenderableHeight += button.height + buttonVerticalSpacing
+
+        maxRenderableWidth += 2 * backgroundPadding
+        maxRenderableHeight += 2 * backgroundPadding
+        currentMaxSize = maxRenderableWidth to maxRenderableHeight
 
         wardrobeWarning?.let { text ->
             val warningRenderable = Renderable.wrappedText(
                 text,
                 maxRenderableWidth,
-                3.0 * (activeScale / 100.0),
+                3.0 * activeScale,
                 horizontalAlign = HorizontalAlignment.CENTER,
             )
-            return Renderable.vertical(
+            val withButtons = Renderable.vertical(
                 warningRenderable,
                 button,
                 spacing = buttonVerticalSpacing,
                 horizontalAlign = HorizontalAlignment.CENTER,
             )
+            return addGuiBackground(withButtons, backgroundPadding)
         }
 
         val chunkedList = list.chunked(maxPlayersPerRow)
@@ -333,21 +387,45 @@ object CustomWardrobe : SkyHanniContainerOverlayScreen(
             horizontalAlign = HorizontalAlignment.CENTER,
         )
 
-        return Renderable.vertical(
+        val withButtons = Renderable.vertical(
             listOf(allSlotsRenderable, button),
             buttonVerticalSpacing,
             horizontalAlign = HorizontalAlignment.CENTER,
         )
+
+        return addGuiBackground(withButtons, backgroundPadding)
     }
 
-    private fun reset() {
-        editMode = false
-        inventoryButton = null
+    private fun addGuiBackground(renderable: Renderable, borderPadding: Int) =
+        Renderable.drawInsideRoundedRect(
+            Renderable.doubleLayered(
+                renderable,
+                Renderable.clickable(
+                    Renderable.text(
+                        "§7SkyHanni",
+                        horizontalAlign = HorizontalAlignment.RIGHT,
+                        verticalAlign = VerticalAlignment.BOTTOM,
+                        scale = activeScale,
+                    ).let { Renderable.hoverable(hovered = Renderable.underlined(it), unHovered = it) },
+                    onLeftClick = {
+                        config::enabled.jumpToEditor()
+                        reset()
+                        ArmorWardrobeApi.currentPage = null
+                    },
+                ),
+                blockBottomHover = false,
+            ),
+            config.color.backgroundColor.toColor(),
+            padding = borderPadding,
+        )
+
+    internal fun reset() {
+        displayRenderable = null
     }
 
     private fun addButtons(): Renderable {
         val (horizontalSpacing, verticalSpacing) = with(config.spacing) {
-            buttonHorizontalSpacing.get() * (activeScale / 100.0) to buttonVerticalSpacing.get() * (activeScale / 100.0)
+            buttonHorizontalSpacing.get() * activeScale to buttonVerticalSpacing.get() * activeScale
         }
 
         val backButton = createLabeledButton(
@@ -355,7 +433,7 @@ object CustomWardrobe : SkyHanniContainerOverlayScreen(
             onClick = {
                 InventoryUtils.clickSlot(48)
                 reset()
-                WardrobeApi.currentPage = null
+                ArmorWardrobeApi.currentPage = null
             },
         )
         val exitButton = createLabeledButton(
@@ -363,7 +441,7 @@ object CustomWardrobe : SkyHanniContainerOverlayScreen(
             onClick = {
                 InventoryUtils.clickSlot(49)
                 reset()
-                WardrobeApi.currentPage = null
+                ArmorWardrobeApi.currentPage = null
             },
         )
 
@@ -375,7 +453,7 @@ object CustomWardrobe : SkyHanniContainerOverlayScreen(
             hoveredColor = if (config.onlyFavorites) greenColor else redColor,
             onClick = {
                 config.onlyFavorites = !config.onlyFavorites
-                rebuildDisplay()
+                update()
             },
         )
 
@@ -384,7 +462,7 @@ object CustomWardrobe : SkyHanniContainerOverlayScreen(
             onClick = {
                 DelayedRun.runNextTick {
                     reset()
-                    editMode = true
+                    enterEditMode()
                 }
             },
         )
@@ -406,21 +484,8 @@ object CustomWardrobe : SkyHanniContainerOverlayScreen(
         )
     }
 
-    private fun addReEnableButton(): Renderable {
-        val color = Color(116, 150, 255, 200)
-        return createLabeledButton(
-            "§bEdit",
-            hoveredColor = color,
-            unhoveredColor = color.darker(0.8),
-            onClick = {
-                editMode = false
-                rebuildDisplay()
-            },
-        )
-    }
-
     private fun addSlotHoverableButtons(wardrobeSlot: WardrobeSlot): Renderable {
-        val textScale = 1.5 * (activeScale / 100.0)
+        val textScale = 1.5 * activeScale
         val shouldRender = !wardrobeSlot.isEmpty() && !wardrobeSlot.locked
         if (!shouldRender && !wardrobeSlot.favorite) return Renderable.placeholder(0, 0)
         val list = buildList {
@@ -432,7 +497,7 @@ object CustomWardrobe : SkyHanniContainerOverlayScreen(
                     ),
                     onLeftClick = {
                         wardrobeSlot.favorite = !wardrobeSlot.favorite
-                        rebuildDisplay()
+                        update()
                     },
                 ),
             )
@@ -440,7 +505,7 @@ object CustomWardrobe : SkyHanniContainerOverlayScreen(
                 add(
                     Renderable.hoverTips(
                         centerString("§2$", scale = textScale),
-                        WardrobeApi.createPriceLore(wardrobeSlot),
+                        ArmorWardrobeApi.createPriceLore(wardrobeSlot),
                     ),
                 )
             }
@@ -449,15 +514,15 @@ object CustomWardrobe : SkyHanniContainerOverlayScreen(
         return Renderable.vertical(list, 1, HorizontalAlignment.RIGHT)
     }
 
-    private fun createLabeledButton(
+    fun createLabeledButton(
         text: String,
         hoveredColor: Color = Color(130, 130, 130, 200),
         unhoveredColor: Color = hoveredColor.darker(0.57),
         onClick: () -> Unit,
     ): Renderable {
-        val buttonWidth = (config.spacing.buttonWidth.get() * (activeScale / 100.0)).toInt()
-        val buttonHeight = (config.spacing.buttonHeight.get() * (activeScale / 100.0)).toInt()
-        val textScale = (activeScale / 100.0)
+        val buttonWidth = (config.spacing.buttonWidth.get() * activeScale).toInt()
+        val buttonHeight = (config.spacing.buttonHeight.get() * activeScale).toInt()
+        val textScale = activeScale
 
         val t = theme
         return Renderable.hoverable(
@@ -544,26 +609,27 @@ object CustomWardrobe : SkyHanniContainerOverlayScreen(
         }
     }
 
+    // TODO: Make this work outside CustomWardrobe
     fun WardrobeSlot.clickSlot() {
         val previousPageSlot = 45
         val nextPageSlot = 53
-        val wardrobePage = WardrobeApi.currentPage ?: return
+        val wardrobePage = ArmorWardrobeApi.currentPage ?: return
         if (isInCurrentPage()) {
             if (isEmpty() || locked || waitingForInventoryUpdate) return
-            WardrobeApi.currentSlot = if (isCurrentSlot()) null else id
+            ArmorWardrobeApi.currentSlot = if (isCurrentSlot()) null else id
             InventoryUtils.clickSlot(inventorySlot)
         } else {
             if (page < wardrobePage) {
-                WardrobeApi.currentPage = wardrobePage - 1
+                ArmorWardrobeApi.currentPage = wardrobePage - 1
                 waitingForInventoryUpdate = true
                 InventoryUtils.clickSlot(previousPageSlot)
             } else if (page > wardrobePage) {
-                WardrobeApi.currentPage = wardrobePage + 1
+                ArmorWardrobeApi.currentPage = wardrobePage + 1
                 waitingForInventoryUpdate = true
                 InventoryUtils.clickSlot(nextPageSlot)
             }
         }
-        rebuildDisplay()
+        update()
     }
 
     private fun WardrobeSlot.getSlotColor(): Color {
@@ -579,12 +645,11 @@ object CustomWardrobe : SkyHanniContainerOverlayScreen(
         }
     }
 
+    private fun isEnabled() = SkyBlockUtils.inSkyBlock && config.enabled.get()
+
     private fun centerString(
         text: String,
         scale: Double = 1.0,
         color: Color = Color.WHITE,
     ) = Renderable.text(text, scale, color, horizontalAlign = HorizontalAlignment.CENTER)
-
-    @JvmStatic
-    fun shouldHideNormalTooltip(): Boolean = isOverlayVisible
 }

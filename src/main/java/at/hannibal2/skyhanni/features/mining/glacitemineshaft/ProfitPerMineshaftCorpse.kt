@@ -37,12 +37,14 @@ object ProfitPerMineshaftCorpse {
         val corpseType = event.corpseType
         val name = corpseType.displayName
 
-        corpseType.key?.let {
-            val keyName = it.repoItemName
-            val price = it.getPrice()
+        if (!event.keyConsumed) {
+            corpseType.key?.let {
+                val keyName = it.repoItemName
+                val price = it.getPrice()
 
-            map["§cCost: $keyName §7(§c-${price.shortFormat()}§7)"] = -price
-            totalProfit -= price
+                map["§cCost: $keyName §7(§c-${price.shortFormat()}§7)"] = -price
+                totalProfit -= price
+            }
         }
 
         val hover = map.sortedDesc().keys.toMutableList()

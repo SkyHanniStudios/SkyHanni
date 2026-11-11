@@ -12,10 +12,10 @@ import at.hannibal2.skyhanni.utils.SoundUtils.playSound
 import at.hannibal2.skyhanni.utils.json.toJsonArray
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import com.google.gson.JsonPrimitive
+import org.intellij.lang.annotations.Language
 
 @SkyHanniModule
 object ChatSoundResponse {
-
     private val config get() = SkyHanniMod.feature.chat.soundResponse
 
     init {
@@ -23,7 +23,7 @@ object ChatSoundResponse {
     }
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!isEnabled()) return
 
         for (soundType in SoundResponseTypes.entries) {
@@ -36,7 +36,7 @@ object ChatSoundResponse {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.transform(95, "chat.soundResponse.soundResponses") { element ->
             if (!element.isJsonArray) return@transform element
             val array = element.asJsonArray
@@ -70,33 +70,36 @@ object ChatSoundResponse {
         }
     }
 
-
     fun isEnabled() = SkyBlockUtils.inSkyBlock && config.enabled
 }
 
+@Language("RegExp")
 private const val START_PATTERN = "(?:^|^.* )(?: |§.)*(?i)"
+@Language("RegExp")
 private const val END_PATTERN = "(?: |§.|!|\\?|\\.)*(?:\$| .*\$)"
 
-enum class SoundResponseTypes(private val displayName: String, soundLocation: String, triggersOn: List<String>) {
-    CAT("Cat Meow", "entity.cat.ambient", listOf("m+e*o*w+", "m+e*a+o+w+")),
-    CATPURR("Cat Purr", "entity.cat.purr", listOf("p+u*rr+")),
-    CATPURREOW("Cat Purreow", "entity.cat.purreow", listOf("m+r+e*o*w+", "m+r+e*a+o+w+")),
-    CATHISS("Cat Hiss", "entity.cat.hiss", listOf("h+i+ss+")),
-    DOG("Dog Bark", "entity.wolf.ambient", listOf("bark", "a*w*r+u*f+", "w+oo+f+")),
-    DOGGROWL("Dog Growl", "entity.wolf.growl", listOf("g+rr+")),
-    DOGHOWL("Dog Howl", "entity.wolf.death", listOf("a+w+oo+")),
-    SHEEP("Sheep", "entity.sheep.ambient", listOf("baa+h*")),
-    COW("Cow", "entity.cow.ambient", listOf("moo+")),
-    PIG("Pig", "entity.pig.ambient", listOf("o+i+n+k+")),
-    CHICKEN("Chicken", "entity.chicken.ambient", listOf("cl+u+c+k+")),
-    FROG("Frog", "entity.frog.hurt", listOf("ribbit")),
-    HORSE("Horse", "entity.horse.angry", listOf("neigh")),
-    GOAT("Goat", "entity.goat.screaming.ambient", listOf("bleat")),
+enum class SoundResponseTypes(private val displayName: String, soundLocation: String, @Language("RegExp") vararg triggersOn: String) {
+    CAT("Cat Meow", "entity.cat.ambient", "m+e*o*w+", "m+e*a+o+w+"),
+    CATPURR("Cat Purr", "entity.cat.purr", "p+u*rr+"),
+    CATPURREOW("Cat Purreow", "entity.cat.purreow", "m+r+e*o*w+", "m+r+e*a+o+w+"),
+    CATHISS("Cat Hiss", "entity.cat.hiss", "h+i+ss+"),
+    DOG("Dog Bark", "entity.wolf.ambient", "bark", "a*w*r+u*f+", "w+oo+f+"),
+    DOGGROWL("Dog Growl", "entity.wolf.growl", "g+rr+"),
+    DOGHOWL("Dog Howl", "entity.wolf.death", "a+w+oo+"),
+    SHEEP("Sheep", "entity.sheep.ambient", "baa+h*"),
+    COW("Cow", "entity.cow.ambient", "moo+"),
+    PIG("Pig", "entity.pig.ambient", "o+i+n+k+"),
+    CHICKEN("Chicken", "entity.chicken.ambient", "cl+u+c+k+"),
+    FROG("Frog", "entity.frog.hurt", "ribbit"),
+    HORSE("Horse", "entity.horse.angry", "neigh"),
+    GOAT("Goat", "entity.goat.screaming.ambient", "bleat"),
+    FOX("Fox", "entity.fox.ambient", "y+i+p+"),
     ;
 
-    val sound by lazy { SoundUtils.createSound(soundLocation, 1f) }
+    val sound by lazy { SoundUtils.createSound(soundLocation, 1f, isWarning = false) }
 
     // creates a pattern that looks for if the message contains any of the triggerOn strings but as a full word
+    @Suppress("RegExpUnnecessaryNonCapturingGroup")
     val pattern by RepoPattern.pattern(
         "chat.sound.response" + name.lowercase(),
         "$START_PATTERN(?:${triggersOn.joinToString("|")})$END_PATTERN",

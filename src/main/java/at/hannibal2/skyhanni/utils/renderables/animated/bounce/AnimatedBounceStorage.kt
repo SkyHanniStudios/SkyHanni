@@ -3,7 +3,6 @@ package at.hannibal2.skyhanni.utils.renderables.animated.bounce
 import at.hannibal2.skyhanni.utils.renderables.SnappedVec3
 import at.hannibal2.skyhanni.utils.renderables.SnappedVec3.Companion.toSnapped
 import at.hannibal2.skyhanni.utils.renderables.animated.bounce.AnimatedBounceStorage.Companion.BOUNCE_SNAP
-import io.github.notenoughupdates.moulconfig.observer.Property
 import net.minecraft.core.Direction.Axis
 import net.minecraft.world.phys.Vec3
 
@@ -25,15 +24,6 @@ open class AnimatedBounceLocalStorage(
     override var currentBounce: SnappedVec3 = Vec3.ZERO.toSnapped(BOUNCE_SNAP),
 ) : AnimatedBounceStorage
 
-open class AnimatedBouncePropertyStorage(
-    override var bounceDefinition: AnimatedBounceDefinition = AnimatedBounceDefinition(),
-    val propGetter: () -> Property<Vec3>,
-) : AnimatedBounceStorage {
-    override var currentBounce: SnappedVec3
-        get() = propGetter().get().toSnapped(BOUNCE_SNAP)
-        set(value) = propGetter().set(value)
-}
-
 /**
  * A data class that defines the bouncing behavior of an item stack.
  * The render will start in the 'middle' and will move up/down relative to that position.
@@ -41,7 +31,7 @@ open class AnimatedBouncePropertyStorage(
  * @param axes A map of axis to their bounce definitions. If an axis is not present, it will not be bounced.
  */
 data class AnimatedBounceDefinition(
-    private val axes: Map<Axis, AxisBounceDefinition> = emptyMap()
+    private val axes: Map<Axis, AxisBounceDefinition> = emptyMap(),
 ) : Map<Axis, AxisBounceDefinition> by axes {
     constructor(vararg pairs: Pair<Axis, AxisBounceDefinition>) : this(pairs.asList().associate { it.first to it.second })
 
