@@ -7,6 +7,7 @@ import at.hannibal2.skyhanni.config.features.inventory.SackDisplayConfig.PriceFo
 import at.hannibal2.skyhanni.config.features.inventory.SackDisplayConfig.SortingTypeEntry
 import at.hannibal2.skyhanni.data.SackApi
 import at.hannibal2.skyhanni.events.GuiContainerEvent
+import at.hannibal2.skyhanni.events.SackOpenEvent
 import at.hannibal2.skyhanni.features.inventory.bazaar.BazaarApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.DelayedRun
@@ -76,8 +77,14 @@ object SackDisplay {
         }
     }
 
-    // Ensure we're running on the render thread - this gets called from the network thread in SackApi
-    fun update(savingSacks: Boolean) = DelayedRun.runOrNextTick {
+    @HandleEvent
+    fun onSackOpen(event: SackOpenEvent) {
+        DelayedRun.runOrNextTick {
+            update(event.isNewInventory)
+        }
+    }
+
+    fun update(savingSacks: Boolean) {
         display = drawDisplay(savingSacks)
     }
 
