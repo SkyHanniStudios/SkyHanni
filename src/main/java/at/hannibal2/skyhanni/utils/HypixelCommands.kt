@@ -47,10 +47,6 @@ object HypixelCommands {
         send("craft")
     }
 
-    fun npcOption(npc: String, answer: String) {
-        send("selectnpcoption $npc $answer")
-    }
-
     fun warp(warp: String) {
         send("warp $warp")
     }
@@ -71,8 +67,8 @@ object HypixelCommands {
         send("gardenlevels")
     }
 
-    fun setHome() {
-        send("sethome")
+    fun setSpawn() {
+        send("setspawn")
     }
 
     // Do not remove this deprecation tag, as we want to catch all wrong uses of /gfs in the future forever.
@@ -191,6 +187,10 @@ object HypixelCommands {
         send("chatprompt $prompt")
     }
 
+    fun call(npc: String) {
+        send("call $npc")
+    }
+
     fun callback(uuid: String) {
         send("cb $uuid")
     }
@@ -205,10 +205,6 @@ object HypixelCommands {
 
     fun viewStash(type: String) {
         send("viewstash $type")
-    }
-
-    fun locraw() {
-        send("locraw")
     }
 
     fun starlynSisters() {
@@ -239,12 +235,16 @@ object HypixelCommands {
         send("quiver")
     }
 
-    fun fishingBag() {
-        send("fishingbag")
+    fun baitSack() {
+        send("baitsack")
     }
 
     fun huntingBox() {
         send("hb")
+    }
+
+    fun tpToDonExpresso() {
+        send("tptodonexpresso")
     }
 
     private fun send(command: String) {
