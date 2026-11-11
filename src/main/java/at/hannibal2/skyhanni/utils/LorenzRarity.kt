@@ -59,7 +59,9 @@ enum class LorenzRarity(val color: LorenzColor, val alternativeName: String? = n
         /** Reverse of [LorenzRarity.neuPetIndex], null when out of range. */
         fun fromNeuPetIndex(index: Int): LorenzRarity? = entries.getOrNull(index)
 
-        fun getByName(name: String): LorenzRarity? = entries.find { it.name.equals(name, ignoreCase = true) || it.alternativeName.equals(name, ignoreCase = true) }
+        fun getByName(name: String): LorenzRarity? = entries.find {
+            it.name.equals(name, ignoreCase = true) || it.alternativeName.equals(name, ignoreCase = true)
+        }
 
         fun getByNameOrError(name: String): LorenzRarity = getByName(name) ?: error("LorenzRarity not found by name: '$name'")
 
