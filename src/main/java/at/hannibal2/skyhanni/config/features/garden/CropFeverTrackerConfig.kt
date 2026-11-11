@@ -13,7 +13,7 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigLink
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 import io.github.notenoughupdates.moulconfig.observer.Property
 
-class CropFeverTrackerConfig : TopLevelTrackerConfig {
+class CropFeverTrackerConfig : TopLevelTrackerConfig<GardenItemTrackerSettings> {
     @Expose
     @ConfigOption(name = "Enabled", desc = "Track your crop fever drops.")
     @ConfigEditorBoolean

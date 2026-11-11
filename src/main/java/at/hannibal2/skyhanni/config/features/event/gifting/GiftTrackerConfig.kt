@@ -11,7 +11,7 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorInfoText
 import io.github.notenoughupdates.moulconfig.annotations.ConfigLink
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 
-class GiftTrackerConfig : TopLevelTrackerConfig {
+class GiftTrackerConfig : TopLevelTrackerConfig<ItemTrackerSettings> {
     @Expose
     @ConfigOption(name = "Enabled", desc = "Enable the gift profit tracker.")
     @ConfigEditorBoolean

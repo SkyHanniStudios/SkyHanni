@@ -24,8 +24,8 @@ import at.hannibal2.skyhanni.utils.RenderDisplayHelper.Companion.NO_INVENTORY
  */
 class RenderDisplayConfig(
     val inventoryDetector: InventoryDetector = NO_INVENTORY,
-    val outsideInventory: Boolean = false,
-    val inOwnInventory: Boolean = false,
+    val outsideInventory: Boolean = true,
+    val inOwnInventory: Boolean = true,
     val condition: () -> Boolean = { true },
     val onlyOnIsland: IslandType? = null,
     val onlyOnIslandTag: IslandTypeTag? = null,

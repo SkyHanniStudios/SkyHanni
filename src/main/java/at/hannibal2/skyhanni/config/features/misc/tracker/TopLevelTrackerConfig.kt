@@ -12,15 +12,15 @@ import at.hannibal2.skyhanni.config.features.misc.tracker.individual.PerTrackerC
  *
  * Example:
  * ```
- * class GardenBpsTrackerConfig : TopLevelTrackerConfig {
+ * class GardenBpsTrackerConfig : TopLevelTrackerConfig<GardenTrackerSettings> {
  *     override val perTrackerConfig: TimedPerTrackerConfig<GardenTrackerSettings> = TimedPerTrackerConfig()
  *     ...
  * }
  * ```
  */
 @Suppress("StorageNeedsExpose")
-interface TopLevelTrackerConfig {
+interface TopLevelTrackerConfig<out Settings : TrackerSettings> {
     var enabled: Boolean
-    val perTrackerConfig: PerTrackerConfig<TrackerSettings>
+    val perTrackerConfig: PerTrackerConfig<Settings>
     val position: Position
 }

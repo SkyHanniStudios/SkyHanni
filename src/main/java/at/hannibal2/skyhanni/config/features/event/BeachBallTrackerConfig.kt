@@ -13,7 +13,7 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigLink
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 import io.github.notenoughupdates.moulconfig.annotations.SearchTag
 
-class BeachBallTrackerConfig : TopLevelTrackerConfig {
+class BeachBallTrackerConfig : TopLevelTrackerConfig<TrackerSettings> {
 
     @Expose
     @ConfigOption(name = "Enabled", desc = "Track the §bBeach Balls §7you use and §dFishy Treats §7you earn.")

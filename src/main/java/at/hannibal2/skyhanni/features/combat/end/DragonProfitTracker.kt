@@ -23,9 +23,9 @@ import at.hannibal2.skyhanni.utils.collection.CollectionUtils.addOrPut
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.sortedDesc
 import at.hannibal2.skyhanni.utils.collection.RenderableCollectionUtils.addSearchString
 import at.hannibal2.skyhanni.utils.renderables.Searchable
-import at.hannibal2.skyhanni.utils.tracker.data.BucketedItemTrackerData
 import at.hannibal2.skyhanni.utils.tracker.SessionUptime
 import at.hannibal2.skyhanni.utils.tracker.SkyHanniBucketedItemTracker
+import at.hannibal2.skyhanni.utils.tracker.data.BucketedItemTrackerData
 import com.google.gson.annotations.Expose
 import java.util.EnumMap
 
@@ -36,7 +36,7 @@ object DragonProfitTracker : SkyHanniBucketedItemTracker<DragonType, DragonProfi
     override val storageAccessor: (ProfileSpecificStorage) -> BucketData = { it.dragonProfitTracker }
     override val config get() = SkyHanniMod.feature.combat.endIsland.dragon.dragonProfitTracker
     override val renderConfig = RenderDisplayConfig(
-        condition = { DragonFightAPI.inNestArea() },
+        condition = { config.enabled && DragonFightAPI.inNestArea() },
         onlyOnIsland = IslandType.THE_END,
     )
 

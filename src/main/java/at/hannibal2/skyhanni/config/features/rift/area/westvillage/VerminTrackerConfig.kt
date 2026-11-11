@@ -11,7 +11,7 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean
 import io.github.notenoughupdates.moulconfig.annotations.ConfigLink
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 
-class VerminTrackerConfig : TopLevelTrackerConfig {
+class VerminTrackerConfig : TopLevelTrackerConfig<TrackerSettings> {
     @Expose
     @ConfigOption(name = "Show Counter", desc = "Count all §aSilverfish§7, §aSpiders, §7and §aFlies §7vacuumed.")
     @ConfigEditorBoolean

@@ -2,6 +2,7 @@ package at.hannibal2.skyhanni.utils.tracker
 
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
+import at.hannibal2.skyhanni.config.core.config.Position
 import at.hannibal2.skyhanni.config.features.misc.tracker.TopLevelTrackerConfig
 import at.hannibal2.skyhanni.config.features.misc.tracker.generic.TrackerSettings
 import at.hannibal2.skyhanni.config.features.misc.tracker.individual.PerTrackerConfig
@@ -44,7 +45,7 @@ abstract class SkyHanniTracker<Data : TrackerData<*>>(private val staticName: St
     open val name get() = staticName
 
     internal abstract val storageAccessor: (ProfileSpecificStorage) -> Data
-    internal abstract val config: TopLevelTrackerConfig
+    internal abstract val config: TopLevelTrackerConfig<*>
 
     internal open val perTrackerConfig: PerTrackerConfig<*> get() = config.perTrackerConfig
     internal open val trackerConfig: TrackerSettings
@@ -93,7 +94,12 @@ abstract class SkyHanniTracker<Data : TrackerData<*>>(private val staticName: St
     )
 
     init {
-        RenderDisplayHelper(renderConfig) {
+        pendingRenderers.add(this)
+    }
+
+    private fun registerRenderer() = renderConfig.let { render ->
+        RenderDisplayHelper(render) {
+            render.onRender()
             renderDisplay(config.position)
         }
     }
@@ -103,9 +109,14 @@ abstract class SkyHanniTracker<Data : TrackerData<*>>(private val staticName: St
         internal val universalTracker get() = SkyHanniMod.feature.misc.tracker
         internal val storedTrackers get() = SkyHanniMod.feature.storage.trackerDisplayModes
         private val unpausedTrackers: MutableSet<SkyHanniTracker<*>> = mutableSetOf()
+        private val pendingRenderers: MutableList<SkyHanniTracker<*>> = mutableListOf()
 
         @HandleEvent
         fun onTick(event: SkyHanniTickEvent) {
+            if (pendingRenderers.isNotEmpty()) {
+                pendingRenderers.toList().forEach { it.registerRenderer() }
+                pendingRenderers.clear()
+            }
             if (!event.isMod(10)) return
             unpausedTrackers.toList().forEach { tracker ->
                 if (tracker.trackUptime) tracker.checkAfk()
@@ -123,7 +134,6 @@ abstract class SkyHanniTracker<Data : TrackerData<*>>(private val staticName: St
         private val entries: Map<DisplayMode, Data>,
     ) {
         fun modify(mode: DisplayMode, modifyFunction: (Data) -> Unit) = get(mode).let(modifyFunction)
-        fun tryModify(mode: DisplayMode, modifyFunction: (Data) -> Unit) = entries[mode]?.let(modifyFunction)
         fun modify(modifyFunction: (Data) -> Unit) = entries.values.forEach(modifyFunction)
 
         fun get(displayMode: DisplayMode) = entries[displayMode] ?: ErrorManager.skyHanniError(
@@ -135,7 +145,6 @@ abstract class SkyHanniTracker<Data : TrackerData<*>>(private val staticName: St
     }
 
     internal abstract fun drawDisplayF(data: Data): List<Searchable>
-    internal open fun extraOnRender() = Unit
 
     private val dataCtor by lazy {
         findGenericSuperclassTypeArgument<SkyHanniTracker<*>, Data>().getConstructor()
@@ -170,7 +179,7 @@ abstract class SkyHanniTracker<Data : TrackerData<*>>(private val staticName: St
 
     fun firstUpdate() = if (display.isEmpty()) update() else Unit
 
-    private fun renderDisplay(position: at.hannibal2.skyhanni.config.core.config.Position) {
+    private fun renderDisplay(position: Position) {
         if (!shouldRender()) return
 
         val searchEnabled = trackerConfig.trackerSearchEnabled.get()

@@ -47,6 +47,7 @@ object InfernoMinionProfitTracker : SkyHanniItemTracker<InfernoMinionProfitTrack
     override val renderConfig = RenderDisplayConfig(
         inventoryDetector = infernoMinionInventory,
         outsideInventory = true,
+        inOwnInventory = false,
         onlyOnIsland = IslandType.PRIVATE_ISLAND,
         condition = { config.enabled && (infernoMinionInventory.isInside() || isRecentCollection()) },
     )

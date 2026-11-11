@@ -55,10 +55,6 @@ object SlayerProfitTracker : SkyHanniItemTracker<SlayerProfitTracker.Data>("Slay
     private val categoryName get() = ReplaceRomanNumerals.replaceLine(category)
     private var baseSlayerType = ""
 
-    private val trackers = mutableMapOf<String, SkyHanniItemTracker<Data>>()
-    private fun getTracker(): SkyHanniItemTracker<Data>? =
-        if (category.isEmpty()) null else trackers.getOrPut(category) { this }
-
     /**
      * REGEX-TEST: Took 1.9k coins from your bank for auto-slayer...
      */
@@ -94,7 +90,8 @@ object SlayerProfitTracker : SkyHanniItemTracker<SlayerProfitTracker.Data>("Slay
 
     private fun addSlayerCosts(price: Double) {
         require(price < 0) { "slayer costs can not be positive" }
-        getTracker()?.modify {
+        if (category.isEmpty()) return
+        modify {
             it.slayerSpawnCost += price.toInt()
         }
     }
@@ -141,12 +138,13 @@ object SlayerProfitTracker : SkyHanniItemTracker<SlayerProfitTracker.Data>("Slay
         val newSlayer = event.newSlayer
         category = newSlayer.removeColor()
         baseSlayerType = category.substringBeforeLast(" ")
-        getTracker()?.update()
+        if (category.isNotEmpty()) update()
     }
 
     @HandleEvent
     fun onSlayerQuestComplete() {
-        getTracker()?.modify {
+        if (category.isEmpty()) return
+        modify {
             it.slayerCompletedCount++
         }
     }
@@ -167,7 +165,8 @@ object SlayerProfitTracker : SkyHanniItemTracker<SlayerProfitTracker.Data>("Slay
             return
         }
 
-        getTracker()?.addItem(internalName, amount, command)
+        if (category.isEmpty()) return
+        addItem(internalName, amount, command)
     }
 
     private fun isAllowedItem(internalName: NeuInternalName): Boolean {
@@ -176,10 +175,10 @@ object SlayerProfitTracker : SkyHanniItemTracker<SlayerProfitTracker.Data>("Slay
     }
 
     override fun drawDisplayF(data: Data) = buildList {
-        val tracker = getTracker() ?: return@buildList
+        if (category.isEmpty()) return@buildList
         addSearchString("§e§l$categoryName Profit Tracker")
 
-        var profit = tracker.drawItems(data, { true }, this)
+        var profit = drawItems(data, { true }, this)
         val slayerSpawnCost = data.slayerSpawnCost
         val slayerSpawnCostFormat = slayerSpawnCost.shortFormat()
         add(
@@ -202,21 +201,9 @@ object SlayerProfitTracker : SkyHanniItemTracker<SlayerProfitTracker.Data>("Slay
         )
 
         val duration = data.getTotalUptime()
-        addAll(tracker.addTotalProfit(profit, data.slayerCompletedCount, "boss", duration, "Bosses"))
+        addAll(addTotalProfit(profit, data.slayerCompletedCount, "boss", duration, "Bosses"))
 
-        tracker.addPriceFromButton(this)
-    }
-
-    // TODO reintroduce this? whats going on?
-    val coinFormat: (ItemTrackerData.TrackedItem) -> Pair<String, List<String>> = { item ->
-        val mobKillCoinsFormat = item.totalAmount.shortFormat()
-        val text = " §6Mob kill coins§7: §6$mobKillCoinsFormat"
-        val lore = listOf(
-            "§7Killing mobs gives you coins (more with Scavenger)",
-            "§7You got §e$mobKillCoinsFormat §7coins in total this way",
-        )
-
-        text to lore
+        addPriceFromButton(this)
     }
 
     private fun shouldShowDisplay(): Boolean = isEnabled() && SlayerApi.isInCorrectArea

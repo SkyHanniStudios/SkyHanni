@@ -2,9 +2,9 @@ package at.hannibal2.skyhanni.features.event.yearofthepig
 
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.config.storage.ProfileSpecificStorage
 import at.hannibal2.skyhanni.config.commands.CommandCategory
 import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
+import at.hannibal2.skyhanni.config.storage.ProfileSpecificStorage
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.events.yearofthepig.ShinyOrbLootedEvent
 import at.hannibal2.skyhanni.features.skillprogress.SkillType
@@ -32,8 +32,7 @@ object ShinyOrbTracker : SkyHanniItemTracker<ShinyOrbTracker.Data>("Shiny Orb Tr
     override val config get() = SkyHanniMod.feature.event.yearOfThePig.shinyOrbTracker
     override val storageAccessor: (ProfileSpecificStorage) -> Data = { it.shinyOrbTracker }
     override val renderConfig = RenderDisplayConfig(
-        outsideInventory = true,
-        condition = { passesHoldingItem() && PigFeaturesApi.isYearOfThePig() },
+        condition = { config.enabled && passesHoldingItem() && PigFeaturesApi.isYearOfThePig() },
         onlyOnIsland = IslandType.HUB,
     )
     private val SHINY_ORB_ITEM = "SHINY_ORB".toInternalName()

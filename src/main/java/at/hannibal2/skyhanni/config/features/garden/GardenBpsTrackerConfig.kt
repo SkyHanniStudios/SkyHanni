@@ -16,7 +16,7 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigLink
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 import io.github.notenoughupdates.moulconfig.observer.Property
 
-class GardenBpsTrackerConfig : TopLevelTrackerConfig {
+class GardenBpsTrackerConfig : TopLevelTrackerConfig<GardenTrackerSettings> {
     @Expose
     @ConfigOption(name = "Enabled", desc = "Track crop block breaks in garden.")
     @ConfigEditorBoolean
@@ -46,7 +46,7 @@ class GardenBpsTrackerConfig : TopLevelTrackerConfig {
             internal val defaultValues: MutableList<GardenUptimeDisplayText> = mutableListOf(
                 TITLE,
                 BPS,
-                BLOCKS_BROKEN
+                BLOCKS_BROKEN,
             )
         }
     }
@@ -58,7 +58,7 @@ class GardenBpsTrackerConfig : TopLevelTrackerConfig {
     @SkyHanniModule
     companion object {
         @HandleEvent
-        fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+        private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
             val base = "garden.gardenBpsTracker"
             event.move(150, "$base.showDisplay", "$base.enabled")
             event.move(150, "$base.pos", "$base.position")

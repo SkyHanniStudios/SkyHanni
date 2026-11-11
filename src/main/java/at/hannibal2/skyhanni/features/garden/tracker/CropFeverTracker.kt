@@ -8,11 +8,9 @@ import at.hannibal2.skyhanni.config.features.garden.CropFeverTrackerConfig.CropF
 import at.hannibal2.skyhanni.config.storage.ProfileSpecificStorage
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.garden.CropCollectionApi.addCollectionCounter
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.garden.farming.CropClickEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
-import at.hannibal2.skyhanni.events.minecraft.WorldChangeEvent
 import at.hannibal2.skyhanni.features.garden.CropCollectionType
 import at.hannibal2.skyhanni.features.garden.CropType
 import at.hannibal2.skyhanni.features.garden.GardenApi
@@ -35,9 +33,9 @@ import at.hannibal2.skyhanni.utils.renderables.primitives.placeholder
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
 import at.hannibal2.skyhanni.utils.renderables.toSearchable
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
-import at.hannibal2.skyhanni.utils.tracker.data.BucketedItemTrackerData
 import at.hannibal2.skyhanni.utils.tracker.SessionUptime
 import at.hannibal2.skyhanni.utils.tracker.SkyHanniBucketedItemTracker
+import at.hannibal2.skyhanni.utils.tracker.data.BucketedItemTrackerData
 import com.google.gson.annotations.Expose
 import java.util.EnumMap
 import kotlin.time.Duration
@@ -75,6 +73,7 @@ object CropFeverTracker : SkyHanniBucketedItemTracker<CropType, CropFeverTracker
                 "§7Average Blocks Broken Per Drop: §c$dropRate.",
             )
         }
+
         override fun getCoinName(bucket: CropType?, item: TrackedItem) = "§6Crop Fever Coins"
         override fun getCoinDescription(bucket: CropType?, item: TrackedItem): List<String> {
             return listOf(
@@ -188,17 +187,15 @@ object CropFeverTracker : SkyHanniBucketedItemTracker<CropType, CropFeverTracker
     }
 
     @HandleEvent
-    fun onWorldChange(event: WorldChangeEvent) {
+    fun onWorldChange() {
         update()
         if (!isCropFever) return
         stopCropFever()
     }
 
     @HandleEvent
-    fun onConfigLoad(event: ConfigLoadEvent) {
-        ConditionalUtils.onToggle(config.text) {
-            update()
-        }
+    fun onConfigLoad() = ConditionalUtils.onToggle(config.text) {
+        update()
     }
 
     private fun startCropFever(partialFever: Boolean = false) {

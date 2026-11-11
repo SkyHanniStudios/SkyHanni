@@ -79,14 +79,6 @@ object ForagingTracker : SkyHanniBucketedItemTracker<TreeType, ForagingTracker.B
     )
 
     /**
-     * WRAPPED-REGEX-TEST: "                                §r§9§lTREE GIFT"
-     */
-    val giftHeaderPattern by patternGroup.pattern(
-        "header",
-        " *(?:§.)+TREE GIFT"
-    )
-
-    /**
      * WRAPPED-REGEX-TEST: "                 §r§7You helped cut §r§a100% §r§7of the §r§aFig Tree§r§7."
      * WRAPPED-REGEX-TEST: "             §r§7You helped cut §r§a100% §r§7of the §r§aMangrove Tree§r§7."
      * WRAPPED-REGEX-TEST: "                 §r§7You helped cut §r§c15.2% §r§7of the §r§aFig Tree§r§7."
@@ -264,13 +256,13 @@ object ForagingTracker : SkyHanniBucketedItemTracker<TreeType, ForagingTracker.B
     }
 
     @HandleEvent(onlyOnIslandTypeTag = [IslandTypeTag.FORAGING_CUSTOM_TREES])
-    fun onItemAdd(event: ItemAddEvent) {
+    private fun onItemAdd(event: ItemAddEvent) {
         if (event.source != ItemAddManager.Source.COMMAND) return
         event.addItemFromEvent()
     }
 
     @HandleEvent(onlyOnIslandTypeTag = [IslandTypeTag.FORAGING_CUSTOM_TREES])
-    fun onSackChange(event: SackChangeEvent) {
+    private fun onSackChange(event: SackChangeEvent) {
         event.addLogs()
     }
 
@@ -318,7 +310,7 @@ object ForagingTracker : SkyHanniBucketedItemTracker<TreeType, ForagingTracker.B
     private val loot = mutableMapOf<NeuInternalName, Int>()
 
     @HandleEvent(onlyOnIslandTypeTag = [IslandTypeTag.FORAGING_CUSTOM_TREES])
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         event.tryReadLoot()
         event.tryBlock()
     }
@@ -327,7 +319,7 @@ object ForagingTracker : SkyHanniBucketedItemTracker<TreeType, ForagingTracker.B
     private var currentStretchingSticks = 0
 
     @HandleEvent(onlyOnIslandTypeTag = [IslandTypeTag.FORAGING_CUSTOM_TREES])
-    fun onOwnInventoryItemUpdate() {
+    private fun onOwnInventoryItemUpdate() {
         val treeType = treeType ?: return
 
         val stretchingSticksNow = InventoryUtils.getItemsInOwnInventory().filter {
@@ -502,7 +494,7 @@ object ForagingTracker : SkyHanniBucketedItemTracker<TreeType, ForagingTracker.B
     }
 
     @HandleEvent(IslandChangeEvent::class, onlyOnIslandTypeTag = [IslandTypeTag.FORAGING_CUSTOM_TREES])
-    fun onIslandChange() {
+    private fun onIslandChange() {
         firstUpdate()
     }
 
@@ -516,7 +508,7 @@ object ForagingTracker : SkyHanniBucketedItemTracker<TreeType, ForagingTracker.B
     }
 
     @HandleEvent(onlyOnIslandTypeTag = [IslandTypeTag.FORAGING_CUSTOM_TREES])
-    fun onItemInHandChange(event: ItemInHandChangeEvent) {
+    private fun onItemInHandChange(event: ItemInHandChangeEvent) {
         val isAxe = event.newItem.getItemStack().getItemCategoryOrNull() == ItemCategory.AXE
         if (isAxe != hasHeldAxe) {
             if (!isAxe) {

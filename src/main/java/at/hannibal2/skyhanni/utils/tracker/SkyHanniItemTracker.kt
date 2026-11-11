@@ -4,6 +4,7 @@ import at.hannibal2.skyhanni.SkyHanniMod.launch
 import at.hannibal2.skyhanni.config.features.misc.tracker.TopLevelTrackerConfig
 import at.hannibal2.skyhanni.config.features.misc.tracker.generic.ItemTrackerSettings
 import at.hannibal2.skyhanni.config.features.misc.tracker.generic.ItemTrackerSettings.ItemTrackerConfig.TextPart
+import at.hannibal2.skyhanni.config.features.misc.tracker.individual.PerTrackerConfig
 import at.hannibal2.skyhanni.data.ItemAddManager
 import at.hannibal2.skyhanni.data.SlayerApi
 import at.hannibal2.skyhanni.data.TrackerManager
@@ -53,12 +54,14 @@ import kotlin.time.Duration.Companion.seconds
 
 abstract class SkyHanniItemTracker<Data : ItemTrackerData<*>>(name: String) : SkyHanniTracker<Data>(name) {
 
-    abstract override val config: TopLevelTrackerConfig
+    abstract override val config: TopLevelTrackerConfig<ItemTrackerSettings>
 
-    // Chains through the base useUniversalConfig check, then casts. The cast is safe because
-    // this class constrains config to TopLevelTrackerConfig<ItemTrackerSettings>, so both the
-    // per-tracker config and universalTracker (which extends ItemTrackerSettings) satisfy it.
-    override val trackerConfig: ItemTrackerSettings get() = super.trackerConfig as ItemTrackerSettings
+    override val perTrackerConfig: PerTrackerConfig<ItemTrackerSettings> get() = config.perTrackerConfig
+    override val trackerConfig: ItemTrackerSettings
+        get() = perTrackerConfig.let {
+            if (it.useUniversalConfig) universalTracker
+            else it.trackerConfig
+        }
 
     override fun shouldRender(): Boolean {
         if (trackerConfig.itemTracker.hideInEstimatedItemValue && EstimatedItemValue.isCurrentlyShowing()) return false

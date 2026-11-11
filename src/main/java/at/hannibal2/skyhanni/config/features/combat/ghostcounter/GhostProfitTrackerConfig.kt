@@ -2,8 +2,8 @@ package at.hannibal2.skyhanni.config.features.combat.ghostcounter
 
 import at.hannibal2.skyhanni.config.FeatureToggle
 import at.hannibal2.skyhanni.config.core.config.Position
-import at.hannibal2.skyhanni.config.features.misc.tracker.generic.ItemTrackerSettings
 import at.hannibal2.skyhanni.config.features.misc.tracker.TopLevelTrackerConfig
+import at.hannibal2.skyhanni.config.features.misc.tracker.generic.ItemTrackerSettings
 import at.hannibal2.skyhanni.config.features.misc.tracker.individual.PerTrackerConfig
 import at.hannibal2.skyhanni.features.combat.ghosttracker.GhostTracker.GhostTrackerLines
 import com.google.gson.annotations.Expose
@@ -14,7 +14,7 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorInfoText
 import io.github.notenoughupdates.moulconfig.annotations.ConfigLink
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 
-class GhostProfitTrackerConfig : TopLevelTrackerConfig {
+class GhostProfitTrackerConfig : TopLevelTrackerConfig<ItemTrackerSettings> {
     @Expose
     @ConfigOption(name = "Enabled", desc = "Enables the Ghost Profit Tracker.")
     @ConfigEditorBoolean
@@ -30,12 +30,12 @@ class GhostProfitTrackerConfig : TopLevelTrackerConfig {
         GhostTrackerLines.MAX_KILL_COMBO,
         GhostTrackerLines.COMBAT_XP_GAINED,
         GhostTrackerLines.AVERAGE_MAGIC_FIND,
-        GhostTrackerLines.BESTIARY_KILLS
+        GhostTrackerLines.BESTIARY_KILLS,
     )
 
     @ConfigOption(
         name = "Max Bestiary",
-        desc = "§7This feature will currently not work properly when having max Ghost Bestiary."
+        desc = "§7This feature will currently not work properly when having max Ghost Bestiary.",
     )
     @ConfigEditorInfoText(infoTitle = "Warning")
     val useless: String? = null

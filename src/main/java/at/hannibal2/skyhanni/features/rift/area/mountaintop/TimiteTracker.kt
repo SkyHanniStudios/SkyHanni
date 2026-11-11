@@ -112,7 +112,7 @@ object TimiteTracker : SkyHanniItemTracker<TimiteTracker.Data>("Timite Tracker")
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         val base = "rift.area.mountaintop.timite"
         event.move(150, "$base.tracker", "$base.tracker.enabled")
         event.move(150, "$base.trackerPosition", "$base.tracker.position")

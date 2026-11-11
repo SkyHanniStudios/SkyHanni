@@ -8,7 +8,6 @@ import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
 import at.hannibal2.skyhanni.config.storage.ProfileSpecificStorage
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.ItemAddManager
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
 import at.hannibal2.skyhanni.events.IslandChangeEvent
 import at.hannibal2.skyhanni.events.ItemAddEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
@@ -69,7 +68,7 @@ object CrystalNucleusTracker : SkyHanniItemTracker<CrystalNucleusTracker.Data>("
      */
     private val balRarityPattern by patternGroup.pattern(
         "bal.rarity",
-        ".*§(?<raritycolor>[65])Bal.*"
+        ".*§(?<raritycolor>[65])Bal.*",
     )
 
     data class Data(
@@ -135,7 +134,7 @@ object CrystalNucleusTracker : SkyHanniItemTracker<CrystalNucleusTracker.Data>("
     }
 
     @HandleEvent
-    fun onConfigLoad(event: ConfigLoadEvent) {
+    fun onConfigLoad() {
         config.professorUsage.onToggle(::update)
     }
 
@@ -199,7 +198,7 @@ object CrystalNucleusTracker : SkyHanniItemTracker<CrystalNucleusTracker.Data>("
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CRYSTAL_HOLLOWS)
-    fun onItemAdd(event: ItemAddEvent) {
+    private fun onItemAdd(event: ItemAddEvent) {
         if (!isEnabled()) return
 
         if (event.source == ItemAddManager.Source.COMMAND) {

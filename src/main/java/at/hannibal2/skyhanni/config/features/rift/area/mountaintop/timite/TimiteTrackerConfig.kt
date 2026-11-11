@@ -2,8 +2,8 @@ package at.hannibal2.skyhanni.config.features.rift.area.mountaintop.timite
 
 import at.hannibal2.skyhanni.config.FeatureToggle
 import at.hannibal2.skyhanni.config.core.config.Position
-import at.hannibal2.skyhanni.config.features.misc.tracker.generic.ItemTrackerSettings
 import at.hannibal2.skyhanni.config.features.misc.tracker.TopLevelTrackerConfig
+import at.hannibal2.skyhanni.config.features.misc.tracker.generic.ItemTrackerSettings
 import at.hannibal2.skyhanni.config.features.misc.tracker.individual.PerTrackerConfig
 import com.google.gson.annotations.Expose
 import io.github.notenoughupdates.moulconfig.annotations.Accordion
@@ -11,7 +11,7 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean
 import io.github.notenoughupdates.moulconfig.annotations.ConfigLink
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 
-class TimiteTrackerConfig : TopLevelTrackerConfig {
+class TimiteTrackerConfig : TopLevelTrackerConfig<ItemTrackerSettings> {
     @Expose
     @ConfigOption(name = "Enabled", desc = "Tracks collected Timite ores and shows mote profit.")
     @ConfigEditorBoolean

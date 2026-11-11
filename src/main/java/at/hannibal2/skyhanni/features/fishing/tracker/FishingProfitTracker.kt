@@ -11,7 +11,6 @@ import at.hannibal2.skyhanni.data.model.SkyblockStat
 import at.hannibal2.skyhanni.events.ItemAddEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
-import at.hannibal2.skyhanni.events.fishing.FishingBobberCastEvent
 import at.hannibal2.skyhanni.events.fishing.FishingCatchEvent
 import at.hannibal2.skyhanni.events.fishing.SeaCreatureFishEvent
 import at.hannibal2.skyhanni.features.fishing.FishingApi
@@ -38,10 +37,10 @@ import at.hannibal2.skyhanni.utils.renderables.RenderableUtils.addButton
 import at.hannibal2.skyhanni.utils.renderables.Searchable
 import at.hannibal2.skyhanni.utils.renderables.toSearchable
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
-import at.hannibal2.skyhanni.utils.tracker.data.ItemTrackerData
 import at.hannibal2.skyhanni.utils.tracker.SessionUptime
 import at.hannibal2.skyhanni.utils.tracker.SkyHanniItemTracker
 import at.hannibal2.skyhanni.utils.tracker.SkyHanniTracker
+import at.hannibal2.skyhanni.utils.tracker.data.ItemTrackerData
 import com.google.gson.annotations.Expose
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -55,7 +54,7 @@ object FishingProfitTracker : SkyHanniItemTracker<FishingProfitTracker.Data>("Fi
     override val renderConfig = RenderDisplayConfig(
         outsideInventory = true,
         inOwnInventory = true,
-        condition = { isEnabled() && config.enabled && shouldShow }
+        condition = { isEnabled() && config.enabled && shouldShow },
     )
 
     /**
@@ -244,9 +243,7 @@ object FishingProfitTracker : SkyHanniItemTracker<FishingProfitTracker.Data>("Fi
     private fun isAllowedItem(internalName: NeuInternalName) = itemCategories.any { internalName in it.value }
 
     @HandleEvent
-    fun onBobberThrow(event: FishingBobberCastEvent) {
-        firstUpdate()
-    }
+    private fun onBobberCast() = firstUpdate()
 
     @HandleEvent
     fun onCatch(event: FishingCatchEvent) {

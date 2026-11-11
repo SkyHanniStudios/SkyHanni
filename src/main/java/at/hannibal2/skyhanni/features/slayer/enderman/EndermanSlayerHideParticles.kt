@@ -14,7 +14,7 @@ import net.minecraft.world.entity.monster.EnderMan
 object EndermanSlayerHideParticles {
 
     @HandleEvent(onlyOnIsland = IslandType.THE_END)
-    fun onParticle(event: ParticleEvent) {
+    private fun onParticle(event: ParticleEvent) {
         if (!SlayerApi.config.enderman.hideParticles) return
 
         when (event.type) {

@@ -12,7 +12,7 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider
 import io.github.notenoughupdates.moulconfig.annotations.ConfigLink
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 
-class RareCropTrackerConfig : TopLevelTrackerConfig {
+class RareCropTrackerConfig : TopLevelTrackerConfig<GardenTrackerSettings> {
     @Expose
     @ConfigOption(name = "Enabled", desc = "Track rare crop drops while farming.")
     @ConfigEditorBoolean
