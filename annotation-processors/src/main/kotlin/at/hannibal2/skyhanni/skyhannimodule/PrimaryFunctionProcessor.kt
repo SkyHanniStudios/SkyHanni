@@ -1,23 +1,16 @@
 package at.hannibal2.skyhanni.skyhannimodule
 
 import com.google.devtools.ksp.getClassDeclarationByName
-import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Dependencies
-import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
+import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import java.io.OutputStreamWriter
 
-class PrimaryFunctionProcessor(
-    codeGenerator: CodeGenerator,
-    logger: KSPLogger,
-    modVersion: String,
-    mcVersion: String,
-    cacheDir: String?,
-) : BaseProcessor(codeGenerator, logger, modVersion) {
+class PrimaryFunctionProcessor(environment: SymbolProcessorEnvironment) : BaseProcessor(environment) {
 
-    private val cache = KspIncrementalCache(cacheDir, mcVersion, "ksp-primary-function-state")
+    private val cache = KspIncrementalCache(options[CACHE_DIR_OPTION], mcVersion, "ksp-primary-function-state")
 
     override fun processSymbols(resolver: Resolver): List<KSAnnotated> {
         val skyHanniEvent = resolver.getClassDeclarationByName("at.hannibal2.skyhanni.api.event.SkyHanniEvent")
