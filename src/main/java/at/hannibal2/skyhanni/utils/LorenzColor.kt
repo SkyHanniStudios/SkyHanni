@@ -111,10 +111,32 @@ enum class LorenzColor(val chatColorCode: Char, private val color: Color, privat
             DyeColor.BLACK -> BLACK
         }
 
+        fun ChatFormatting.toLorenzColor() = when (this) {
+            ChatFormatting.BLACK -> BLACK
+            ChatFormatting.DARK_BLUE -> DARK_BLUE
+            ChatFormatting.DARK_GREEN -> DARK_GREEN
+            ChatFormatting.DARK_AQUA -> DARK_AQUA
+            ChatFormatting.DARK_RED -> DARK_RED
+            ChatFormatting.DARK_PURPLE -> DARK_PURPLE
+            ChatFormatting.GOLD -> GOLD
+            ChatFormatting.GRAY -> GRAY
+            ChatFormatting.DARK_GRAY -> DARK_GRAY
+            ChatFormatting.BLUE -> BLUE
+            ChatFormatting.GREEN -> GREEN
+            ChatFormatting.AQUA -> AQUA
+            ChatFormatting.RED -> RED
+            ChatFormatting.LIGHT_PURPLE -> LIGHT_PURPLE
+            ChatFormatting.YELLOW -> YELLOW
+            ChatFormatting.WHITE -> WHITE
+            else -> ErrorManager.skyHanniError(
+                "Cannot Convert from non Color Chat Formatting to LorenzColor", "ChatFormatting" to this,
+            )
+        }
+
         fun Char.toLorenzColor(): LorenzColor? = entries.firstOrNull { it.chatColorCode == this } ?: run {
             ErrorManager.logErrorWithData(
                 Exception("Unknown chat color: $this"),
-                "Unknown chat color: $this"
+                "Unknown chat color: $this",
             )
             null
         }
