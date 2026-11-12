@@ -45,10 +45,10 @@ object PersonalCompactorOverlay {
     )
 
     private val slotsMap = mapOf(
-        7000 to 12,
-        6000 to 7,
-        5000 to 3,
-        4000 to 1,
+        7000 to 28,
+        6000 to 21,
+        5000 to 14,
+        4000 to 7,
     )
 
     private const val MAX_ITEMS_PER_ROW = 7
