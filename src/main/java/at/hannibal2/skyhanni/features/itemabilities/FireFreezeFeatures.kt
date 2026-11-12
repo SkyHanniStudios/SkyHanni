@@ -24,7 +24,6 @@ import at.hannibal2.skyhanni.utils.collection.CollectionUtils.removeIf
 import at.hannibal2.skyhanni.utils.compat.EntityCompat.getStandHelmet
 import at.hannibal2.skyhanni.utils.compat.appendWithColor
 import at.hannibal2.skyhanni.utils.compat.componentBuilder
-import at.hannibal2.skyhanni.utils.expand
 import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.inPartialSeconds
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawCircleWireframe
@@ -211,7 +210,7 @@ object FireFreezeFeatures {
                 )
             }
             if (config.mobHighlight) {
-                val aabb = exactBoundingBox(mob.baseEntity).expand(0.1)
+                val aabb = exactBoundingBox(mob.baseEntity).inflate(0.1)
                 drawFilledBoundingBox(aabb, color, 0.5f)
             }
         }
