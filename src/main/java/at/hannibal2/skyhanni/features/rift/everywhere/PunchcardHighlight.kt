@@ -50,30 +50,30 @@ object PunchcardHighlight {
     private val patternGroup = RepoPattern.group("rift.punchcard")
 
     /**
-     * REGEX-TEST: §5§lPUNCHCARD! §r§eYou punched §r§b[MVP§r§c+§r§b] ThorQOM§r§f §r§eand both regained §r§a+25 Rift Time§r§e!
-     * REGEX-TEST: §5§lPUNCHCARD! §r§eYou punched §r§7Metafighter§r§7 §r§eand both regained §r§a+25 Rift Time§r§e!
-     * REGEX-TEST: §5§lPUNCHCARD! §r§eYou punched §r§a[VIP] RickyLafleur22§r§f §r§eand both regained §r§a+25 Rift Time§r§e!
+     * REGEX-TEST: PUNCHCARD! You punched [MVP+] ThorQOM and both regained +25 Rift Time!
+     * REGEX-TEST: PUNCHCARD! You punched Metafighter and both regained +25 Rift Time!
+     * REGEX-TEST: PUNCHCARD! You punched [VIP] RickyLafleur22 and both regained +25 Rift Time!
      */
     @Suppress("MaxLineLength")
     private val punchedPattern by patternGroup.pattern(
-        "new",
-        "§5§lPUNCHCARD! §r§eYou punched §r§.(?:.*?)?(?<name>\\w+)§r§. §r§eand both regained §r§a\\+25${SkyblockStat.RIFT_TIME.hypixelIcon} Rift Time§r§e!",
+        "new.colorless",
+        "PUNCHCARD! You punched (?:.*?)?(?<name>\\w+) and both regained \\+25${SkyblockStat.RIFT_TIME.hypixelIcon} Rift Time!",
     )
 
     /**
-     * REGEX-TEST: §c§lAWKWARD! §r§cThis player has already been punched by you... somehow!
+     * REGEX-TEST: AWKWARD! This player has already been punched by you... somehow!
      */
     private val repeatPattern by patternGroup.pattern(
-        "repeat",
-        "§c§lAWKWARD! §r§cThis player has already been punched by you\\.\\.\\. somehow!",
+        "repeat.colorless",
+        "AWKWARD! This player has already been punched by you\\.\\.\\. somehow!",
     )
 
     /**
-     * REGEX-TEST: §c§lUH OH! §r§cYou reached the limit of 20 players you can punch in one session!
+     * REGEX-TEST: UH OH! You reached the limit of 20 players you can punch in one session!
      */
     private val limitPattern by patternGroup.pattern(
-        "limit",
-        "§c§lUH OH! §r§cYou reached the limit of 20 players you can punch in one session!",
+        "limit.colorless",
+        "UH OH! You reached the limit of 20 players you can punch in one session!",
     )
 
     private val playerList: MutableSet<String> = mutableSetOf()
@@ -84,7 +84,7 @@ object PunchcardHighlight {
     private var display: Renderable = Renderable.text("hello")
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onPlayerSpawn(event: MobEvent.Spawn.Player) {
+    private fun onPlayerSpawn(event: MobEvent.Spawn.Player) {
         if (!config.highlight.get()) return
         if (config.reverse.get()) return
         val size = playerList.size
@@ -96,7 +96,7 @@ object PunchcardHighlight {
     }
 
     @HandleEvent
-    fun onConfigLoad(event: ConfigLoadEvent) {
+    private fun onConfigLoad() {
         ConditionalUtils.onToggle(
             config.highlight,
             config.color,
@@ -132,7 +132,7 @@ object PunchcardHighlight {
     }
 
     @HandleEvent
-    fun onIslandChange(event: IslandChangeEvent) {
+    private fun onIslandChange(event: IslandChangeEvent) {
         DelayedRun.runDelayed(1500.milliseconds) {
             if (playerList.isEmpty()) return@runDelayed
             if (event.newIsland != IslandType.THE_RIFT) return@runDelayed
@@ -170,7 +170,7 @@ object PunchcardHighlight {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onPunch(event: EntityClickEvent) {
+    private fun onEntityClick(event: EntityClickEvent) {
         val entity = event.clickedEntity
         if (entity !is AbstractClientPlayer) return
         if (entity.isNpc()) return
@@ -185,10 +185,10 @@ object PunchcardHighlight {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!listening) return
         if (playerQueue.isEmpty()) return
-        val message = event.message
+        val message = event.cleanMessage
         val queuedName = playerQueue[0]
         punchedPattern.matchMatcher(message) {
             val name = group("name")
@@ -216,7 +216,7 @@ object PunchcardHighlight {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay() {
         if (!config.gui.get()) return
 
         config.position.renderRenderable(display, "Punchcard Overlay")
@@ -247,7 +247,7 @@ object PunchcardHighlight {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shresetpunchcard") {
             description = "Resets the Rift Punchcard Artifact player list."
             category = CommandCategory.USERS_RESET
