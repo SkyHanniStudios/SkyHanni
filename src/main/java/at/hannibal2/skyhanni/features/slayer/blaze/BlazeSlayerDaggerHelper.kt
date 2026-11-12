@@ -10,6 +10,7 @@ import at.hannibal2.skyhanni.events.ItemClickEvent
 import at.hannibal2.skyhanni.events.ItemInHandChangeEvent
 import at.hannibal2.skyhanni.events.TitleReceivedEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
+import at.hannibal2.skyhanni.events.slayer.SlayerStateChangeEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.ItemUtils.cleanName
@@ -94,6 +95,15 @@ object BlazeSlayerDaggerHelper {
 
         textTop = Renderable.text(format(holding, true, first) + " " + format(holding, true, second))
         textBottom = Renderable.text(format(holding, false, first) + " " + format(holding, false, second))
+    }
+
+    @HandleEvent
+    private fun onSlayerStateChange(event: SlayerStateChangeEvent) {
+        lastNearestCheck = SimpleTimeMark.farPast()
+        lastNearest = when (event.state) {
+            BOSS_FIGHT -> findNearest()
+            else -> null
+        }
     }
 
     private fun findNearest(): HellionShield? {
