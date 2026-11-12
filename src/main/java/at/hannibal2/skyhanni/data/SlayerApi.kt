@@ -25,6 +25,7 @@ import at.hannibal2.skyhanni.utils.ItemPriceUtils.getPriceName
 import at.hannibal2.skyhanni.utils.NeuInternalName
 import at.hannibal2.skyhanni.utils.NumberUtil.romanToDecimalIfNecessaryOrNull
 import at.hannibal2.skyhanni.utils.PlayerUtils
+import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
@@ -82,7 +83,7 @@ object SlayerApi {
      */
     private val bossStartPattern by patternGroup.pattern(
         "boss.start",
-        "SLAYER BOSS! The .* spawned!"
+        "SLAYER BOSS! The (?<name>.*) (?<tier>[IVX]+) spawned!"
     )
 
     /**
@@ -217,24 +218,24 @@ object SlayerApi {
                 questStartTime = SimpleTimeMark.now()
             }
             questCompletePattern.matches(message) -> {
-                ChatUtils.debug("SlayerApi: Slayer quest complete detected, posting SlayerQuestCompleteEvent")
                 SlayerQuestCompleteEvent.post()
             }
             questFailedPattern.matches(message) -> {
-                ChatUtils.debug("SlayerApi: Slayer quest failed, posting SlayerStateChangeEvent")
                 updateState(FAILED)
             }
             cocoonPattern.matches(message) -> {
-                ChatUtils.debug("SlayerApi: Slayer boss cocooned, posting SlayerStateChangeEvent")
                 updateState(COCOONED)
             }
-            bossStartPattern.matches(message) -> {
-                ChatUtils.debug("SlayerApi: Slayer boss fight started, posting SlayerStateChangeEvent")
-                updateState(BOSS_FIGHT)
-            }
             bossSlainPattern.matches(message) -> {
-                ChatUtils.debug("SlayerApi: Slayer boss slain, posting SlayerStateChangeEvent")
                 updateState(SLAIN)
+            }
+            else -> {
+                bossStartPattern.matchMatcher(message) {
+                    val name = group("name")
+                    val data = getCurrentData()
+                    data.type = Type.getByName(name)
+                    updateState(BOSS_FIGHT)
+                }
             }
         }
     }
@@ -331,6 +332,9 @@ object SlayerApi {
     }
 
     private fun updateActiveState(parsed: ParsedSlayer?, progress: String) {
+        val data = getCurrentData()
+        data.type = parsed?.type
+
         if (parsed == null) {
             if (state != COCOONED) updateState(NO_ACTIVE_QUEST)
         } else if (grindingSlayerPattern.matches(progress)) {
