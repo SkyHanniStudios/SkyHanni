@@ -43,7 +43,7 @@ object MutedNarratorWarning {
     }.getOrDefault(false)
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         if (!warningEnabled || !narratorActive || !isNarratorMuted) return
         if (lastReminded.passedSince() < reminderInterval) return
 
