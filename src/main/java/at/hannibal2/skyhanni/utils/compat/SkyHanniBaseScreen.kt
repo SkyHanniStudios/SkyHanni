@@ -3,7 +3,6 @@ package at.hannibal2.skyhanni.utils.compat
 import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.InputKeys
 import com.mojang.blaze3d.platform.InputConstants
-import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.input.CharacterEvent
