@@ -14,7 +14,6 @@ import at.hannibal2.skyhanni.utils.ColorUtils.toColor
 import at.hannibal2.skyhanni.utils.EntityUtils.getEntitiesNearby
 import at.hannibal2.skyhanni.utils.EntityUtils.isAtFullHealth
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceTo
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.editCopy
 import at.hannibal2.skyhanni.utils.compat.deceased
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLessResets
@@ -23,6 +22,7 @@ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawLineToCrosshair
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.exactLocation
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import net.minecraft.client.player.RemotePlayer
 import net.minecraft.core.particles.ParticleTypes
 
@@ -33,7 +33,7 @@ object LivingCaveDefenseBlocks {
     private var movingBlocks = mapOf<DefenseBlock, Long>()
     private var staticBlocks = emptyList<DefenseBlock>()
 
-    class DefenseBlock(val entity: RemotePlayer, val location: LorenzVec, var hidden: Boolean = false)
+    class DefenseBlock(val entity: RemotePlayer, val location: SkyHanniVector, var hidden: Boolean = false)
 
     @HandleEvent
     fun onSecondPassed(event: SecondPassedEvent) {
@@ -132,11 +132,11 @@ object LivingCaveDefenseBlocks {
         }
     }
 
-    private fun getNearestMovingDefenseBlock(location: LorenzVec) =
+    private fun getNearestMovingDefenseBlock(location: SkyHanniVector) =
         movingBlocks.keys.filter { it.location.distance(location) < 15 }
             .minByOrNull { it.location.distance(location) }
 
-    private fun getNearestStaticDefenseBlock(location: LorenzVec) =
+    private fun getNearestStaticDefenseBlock(location: SkyHanniVector) =
         staticBlocks.filter { it.location.distance(location) < 15 }.minByOrNull { it.location.distance(location) }
 
     @HandleEvent

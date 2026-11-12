@@ -14,10 +14,11 @@ import at.hannibal2.skyhanni.utils.DelayedRun
 import at.hannibal2.skyhanni.utils.EntityUtils
 import at.hannibal2.skyhanni.utils.EntityUtils.canBeSeen
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceTo
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.MobUtils.isCompletelyDefault
-import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorBounds.boxAround
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.decoration.ArmorStand
@@ -29,7 +30,7 @@ object InvisibugHighlighter {
     private const val DISTANCE = 5.0
 
     private val invisibugEntities = mutableSetOf<LivingEntity>()
-    private var locationsToRender = listOf<LorenzVec>()
+    private var locationsToRender = listOf<SkyHanniVector>()
 
     @HandleEvent(onlyOnIsland = IslandType.GALATEA, receiveCancelled = true)
     fun onParticle(event: ParticleEvent) {
@@ -39,7 +40,7 @@ object InvisibugHighlighter {
         if (particle != ParticleTypes.CRIT) return
         if (invisibugEntities.any { it.distanceTo(event.location) < DISTANCE }) return
 
-        val aabb = event.location.boundingCenter(DISTANCE)
+        val aabb = event.location.boxAround(DISTANCE)
         val nearestArmorStand = EntityUtils.getEntitiesInBoundingBox<ArmorStand>(aabb).minByOrNull { it.distanceTo(event.location) } ?: return
 
         if (!nearestArmorStand.isCompletelyDefault()) return
@@ -48,14 +49,14 @@ object InvisibugHighlighter {
 
     }
 
-    private val renderOffset = LorenzVec(0.4, -0.2, 0.4)
+    private val renderOffset = SkyHanniVector(0.4, -0.2, 0.4)
 
     @HandleEvent(onlyOnIsland = IslandType.GALATEA)
     fun onTick(event: SkyHanniTickEvent) {
         if (!event.isMod(5)) return
         if (!config.enabled) return
         locationsToRender = invisibugEntities.mapNotNull {
-            if (it.canBeSeen(32)) it.getLorenzVec() else null
+            if (it.canBeSeen(32)) it.positionVector() else null
         }
     }
 

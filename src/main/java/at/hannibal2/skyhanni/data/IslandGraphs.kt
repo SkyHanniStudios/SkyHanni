@@ -31,7 +31,6 @@ import at.hannibal2.skyhanni.utils.GraphUtils.distanceSqToPlayer
 import at.hannibal2.skyhanni.utils.GraphUtils.distanceToPlayer
 import at.hannibal2.skyhanni.utils.GraphUtils.playerPosition
 import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NumberUtil.roundTo
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
@@ -43,6 +42,7 @@ import at.hannibal2.skyhanni.utils.compat.hover
 import at.hannibal2.skyhanni.utils.compat.normalizeAsArray
 import at.hannibal2.skyhanni.utils.coroutines.CoroutineSettings
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import net.minecraft.client.player.LocalPlayer
 import java.awt.Color
 import kotlin.time.Duration.Companion.milliseconds
@@ -116,7 +116,7 @@ object IslandGraphs {
     var disabledNodesReason: String? = null
         private set
 
-    fun disableNodes(reason: String, center: LorenzVec, radius: Double) {
+    fun disableNodes(reason: String, center: SkyHanniVector, radius: Double) {
         disabledNodesReason = reason
         for (node in getGraph().filter { it.position.distance(center) < radius }) {
             node.enabled = false
@@ -135,7 +135,7 @@ object IslandGraphs {
     private var cachedNearbyNodes = listOf<GraphNode>()
     private var lastCacheUpdate = SimpleTimeMark.farPast()
 
-    private var currentTarget: LorenzVec? = null
+    private var currentTarget: SkyHanniVector? = null
 
     var currentTargetNode: GraphNode? = null
         private set
@@ -524,7 +524,7 @@ object IslandGraphs {
      * @param condition The pathfinding stops when the condition is no longer valid.
      */
     fun pathFind(
-        location: LorenzVec,
+        location: SkyHanniVector,
         label: String,
         color: Color = LorenzColor.WHITE.toColor(),
         onFound: () -> Unit = {},
@@ -553,7 +553,7 @@ object IslandGraphs {
         getGraph().nodesAround(node, condition)
 
     private fun initNavigation(
-        location: LorenzVec,
+        location: SkyHanniVector,
         label: String,
         color: Color = LorenzColor.WHITE.toColor(),
         onFound: () -> Unit = {},
@@ -594,9 +594,13 @@ object IslandGraphs {
         pathRenderer?.render(event)
     }
 
-    fun isActive(testTarget: LorenzVec, testLabel: String): Boolean = testTarget == currentTarget && testLabel == navigationLabel
+    fun isActive(testTarget: SkyHanniVector, testLabel: String): Boolean = testTarget == currentTarget && testLabel == navigationLabel
 
-    fun findClosestNode(location: LorenzVec, condition: (GraphNode) -> Boolean, radius: Double = DEFAULT_NODE_SEARCH_RADIUS): GraphNode? {
+    fun findClosestNode(
+        location: SkyHanniVector,
+        condition: (GraphNode) -> Boolean,
+        radius: Double = DEFAULT_NODE_SEARCH_RADIUS,
+    ): GraphNode? {
         val found = getGraph().getNearestNode(location, condition)
         return found.takeIf { it.position.distance(location) < radius }
     }
@@ -626,7 +630,7 @@ object IslandGraphs {
     }
 
     fun reportLocation(
-        location: LorenzVec,
+        location: SkyHanniVector,
         userFacingReason: String,
         technicalInfo: String? = null,
         vararg extraData: Pair<String, Any?>,
@@ -640,7 +644,7 @@ object IslandGraphs {
     }
 
     private fun sendReportLocation(
-        location: LorenzVec,
+        location: SkyHanniVector,
         reasonForReport: String,
         technicalInfo: String? = null,
         vararg extraData: Pair<String, Any?>,

@@ -12,17 +12,17 @@ import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.LocationUtils
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
-import at.hannibal2.skyhanni.utils.LocationUtils.getBoxCenter
 import at.hannibal2.skyhanni.utils.LocationUtils.rayIntersects
 import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.StringUtils
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.coroutines.CoroutineSettings
 import at.hannibal2.skyhanni.utils.navigation.NavigationUtils
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawString
-import at.hannibal2.skyhanni.utils.toLorenzVec
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorBounds.center
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.toSkyHanniVector
 import net.minecraft.world.phys.AABB
 import java.awt.Color
 import kotlin.time.Duration.Companion.seconds
@@ -47,7 +47,7 @@ object NavigateAllApi {
     private val unreachableWarningDelay = 10.seconds
     private val pathfindCoroutine = CoroutineSettings("navigate all pathfind")
 
-    private val defaultTargetLocation: (GraphNode) -> LorenzVec = { it.position }
+    private val defaultTargetLocation: (GraphNode) -> SkyHanniVector = { it.position }
 
     val currentlyNavigating get() = currentTargetName != null
     private val currentTarget get() = route.getOrNull(currentIndex)
@@ -63,7 +63,7 @@ object NavigateAllApi {
     private var warnWhenUnreachable = false
     private var unreachableWarningSent = false
     private var nodeReachedAt: SimpleTimeMark? = null
-    private var targetLocation: (GraphNode) -> LorenzVec = defaultTargetLocation
+    private var targetLocation: (GraphNode) -> SkyHanniVector = defaultTargetLocation
 
     private var onFound: (GraphNode) -> Unit = {}
     private var onFinish: () -> Unit = {}
@@ -104,7 +104,7 @@ object NavigateAllApi {
         optimizeRoute: Boolean = true,
         renderNumber: Boolean = false,
         warnWhenUnreachable: Boolean = false,
-        targetLocation: (GraphNode) -> LorenzVec = defaultTargetLocation,
+        targetLocation: (GraphNode) -> SkyHanniVector = defaultTargetLocation,
         usageHint: String = "§aUse §e/shnavall skip §ato skip a target.",
     ) {
         currentTargetName = targetName
@@ -283,9 +283,9 @@ object NavigateAllApi {
 
         val location = targetLocation(target)
         val box = AABB(location.x, location.y, location.z, location.x + 1, location.y + 1, location.z + 1)
-        if (box.getBoxCenter().distanceToPlayer() > CLICK_RANGE) return
+        if (box.center().distanceToPlayer() > CLICK_RANGE) return
 
-        val direction = MinecraftCompat.localPlayerOrThrow.lookAngle.toLorenzVec()
+        val direction = MinecraftCompat.localPlayerOrThrow.lookAngle.toSkyHanniVector()
         if (!box.rayIntersects(LocationUtils.playerEyeLocation(), direction)) return
 
         event.cancel()

@@ -20,7 +20,6 @@ import at.hannibal2.skyhanni.features.mining.OreBlock
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.BlockUtils.getBlockStateAt
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NumberUtil.formatInt
 import at.hannibal2.skyhanni.utils.RegexUtils.firstMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.groupOrNull
@@ -32,6 +31,7 @@ import at.hannibal2.skyhanni.utils.TimeUtils.format
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.countBy
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.removeIf
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
 import java.util.concurrent.ConcurrentHashMap
@@ -123,16 +123,16 @@ object MiningApi {
     }
 
     // normal mining
-    private val recentClickedBlocks = ConcurrentHashMap<LorenzVec, SimpleTimeMark>()
-    private val surroundingMinedBlocks = ConcurrentLinkedQueue<Pair<MinedBlock, LorenzVec>>()
+    private val recentClickedBlocks = ConcurrentHashMap<SkyHanniVector, SimpleTimeMark>()
+    private val surroundingMinedBlocks = ConcurrentLinkedQueue<Pair<MinedBlock, SkyHanniVector>>()
 
-    private var lastClickedPos: LorenzVec? = null
+    private var lastClickedPos: SkyHanniVector? = null
     private var lastClicked = SimpleTimeMark.farPast()
     private var ignoreInit = false
 
     private var lastInitSound = SimpleTimeMark.farPast()
 
-    private var initBlockPos: LorenzVec? = null
+    private var initBlockPos: SkyHanniVector? = null
     private var waitingForInitSound = true
 
     private var waitingForEffMinerSound = false
@@ -141,8 +141,8 @@ object MiningApi {
     // pickobulus
     private var lastPickobulusUse = SimpleTimeMark.farPast()
     private var lastPickobulusExplosion = SimpleTimeMark.farPast()
-    private var pickobulusExplosionPos: LorenzVec? = null
-    private val pickobulusMinedBlocks = ConcurrentLinkedQueue<Pair<LorenzVec, OreBlock>>()
+    private var pickobulusExplosionPos: SkyHanniVector? = null
+    private val pickobulusMinedBlocks = ConcurrentLinkedQueue<Pair<SkyHanniVector, OreBlock>>()
 
     private val pickobulusActive get() = lastPickobulusUse.passedSince() < 2.seconds
 
@@ -366,11 +366,11 @@ object MiningApi {
 
     private fun PlaySoundEvent.noOrbSound(): Boolean {
         if (pitch != 0.7936508f) return true
-        val pos = location.roundToBlock()
+        val pos = location.floor()
         if (!recentClickedBlocks.containsKey(pos)) return true
         waitingForInitSound = false
         waitingForEffMinerBlock = true
-        initBlockPos = location.roundToBlock()
+        initBlockPos = location.floor()
         lastInitSound = SimpleTimeMark.now()
         return false
     }
@@ -390,7 +390,7 @@ object MiningApi {
         handleBlockBreak(event.location, oldState)
     }
 
-    private fun handleBlockBreak(pos: LorenzVec, oldState: BlockState) {
+    private fun handleBlockBreak(pos: SkyHanniVector, oldState: BlockState) {
         if (tryHandlePickobulusBlock(pos, oldState)) return
 
         if (lastInitSound.passedSince() > 100.milliseconds) return
@@ -407,7 +407,7 @@ object MiningApi {
         handleEffMinerBlock(ore, pos)
     }
 
-    private fun handleEffMinerBlock(ore: OreBlock, pos: LorenzVec) {
+    private fun handleEffMinerBlock(ore: OreBlock, pos: SkyHanniVector) {
         if (!waitingForEffMinerBlock) return
         if (ignoreInit && ore.hasInitSound) return
 
@@ -418,7 +418,7 @@ object MiningApi {
         return
     }
 
-    private fun tryHandlePickobulusBlock(pos: LorenzVec, oldState: BlockState): Boolean {
+    private fun tryHandlePickobulusBlock(pos: SkyHanniVector, oldState: BlockState): Boolean {
         if (!pickobulusActive || !pickobulusWaitingForBlock) return false
         val explosionPos = pickobulusExplosionPos ?: return true
         if (explosionPos.distance(pos) > 15) return true

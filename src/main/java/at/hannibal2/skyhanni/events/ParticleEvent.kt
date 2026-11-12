@@ -2,8 +2,8 @@ package at.hannibal2.skyhanni.events
 
 import at.hannibal2.skyhanni.skyhannimodule.PrimaryFunction
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NumberUtil.roundTo
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import net.minecraft.core.particles.ParticleType
 import net.minecraft.core.registries.BuiltInRegistries
 
@@ -30,10 +30,10 @@ import net.minecraft.core.registries.BuiltInRegistries
 @PrimaryFunction("onParticle")
 class ParticleEvent(
     val type: ParticleType<*>,
-    override val location: LorenzVec,
+    override val location: SkyHanniVector,
     val count: Int,
     val speed: Float,
-    val offset: LorenzVec,
+    val offset: SkyHanniVector,
     val longDistance: Boolean,
     val particleArgs: IntArray? = null,
 ) : CancellableWorldEvent() {

@@ -2,9 +2,9 @@ package at.hannibal2.skyhanni.data.model.graph
 
 import at.hannibal2.skyhanni.utils.GraphUtils
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NumberUtil.roundTo
 import at.hannibal2.skyhanni.utils.json.fromJson
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
@@ -54,7 +54,7 @@ value class Graph(
     fun filterByActive(predicate: (GraphNode) -> Boolean): List<GraphNode> =
         asSequence().filter(predicate).filter { it.enabled }.toList()
     fun getNearestNode(
-        location: LorenzVec = GraphUtils.playerPosition,
+        location: SkyHanniVector = GraphUtils.playerPosition,
         condition: (GraphNode) -> Boolean = { true },
     ): GraphNode = filterByActive(condition).minBy { it.position.distanceSq(location) }
     fun toPositionsList() = map { it.position }
@@ -143,7 +143,7 @@ value class Graph(
         }
 
         private data class NodeData(
-            var position: LorenzVec? = null,
+            var position: SkyHanniVector? = null,
             var name: String? = null,
             var tags: List<String> = emptyList(),
             val neighbors: MutableList<Pair<Int, Double>> = mutableListOf(),
@@ -159,7 +159,7 @@ value class Graph(
                 }
                 when (reader.nextName()) {
                     "Position" -> data.position = reader.nextString().split(":").let {
-                        LorenzVec(it[0].toDouble(), it[1].toDouble(), it[2].toDouble())
+                        SkyHanniVector(it[0].toDouble(), it[1].toDouble(), it[2].toDouble())
                     }
                     "ExtraWeight" -> data.extraWeight = reader.nextInt()
                     // JSON key intentionally kept as "Neighbours" for backward compatibility
