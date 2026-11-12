@@ -36,8 +36,16 @@ open class TextInput {
 
     fun finalText() = textBox.replace("&&", "§")
 
-    fun makeActive() = if (!isActive) activate(this) else Unit
-    fun disable() = if (isActive) Companion.disable() else Unit
+    fun makeActive() = if (!isActive) {
+        activate(this)
+        IMinecraft.INSTANCE.startTextInput(this, true)
+    } else Unit
+
+    fun disable() = if (isActive) {
+        IMinecraft.INSTANCE.startTextInput(this, false)
+        Companion.disable()
+    } else Unit
+
     fun handle() = handleTextInput(null)
 
     fun clear() {
@@ -69,11 +77,9 @@ open class TextInput {
 
         fun activate(instance: TextInput) {
             activeInstance = instance
-            IMinecraft.INSTANCE.startTextInput(this, true)
         }
 
         fun disable() {
-            IMinecraft.INSTANCE.startTextInput(this, false)
             activeInstance = null
         }
 
