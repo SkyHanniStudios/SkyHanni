@@ -44,14 +44,7 @@ fun Renderable.Companion.searchableList(
             val query = searchInput.textBox
             val filtered = if (query.isEmpty()) items.map { it.second }
             else items.filter { filterPredicate(query, it.first) }.map { it.second }
-            Renderable.scrollList(
-                filtered,
-                height,
-                scrollValue = scrollValue,
-                showScrollbar = true,
-                scrollbarTrackColor = SkyHanniScreenTheme.COLOR_SCROLLBAR_TRACK,
-                scrollbarThumbColor = SkyHanniScreenTheme.COLOR_SCROLLBAR_THUMB,
-            ).render(mouseOffsetX, mouseOffsetY)
+            SkyHanniScreenTheme.scrollList(filtered, height, scrollValue).render(mouseOffsetX, mouseOffsetY)
         }
     }
     return Renderable.vertical(listOf(searchField, filteredList), spacing = 4)

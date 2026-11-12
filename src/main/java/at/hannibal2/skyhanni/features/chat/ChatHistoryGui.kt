@@ -46,16 +46,7 @@ object ChatHistoryGui {
 
         val rows = history.map { msg -> buildRow(msg, wrapWidth, xOffset) }
 
-        return Renderable.scrollList(
-            rows,
-            height = LIST_HEIGHT,
-            velocity = 12.0,
-            scrollValue = screen.scrollValue,
-            bypassChecks = true,
-            showScrollbar = true,
-            scrollbarTrackColor = SkyHanniScreenTheme.COLOR_SCROLLBAR_TRACK,
-            scrollbarThumbColor = SkyHanniScreenTheme.COLOR_SCROLLBAR_THUMB,
-        )
+        return SkyHanniScreenTheme.scrollList(rows, LIST_HEIGHT, screen.scrollValue, velocity = 12.0, bypassChecks = true)
     }
 
     /**
@@ -75,29 +66,16 @@ object ChatHistoryGui {
 
         val rowContent = buildRowContent(msg, messageLines, modifiedLines, xOffset, wrapWidth)
 
-        val withHover = Renderable.hoverable(
-            Renderable.drawInsideRoundedRect(rowContent, SkyHanniScreenTheme.COLOR_ROW_HOVER, padding = 2, radius = 3),
-            rowContent,
-            bypassChecks = true,
-        )
-
         val tooltip = msg.hoverInfo.takeIf { it.isNotEmpty() }?.map(StringRenderable::from)
         val extraTooltip = msg.hoverExtraInfo.takeIf { it.isNotEmpty() }?.map(StringRenderable::from)
 
-        val withTooltip = if (tooltip != null || extraTooltip != null) {
-            object : Renderable by withHover {
-                override fun render(mouseOffsetX: Int, mouseOffsetY: Int) {
-                    withHover.render(mouseOffsetX, mouseOffsetY)
-                    if (isHovered(mouseOffsetX, mouseOffsetY)) {
-                        val tip = if (KeyboardManager.isShiftKeyDown()) extraTooltip ?: tooltip else tooltip
-                        tip?.let { RenderableTooltips.setTooltipForRender(it) }
-                    }
-                }
-            }
-        } else withHover
+        val row = SkyHanniScreenTheme.hoverRow(rowContent) {
+            val tip = if (KeyboardManager.isShiftKeyDown()) extraTooltip ?: tooltip else tooltip
+            tip?.let { RenderableTooltips.setTooltipForRender(it) }
+        }
 
         return Renderable.clickable(
-            withTooltip,
+            row,
             onLeftClick = {
                 copyCoroutine.launch {
                     val (target, copyType) = if (KeyboardManager.isShiftKeyDown()) {

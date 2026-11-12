@@ -14,96 +14,59 @@ abstract class SkyHanniBaseScreen(title: Component = Component.empty()) : Screen
 
     val mc: Minecraft = Minecraft.getInstance()
 
+    private inline fun guarded(action: String, block: () -> Unit) {
+        try {
+            block()
+        } catch (e: Exception) {
+            ErrorManager.logErrorWithData(e, "Error while $action", "screen" to this)
+        }
+    }
+
     override fun extractRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         super.extractRenderState(context, mouseX, mouseY, delta)
-        postDrawScreen(context, mouseX, mouseY, delta)
-    }
-
-    override fun extractBackground(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, deltaTicks: Float) {
-        try {
-            this.extractMenuBackground(context)
-        } catch (e: Exception) {
-            ErrorManager.logErrorWithData(e, "Error while rendering background", "screen" to this)
-        }
-    }
-
-    private fun postDrawScreen(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, partialTicks: Float) {
         DrawContextUtils.setContext(context)
-        try {
-            onDrawScreen(mouseX, mouseY, partialTicks)
-        } catch (e: Exception) {
-            ErrorManager.logErrorWithData(e, "Error while drawing screen", "screen" to this)
-        }
+        guarded("drawing screen") { onDrawScreen(mouseX, mouseY, delta) }
         DrawContextUtils.clearContext()
     }
+
+    override fun extractBackground(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, deltaTicks: Float) =
+        guarded("rendering background") { extractMenuBackground(context) }
 
     open fun onDrawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {}
 
     override fun mouseClicked(click: MouseButtonEvent, doubled: Boolean): Boolean {
-        postMouseClicked(click.x.toInt(), click.y.toInt(), click.button())
+        guarded("clicking mouse") { onMouseClicked(click.x.toInt(), click.y.toInt(), click.button()) }
         postHandleMouseInput()
         return super.mouseClicked(click, doubled)
-    }
-
-    private fun postMouseClicked(originalMouseX: Int, originalMouseY: Int, mouseButton: Int) {
-        try {
-            onMouseClicked(originalMouseX, originalMouseY, mouseButton)
-        } catch (e: Exception) {
-            ErrorManager.logErrorWithData(e, "Error while clicking mouse", "screen" to this)
-        }
     }
 
     open fun onMouseClicked(originalMouseX: Int, originalMouseY: Int, mouseButton: Int) {}
 
     override fun keyPressed(input: KeyEvent): Boolean {
-        postKeyTyped(null, input.key)
+        guarded("typing key") { onKeyTyped(null, input.key) }
         return super.keyPressed(input)
     }
 
     override fun charTyped(input: CharacterEvent): Boolean {
-        postKeyTyped(input.codepoint.toChar(), null)
+        guarded("typing key") { onKeyTyped(input.codepoint.toChar(), null) }
         return super.charTyped(input)
-    }
-
-    private fun postKeyTyped(typedChar: Char?, keyCode: Int?) {
-        try {
-            onKeyTyped(typedChar, keyCode)
-        } catch (e: Exception) {
-            ErrorManager.logErrorWithData(e, "Error while typing key", "screen" to this)
-        }
     }
 
     open fun onKeyTyped(typedChar: Char?, keyCode: Int?) {}
 
     override fun mouseReleased(click: MouseButtonEvent): Boolean {
-        postMouseReleased(click.x.toInt(), click.y.toInt(), click.button())
+        guarded("releasing mouse") { onMouseReleased(click.x.toInt(), click.y.toInt(), click.button()) }
         postHandleMouseInput()
         return super.mouseReleased(click)
-    }
-
-    private fun postMouseReleased(originalMouseX: Int, originalMouseY: Int, state: Int) {
-        try {
-            onMouseReleased(originalMouseX, originalMouseY, state)
-        } catch (e: Exception) {
-            ErrorManager.logErrorWithData(e, "Error while releasing mouse", "screen" to this)
-        }
     }
 
     open fun onMouseReleased(originalMouseX: Int, originalMouseY: Int, state: Int) {}
 
     override fun mouseDragged(click: MouseButtonEvent, mouseX: Double, mouseY: Double): Boolean {
         // TODO idk if mouseX is correct or if it should be click.x
-        postMouseClickMove(mouseX.toInt(), mouseY.toInt(), click.button(), 0L)
+        guarded("clicking and moving mouse") { onMouseClickMove(mouseX.toInt(), mouseY.toInt(), click.button(), 0L) }
         postHandleMouseInput()
         return super.mouseDragged(click, mouseX, mouseY)
-    }
-
-    private fun postMouseClickMove(originalMouseX: Int, originalMouseY: Int, clickedMouseButton: Int, timeSinceLastClick: Long) {
-        try {
-            onMouseClickMove(originalMouseX, originalMouseY, clickedMouseButton, timeSinceLastClick)
-        } catch (e: Exception) {
-            ErrorManager.logErrorWithData(e, "Error while clicking and moving mouse", "screen" to this)
-        }
     }
 
     open fun onMouseClickMove(originalMouseX: Int, originalMouseY: Int, clickedMouseButton: Int, timeSinceLastClick: Long) {}
@@ -118,42 +81,20 @@ abstract class SkyHanniBaseScreen(title: Component = Component.empty()) : Screen
         return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount)
     }
 
-    private fun postHandleMouseInput() {
-        try {
-            onHandleMouseInput()
-        } catch (e: Exception) {
-            ErrorManager.logErrorWithData(e, "Error while handling mouse input", "screen" to this)
-        }
-    }
+    private fun postHandleMouseInput() = guarded("handling mouse input") { onHandleMouseInput() }
 
     open fun onHandleMouseInput() {}
 
     override fun onClose() {
         super.onClose()
-        postGuiClosed()
-    }
-
-    private fun postGuiClosed() {
-        try {
-            guiClosed()
-        } catch (e: Exception) {
-            ErrorManager.logErrorWithData(e, "Error while closing GUI", "screen" to this)
-        }
+        guarded("closing GUI") { guiClosed() }
     }
 
     open fun guiClosed() {}
 
     override fun init() {
         super.init()
-        postInitGui()
-    }
-
-    private fun postInitGui() {
-        try {
-            onInitGui()
-        } catch (e: Exception) {
-            ErrorManager.logErrorWithData(e, "Error while initializing GUI", "screen" to this)
-        }
+        guarded("initializing GUI") { onInitGui() }
     }
 
     open fun onInitGui() {}

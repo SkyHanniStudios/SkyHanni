@@ -1,5 +1,6 @@
 package at.hannibal2.skyhanni.utils.compat
 
+import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.guide.TabDef
 import at.hannibal2.skyhanni.utils.guide.TabDef.Companion.TAB_LONG_SIDE
 import at.hannibal2.skyhanni.utils.guide.TabDef.Companion.TAB_SHORT_SIDE
@@ -7,7 +8,6 @@ import at.hannibal2.skyhanni.utils.guide.TabDef.Companion.TAB_SPACING
 import at.hannibal2.skyhanni.utils.guide.TabPage
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.primitives.empty
-import net.minecraft.world.item.ItemStack
 
 /**
  * Abstract base for SkyHanni screens with horizontal and/or vertical tab navigation.
@@ -29,10 +29,10 @@ abstract class SkyHanniTabScreen<T : Enum<T>>(defaultPage: T) : SkyHanniChromeSc
             rebuildDisplay()
         }
 
-    fun hTab(item: ItemStack, tip: Renderable, onClick: (TabDef) -> Unit) =
+    fun hTab(item: SafeItemStack, tip: Renderable, onClick: (TabDef) -> Unit) =
         TabDef(item, tip, isVertical = false, onClick = onClick)
 
-    fun vTab(item: ItemStack, tip: Renderable, onClick: (TabDef) -> Unit) =
+    fun vTab(item: SafeItemStack, tip: Renderable, onClick: (TabDef) -> Unit) =
         TabDef(item, tip, isVertical = true, onClick = onClick)
 
     fun refreshPage() {
@@ -49,37 +49,28 @@ abstract class SkyHanniTabScreen<T : Enum<T>>(defaultPage: T) : SkyHanniChromeSc
             override val verticalAlign = pageRenderable.verticalAlign
 
             override fun render(mouseOffsetX: Int, mouseOffsetY: Int) {
-                renderHorizontalTabs(mouseOffsetX, mouseOffsetY)
-                renderVerticalTabs(mouseOffsetX, mouseOffsetY)
+                renderTabs(horizontalTabs, vertical = false, mouseOffsetX, mouseOffsetY)
+                renderTabs(verticalTabs, vertical = true, mouseOffsetX, mouseOffsetY)
                 pageRenderable.render(mouseOffsetX, mouseOffsetY)
             }
         }
     }
 
-    private fun renderHorizontalTabs(mouseOffsetX: Int, mouseOffsetY: Int) {
+    private fun renderTabs(tabs: List<TabDef>, vertical: Boolean, mouseOffsetX: Int, mouseOffsetY: Int) {
+        val along = TAB_SPACING * 3f
+        val across = -TAB_LONG_SIDE.toFloat()
+        val shift = (TAB_SHORT_SIDE + TAB_SPACING).toFloat()
+        val shiftX = if (vertical) 0f else shift
+        val shiftY = if (vertical) shift else 0f
+        var xOffset = if (vertical) across else along
+        var yOffset = if (vertical) along else across
         DrawContextUtils.pushPop {
-            var xOffset = TAB_SPACING * 3f
-            val yOffset = -TAB_LONG_SIDE.toFloat()
             DrawContextUtils.translate(xOffset, yOffset)
-            for (tab in horizontalTabs) {
+            for (tab in tabs) {
                 tab.render(mouseOffsetX + xOffset.toInt(), mouseOffsetY + yOffset.toInt())
-                val shift = (TAB_SHORT_SIDE + TAB_SPACING).toFloat()
-                xOffset += shift
-                DrawContextUtils.translate(shift, 0f)
-            }
-        }
-    }
-
-    private fun renderVerticalTabs(mouseOffsetX: Int, mouseOffsetY: Int) {
-        DrawContextUtils.pushPop {
-            val xOffset = -TAB_LONG_SIDE.toFloat()
-            var yOffset = TAB_SPACING * 3f
-            DrawContextUtils.translate(xOffset, yOffset)
-            for (tab in verticalTabs) {
-                tab.render(mouseOffsetX + xOffset.toInt(), mouseOffsetY + yOffset.toInt())
-                val shift = (TAB_SHORT_SIDE + TAB_SPACING).toFloat()
-                yOffset += shift
-                DrawContextUtils.translate(0f, shift)
+                xOffset += shiftX
+                yOffset += shiftY
+                DrawContextUtils.translate(shiftX, shiftY)
             }
         }
     }

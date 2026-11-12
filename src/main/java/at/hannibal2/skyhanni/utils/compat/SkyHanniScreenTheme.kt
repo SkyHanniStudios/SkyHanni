@@ -1,6 +1,7 @@
 package at.hannibal2.skyhanni.utils.compat
 
 import at.hannibal2.skyhanni.utils.renderables.Renderable
+import at.hannibal2.skyhanni.utils.renderables.ScrollValue
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
 import io.github.notenoughupdates.moulconfig.ChromaColour
 import java.awt.Color
@@ -58,4 +59,36 @@ object SkyHanniScreenTheme {
             bypassChecks = true,
         )
     }
+
+    fun hoverRow(
+        content: Renderable,
+        padding: Int = 2,
+        radius: Int = 3,
+        idleBackground: Boolean = false,
+        onHover: () -> Unit = {},
+    ): Renderable = Renderable.hoverable(
+        Renderable.drawInsideRoundedRect(content, COLOR_ROW_HOVER, padding = padding, radius = radius),
+        if (idleBackground) Renderable.drawInsideRoundedRect(content, COLOR_ROW_NORMAL, padding = padding, radius = radius) else content,
+        bypassChecks = true,
+        onHover = onHover,
+    )
+
+    fun scrollList(
+        list: List<Renderable>,
+        height: Int,
+        scrollValue: ScrollValue,
+        velocity: Double = 2.0,
+        button: Int? = null,
+        bypassChecks: Boolean = false,
+    ): Renderable = Renderable.scrollList(
+        list,
+        height,
+        scrollValue = scrollValue,
+        velocity = velocity,
+        button = button,
+        bypassChecks = bypassChecks,
+        showScrollbar = true,
+        scrollbarTrackColor = COLOR_SCROLLBAR_TRACK,
+        scrollbarThumbColor = COLOR_SCROLLBAR_THUMB,
+    )
 }
