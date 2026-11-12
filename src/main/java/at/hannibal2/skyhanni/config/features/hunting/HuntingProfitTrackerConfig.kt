@@ -2,23 +2,25 @@ package at.hannibal2.skyhanni.config.features.hunting
 
 import at.hannibal2.skyhanni.config.FeatureToggle
 import at.hannibal2.skyhanni.config.core.config.Position
-import at.hannibal2.skyhanni.config.features.misc.tracker.individual.IndividualItemTrackerConfig
+import at.hannibal2.skyhanni.config.features.misc.tracker.TopLevelTrackerConfig
+import at.hannibal2.skyhanni.config.features.misc.tracker.generic.ItemTrackerSettings
+import at.hannibal2.skyhanni.config.features.misc.tracker.individual.PerTrackerConfig
 import com.google.gson.annotations.Expose
 import io.github.notenoughupdates.moulconfig.annotations.Accordion
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean
 import io.github.notenoughupdates.moulconfig.annotations.ConfigLink
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 
-class HuntingProfitTrackerConfig {
+class HuntingProfitTrackerConfig : TopLevelTrackerConfig<ItemTrackerSettings> {
     @Expose
     @ConfigOption(name = "Enabled", desc = "Count all items you pick up while hunting.")
     @ConfigEditorBoolean
     @FeatureToggle
-    var enabled: Boolean = false
+    override var enabled: Boolean = false
 
     @Expose
     @ConfigLink(owner = HuntingProfitTrackerConfig::class, field = "enabled")
-    val position: Position = Position(20, 20)
+    override val position: Position = Position(20, 20)
 
     @Expose
     @ConfigOption(
@@ -31,16 +33,13 @@ class HuntingProfitTrackerConfig {
     @Expose
     @ConfigOption(
         name = "Always Show",
-        desc = "Always show the tracker, regardless of what you are holding.\n§eIf enabled, ignore the Show When Pickup setting."
+        desc = "Always show the tracker, regardless of what you are holding.\n§eIf enabled, ignore the Show When Pickup setting.",
     )
     @ConfigEditorBoolean
     var alwaysShow: Boolean = false
 
     @Expose
-    @ConfigOption(
-        name = "Tracker Settings",
-        desc = ""
-    )
+    @ConfigOption(name = "Tracker Settings", desc = "")
     @Accordion
-    val perTrackerConfig: IndividualItemTrackerConfig = IndividualItemTrackerConfig()
+    override val perTrackerConfig: PerTrackerConfig<ItemTrackerSettings> = PerTrackerConfig()
 }

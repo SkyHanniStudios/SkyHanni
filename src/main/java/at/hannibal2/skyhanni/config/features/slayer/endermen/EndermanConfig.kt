@@ -7,12 +7,29 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorSlider
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 import io.github.notenoughupdates.moulconfig.annotations.SearchTag
+import io.github.notenoughupdates.moulconfig.observer.Property
 
 class EndermanConfig {
     @Expose
     @ConfigOption(name = "Yang Glyph (Beacon)", desc = "")
     @Accordion
     val beacon: EndermanBeaconConfig = EndermanBeaconConfig()
+
+    @Expose
+    @ConfigOption(
+        name = "Voidgloom in Dragon's Nest",
+        desc = "Show all Enderman Slayer Features while in the Dragon's Nest.",
+    )
+    @ConfigEditorBoolean
+    val showInNest: Property<Boolean> = Property.of(false)
+
+    @Expose
+    @ConfigOption(
+        name = "Voidgloom Everywhere",
+        desc = "Show all Enderman Slayer Features while outside of Void Sepulture and Zealot Bruiser Hideout.",
+    )
+    @ConfigEditorBoolean
+    val showInNoArea: Property<Boolean> = Property.of(true)
 
     @Expose
     @ConfigOption(name = "Highlight Nukekubi Skulls", desc = "Highlight the Enderman Slayer Nukekubi Skulls (Eyes).")

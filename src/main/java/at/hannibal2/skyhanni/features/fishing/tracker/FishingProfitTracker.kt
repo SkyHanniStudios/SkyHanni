@@ -4,13 +4,13 @@ import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.commands.CommandCategory
 import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
+import at.hannibal2.skyhanni.config.storage.ProfileSpecificStorage
 import at.hannibal2.skyhanni.data.ItemAddManager
 import at.hannibal2.skyhanni.data.jsonobjects.repo.FishingProfitItemsJson
 import at.hannibal2.skyhanni.data.model.SkyblockStat
 import at.hannibal2.skyhanni.events.ItemAddEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
-import at.hannibal2.skyhanni.events.fishing.FishingBobberCastEvent
 import at.hannibal2.skyhanni.events.fishing.FishingCatchEvent
 import at.hannibal2.skyhanni.events.fishing.SeaCreatureFishEvent
 import at.hannibal2.skyhanni.features.fishing.FishingApi
@@ -27,7 +27,7 @@ import at.hannibal2.skyhanni.utils.NumberUtil.formatInt
 import at.hannibal2.skyhanni.utils.NumberUtil.formatPercentage
 import at.hannibal2.skyhanni.utils.NumberUtil.shortFormat
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
-import at.hannibal2.skyhanni.utils.RenderDisplayHelper
+import at.hannibal2.skyhanni.utils.RenderDisplayConfig
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.StringUtils
@@ -37,10 +37,10 @@ import at.hannibal2.skyhanni.utils.renderables.RenderableUtils.addButton
 import at.hannibal2.skyhanni.utils.renderables.Searchable
 import at.hannibal2.skyhanni.utils.renderables.toSearchable
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
-import at.hannibal2.skyhanni.utils.tracker.ItemTrackerData
 import at.hannibal2.skyhanni.utils.tracker.SessionUptime
 import at.hannibal2.skyhanni.utils.tracker.SkyHanniItemTracker
 import at.hannibal2.skyhanni.utils.tracker.SkyHanniTracker
+import at.hannibal2.skyhanni.utils.tracker.data.ItemTrackerData
 import com.google.gson.annotations.Expose
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -48,9 +48,14 @@ import kotlin.time.Duration.Companion.seconds
 typealias CategoryName = String
 
 @SkyHanniModule
-object FishingProfitTracker {
-
-    val config get() = SkyHanniMod.feature.fishing.fishingProfitTracker
+object FishingProfitTracker : SkyHanniItemTracker<FishingProfitTracker.Data>("Fishing Profit Tracker") {
+    override val config get() = SkyHanniMod.feature.fishing.fishingProfitTracker
+    override val storageAccessor: (ProfileSpecificStorage) -> Data = { it.fishing.fishingProfitTracker }
+    override val renderConfig = RenderDisplayConfig(
+        outsideInventory = true,
+        inOwnInventory = true,
+        condition = { isEnabled() && config.enabled && shouldShow },
+    )
 
     /**
      * REGEX-TEST:  GOOD CATCH! You caught 36,064 Coins!
@@ -62,16 +67,10 @@ object FishingProfitTracker {
     )
 
     private var lastCatchTime = SimpleTimeMark.farPast()
-    private val tracker = SkyHanniItemTracker(
-        "Fishing Profit Tracker",
-        ::Data,
-        { it.fishing.fishingProfitTracker },
-        trackerConfig = { config.perTrackerConfig }
-    ) { drawDisplay(it) }
 
     data class Data(
         @Expose var totalCatchAmount: Long = 0L,
-    ) : ItemTrackerData<SessionUptime.Normal>(SessionUptime.Normal::class) {
+    ) : ItemTrackerData<SessionUptime.Normal>() {
         override fun getDescription(timesGained: Long): List<String> {
             val percentage = timesGained.toDouble() / totalCatchAmount
             val catchRate = percentage.coerceAtMost(1.0).formatPercentage()
@@ -91,7 +90,7 @@ object FishingProfitTracker {
             )
         }
 
-        override fun getCustomPricePer(internalName: NeuInternalName, tracker: SkyHanniTracker<*, *>): Double {
+        override fun getCustomPricePer(internalName: NeuInternalName, tracker: SkyHanniTracker<*>): Double {
             return if (internalName.getItemCategoryOrNull() == ItemCategory.TROPHY_FISH) {
                 tracker.getPricePer(MAGMA_FISH) * FishingApi.getFilletPerTrophy(internalName)
             } else super.getCustomPricePer(internalName, tracker)
@@ -102,7 +101,6 @@ object FishingProfitTracker {
 
     private const val NAME_ALL: CategoryName = "All"
     private var currentCategory: CategoryName = NAME_ALL
-
     private var itemCategories = mapOf<String, List<NeuInternalName>>()
 
     @HandleEvent
@@ -123,11 +121,11 @@ object FishingProfitTracker {
         return map
     }
 
-    private fun drawDisplay(data: Data): List<Searchable> = buildList {
+    override fun drawDisplayF(data: Data): List<Searchable> = buildList {
         addSearchString("§e§lFishing Profit Tracker")
         val filter: (NeuInternalName) -> Boolean = addCategories(data)
 
-        val profit = tracker.drawItems(data, filter, this)
+        val profit = drawItems(data, filter, this)
 
         val fishedCount = data.totalCatchAmount
         add(
@@ -138,9 +136,8 @@ object FishingProfitTracker {
         )
 
         val duration = data.getTotalUptime()
-        addAll(tracker.addTotalProfit(profit, data.totalCatchAmount, "catch", duration, "Catches"))
-
-        tracker.addPriceFromButton(this)
+        addAll(addTotalProfit(profit, data.totalCatchAmount, "catch", duration, "Catches"))
+        addPriceFromButton(this)
     }
 
     private fun MutableList<Searchable>.addCategories(data: Data): (NeuInternalName) -> Boolean {
@@ -151,14 +148,14 @@ object FishingProfitTracker {
             currentCategory = NAME_ALL
         }
 
-        if (tracker.isInventoryOpen()) {
+        if (isInventoryOpen()) {
             addButton(
                 label = "Category",
                 current = currentCategory,
                 getName = { it + " §7(" + amounts[it] + ")" },
                 onChange = {
                     currentCategory = it
-                    tracker.update()
+                    update()
                 },
                 universe = list,
             )
@@ -216,7 +213,7 @@ object FishingProfitTracker {
     }
 
     private fun addCatch() {
-        tracker.modify {
+        modify {
             it.totalCatchAmount++
         }
         lastCatchTime = SimpleTimeMark.now()
@@ -227,17 +224,6 @@ object FishingProfitTracker {
 
     private val shouldShow: Boolean
         get() = isRecentPickup || FishingApi.isFishing(checkRodInHand = false)
-
-    init {
-        RenderDisplayHelper(
-            outsideInventory = true,
-            inOwnInventory = true,
-            condition = { isEnabled() && config.enabled && shouldShow },
-            onRender = {
-                tracker.renderDisplay(config.position)
-            },
-        )
-    }
 
     @HandleEvent
     fun onWorldChange() {
@@ -251,15 +237,13 @@ object FishingProfitTracker {
             return
         }
 
-        tracker.addItem(internalName, amount, command)
+        addItem(internalName, amount, command)
     }
 
     private fun isAllowedItem(internalName: NeuInternalName) = itemCategories.any { internalName in it.value }
 
     @HandleEvent
-    fun onBobberThrow(event: FishingBobberCastEvent) {
-        tracker.firstUpdate()
-    }
+    private fun onBobberCast() = firstUpdate()
 
     @HandleEvent
     fun onCatch(event: FishingCatchEvent) {
@@ -278,7 +262,7 @@ object FishingProfitTracker {
         event.registerBrigadier("shresetfishingtracker") {
             description = "Resets the Fishing Profit Tracker"
             category = CommandCategory.USERS_RESET
-            simpleCallback { tracker.resetCommand() }
+            simpleCallback { resetCommand() }
         }
     }
 }

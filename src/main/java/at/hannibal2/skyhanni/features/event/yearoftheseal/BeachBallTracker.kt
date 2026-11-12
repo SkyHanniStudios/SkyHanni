@@ -4,6 +4,7 @@ import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.commands.CommandCategory
 import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
+import at.hannibal2.skyhanni.config.storage.ProfileSpecificStorage
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -16,7 +17,7 @@ import at.hannibal2.skyhanni.utils.NumberUtil.formatInt
 import at.hannibal2.skyhanni.utils.NumberUtil.roundTo
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
-import at.hannibal2.skyhanni.utils.RenderDisplayHelper
+import at.hannibal2.skyhanni.utils.RenderDisplayConfig
 import at.hannibal2.skyhanni.utils.RenderUtils
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.addOrPut
@@ -31,16 +32,22 @@ import at.hannibal2.skyhanni.utils.renderables.toSearchable
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import at.hannibal2.skyhanni.utils.tracker.SessionUptime
 import at.hannibal2.skyhanni.utils.tracker.SkyHanniTracker
-import at.hannibal2.skyhanni.utils.tracker.TrackerData
+import at.hannibal2.skyhanni.utils.tracker.data.TrackerData
 import com.google.gson.annotations.Expose
 import java.util.regex.Pattern
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 @SkyHanniModule
-object BeachBallTracker {
-
-    private val config get() = SkyHanniMod.feature.event.yearOfTheSeal.beachBallTracker
+object BeachBallTracker : SkyHanniTracker<BeachBallTracker.Data>("Beach Ball Tracker") {
+    override val config get() = SkyHanniMod.feature.event.yearOfTheSeal.beachBallTracker
+    override val storageAccessor: (ProfileSpecificStorage) -> Data = { it.beachBallTracker }
+    override val renderConfig = RenderDisplayConfig(
+        outsideInventory = true,
+        inOwnInventory = true,
+        onlyOnIsland = IslandType.HUB,
+        condition = { shouldShowDisplay() },
+    )
 
     private val FISHY_TREAT = "FISHY_TREAT".toInternalName()
     private val ENCHANTED_RAW_FISH = "ENCHANTED_RAW_FISH".toInternalName()
@@ -75,21 +82,12 @@ object BeachBallTracker {
         ".*BOUNCE BONANZA(?: EX)?! Keep the (?:Giant )?Bouncy Beach Ball in the air .*",
     )
 
-    private val tracker = SkyHanniTracker(
-        "Beach Ball Tracker",
-        ::Data,
-        { it.beachBallTracker },
-        trackerConfig = { config.perTrackerConfig },
-    ) {
-        drawDisplay(it)
-    }
-
     private var lastBallActivity = SimpleTimeMark.farPast()
 
     data class Data(
         @Expose var ballsUsed: MutableMap<BallType, Int> = mutableMapOf(),
         @Expose var fishyTreats: Long = 0L,
-    ) : TrackerData<SessionUptime.Normal>(SessionUptime.Normal::class)
+    ) : TrackerData<SessionUptime.Normal>()
 
     enum class BallType(
         val label: String,
@@ -117,7 +115,7 @@ object BeachBallTracker {
             type.resultPattern().matchMatcher(message) {
                 val treats = group("treats").formatInt()
                 markActivity()
-                tracker.modify {
+                modify {
                     it.ballsUsed.addOrPut(type, 1)
                     it.fishyTreats += treats
                 }
@@ -128,10 +126,10 @@ object BeachBallTracker {
 
     private fun markActivity() {
         lastBallActivity = SimpleTimeMark.now()
-        tracker.firstUpdate()
+        firstUpdate()
     }
 
-    private fun drawDisplay(data: Data): List<Searchable> = buildList {
+    override fun drawDisplayF(data: Data): List<Searchable> = buildList {
         addSearchString("§6§lBeach Ball Tracker")
 
         for (type in BallType.entries) {
@@ -167,17 +165,9 @@ object BeachBallTracker {
         )
     }
 
-    init {
-        RenderDisplayHelper(
-            outsideInventory = true,
-            inOwnInventory = true,
-            onlyOnIsland = IslandType.HUB,
-            condition = { shouldShowDisplay() },
-            onRender = {
-                if (isHoldingBeachBall()) tracker.firstUpdate()
-                tracker.renderDisplay(config.position)
-            },
-        )
+    override fun shouldRender(): Boolean {
+        if (isHoldingBeachBall()) firstUpdate()
+        return true
     }
 
     private fun shouldShowDisplay(): Boolean {
@@ -196,7 +186,7 @@ object BeachBallTracker {
         event.registerBrigadier("shresetbeachballtracker") {
             description = "Resets the Beach Ball Tracker"
             category = CommandCategory.USERS_RESET
-            simpleCallback { tracker.resetCommand() }
+            simpleCallback { resetCommand() }
         }
     }
 }

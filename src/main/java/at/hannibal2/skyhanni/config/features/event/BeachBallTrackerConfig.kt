@@ -2,7 +2,9 @@ package at.hannibal2.skyhanni.config.features.event
 
 import at.hannibal2.skyhanni.config.FeatureToggle
 import at.hannibal2.skyhanni.config.core.config.Position
-import at.hannibal2.skyhanni.config.features.misc.tracker.individual.IndividualTrackerConfig
+import at.hannibal2.skyhanni.config.features.misc.tracker.TopLevelTrackerConfig
+import at.hannibal2.skyhanni.config.features.misc.tracker.generic.TrackerSettings
+import at.hannibal2.skyhanni.config.features.misc.tracker.individual.PerTrackerConfig
 import com.google.gson.annotations.Expose
 import io.github.notenoughupdates.moulconfig.annotations.Accordion
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean
@@ -11,14 +13,14 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigLink
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 import io.github.notenoughupdates.moulconfig.annotations.SearchTag
 
-class BeachBallTrackerConfig {
+class BeachBallTrackerConfig : TopLevelTrackerConfig<TrackerSettings> {
 
     @Expose
     @ConfigOption(name = "Enabled", desc = "Track the §bBeach Balls §7you use and §dFishy Treats §7you earn.")
     @ConfigEditorBoolean
     @FeatureToggle
     @SearchTag("beach")
-    var enabled: Boolean = true
+    override var enabled: Boolean = true
 
     @Expose
     @ConfigOption(
@@ -32,9 +34,9 @@ class BeachBallTrackerConfig {
     @Expose
     @ConfigOption(name = "Tracker Settings", desc = "")
     @Accordion
-    val perTrackerConfig: IndividualTrackerConfig = IndividualTrackerConfig()
+    override val perTrackerConfig: PerTrackerConfig<TrackerSettings> = PerTrackerConfig()
 
     @Expose
     @ConfigLink(owner = BeachBallTrackerConfig::class, field = "enabled")
-    val position: Position = Position(170, 170)
+    override val position: Position = Position(170, 170)
 }
