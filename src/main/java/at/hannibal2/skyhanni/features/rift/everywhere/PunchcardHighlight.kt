@@ -17,7 +17,6 @@ import at.hannibal2.skyhanni.events.entity.EntityClickEvent
 import at.hannibal2.skyhanni.features.rift.RiftApi
 import at.hannibal2.skyhanni.mixins.hooks.RenderLivingEntityHelper
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
-import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.AutoUpdatingItemStack
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.ColorUtils.toColor
@@ -192,23 +191,15 @@ object PunchcardHighlight {
         val queuedName = playerQueue[0]
         punchedPattern.matchMatcher(message) {
             val name = group("name")
-            if (queuedName == name) {
-                addPunch(name)
-            } else ErrorManager.logErrorStateWithData(
-                "Error finding punched player", "queuedName and capturedName were different",
-                "queuedName" to queuedName,
-                "capturedName" to name,
-                noStackTrace = true,
-                betaOnly = true,
-            )
+            addPunch(name, queuedName)
             return
         }
         if (limitPattern.matches(message) || repeatPattern.matches(message)) addPunch(queuedName)
     }
 
-    private fun addPunch(playerName: String) {
+    private fun addPunch(playerName: String, queuedName: String = playerName) {
         playerList.add(playerName)
-        playerQueue.remove(playerName)
+        playerQueue.remove(queuedName)
         val player = MobData.players.firstOrNull { it.name == playerName } ?: return
         if (!config.reverse.get()) removePlayerColor(player.baseEntity)
         else colorPlayer(player.baseEntity)
