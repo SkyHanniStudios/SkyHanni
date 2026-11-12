@@ -33,8 +33,13 @@ public abstract class MixinKeyMapping {
                 return;
             }
         }
-        TextInput.Companion.onMinecraftInput(keyBinding, cir);
-        GraphEditor.INSTANCE.onMinecraftInput(keyBinding, cir);
+        if (TextInput.onMinecraftInput()) {
+            cir.setReturnValue(false);
+            return;
+        }
+        if (GraphEditor.onMinecraftInput(keyBinding)) {
+            cir.setReturnValue(false);
+        }
     }
 
     @Inject(method = "consumeClick", at = @At("HEAD"), cancellable = true)
@@ -50,7 +55,12 @@ public abstract class MixinKeyMapping {
                 return;
             }
         }
-        TextInput.Companion.onMinecraftInput(keyBinding, cir);
-        GraphEditor.INSTANCE.onMinecraftInput(keyBinding, cir);
+        if (TextInput.onMinecraftInput()) {
+            cir.setReturnValue(false);
+            return;
+        }
+        if (GraphEditor.onMinecraftInput(keyBinding)) {
+            cir.setReturnValue(false);
+        }
     }
 }

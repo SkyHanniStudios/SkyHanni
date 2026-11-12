@@ -17,7 +17,6 @@ import at.hannibal2.skyhanni.utils.KeyboardManager
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import net.minecraft.client.KeyMapping
 import net.minecraft.client.player.LocalPlayer
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
 import kotlin.time.Duration.Companion.seconds
 
 @SkyHanniModule
@@ -242,11 +241,12 @@ object GraphEditor {
         autoOpen = true,
     )
 
-    fun onMinecraftInput(keyBinding: KeyMapping, cir: CallbackInfoReturnable<Boolean>) {
-        if (!isEnabled()) return
-        if (!state.inNodeMoveMode) return
-        if (keyBinding !in KeyboardManager.WasdInputMatrix) return
-        cir.returnValue = false
+    @JvmStatic
+    fun onMinecraftInput(keyBinding: KeyMapping): Boolean {
+        if (!isEnabled()) return false
+        if (!state.inNodeMoveMode) return false
+        if (keyBinding !in KeyboardManager.WasdInputMatrix) return false
+        return true
     }
 
     fun clear() {

@@ -13,9 +13,6 @@ import net.minecraft.network.chat.Component
 
 @Suppress("UnusedParameter", "TooManyFunctions")
 abstract class SkyHanniBaseScreen(title: Component = Component.empty()) : Screen(title) {
-
-    val mc: Minecraft = Minecraft.getInstance()
-
     override fun extractRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         super.extractRenderState(context, mouseX, mouseY, delta)
         postDrawScreen(context, mouseX, mouseY, delta)
