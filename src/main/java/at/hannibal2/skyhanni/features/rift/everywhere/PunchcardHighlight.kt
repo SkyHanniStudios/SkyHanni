@@ -8,9 +8,7 @@ import at.hannibal2.skyhanni.data.HypixelData
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.mob.MobData
 import at.hannibal2.skyhanni.data.model.SkyblockStat
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.IslandChangeEvent
+import at.hannibal2.skyhanni.events.IslandJoinEvent
 import at.hannibal2.skyhanni.events.MobEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.entity.EntityClickEvent
@@ -131,10 +129,10 @@ object PunchcardHighlight {
     }
 
     @HandleEvent
-    private fun onIslandChange(event: IslandChangeEvent) {
+    private fun onIslandJoin(event: IslandJoinEvent) {
         DelayedRun.runDelayed(1500.milliseconds) {
             if (playerList.isEmpty()) return@runDelayed
-            if (event.newIsland != IslandType.THE_RIFT) return@runDelayed
+            if (event.island != IslandType.THE_RIFT) return@runDelayed
 
             if (HypixelData.server.isNotEmpty() && lastRiftServer != HypixelData.server) {
                 reloadColors()
