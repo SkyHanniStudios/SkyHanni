@@ -10,7 +10,7 @@ object UtilsPatterns {
     private val patternGroup = RepoPattern.group("utils")
 
     // COMMON|UNCOMMON|RARE|EPIC|LEGENDARY|MYTHIC|DIVINE|SPECIAL|VERY SPECIAL|ULTIMATE
-    private val rarities = enumJoinToPattern<LorenzRarity> { it.name.replace("_", " ") }
+    private val rarities = enumJoinToPattern<LorenzRarity> { it.rawName }
 
     /**
      * REGEX-TEST: a MYTHIC ACCESSORY a
