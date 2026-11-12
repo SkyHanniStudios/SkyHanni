@@ -99,7 +99,6 @@ object GriffinBurrowParticleFinder {
 
     // TODO move to ParticleUtils or similar
     // TODO remove the roundTo calls as they are only workarounds
-    // TODO verify on 26.3
     private enum class ParticleType(val check: ParticleEvent.() -> Boolean) {
         EMPTY(
             { type == ParticleTypes.ENCHANTED_HIT && count == 4 && isSpeed(0.01f) && offset.roundTo(2) == LorenzVec(0.5, 0.1, 0.5) },

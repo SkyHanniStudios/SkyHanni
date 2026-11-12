@@ -100,7 +100,6 @@ object TotemOfCorruption {
         if (!config.hideParticles) return
 
         for (totem in allTotems) {
-            // TODO verify on 26.3
             if (event.type == ParticleTypes.WITCH && event.isSpeed(0f)) {
                 if (totem.location.distance(event.location) < 4.0) {
                     event.cancel()

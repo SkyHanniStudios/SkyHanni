@@ -227,7 +227,6 @@ object HoppityEggLocator {
         it.distance(location) < 5.0
     }
 
-    // TODO verify on 26.3
     private fun ParticleEvent.isVillagerParticle() = type == ParticleTypes.HAPPY_VILLAGER && isSpeed(0f) && count == 1
 
     fun isEnabled() =

@@ -75,11 +75,9 @@ object PestParticleWaypoint {
         isGuessPlotMiddle = GardenPlotApi.getPlot(solved)?.middle?.equalsIgnoreY(solved.ceil()) ?: false
     }
 
-    // TODO verify on 26.3
     private fun ParticleEvent.isEnchantmentTable(): Boolean =
         type == ParticleTypes.ENCHANT && count == 10 && isSpeed(-2f) && offset.isZero()
 
-    // TODO verify on 26.3
     private fun ParticleEvent.isVillagerAngry(): Boolean =
         type == ParticleTypes.ANGRY_VILLAGER && count == 1 && isSpeed(0f) && offset.isZero()
 

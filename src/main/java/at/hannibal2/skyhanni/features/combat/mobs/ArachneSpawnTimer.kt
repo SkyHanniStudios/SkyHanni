@@ -100,7 +100,6 @@ object ArachneSpawnTimer {
 
         val location = event.location.roundTo(2)
         if (arachneAltarLocation.distance(location) > 30) return
-        // TODO verify on 26.3
         if (event.type == ParticleTypes.DUST && event.isSpeed(1f)) {
             particleCounter += 1
         }
