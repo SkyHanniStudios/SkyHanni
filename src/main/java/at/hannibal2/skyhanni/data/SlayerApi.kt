@@ -373,7 +373,7 @@ object SlayerApi {
         ;
 
         internal val rawName: String? get() {
-            return if (this == NO_ACTIVE_QUEST)  null
+            return if (this == NO_ACTIVE_QUEST) null
             else name.lowercase().replace('_', ' ')
         }
     }
