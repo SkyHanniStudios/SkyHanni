@@ -9,11 +9,13 @@ import at.hannibal2.skyhanni.utils.ItemUtils.getInternalNameOrNull
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
 import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
-import at.hannibal2.skyhanni.utils.RenderUtils.renderStrings
+import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderable
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SkyBlockTime
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.TimeUtils.format
+import at.hannibal2.skyhanni.utils.renderables.Renderable
+import at.hannibal2.skyhanni.utils.renderables.primitives.text
 
 @SkyHanniModule
 object FallenStarCultTimer {
@@ -29,7 +31,7 @@ object FallenStarCultTimer {
     private val meetingDays = listOf(7, 14, 21, 28)
     private const val MEETING_END_HOUR = 6
 
-    private var display = emptyList<String>()
+    private var displayRenderable: Renderable? = null
     private var visible = false
 
     @HandleEvent
@@ -39,17 +41,17 @@ object FallenStarCultTimer {
             return
         }
         visible = shouldShow()
-        if (visible) display = listOf(buildDisplay())
+        if (visible) displayRenderable = buildDisplay()
     }
 
-    private fun buildDisplay(): String {
+    private fun buildDisplay(): Renderable {
         val meetingEnd = currentMeetingEnd()
         if (meetingEnd != null) {
             val time = meetingEnd.timeUntil().format(maxUnits = 2)
-            return "§aCult Meeting active! §7(§b$time left§7)"
+            return Renderable.text("§aCult Meeting active! §7(§b$time left§7)")
         }
         val time = nextMeetingStart().timeUntil().format(maxUnits = 2)
-        return "§eCult Meeting: §bin $time"
+        return Renderable.text("§eCult Meeting: §bin $time")
     }
 
     // Null while no meeting is running
@@ -71,9 +73,9 @@ object FallenStarCultTimer {
 
     @HandleEvent
     private fun onGuiRenderOverlay() {
-        if (shouldRender()) {
-            config.position.renderStrings(display, posLabel = "Fallen Star Cult Timer")
-        }
+        if (!shouldRender()) return
+        val displayRenderable = displayRenderable ?: return
+        config.position.renderRenderable(displayRenderable, posLabel = "Fallen Star Cult Timer")
     }
 
     private fun inDwarvenMines() = IslandType.DWARVEN_MINES.isInIsland()
