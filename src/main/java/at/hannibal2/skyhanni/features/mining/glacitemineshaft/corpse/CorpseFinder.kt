@@ -85,7 +85,7 @@ object CorpseFinder {
 
     @HandleEvent(onlyOnIsland = IslandType.MINESHAFT)
     fun onEntityClick(event: EntityClickEvent) {
-        val clickedEntityUuid = event.clickedEntity.uuid
+        val clickedEntityUuid = event.entity.uuid
         val (entity, canBeSeenTicks) = corpseEntities.entries.firstOrNull { it.key.uuid == clickedEntityUuid } ?: return
 
         if (canBeSeenTicks >= MARK_AS_FOUND_TICKS_THRESHOLD) return

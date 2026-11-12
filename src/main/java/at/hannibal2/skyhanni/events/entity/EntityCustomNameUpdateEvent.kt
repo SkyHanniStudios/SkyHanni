@@ -1,6 +1,7 @@
 package at.hannibal2.skyhanni.events.entity
 
 import at.hannibal2.skyhanni.api.event.GenericSkyHanniEvent
+import at.hannibal2.skyhanni.events.entity.abstract.SkyHanniEntityEvent
 import at.hannibal2.skyhanni.skyhannimodule.PrimaryFunction
 import at.hannibal2.skyhanni.utils.StringUtils.removeColor
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLessResets
@@ -16,9 +17,9 @@ import net.minecraft.world.entity.Entity
  */
 @PrimaryFunction("onEntityNameUpdate")
 data class EntityCustomNameUpdateEvent<T : Entity>(
-    val entity: T,
+    override val entity: T,
     val newName: Component?,
-) : GenericSkyHanniEvent<T>(entity.javaClass) {
+) : GenericSkyHanniEvent<T>(entity.javaClass), SkyHanniEntityEvent<T> {
 
     @Deprecated("Use cleanName instead", ReplaceWith("cleanName"))
     val newNameFormatted = newName?.formattedTextCompatLessResets()

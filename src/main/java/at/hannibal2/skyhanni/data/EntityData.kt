@@ -3,10 +3,10 @@ package at.hannibal2.skyhanni.data
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.ElectionApi.derpy
 import at.hannibal2.skyhanni.events.CheckRenderEntityEvent
-import at.hannibal2.skyhanni.events.entity.EntityDisplayNameEvent
 import at.hannibal2.skyhanni.events.entity.EntityHealthDisplayEvent
 import at.hannibal2.skyhanni.events.entity.EntityLeaveWorldEvent
 import at.hannibal2.skyhanni.events.entity.EntityMaxHealthUpdateEvent
+import at.hannibal2.skyhanni.events.entity.EntityNameTagRenderEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.AllEntitiesGetter
 import at.hannibal2.skyhanni.utils.EntityUtils
@@ -24,7 +24,7 @@ object EntityData {
 
     private val maxHealthMap = mutableMapOf<Int, Int>()
     private val nametagCache = TimeLimitedCache<UUID, Component>(50.milliseconds)
-    private val healthDisplayCache = TimeLimitedCache<Component, Component>(50.milliseconds)
+    private val healthDisplayCache = TimeLimitedCache<Pair<UUID, Component>, Component>(50.milliseconds)
     private val lastVisibilityCheck = TimeLimitedCache<Int, Boolean>(200.milliseconds)
 
     // TODO replace with packet detection
@@ -63,16 +63,16 @@ object EntityData {
     }
 
     private fun postRenderNametag(entity: Entity, chatComponent: Component) = nametagCache.getOrPut(entity.uuid) {
-        val event = EntityDisplayNameEvent(entity, chatComponent)
+        val event = EntityNameTagRenderEvent(entity, chatComponent)
         event.post()
         event.chatComponent
     }
 
     @JvmStatic
-    fun getHealthDisplay(text: Component) = healthDisplayCache.getOrPut(text) {
-        val event = EntityHealthDisplayEvent(text)
-        event.post()
-        event.text
+    fun getHealthDisplay(entity: Entity, text: Component) = healthDisplayCache.getOrPut(entity.uuid to text) {
+        EntityHealthDisplayEvent(entity, text).apply {
+            post()
+        }.text
     }
 
     @JvmStatic
