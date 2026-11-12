@@ -70,7 +70,7 @@ object FishingProfitTracker {
     ) { drawDisplay(it) }
 
     data class Data(
-        @Expose var totalCatchAmount: Long = 0L
+        @Expose var totalCatchAmount: Long = 0L,
     ) : ItemTrackerData<SessionUptime.Normal>(SessionUptime.Normal::class) {
         override fun getDescription(timesGained: Long): List<String> {
             val percentage = timesGained.toDouble() / totalCatchAmount
@@ -211,7 +211,7 @@ object FishingProfitTracker {
     fun onChat(event: SkyHanniChatEvent.Allow) {
         coinsChatPattern.matchMatcher(event.cleanMessage) {
             tryAddItem(NeuInternalName.SKYBLOCK_COIN, group("coins").formatInt(), command = false)
-            addCatch()
+            // Don't need to addCatch() here since FishingCatchEvent will be posted and increment it there
         }
     }
 
