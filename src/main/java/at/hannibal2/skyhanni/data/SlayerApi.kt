@@ -398,13 +398,9 @@ object SlayerApi {
     private fun onIslandLeave(event: IslandLeaveEvent) {
         val data = if (event.island == THE_RIFT) insideRiftData else outsideRiftData
         when (data.currentState) {
+            BOSS_FIGHT,
             COCOONED -> {
-                ChatUtils.debug("SlayerApi: World change detected, resetting cocooned state")
-                updateState(NO_ACTIVE_QUEST)
-            }
-            BOSS_FIGHT -> {
-                ChatUtils.debug("SlayerApi: World change detected, resetting boss fight state")
-                updateState(NO_ACTIVE_QUEST)
+                updateState(GRINDING)
             }
             else -> {}
         }
