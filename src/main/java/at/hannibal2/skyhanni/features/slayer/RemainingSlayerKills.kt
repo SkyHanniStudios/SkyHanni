@@ -99,7 +99,7 @@ object RemainingSlayerKills {
     data class SlayerSpecificPetData(
         // These are only the first halves of a pet's Internal Name, this is the name used within PetData/PetUtils for these.
         @Expose @SerializedName("proper_pet_names") val properPetNames: List<String>? = null,
-        @Expose @SerializedName("scaling") val perLevelMultiplier: List<Float>,
+        @Expose @SerializedName("scaling_wisdom") val perLevelMultiplier: List<Float>,
     )
 
     data class Mob(
@@ -183,7 +183,7 @@ object RemainingSlayerKills {
         val mobs = getMobs() ?: return listOf()
 
         val combatWisdomMultiplier = getCombatWisdomMultiplier()
-        debugMessage("$combatWisdomMultiplier multiplier for Combat Wisdom .")
+        debugMessage("$combatWisdomMultiplier multiplier for Combat Wisdom.")
         val multiplicativeMultiplier = getMultiplicativeMultiplier()
         debugMessage("$multiplicativeMultiplier multiplier for multiplicatives.")
         return mobs.map { mob ->
@@ -244,7 +244,32 @@ object RemainingSlayerKills {
             combatWisdom += 10
         }
 
+        combatWisdom += getPetWisdom()
+
         return 1 + 0.01 * combatWisdom
+    }
+
+    private fun getPetWisdom(): Double {
+        var wisdom = 0.0
+        val currentPet = CurrentPetApi.currentPet
+        val fauxInternalName = currentPet?.fauxInternalName ?: return wisdom
+        debugMessage("$fauxInternalName")
+        val petProperName = PetUtils.getPetProperName(fauxInternalName).orEmpty()
+        val petRarity = PetUtils.getPetRarity(fauxInternalName) ?: return wisdom
+        debugMessage("Split Internal Name, ID = $petProperName, rarity = $petRarity")
+        if (petProperName.isEmpty()) return wisdom
+        data?.let { data ->
+            val slayerPetData = data.pets[SlayerApi.activeType]
+            val levellingData = slayerPetData?.firstNotNullOfOrNull { slayerPet ->
+                slayerPet.value.takeIf { (it.properPetNames != null && it.properPetNames.contains(petProperName)) }
+            } ?: return wisdom
+
+            wisdom += (levellingData.perLevelMultiplier[petRarity.ordinal] * currentPet.level)
+            debugMessage(
+                "$wisdom Pet Wisdom, ${currentPet.level} is Pet Level.",
+            )
+        }
+        return wisdom
     }
 
     private fun getMultiplicativeMultiplier(): Double {
@@ -277,25 +302,6 @@ object RemainingSlayerKills {
         val championLevel = (InventoryUtils.getItemInHand()?.getHypixelEnchantments().orEmpty()["champion"] ?: 0) - 1
 
         if (championLevel != -1) additiveWithMultMultipliers += (data?.champion?.getOrNull(championLevel) ?: 0.0)
-
-        val currentPet = CurrentPetApi.currentPet
-        val fauxInternalName = currentPet?.fauxInternalName ?: return additiveWithMultMultipliers
-        debugMessage("$fauxInternalName")
-        val petProperName = PetUtils.getPetProperName(fauxInternalName).orEmpty()
-        val petRarity = PetUtils.getPetRarity(fauxInternalName) ?: return additiveWithMultMultipliers
-        debugMessage("Split Internal Name, ID = $petProperName, rarity = $petRarity")
-        if (petProperName.isEmpty()) return additiveWithMultMultipliers
-        data?.let { data ->
-            val slayerPetData = data.pets[SlayerApi.activeType]
-            val levellingData = slayerPetData?.firstNotNullOfOrNull { slayerPet ->
-                slayerPet.value.takeIf { (it.properPetNames != null && it.properPetNames.contains(petProperName)) }
-            } ?: return additiveWithMultMultipliers
-
-            additiveWithMultMultipliers += (levellingData.perLevelMultiplier[petRarity.ordinal] * currentPet.level)
-            debugMessage(
-                "$additiveWithMultMultipliers Pet & Champion Multiplier, ${currentPet.level} is Pet Level.",
-            )
-        }
 
         return additiveWithMultMultipliers
     }
