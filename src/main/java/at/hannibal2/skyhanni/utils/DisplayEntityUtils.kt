@@ -1,5 +1,6 @@
 package at.hannibal2.skyhanni.utils
 
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 import com.mojang.math.Transformation
 import net.minecraft.world.entity.Display
 import org.joml.Vector3f
@@ -10,11 +11,11 @@ object DisplayEntityUtils {
             return renderState()?.transformation?.get(0f)
         }
 
-    fun Display.TextDisplay.arrowForwardVec(): LorenzVec {
-        val quat = transformation?.leftRotation() ?: return LorenzVec(0, 0, 1)
+    fun Display.TextDisplay.arrowForwardVec(): SkyHanniVector {
+        val quat = transformation?.leftRotation() ?: return SkyHanniVector(0, 0, 1)
         val localY = Vector3f(0f, 1f, 0f)
         quat.transform(localY)
-        return LorenzVec(localY.x.toDouble(), 0.0, localY.z.toDouble()).normalize()
+        return SkyHanniVector(localY.x.toDouble(), 0.0, localY.z.toDouble()).normalized()
     }
 
     val Transformation.uniformScale: Float?

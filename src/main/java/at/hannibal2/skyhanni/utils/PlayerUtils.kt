@@ -3,6 +3,7 @@ package at.hannibal2.skyhanni.utils
 import at.hannibal2.skyhanni.utils.NumberUtil.roundTo
 import at.hannibal2.skyhanni.utils.StringUtils.toUnDashedUUID
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.toSkyHanniVector
 import net.minecraft.client.Minecraft
 import net.minecraft.world.entity.Avatar
 import net.minecraft.world.entity.Pose
@@ -54,7 +55,7 @@ object PlayerUtils {
             !MinecraftCompat.localPlayerOrThrow.isPassenger &&
             !MinecraftCompat.localPlayerOrThrow.isFallFlying
 
-    fun blockPosition() = MinecraftCompat.localPlayerOrThrow.blockPosition().toLorenzVec()
+    fun blockPosition() = MinecraftCompat.localPlayerOrThrow.blockPosition().toSkyHanniVector()
 
     fun isSneaking(): Boolean = MinecraftCompat.localPlayerOrThrow.isShiftKeyDown
 }
