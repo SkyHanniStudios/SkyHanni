@@ -405,9 +405,9 @@ object TunnelsMaps {
         val second = path.getOrNull(1)
 
         val playerPosition = LocationUtils.playerLocation()
-        val nodeDistance = first?.let { playerPosition.distance(it.position) } ?: 0.0
+        val nodeDistance = first?.let { playerPosition.distanceTo(it.position) } ?: 0.0
         if (first != null && second != null) {
-            val direct = playerPosition.distance(second.position)
+            val direct = playerPosition.distanceTo(second.position)
             val firstPath = first.neighbors[second] ?: 0.0
             val around = nodeDistance + firstPath
             if (direct < around) {

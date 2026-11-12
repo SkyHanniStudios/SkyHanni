@@ -2,6 +2,7 @@ package at.hannibal2.skyhanni.test.graph
 
 import at.hannibal2.skyhanni.data.model.TextInput
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
+import at.hannibal2.skyhanni.utils.vector.VectorOperators.copy
 
 class GraphEditorState {
     var id = 0

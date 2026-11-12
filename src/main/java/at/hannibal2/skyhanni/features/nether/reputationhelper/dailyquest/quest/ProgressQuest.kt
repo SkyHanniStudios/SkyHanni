@@ -1,11 +1,11 @@
 package at.hannibal2.skyhanni.features.nether.reputationhelper.dailyquest.quest
 
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NeuInternalName
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
 
 abstract class ProgressQuest(
     displayItem: NeuInternalName,
-    location: LorenzVec?,
+    location: SkyHanniVector?,
     questCategory: QuestCategory,
     displayName: String,
     state: QuestState,

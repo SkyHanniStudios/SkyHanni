@@ -19,7 +19,6 @@ import at.hannibal2.skyhanni.features.garden.pests.PestType
 import at.hannibal2.skyhanni.features.misc.update.ModrinthVersionType
 import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.LorenzRarity
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NeuInternalName
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.NeuItems
@@ -33,6 +32,9 @@ import at.hannibal2.skyhanni.utils.system.ModVersion
 import at.hannibal2.skyhanni.utils.tracker.SessionUptime
 import at.hannibal2.skyhanni.utils.tracker.SessionUptimeTypeAdapter
 import at.hannibal2.skyhanni.utils.tracker.SkyHanniTracker
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorFormat
+import at.hannibal2.skyhanni.utils.vector.VectorFormat.asStoredString
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import com.google.gson.TypeAdapter
@@ -66,8 +68,8 @@ enum class SkyHanniTypeAdapters(
         SimpleStringTypeAdapter({ this.asString() }, { NbtBoolean.fromString(this) }),
     ),
     VEC(
-        LorenzVec::class.java,
-        SimpleStringTypeAdapter(LorenzVec::asStoredString, LorenzVec::decodeFromString),
+        SkyHanniVector::class.java,
+        SimpleStringTypeAdapter({ asStoredString() }, { VectorFormat.parseStored(this) }),
     ),
     TROPHY_RARITY(
         TrophyRarity::class.java,

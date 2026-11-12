@@ -22,7 +22,7 @@ import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.StringUtils
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLessResets
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
-import at.hannibal2.skyhanni.utils.toLorenzVec
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.toSkyHanniVector
 import net.minecraft.world.entity.decoration.ArmorStand
 import java.util.regex.Matcher
 import kotlin.time.Duration.Companion.seconds
@@ -139,7 +139,7 @@ object CakeCounterFeatures {
     private fun checkForSoulsStand(cakesStand: ArmorStand) {
         if (soulsFoundEntityId != null) return // in case it was found during DelayedRun time
 
-        val nearbyArmorStands = cakesStand.blockPosition().toLorenzVec().getEntitiesNearby<ArmorStand>(1.0)
+        val nearbyArmorStands = cakesStand.blockPosition().toSkyHanniVector().getEntitiesNearby<ArmorStand>(1.0)
         soulsStandExists = nearbyArmorStands.any { armorStand ->
             soulsFoundPattern.matchMatcher(armorStand.name.formattedTextCompatLessResets()) {
                 soulsFoundEntityId = armorStand.id

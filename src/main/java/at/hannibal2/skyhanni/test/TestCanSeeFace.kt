@@ -18,9 +18,6 @@ import at.hannibal2.skyhanni.utils.DelayedRun
 import at.hannibal2.skyhanni.utils.FacePointEntry
 import at.hannibal2.skyhanni.utils.FacePointSet
 import at.hannibal2.skyhanni.utils.LocationUtils
-import at.hannibal2.skyhanni.utils.LocationUtils.maxBox
-import at.hannibal2.skyhanni.utils.LocationUtils.minBox
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NumberUtil.roundTo
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderable
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
@@ -33,6 +30,12 @@ import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.RenderableUtils.addRenderableButton
 import at.hannibal2.skyhanni.utils.renderables.container.VerticalContainerRenderable.Companion.vertical
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorBounds.blockBox
+import at.hannibal2.skyhanni.utils.vector.VectorBounds.maxCorner
+import at.hannibal2.skyhanni.utils.vector.VectorBounds.minCorner
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.toBlockPos
+import at.hannibal2.skyhanni.utils.vector.VectorMath.floor
 import net.minecraft.client.Minecraft
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.core.Direction
@@ -45,7 +48,7 @@ object TestCanSeeFace {
 
     private data class FaceCheckContext(
         var aabbs: List<AABB> = emptyList(),
-        var blockPos: LorenzVec? = null,
+        var blockPos: SkyHanniVector? = null,
         var waitingForPunch: Boolean = false,
         var pointSet: FacePointSet = mutableMapOf(),
         var finished: Boolean = false,
@@ -69,7 +72,7 @@ object TestCanSeeFace {
                         blockPos.x + bounds.minX, blockPos.y + bounds.minY, blockPos.z + bounds.minZ,
                         blockPos.x + bounds.maxX, blockPos.y + bounds.maxY, blockPos.z + bounds.maxZ,
                     )
-                } else listOf(blockPos.boundingToOffset(1.0, 1.0, 1.0))
+                } else listOf(blockPos.blockBox())
             }
         }
 
@@ -144,7 +147,7 @@ object TestCanSeeFace {
         regenDebugRenderable()
     }
 
-    private fun LorenzVec.shortFormatVec(): String {
+    private fun SkyHanniVector.shortFormatVec(): String {
         val xFormat = this.x.roundTo(2)
         val yFormat = this.y.roundTo(2)
         val zFormat = this.z.roundTo(2)
@@ -246,8 +249,8 @@ object TestCanSeeFace {
         faceCheckContext.pointSet.clear()
         for (aabb in faceCheckContext.aabbs) {
             LocationUtils.canSeeAnyFace(
-                min = aabb.minBox(),
-                max = aabb.maxBox(),
+                min = aabb.minCorner(),
+                max = aabb.maxCorner(),
                 stepCount = config.stepCount.get(),
                 stepDensity = config.stepDensity.get(),
                 pointFill = faceCheckContext.pointSet,
@@ -281,7 +284,7 @@ object TestCanSeeFace {
 
     private fun SkyHanniRenderWorldEvent.drawRaysFromFacePoints(
         face: Direction,
-        points: Collection<Pair<LorenzVec, Boolean>>,
+        points: Collection<Pair<SkyHanniVector, Boolean>>,
     ) {
         if (!rayConfig.enabled.get() || faceStates[face] == FaceState.HIDDEN) return
         for ((point, isSeen) in points) {

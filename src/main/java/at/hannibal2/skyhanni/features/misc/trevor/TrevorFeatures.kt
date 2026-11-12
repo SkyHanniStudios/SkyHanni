@@ -25,7 +25,6 @@ import at.hannibal2.skyhanni.utils.HypixelCommands
 import at.hannibal2.skyhanni.utils.LocationUtils
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
 import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.RegexUtils.findMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
@@ -36,7 +35,6 @@ import at.hannibal2.skyhanni.utils.SkullTextureHolder
 import at.hannibal2.skyhanni.utils.SoundUtils
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.compat.command
-import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawString
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
@@ -44,6 +42,8 @@ import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import at.hannibal2.skyhanni.utils.roundedUpSeconds
+import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.positionVector
 import net.minecraft.client.player.RemotePlayer
 import net.minecraft.world.entity.decoration.ArmorStand
 import kotlin.time.Duration.Companion.milliseconds
@@ -241,7 +241,7 @@ object TrevorFeatures {
         if (!active) trapperReady = true
         else inBetweenQuests = true
 
-        if (TrevorSolver.mobCoordinates != LorenzVec(0.0, 0.0, 0.0) && active) {
+        if (TrevorSolver.mobCoordinates != SkyHanniVector(0.0, 0.0, 0.0) && active) {
             TrevorSolver.mobLocation = previousLocation
         }
         questActive = active
@@ -302,7 +302,7 @@ object TrevorFeatures {
         RenderLivingEntityHelper.setEntityColor(entity, currentStatus.color) {
             config.cooldown
         }
-        entity.getLorenzVec().let {
+        entity.positionVector().let {
             if (it.distanceToPlayer() < 15) {
                 drawString(it.up(2.23), currentLabel)
             }
@@ -315,7 +315,7 @@ object TrevorFeatures {
 
         var location = TrevorSolver.mobLocation.coordinates
         if (TrevorSolver.averageHeight != 0.0) {
-            location = LorenzVec(location.x, TrevorSolver.averageHeight, location.z)
+            location = SkyHanniVector(location.x, TrevorSolver.averageHeight, location.z)
         }
 
         val found = TrevorSolver.mobLocation == TrapperMobArea.FOUND
