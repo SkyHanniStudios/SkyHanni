@@ -6,12 +6,13 @@ import at.hannibal2.skyhanni.config.core.config.Position
 import at.hannibal2.skyhanni.config.core.config.gui.GuiPositionEditor
 import at.hannibal2.skyhanni.data.InteractClickType
 import at.hannibal2.skyhanni.data.SlayerApi
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.ItemClickEvent
+import at.hannibal2.skyhanni.events.ItemInHandChangeEvent
 import at.hannibal2.skyhanni.events.TitleReceivedEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.InventoryUtils
+import at.hannibal2.skyhanni.utils.ItemUtils.cleanName
 import at.hannibal2.skyhanni.utils.ItemUtils.getLore
 import at.hannibal2.skyhanni.utils.LocationUtils
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
@@ -33,13 +34,23 @@ object BlazeSlayerDaggerHelper {
 
     private val config get() = SlayerApi.config.blazes.hellion
 
+    private val patternGroup = RepoPattern.group("slayer.blaze.dagger")
+
     /**
-     * REGEX-TEST: §cStrike using the §r§f§lSPIRIT §r§cattunement on your dagger!
-     * REGEX-TEST: §cStrike using the §r§8§lASHEN §r§cattunement on your dagger!
+     * REGEX-TEST: Strike using the SPIRIT attunement on your dagger!
+     * REGEX-TEST: Strike using the ASHEN attunement on your dagger!
      */
-    private val attunementPattern by RepoPattern.pattern(
-        "slayer.blaze.dagger.attunement",
-        "§cStrike using the §r.+ §r§cattunement on your dagger!",
+    private val attunementPattern by patternGroup.pattern(
+        "attunement.colorless",
+        "Strike using the .+ attunement on your dagger!",
+    )
+
+    /**
+     * REGEX-TEST: Your hit was reduced by Hellion Shield!
+     */
+    private val helionShieldPattern by patternGroup.pattern(
+        "helionshield",
+        "Your hit was reduced by Hellion Shield!",
     )
 
     private var clientSideClicked = false
@@ -51,20 +62,20 @@ object BlazeSlayerDaggerHelper {
     private var lastNearest: HellionShield? = null
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!config.hideDaggerWarning) return
 
-        val message = event.message
-        if (attunementPattern.matches(message) || message == "§cYour hit was reduced by Hellion Shield!") {
+        val message = event.cleanMessage
+        if (attunementPattern.matches(message) || helionShieldPattern.matches(message)) {
             event.blockedReason = "blaze_slayer_dagger"
         }
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onTick() {
+    private fun onItemInHandChange(event: ItemInHandChangeEvent) {
         if (!config.daggers) return
 
-        val dagger = getDaggerFromStack(InventoryUtils.getItemInHand())
+        val dagger = getDaggerFromStack(event.newStack)
         if (dagger != null) {
             setDaggerText(dagger)
             return
@@ -171,7 +182,7 @@ object BlazeSlayerDaggerHelper {
     }
 
     private fun getDaggerFromStack(stack: SafeItemStack?): Dagger? {
-        val itemName = stack?.hoverName?.string.orEmpty()
+        val itemName = stack?.cleanName.orEmpty()
         for (dagger in Dagger.entries) {
             if (dagger.daggerNames.any { itemName.contains(it) }) {
                 return dagger
@@ -182,7 +193,7 @@ object BlazeSlayerDaggerHelper {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onTitleReceived(event: TitleReceivedEvent) {
+    private fun onTitleReceived(event: TitleReceivedEvent) {
         if (!config.daggers) return
 
         for (shield in HellionShield.entries) {
@@ -200,7 +211,7 @@ object BlazeSlayerDaggerHelper {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onItemClick(event: ItemClickEvent) {
+    private fun onItemClick(event: ItemClickEvent) {
         if (!config.daggers) return
         if (clientSideClicked) return
         if (event.clickType != InteractClickType.RIGHT_CLICK) return
@@ -212,7 +223,7 @@ object BlazeSlayerDaggerHelper {
     }
 
     // TODO use internal names. see FixDoubleClicks.blazeDaggers
-    enum class Dagger(val daggerNames: List<String>, vararg val shields: HellionShield, var updated: Boolean = false) {
+    private enum class Dagger(val daggerNames: List<String>, vararg val shields: HellionShield, var updated: Boolean = false) {
         TWILIGHT(
             listOf("Twilight Dagger", "Mawdredge Dagger", "Deathripper Dagger"),
             HellionShield.SPIRIT,
@@ -242,7 +253,7 @@ object BlazeSlayerDaggerHelper {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay() {
         if (!config.daggers) return
 
         val currentScreen = MinecraftCompat.screen
@@ -253,7 +264,7 @@ object BlazeSlayerDaggerHelper {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(3, "slayer.blazeDaggers", "slayer.blazes.hellion.daggers")
         event.move(3, "slayer.blazeMarkRightHellionShield", "slayer.blazes.hellion.markRightHellionShield")
         event.move(3, "slayer.blazeFirstDagger", "slayer.blazes.hellion.firstDagger")
@@ -263,18 +274,18 @@ object BlazeSlayerDaggerHelper {
             event.transform(72, "slayer.blazes.hellion.$it", Position::migrate)
         }
     }
-}
 
-private fun HellionShield.other(): HellionShield {
-    for (dagger in BlazeSlayerDaggerHelper.Dagger.entries) {
-        if (this in dagger.shields) {
-            for (shield in dagger.shields) {
-                if (shield != this) {
-                    return shield
+    private fun HellionShield.other(): HellionShield {
+        for (dagger in Dagger.entries) {
+            if (this in dagger.shields) {
+                for (shield in dagger.shields) {
+                    if (shield != this) {
+                        return shield
+                    }
                 }
             }
         }
-    }
 
-    throw RuntimeException("Found no other shield for $this")
+        throw RuntimeException("Found no other shield for $this")
+    }
 }
