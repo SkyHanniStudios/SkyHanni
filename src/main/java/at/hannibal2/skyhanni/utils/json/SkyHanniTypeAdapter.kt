@@ -217,11 +217,15 @@ enum class SkyHanniTypeAdapter(
     MODRINTH_VERSION_TYPE(ModrinthVersionType::class.java),
     ;
 
-    /** Shorthand constructor for plain enum adapters. Disambiguated from the primary by [Enum] vs [TypeAdapter] second arg. */
     constructor(enumClass: Class<out Enum<*>>, default: Enum<*>? = null) : this(enumClass, enumAdapter(enumClass, default))
 
-    /** Shorthand constructor for [SkyHanniAdaptable] types. Companion must implement [SkyHanniAdaptable.Factory]. */
     constructor(adaptableClass: Class<out SkyHanniAdaptable<*>>) : this(adaptableClass, adaptableAdapter(adaptableClass))
+
+    @Suppress("UNCHECKED_CAST")
+    @Throws(ClassCastException::class)
+    inline fun <reified T> typed(): TypeAdapter<T> = if (clazz.isAssignableFrom(T::class.java)) {
+        adapter as TypeAdapter<T>
+    } else throw ClassCastException("Class of adapter \"${clazz.canonicalName}\" is not a ${T::class.qualifiedName}")
 }
 
 @Suppress("UNCHECKED_CAST")
