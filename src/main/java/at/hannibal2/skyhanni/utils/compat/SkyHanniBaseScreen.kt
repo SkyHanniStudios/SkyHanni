@@ -1,6 +1,5 @@
 package at.hannibal2.skyhanni.utils.compat
 
-import at.hannibal2.skyhanni.test.command.ErrorManager
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.Screen
@@ -10,29 +9,17 @@ import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.network.chat.Component
 
 @Suppress("UnusedParameter", "TooManyFunctions")
-abstract class SkyHanniBaseScreen(title: Component = Component.empty()) : Screen(title) {
+abstract class SkyHanniBaseScreen(title: Component = Component.empty()) : Screen(title), SkyHanniScreenHooks {
 
     val mc: Minecraft = Minecraft.getInstance()
 
-    private inline fun guarded(action: String, block: () -> Unit) {
-        try {
-            block()
-        } catch (e: Exception) {
-            ErrorManager.logErrorWithData(e, "Error while $action", "screen" to this)
-        }
-    }
-
     override fun extractRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         super.extractRenderState(context, mouseX, mouseY, delta)
-        DrawContextUtils.setContext(context)
-        guarded("drawing screen") { onDrawScreen(mouseX, mouseY, delta) }
-        DrawContextUtils.clearContext()
+        drawGuarded(context, mouseX, mouseY, delta)
     }
 
     override fun extractBackground(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, deltaTicks: Float) =
         guarded("rendering background") { extractMenuBackground(context) }
-
-    open fun onDrawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {}
 
     override fun mouseClicked(click: MouseButtonEvent, doubled: Boolean): Boolean {
         guarded("clicking mouse") { onMouseClicked(click.x.toInt(), click.y.toInt(), click.button()) }

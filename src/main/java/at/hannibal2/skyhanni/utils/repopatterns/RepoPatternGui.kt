@@ -15,6 +15,10 @@ import at.hannibal2.skyhanni.utils.renderables.searchableList
 @SkyHanniModule
 object RepoPatternGui {
 
+    private const val LIST_HEIGHT = 280
+    private const val SEARCH_FIELD_HEIGHT = 16
+    private const val SEARCH_SPACING = 4
+
     @HandleEvent
     private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shrepopatterns") {
@@ -33,7 +37,7 @@ object RepoPatternGui {
         }
         return Renderable.searchableList(
             items = items,
-            height = 280,
+            height = LIST_HEIGHT.coerceAtMost(screen.maxContentHeight - SEARCH_FIELD_HEIGHT - SEARCH_SPACING),
             scrollValue = screen.scrollValue,
             searchInput = screen.searchInput,
             isSearchActive = { screen.isSearchActive },

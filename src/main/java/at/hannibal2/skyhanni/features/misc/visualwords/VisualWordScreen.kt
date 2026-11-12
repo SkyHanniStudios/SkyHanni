@@ -3,6 +3,7 @@ package at.hannibal2.skyhanni.features.misc.visualwords
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.config.ConfigFileType
 import at.hannibal2.skyhanni.data.model.TextInput
+import at.hannibal2.skyhanni.mixins.hooks.VisualWordsHook
 import at.hannibal2.skyhanni.utils.KeyboardManager
 import at.hannibal2.skyhanni.utils.compat.SkyHanniChromeScreen
 import at.hannibal2.skyhanni.utils.renderables.Renderable
@@ -30,6 +31,8 @@ class VisualWordScreen : SkyHanniChromeScreen() {
         .map { it.toVisualWord() }.toMutableList()
 
     override fun buildContent(): Renderable = VisualWordGui.buildDisplay(this)
+
+    override fun renderPanel(render: () -> Unit) = VisualWordsHook.withoutWordChanges(render)
 
     override fun guiClosed() {
         if (currentlyEditing) exitEditMode()
