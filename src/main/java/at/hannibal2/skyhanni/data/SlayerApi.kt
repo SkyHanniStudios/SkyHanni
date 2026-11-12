@@ -218,6 +218,7 @@ object SlayerApi {
                 questStartTime = SimpleTimeMark.now()
             }
             questCompletePattern.matches(message) -> {
+                ChatUtils.debug("SlayerApi: Slayer quest complete detected, posting SlayerQuestCompleteEvent")
                 SlayerQuestCompleteEvent.post()
             }
             questFailedPattern.matches(message) -> {
