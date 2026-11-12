@@ -400,9 +400,8 @@ object SlayerApi {
         val data = if (event.island == THE_RIFT) insideRiftData else outsideRiftData
         when (data.currentState) {
             BOSS_FIGHT,
-            COCOONED -> {
-                updateState(GRINDING)
-            }
+            COCOONED,
+            -> updateState(GRINDING)
             else -> {}
         }
     }
