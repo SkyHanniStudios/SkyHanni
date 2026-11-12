@@ -18,16 +18,9 @@ class KspIncrementalCache(cacheDir: String?, mcVersion: String, stateFileName: S
     private data class FileState(val mtime: Long, val crc: Long)
 
     /**
-     * Evaluates which source files are dirty and whether regeneration is needed.
-     *
-     * Returns null if no regeneration is needed (no dirty files and output file exists).
-     * Returns a set of dirty file paths otherwise; the set may be empty if the output
-     * file is missing but no sources changed. Always call [commit] after processing.
-     *
      * @param filePaths The source file paths to evaluate against the cache.
-     * @param outputFile The generated output file; if absent, regeneration is forced.
      */
-    fun evaluate(filePaths: Set<String>, outputFile: File?): Set<String>? {
+    fun evaluate(filePaths: Set<String>): Set<String> {
         val cachedStates = readStateFile()
         val newStates = mutableMapOf<String, FileState>()
         val dirtyPaths = mutableSetOf<String>()
@@ -45,21 +38,11 @@ class KspIncrementalCache(cacheDir: String?, mcVersion: String, stateFileName: S
         }
 
         pendingStates = newStates
-        if (dirtyPaths.isEmpty() && outputFile?.exists() != false) return null
         return dirtyPaths
     }
 
-    /**
-     * Returns the expected output file path relative to the build directory.
-     *
-     * @param packagePath The package path (slash-separated) of the generated file.
-     * @param fileName The file name without extension of the generated file.
-     */
-    fun outputFile(packagePath: String, fileName: String): File? =
-        stateFile?.parentFile?.let { File(it, "generated/ksp/main/kotlin/$packagePath/$fileName.kt") }
-
     /** Persists the state computed during the last [evaluate] call. */
-    fun commit() = writeStateFile(pendingStates)
+    fun commit(failedPaths: Set<String> = emptySet()) = writeStateFile(pendingStates - failedPaths)
 
     private fun fileCrc(path: String): Long {
         val crc = CRC32()
