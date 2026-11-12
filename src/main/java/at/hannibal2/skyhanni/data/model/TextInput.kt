@@ -10,6 +10,7 @@ import at.hannibal2.skyhanni.utils.LorenzColor
 import at.hannibal2.skyhanni.utils.OSUtils
 import at.hannibal2.skyhanni.utils.StringUtils.insert
 import at.hannibal2.skyhanni.utils.StringUtils.removeWordsAtEnd
+import io.github.notenoughupdates.moulconfig.common.IMinecraft
 import org.apache.commons.lang3.SystemUtils
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
 import kotlinx.coroutines.runBlocking
@@ -68,9 +69,11 @@ open class TextInput {
 
         fun activate(instance: TextInput) {
             activeInstance = instance
+            IMinecraft.INSTANCE.startTextInput(this, true)
         }
 
         fun disable() {
+            IMinecraft.INSTANCE.startTextInput(this, false)
             activeInstance = null
         }
 
