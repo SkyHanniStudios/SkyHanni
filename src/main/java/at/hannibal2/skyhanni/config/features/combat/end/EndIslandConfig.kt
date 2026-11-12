@@ -60,7 +60,7 @@ class EndIslandConfig {
             event.move(78, "combat.endstoneProtectorChat", "combat.endIsland.endstoneProtectorChat")
             // Moved rather than dropped: the option was on by default, and a reset would silently
             // switch it off.
-            event.move(147, "combat.endIsland.endstoneProtectorChat", "combat.endIsland.golem.weightChat")
+            event.move(150, "combat.endIsland.endstoneProtectorChat", "combat.endIsland.golem.weightChat")
         }
     }
 }

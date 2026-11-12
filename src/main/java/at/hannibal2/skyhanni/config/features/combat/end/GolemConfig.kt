@@ -87,8 +87,8 @@ class GolemConfig {
 
     @Expose
     @ConfigOption(
-        name = "Skyhanni Prefix",
-        desc = "Displays the Skyhanni prefix in the protector weight message."
+        name = "SkyHanni Prefix",
+        desc = "Displays the SkyHanni prefix in the protector weight message."
     )
     @ConfigEditorBoolean
     @FeatureToggle
