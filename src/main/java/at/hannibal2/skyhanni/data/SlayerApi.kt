@@ -347,7 +347,7 @@ object SlayerApi {
         val data = getCurrentData()
         val oldState = data.currentState
         if (oldState == newState) return
-        ChatUtils.debug("SlayerApi: ${data.currentState} -> $newState")
+        ChatUtils.debug("SlayerApi: State $oldState -> $newState")
         data.currentState = newState
         data.currentStateRaw = newState.rawName
         SlayerStateChangeEvent(newState).post()
