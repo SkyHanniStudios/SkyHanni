@@ -3,7 +3,6 @@ package at.hannibal2.skyhanni.data
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.events.GuiContainerEvent
 import at.hannibal2.skyhanni.events.GuiKeyPressEvent
-import at.hannibal2.skyhanni.events.render.gui.GuiMouseInputEvent
 import at.hannibal2.skyhanni.features.inventory.loadout.CustomLoadoutKeybinds
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.DelayedRun
@@ -25,13 +24,6 @@ object GuiData {
         if (preDrawEventCancelled) event.cancel()
     }
 
-    @HandleEvent
-    private fun onGuiMouseInput(event: GuiMouseInputEvent) {
-        if (CustomLoadoutKeybinds.allowMouseClick()) return
-
-        if (preDrawEventCancelled) event.cancel()
-    }
-
     @HandleEvent(priority = HandleEvent.HIGHEST)
     private fun onGuiKeyPress(event: GuiKeyPressEvent) {
         val allowedKeys = with(Minecraft.getInstance().options) {
@@ -44,7 +36,7 @@ object GuiData {
         if (allowedKeys.any { it.isActive() }) return
         if (GLFW.GLFW_KEY_ESCAPE.isKeyHeld()) return
 
-        if (CustomLoadoutKeybinds.allowKeyboardClick()) return
+        if (CustomLoadoutKeybinds.allowInput()) return
 
         if (preDrawEventCancelled) event.cancel()
     }

@@ -7,6 +7,7 @@ import at.hannibal2.skyhanni.data.jsonobjects.repo.neu.recipe.NeuRecipeType
 import at.hannibal2.skyhanni.events.MessageSendToServerEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.HypixelCommands
+import at.hannibal2.skyhanni.utils.ItemNameResolver
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.NeuItems
 import at.hannibal2.skyhanni.utils.NeuItems.getItemStackOrNull
@@ -70,10 +71,7 @@ object ViewRecipeCommand {
 
     private fun String.toSkyblockCommandId(itemData: NeuItemJson): String = when {
         PetUtils.isNeuRepoPetItem(itemData) -> substringBefore(';')
-        contains(';') && itemData.isEnchantedBook -> {
-            val (name, level) = split(";", limit = 2)
-            "ENCHANTED_BOOK_${name}_$level"
-        }
+        contains(';') && itemData.isEnchantedBook -> ItemNameResolver.enchantedBookCommandId(this)
 
         else -> this
     }
