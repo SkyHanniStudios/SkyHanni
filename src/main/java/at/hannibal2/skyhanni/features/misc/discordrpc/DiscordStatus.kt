@@ -314,7 +314,7 @@ enum class DiscordStatus(private val displayMessageSupplier: DiscordStatus.() ->
                 "AFK for $format"
             } else AutoStatus.AFK.placeholderText
         },
-    )
+    ),
     ;
 
     fun getDisplayString(): String = displayMessageSupplier().orEmpty()

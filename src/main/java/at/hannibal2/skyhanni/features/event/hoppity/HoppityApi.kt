@@ -6,12 +6,12 @@ import at.hannibal2.skyhanni.api.event.HandleEvent.Companion.HIGHEST
 import at.hannibal2.skyhanni.config.storage.Resettable
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.jsonobjects.repo.HoppityEggLocationsJson
+import at.hannibal2.skyhanni.events.DialogueResponseSentEvent
 import at.hannibal2.skyhanni.events.GuiContainerEvent
 import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
 import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
 import at.hannibal2.skyhanni.events.IslandChangeEvent
-import at.hannibal2.skyhanni.events.MessageSendToServerEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.hoppity.EggFoundEvent
@@ -100,11 +100,19 @@ object HoppityApi {
     )
 
     /**
-     * REGEX-TEST: /selectnpcoption hoppity r_2_1
+     * REGEX-TEST: hoppity
      */
-    val pickupOutgoingCommandPattern by CFApi.patternGroup.pattern(
-        "hoppity.call.pickup.outgoing",
-        "\\/selectnpcoption hoppity r_2_1",
+    private val hoppityNpcIdPattern by CFApi.patternGroup.pattern(
+        "hoppity.npc.id",
+        "hoppity",
+    )
+
+    /**
+     * REGEX-TEST: r_2_1
+     */
+    private val hoppityAcceptResponsePattern by CFApi.patternGroup.pattern(
+        "hoppity.response.accept",
+        "r_2_1",
     )
 
     /**
@@ -144,7 +152,7 @@ object HoppityApi {
     /**
      * REGEX-TEST: Hoppity
      */
-    val hoppityInventoryPattern by CFApi.patternGroup.pattern(
+    private val hoppityInventoryPattern by CFApi.patternGroup.pattern(
         "hoppity.inventory",
         "Hoppity",
     )
@@ -234,17 +242,17 @@ object HoppityApi {
     }
 
     @HandleEvent
-    fun onRepoReload(event: RepositoryReloadEvent) {
+    private fun onRepoReload(event: RepositoryReloadEvent) {
         allowedHoppityIslands = event.getConstant<HoppityEggLocationsJson>("HoppityEggLocations").apiEggLocations.keys.toSet()
     }
 
     @HandleEvent(IslandChangeEvent::class)
-    fun onIslandChange() {
+    private fun onIslandChange() {
         onHoppityIsland = SkyBlockUtils.inSkyBlock && allowedHoppityIslands.any { it.isInIsland() }
     }
 
     @HandleEvent
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         if (!checkNextInvOpen) return
         checkNextInvOpen = false
         if (!hoppityDetector.isInside()) return
@@ -252,7 +260,7 @@ object HoppityApi {
     }
 
     @HandleEvent(InventoryCloseEvent::class)
-    fun onInventoryClose() {
+    private fun onInventoryClose() {
         processedStraySlots.clear()
         if (lastHoppityCallAccept == null) return
         DelayedRun.runDelayed(1.seconds) {
@@ -261,13 +269,16 @@ object HoppityApi {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onCommandSend(event: MessageSendToServerEvent) {
-        if (!pickupOutgoingCommandPattern.matches(event.message)) return
+    private fun onDialogueResponseSent(event: DialogueResponseSentEvent) {
+        if (!hoppityNpcIdPattern.matches(event.npcId) ||
+            !hoppityAcceptResponsePattern.matches(event.responseKey)
+        ) return
+
         checkNextInvOpen = true
     }
 
     @HandleEvent
-    fun onInventoryUpdated(event: InventoryUpdatedEvent) {
+    private fun onInventoryUpdated(event: InventoryUpdatedEvent) {
         // Remove any processed stray slots that are no longer in the inventory.
         processedStraySlots.entries.removeIf {
             !event.inventoryItems.containsKey(it.key) ||
@@ -310,7 +321,7 @@ object HoppityApi {
     }
 
     @HandleEvent(priority = HandleEvent.HIGH)
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         if (!miscProcessInvPattern.matches(InventoryUtils.openInventoryName())) return
         val slot = event.slot?.takeIf { it.isMiscProcessable() } ?: return
         val hoverName = slot.item.hoverName.formattedTextCompatLeadingWhiteLessResets()
@@ -328,7 +339,7 @@ object HoppityApi {
     }
 
     @HandleEvent(priority = HIGHEST)
-    fun onEggFound(event: EggFoundEvent) {
+    private fun onEggFound(event: EggFoundEvent) {
         hoppityDataSet.lastMeal = event.type
 
         when (event.type) {
@@ -354,7 +365,7 @@ object HoppityApi {
     }
 
     @HandleEvent(onlyOnSkyblock = true, priority = HandleEvent.HIGH)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         HoppityEggsManager.eggFoundPattern.matchMatcher(event.message) {
             hoppityDataSet.reset()
             val type = getEggType(event)

@@ -2,6 +2,7 @@ package at.hannibal2.skyhanni.features.combat
 
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
+import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.title.TitleManager
 import at.hannibal2.skyhanni.events.GuiRenderEvent
@@ -20,6 +21,8 @@ import at.hannibal2.skyhanni.utils.compat.appendWithColor
 import at.hannibal2.skyhanni.utils.compat.componentBuilder
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
+import com.google.gson.JsonArray
+import com.google.gson.JsonPrimitive
 import net.minecraft.ChatFormatting
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
@@ -34,7 +37,8 @@ object BroodmotherFeatures {
         SOON("§6Soon", 1.5.minutes),
         AWAKENING("§6Awakening", 1.minutes),
         IMMINENT("§4Imminent", 0.5.minutes),
-        ALIVE("§4Alive!", 0.minutes);
+        ALIVE("§4Alive!", 0.minutes),
+        ;
 
         override fun toString() = str
     }
@@ -152,6 +156,13 @@ object BroodmotherFeatures {
         lastStage = null
         currentStage = null
         display = null
+    }
+
+    @HandleEvent
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+        event.move(149, "combat.broodmother.stages", "combat.broodmother.slainMessage") { stages ->
+            JsonPrimitive((stages as? JsonArray)?.contains(JsonPrimitive("SLAIN")) == true)
+        }
     }
 
     @HandleEvent(onlyOnIsland = IslandType.SPIDER_DEN)
