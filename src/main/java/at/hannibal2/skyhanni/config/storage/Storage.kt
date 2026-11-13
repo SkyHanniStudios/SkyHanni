@@ -12,9 +12,6 @@ class Storage {
     var hasPlayedBefore: Boolean = false
 
     @Expose
-    var visualWordsImported: Boolean = false
-
-    @Expose
     var contestSendingAsked: Boolean = false
 
     @Expose
@@ -25,9 +22,6 @@ class Storage {
 
     @Expose
     var trackerDisplayModes: MutableMap<String, SkyHanniTracker.DisplayMode> = mutableMapOf()
-
-    @Expose
-    var foundDianaBurrowLocations: List<LorenzVec> = emptyList()
 
     @Expose
     var players: MutableMap<UUID, PlayerSpecificStorage> = mutableMapOf()
