@@ -560,8 +560,6 @@ tasks.withType<ValidateAccessWidenerTask>().configureEach {
 }
 
 tasks.withType<ProcessResources>().configureEach {
-    duplicatesStrategy = DuplicatesStrategy.INCLUDE
-
     // Taken From SkyOcean, this is a workaround since stonecutter does not work in shaders
     if (stonecutter.current.parsed eq "<= 26.2") {
         filesMatching(listOf("**/*.fsh", "**/*.vsh")) {
