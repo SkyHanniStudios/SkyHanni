@@ -16,7 +16,7 @@ enum class ProjectTarget(
     MODERN_26100(
         "26.1",
         MinecraftVersion.MC26100,
-        fabricLoaderVersion = "net.fabricmc:fabric-loader:0.19.5",
+        fabricLoaderVersion = "net.fabricmc:fabric-loader:0.20.1",
         fabricApiVersion = "net.fabricmc.fabric-api:fabric-api:0.155.2+26.1.2",
         fabricLanguageKotlinVersion = "net.fabricmc:fabric-language-kotlin:1.14.2+kotlin.2.4.21",
         hypixelModApiVersion = "net.hypixel:mod-api:1.0.2",
@@ -29,7 +29,7 @@ enum class ProjectTarget(
     MODERN_26200(
         "26.2",
         MinecraftVersion.MC26200,
-        fabricLoaderVersion = "net.fabricmc:fabric-loader:0.19.5",
+        fabricLoaderVersion = "net.fabricmc:fabric-loader:0.20.1",
         fabricApiVersion = "net.fabricmc.fabric-api:fabric-api:0.155.2+26.2",
         fabricLanguageKotlinVersion = "net.fabricmc:fabric-language-kotlin:1.14.2+kotlin.2.4.21",
         hypixelModApiVersion = "net.hypixel:mod-api:1.0.2",
@@ -43,8 +43,8 @@ enum class ProjectTarget(
     MODERN_26300(
         "26.3",
         MinecraftVersion.MC26300,
-        fabricLoaderVersion = "net.fabricmc:fabric-loader:0.19.3",
-        fabricApiVersion = "net.fabricmc.fabric-api:fabric-api:0.160.3+26.3",
+        fabricLoaderVersion = "net.fabricmc:fabric-loader:0.20.1",
+        fabricApiVersion = "net.fabricmc.fabric-api:fabric-api:0.166.2+26.3",
         fabricLanguageKotlinVersion = "net.fabricmc:fabric-language-kotlin:1.14.2+kotlin.2.4.21",
         hypixelModApiVersion = "net.hypixel:mod-api:1.0.2",
         // There is no 26.3 version; the 26.1 version works on 26.3.
