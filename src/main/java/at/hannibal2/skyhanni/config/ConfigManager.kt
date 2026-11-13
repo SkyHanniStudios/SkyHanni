@@ -29,6 +29,9 @@ import at.hannibal2.skyhanni.utils.collection.CollectionUtils.enumMapOf
 import at.hannibal2.skyhanni.utils.json.BaseGsonBuilder
 import at.hannibal2.skyhanni.utils.system.PlatformUtils
 import com.google.gson.Gson
+import com.google.gson.JsonObject
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
 import io.github.notenoughupdates.moulconfig.annotations.ConfigLink
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 import io.github.notenoughupdates.moulconfig.gui.GuiOptionEditor
@@ -161,8 +164,9 @@ class ConfigManager {
                 logger.log("load-$fileName-now")
 
                 output = if (fileType == ConfigFileType.FEATURES) {
-                    val jsonObject = lenientGson.fromJson(text, com.google.gson.JsonObject::class.java)
+                    val jsonObject = lenientGson.fromJson(text, JsonObject::class.java)
                     val newJsonObject = ConfigUpdaterMigrator.fixConfig(jsonObject)
+                    fillMissingFromDefaults(defaultValue, newJsonObject, lenientGson)
                     val run = { lenientGson.fromJson(newJsonObject, defaultValue.javaClass) }
                     if (PlatformUtils.isDevEnvironment) {
                         try {
@@ -202,6 +206,19 @@ class ConfigManager {
         }
 
         return output
+    }
+
+    private fun fillMissingFromDefaults(defaults: Any, json: JsonObject, gson: Gson) {
+        val fields = generateSequence<Class<*>>(defaults.javaClass) { it.superclass }.flatMap { it.declaredFields.asSequence() }
+        for (field in fields.filter { it.isAnnotationPresent(Expose::class.java) }) {
+            val value = field.makeAccessible().get(defaults) ?: continue
+            val name = field.getAnnotation(SerializedName::class.java)?.value ?: field.name
+            when (val existing = json[name]) {
+                null -> json.add(name, gson.toJsonTree(value, field.genericType))
+                is JsonObject if value.javaClass.name.startsWith("at.hannibal2.skyhanni.config.") ->
+                    fillMissingFromDefaults(value, existing, gson)
+            }
+        }
     }
 
     fun saveConfig(fileType: ConfigFileType, reason: String) {
