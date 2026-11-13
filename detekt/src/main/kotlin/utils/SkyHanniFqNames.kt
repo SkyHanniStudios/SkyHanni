@@ -4,19 +4,18 @@ import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 
 object SkyHanniFqNames {
-    const val ROOT_PACKAGE = "at.hannibal2.skyhanni"
-    const val ISLAND_TYPE = "at.hannibal2.skyhanni.data.IslandType"
-    const val SAFE_ITEM_STACK = "at.hannibal2.skyhanni.utils.SafeItemStack"
-    const val VANILLA_ITEM_STACK = "net.minecraft.world.item.ItemStack"
-    const val HANDLE_EVENT = "at.hannibal2.skyhanni.api.event.HandleEvent"
-    const val PRIMARY_FUNCTION = "at.hannibal2.skyhanni.skyhannimodule.PrimaryFunction"
-    const val SKYHANNI_MODULE = "at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule"
-    const val SKYHANNI_EVENT = "at.hannibal2.skyhanni.api.event.SkyHanniEvent"
+    val ROOT_PACKAGE = FqName("at.hannibal2.skyhanni")
+    val CONFIG_PACKAGE = FqName("at.hannibal2.skyhanni.config")
+    val CONFIG_FEATURES_PACKAGE = FqName("at.hannibal2.skyhanni.config.features")
+    val CONFIG_STORAGE_PACKAGE = FqName("at.hannibal2.skyhanni.config.storage")
 
-    val HANDLE_EVENT_ID: ClassId = HANDLE_EVENT.toClassId()
-    val PRIMARY_FUNCTION_ID: ClassId = PRIMARY_FUNCTION.toClassId()
-    val SKYHANNI_MODULE_ID: ClassId = SKYHANNI_MODULE.toClassId()
-    val SKYHANNI_EVENT_ID: ClassId = SKYHANNI_EVENT.toClassId()
+    val ISLAND_TYPE: ClassId = classId("at.hannibal2.skyhanni.data.IslandType")
+    val SAFE_ITEM_STACK: ClassId = classId("at.hannibal2.skyhanni.utils.SafeItemStack")
+    val VANILLA_ITEM_STACK: ClassId = classId("net.minecraft.world.item.ItemStack")
+    val HANDLE_EVENT: ClassId = classId("at.hannibal2.skyhanni.api.event.HandleEvent")
+    val PRIMARY_FUNCTION: ClassId = classId("at.hannibal2.skyhanni.skyhannimodule.PrimaryFunction")
+    val SKYHANNI_MODULE: ClassId = classId("at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule")
+    val SKYHANNI_EVENT: ClassId = classId("at.hannibal2.skyhanni.api.event.SkyHanniEvent")
 
-    private fun String.toClassId(): ClassId = ClassId.topLevel(FqName(this))
+    private fun classId(fqName: String): ClassId = ClassId.topLevel(FqName(fqName))
 }

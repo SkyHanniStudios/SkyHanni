@@ -1,6 +1,6 @@
 package potentialbugs
 
-import SkyHanniRule
+import SkyHanniAnalysisRule
 import com.google.gson.annotations.Expose
 import dev.detekt.api.Config
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorButton
@@ -10,21 +10,16 @@ import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtProperty
 import utils.DetektUtils.doWeNeedToCheckConfigProp
 import utils.DetektUtils.hasAnnotation
+import utils.DetektUtils.isConfigOrStorageFile
+import utils.DetektUtils.javaClassId
 
-class StorageNeedsExpose(config: Config) : SkyHanniRule(
+class StorageNeedsExpose(config: Config) : SkyHanniAnalysisRule(
     config,
     "Config and storage properties that store data should be annotated with @Expose.",
 ) {
 
-    companion object {
-        const val STORAGE_PACKAGE = "at.hannibal2.skyhanni.config.storage"
-        const val CONFIG_PACKAGE = "at.hannibal2.skyhanni.config.features"
-    }
-
     override fun visitKtFile(file: KtFile) {
-        val packageName = file.packageDirective?.fqName?.asString().orEmpty()
-        if (!packageName.startsWith(CONFIG_PACKAGE) && !packageName.startsWith(STORAGE_PACKAGE)) return
-        super.visitKtFile(file)
+        if (file.isConfigOrStorageFile()) super.visitKtFile(file)
     }
 
     private fun checkProperty(property: KtProperty) {
@@ -41,7 +36,7 @@ class StorageNeedsExpose(config: Config) : SkyHanniRule(
         }
 
         (property.nameIdentifier ?: property).reportIssue("@Expose annotation is missing from property ${property.name}", property)
-        property.addAnnotation(Expose::class.java.name)
+        property.addAnnotation(Expose::class.javaClassId())
     }
 
     override fun visitProperty(property: KtProperty) {

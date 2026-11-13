@@ -19,8 +19,8 @@ class MissingSkyHanniModule(config: Config) : SkyHanniAnalysisRule(
         val body = declaration.body ?: return
         val missing = analyze(declaration) {
             val symbol = declaration.classSymbol ?: return@analyze false
-            !symbol.hasAnnotation(SkyHanniFqNames.SKYHANNI_MODULE_ID) &&
-                body.functions.any { it.symbol.hasAnnotation(SkyHanniFqNames.HANDLE_EVENT_ID) }
+            !symbol.hasAnnotation(SkyHanniFqNames.SKYHANNI_MODULE) &&
+                body.functions.any { it.symbol.hasAnnotation(SkyHanniFqNames.HANDLE_EVENT) }
         }
         if (!missing) return
         (declaration.nameIdentifier ?: declaration.getObjectKeyword() ?: declaration).reportIssue(

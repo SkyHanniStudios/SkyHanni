@@ -1,6 +1,7 @@
 package imports
 
 import SkyHanniRule
+import corrections.OffsetMapper
 import dev.detekt.api.Config
 import imports.ImportOrdering.ImportBlock
 import imports.ImportOrdering.ImportLine
@@ -110,7 +111,7 @@ class CustomImportOrdering(config: Config) : SkyHanniRule(
         }
 
         val sourceFileLinesMapping by lazy { KtPsiSourceFileLinesMapping(file) }
-        val starts by lazy { lineStartOffsets(fileLines) }
+        val starts by lazy { OffsetMapper.lineStartOffsets(fileLines) }
 
         findPreprocessingBlockOrderViolation(blocks)?.let {
             reportIssue(

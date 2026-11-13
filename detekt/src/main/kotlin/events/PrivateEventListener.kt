@@ -1,6 +1,6 @@
 package events
 
-import SkyHanniRule
+import SkyHanniAnalysisRule
 import dev.detekt.api.Config
 import org.jetbrains.kotlin.lexer.KtModifierKeywordToken
 import org.jetbrains.kotlin.lexer.KtTokens
@@ -8,14 +8,15 @@ import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 import utils.DetektUtils.hasAnnotation
+import utils.SkyHanniFqNames
 
-class PrivateEventListener(config: Config) : SkyHanniRule(
+class PrivateEventListener(config: Config) : SkyHanniAnalysisRule(
     config,
     "Functions annotated with @HandleEvent should be private.",
     CONVENTIONS_URI,
 ) {
     override fun visitNamedFunction(function: KtNamedFunction) {
-        if (function.hasAnnotation("HandleEvent") && !isEffectivelyPrivate(function)) {
+        if (function.hasAnnotation(SkyHanniFqNames.HANDLE_EVENT) && !isEffectivelyPrivate(function)) {
             (function.nameIdentifier ?: function).reportIssue("Event listener functions should be private.", function)
             correct(function)
         }

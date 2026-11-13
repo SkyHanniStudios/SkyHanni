@@ -35,13 +35,15 @@ class MissingPrimaryFunction(config: Config, private val index: PrimaryFunctionI
     }
 
     private fun KaSession.needsPrimaryFunction(symbol: KaClassSymbol): Boolean =
-        !symbol.isAbstractDeclaration() && isSkyHanniEventClass(symbol) && !symbol.hasAnnotation(SkyHanniFqNames.PRIMARY_FUNCTION_ID)
+        !symbol.isAbstractDeclaration() && isSkyHanniEventClass(symbol) && !symbol.hasAnnotation(SkyHanniFqNames.PRIMARY_FUNCTION)
 
     private fun KaSession.freeCandidate(classOrObject: KtClassOrObject, symbol: KaClassSymbol): String? {
         val candidate = symbol.primaryFunctionCandidate() ?: return null
         if (index.lookup(this, candidate)?.isEmpty() != true) return null
         val sameFile = classOrObject.containingKtFile.collectDescendantsOfType<KtClassOrObject> { it != classOrObject }
             .mapNotNull { it.classSymbol?.takeIf { other -> needsPrimaryFunction(other) } }
-        return candidate.takeIf { sameFile.none { it.primaryFunctionCandidate() == candidate } }
+        return candidate.takeIf { primaryFuncCandidate ->
+            sameFile.none { it.primaryFunctionCandidate() == primaryFuncCandidate }
+        }
     }
 }

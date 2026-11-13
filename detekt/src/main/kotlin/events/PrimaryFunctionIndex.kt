@@ -5,7 +5,6 @@ import org.jetbrains.kotlin.analysis.api.KaSession
 import org.jetbrains.kotlin.analysis.api.symbols.KaClassSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.KaPackageSymbol
 import org.jetbrains.kotlin.name.ClassId
-import org.jetbrains.kotlin.name.FqName
 import utils.SkyHanniFqNames
 import utils.SkyHanniSymbols.isSkyHanniEventClass
 import utils.SkyHanniSymbols.primaryFunctionName
@@ -21,7 +20,7 @@ class PrimaryFunctionIndex {
         entries ?: synchronized(this) { entries ?: build(session).takeIf { it.isNotEmpty() }?.also { entries = it } }
 
     private fun build(session: KaSession): Map<String, List<ClassId>> = with(session) {
-        val root = findPackage(FqName(SkyHanniFqNames.ROOT_PACKAGE)) ?: return emptyMap()
+        val root = findPackage(SkyHanniFqNames.ROOT_PACKAGE) ?: return emptyMap()
         val classes = mutableListOf<KaClassSymbol>()
         collectPackage(root, classes)
         classes.mapNotNull { symbol ->

@@ -13,7 +13,8 @@ import utils.SkyHanniSymbols.isObjectMember
 
 class RedundantHandleEvent(config: Config, private val index: PrimaryFunctionIndex) : SkyHanniAnalysisRule(
     config,
-    "@HandleEvent should only be applied to functions that take a SkyHanniEvent, list an event type, or are named after a @PrimaryFunction.",
+    "@HandleEvent should only be applied to functions that take a SkyHanniEvent," +
+        "list an event type,or are named after a @PrimaryFunction.",
 ) {
 
     override fun visitNamedFunction(function: KtNamedFunction) {

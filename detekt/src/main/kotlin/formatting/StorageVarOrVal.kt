@@ -1,8 +1,7 @@
 package formatting
 
-import SkyHanniRule
+import SkyHanniAnalysisRule
 import dev.detekt.api.Config
-import dev.detekt.api.RequiresAnalysisApi
 import io.github.notenoughupdates.moulconfig.ChromaColour
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorInfoText
 import org.jetbrains.kotlin.analysis.api.analyze
@@ -11,12 +10,12 @@ import org.jetbrains.kotlin.analysis.api.types.KaClassType
 import org.jetbrains.kotlin.name.StandardClassIds
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtProperty
-import potentialbugs.StorageNeedsExpose.Companion.CONFIG_PACKAGE
 import utils.DetektUtils.doWeNeedToCheckConfigProp
 import utils.DetektUtils.hasAnnotation
 import utils.DetektUtils.javaClassId
+import utils.SkyHanniFqNames
 
-class StorageVarOrVal(config: Config) : RequiresAnalysisApi, SkyHanniRule(
+class StorageVarOrVal(config: Config) : SkyHanniAnalysisRule(
     config,
     "Storage and config properties should be `var` for primitives, strings, enums and colors, and `val` for other objects.",
 ) {
@@ -30,9 +29,7 @@ class StorageVarOrVal(config: Config) : RequiresAnalysisApi, SkyHanniRule(
     }
 
     override fun visitKtFile(file: KtFile) {
-        val packageName = file.packageDirective?.fqName?.asString().orEmpty()
-        if (!packageName.startsWith(CONFIG_PACKAGE)) return
-        super.visitKtFile(file)
+        if (file.packageFqName.startsWith(SkyHanniFqNames.CONFIG_FEATURES_PACKAGE)) super.visitKtFile(file)
     }
 
     override fun visitProperty(property: KtProperty) {

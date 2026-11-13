@@ -27,7 +27,7 @@ object SkyHanniSymbols {
     fun KaAnnotated.hasAnnotation(classId: ClassId): Boolean = annotations.contains(classId)
 
     fun KaSession.isSkyHanniEvent(type: KaType): Boolean =
-        (type as? KaClassType)?.classId != SkyHanniFqNames.SKYHANNI_EVENT_ID && type.isSubtypeOf(SkyHanniFqNames.SKYHANNI_EVENT_ID)
+        (type as? KaClassType)?.classId != SkyHanniFqNames.SKYHANNI_EVENT && type.isSubtypeOf(SkyHanniFqNames.SKYHANNI_EVENT)
 
     fun KaSession.isSkyHanniEventClass(symbol: KaClassSymbol): Boolean = isSkyHanniEvent(symbol.defaultType)
 
@@ -44,7 +44,7 @@ object SkyHanniSymbols {
     }
 
     fun KaAnnotated.handleEventEntry(): KtAnnotationEntry? =
-        annotations[SkyHanniFqNames.HANDLE_EVENT_ID].firstOrNull()?.psi as? KtAnnotationEntry
+        annotations[SkyHanniFqNames.HANDLE_EVENT].firstOrNull()?.psi as? KtAnnotationEntry
 
     fun KtAnnotationEntry.eventTypeArguments(): List<KtValueArgument> =
         valueArguments.filterIsInstance<KtValueArgument>().filterIndexed { index, argument ->
@@ -55,18 +55,18 @@ object SkyHanniSymbols {
     fun KaType.displayName(): String = (this as? KaClassType)?.classId?.shortClassName?.asString() ?: "event"
 
     fun KaAnnotated.primaryFunctionName(): String? {
-        val arguments = annotations[SkyHanniFqNames.PRIMARY_FUNCTION_ID].firstOrNull()?.arguments ?: return null
+        val arguments = annotations[SkyHanniFqNames.PRIMARY_FUNCTION].firstOrNull()?.arguments ?: return null
         val argument = arguments.firstOrNull { it.name.asString() == "value" } ?: arguments.singleOrNull() ?: return null
         val constant = (argument.expression as? KaAnnotationValue.ConstantValue)?.value as? KaConstantValue.StringValue
         return constant?.value?.takeIf(String::isNotBlank)
     }
 
     fun KaAnnotated.explicitEventTypes(): List<ClassId> =
-        annotations[SkyHanniFqNames.HANDLE_EVENT_ID]
+        annotations[SkyHanniFqNames.HANDLE_EVENT]
             .flatMap { it.arguments }
             .filter { it.name.asString() in EVENT_TYPE_ARGUMENTS }
             .flatMap { it.expression.classLiterals() }
-            .filter { it != SkyHanniFqNames.SKYHANNI_EVENT_ID }
+            .filter { it != SkyHanniFqNames.SKYHANNI_EVENT }
 
     private fun KaAnnotationValue.classLiterals(): List<ClassId> = when (this) {
         is KaAnnotationValue.ClassLiteralValue -> listOfNotNull(classId)
@@ -88,8 +88,6 @@ object SkyHanniSymbols {
             .collectDescendantsOfType<KtNameReferenceExpression> { it.getReferencedName() == function.name }
             .any { it.resolveSymbol()?.psi == function }
 
-    fun KtClassOrObject.isInSkyHanniPackage(): Boolean {
-        val packageName = getClassId()?.packageFqName?.asString() ?: return false
-        return packageName == SkyHanniFqNames.ROOT_PACKAGE || packageName.startsWith("${SkyHanniFqNames.ROOT_PACKAGE}.")
-    }
+    fun KtClassOrObject.isInSkyHanniPackage(): Boolean =
+        getClassId()?.packageFqName?.startsWith(SkyHanniFqNames.ROOT_PACKAGE) == true
 }

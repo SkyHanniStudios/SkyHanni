@@ -1,6 +1,6 @@
 package potentialbugs
 
-import SkyHanniRule
+import SkyHanniAnalysisRule
 import com.google.gson.annotations.Expose
 import dev.detekt.api.Config
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorButton
@@ -8,20 +8,17 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorInfoText
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.psiUtil.isPrivate
-import potentialbugs.StorageNeedsExpose.Companion.CONFIG_PACKAGE
-import potentialbugs.StorageNeedsExpose.Companion.STORAGE_PACKAGE
 import utils.DetektUtils.getAnnotation
 import utils.DetektUtils.hasAnnotation
+import utils.DetektUtils.isConfigOrStorageFile
 
-class NonStorageDoesntNeedExpose(config: Config) : SkyHanniRule(
+class NonStorageDoesntNeedExpose(config: Config) : SkyHanniAnalysisRule(
     config,
     "Config and storage properties that do not store data should not be annotated with @Expose.",
 ) {
 
     override fun visitKtFile(file: KtFile) {
-        val packageName = file.packageDirective?.fqName?.asString().orEmpty()
-        if (!packageName.startsWith(CONFIG_PACKAGE) && !packageName.startsWith(STORAGE_PACKAGE)) return
-        super.visitKtFile(file)
+        if (file.isConfigOrStorageFile()) super.visitKtFile(file)
     }
 
     override fun visitProperty(property: KtProperty) {

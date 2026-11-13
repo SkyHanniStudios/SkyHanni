@@ -17,7 +17,7 @@ class SkyHanniModuleOnlyOnObjects(config: Config) : SkyHanniAnalysisRule(
         super.visitClass(klass)
         if (klass.name == null || !klass.isInSkyHanniPackage()) return
         val entry = analyze(klass) {
-            klass.classSymbol?.annotations?.get(SkyHanniFqNames.SKYHANNI_MODULE_ID)?.firstOrNull()?.psi as? KtAnnotationEntry
+            klass.classSymbol?.annotations?.get(SkyHanniFqNames.SKYHANNI_MODULE)?.firstOrNull()?.psi as? KtAnnotationEntry
         } ?: return
         (klass.nameIdentifier ?: klass).reportIssue("@SkyHanniModule can only be applied to objects.", klass)
         entry.removeAnnotation(SkyHanniFqNames.SKYHANNI_MODULE)

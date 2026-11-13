@@ -1,8 +1,7 @@
 package potentialbugs
 
-import SkyHanniRule
+import SkyHanniAnalysisRule
 import dev.detekt.api.Config
-import dev.detekt.api.RequiresAnalysisApi
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 import io.github.notenoughupdates.moulconfig.observer.Property
 import org.jetbrains.kotlin.analysis.api.KaSession
@@ -11,22 +10,20 @@ import org.jetbrains.kotlin.analysis.api.types.KaClassType
 import org.jetbrains.kotlin.analysis.api.types.KaType
 import org.jetbrains.kotlin.analysis.api.types.KaTypeArgumentWithVariance
 import org.jetbrains.kotlin.name.ClassId
-import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.StandardClassIds
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtProperty
 import utils.DetektUtils.hasAnnotation
 import utils.DetektUtils.javaClassId
+import utils.SkyHanniFqNames
 import java.util.EnumMap
 import java.util.EnumSet
 
-class ImmutableWritableConfigDeclaration(config: Config) : RequiresAnalysisApi, SkyHanniRule(
+class ImmutableWritableConfigDeclaration(config: Config) : SkyHanniAnalysisRule(
     config,
     "Config options should use mutable collection types so MoulConfig can modify them in place.",
 ) {
     companion object {
-        val configPackage = FqName("at.hannibal2.skyhanni.config")
-
         private val propertyClassId = Property::class.javaClassId()
         private val immutableCollectionClassIds = setOf(
             StandardClassIds.Collection,
@@ -43,7 +40,7 @@ class ImmutableWritableConfigDeclaration(config: Config) : RequiresAnalysisApi, 
     }
 
     override fun visitKtFile(file: KtFile) {
-        if (!file.packageFqName.startsWith(configPackage)) return
+        if (!file.packageFqName.startsWith(SkyHanniFqNames.CONFIG_PACKAGE)) return
         super.visitKtFile(file)
     }
 

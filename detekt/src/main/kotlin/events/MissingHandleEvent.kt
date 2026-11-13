@@ -26,9 +26,9 @@ class MissingHandleEvent(config: Config, private val index: PrimaryFunctionIndex
         val name = function.name ?: return
         val message = analyze(function) {
             val symbol = function.symbol
-            if (symbol.hasAnnotation(SkyHanniFqNames.HANDLE_EVENT_ID) || !symbol.returnType.isUnitType) return@analyze null
+            if (symbol.hasAnnotation(SkyHanniFqNames.HANDLE_EVENT) || !symbol.returnType.isUnitType) return@analyze null
             val module = function.containingClassOrObject?.classSymbol ?: return@analyze null
-            if (!module.hasAnnotation(SkyHanniFqNames.SKYHANNI_MODULE_ID)) return@analyze null
+            if (!module.hasAnnotation(SkyHanniFqNames.SKYHANNI_MODULE)) return@analyze null
             val parameterless = function.valueParameters.isEmpty()
             val eventType = eventParameterType(function) ?: eventReceiverType(function)?.takeIf { parameterless }
             val text = when {

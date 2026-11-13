@@ -27,7 +27,7 @@ class DuplicatePrimaryFunction(config: Config, private val index: PrimaryFunctio
             val name = symbol.primaryFunctionName() ?: return@analyze null
             val others = index.lookup(this, name).orEmpty().filter { it != symbol.classId }
             if (others.isEmpty()) return@analyze null
-            val value = symbol.annotations[SkyHanniFqNames.PRIMARY_FUNCTION_ID].firstOrNull()
+            val value = symbol.annotations[SkyHanniFqNames.PRIMARY_FUNCTION].firstOrNull()
                 ?.psi?.valueArguments?.firstOrNull()?.getArgumentExpression()
             val rename = symbol.primaryFunctionCandidate()
                 ?.takeIf { it != name && index.lookup(this, it)?.isEmpty() == true }

@@ -31,7 +31,7 @@ class UnusedEventParameter(config: Config, private val index: PrimaryFunctionInd
         val name = function.name ?: return
         val parameter = function.valueParameters.singleOrNull() ?: return
         val (source, eventId) = analyze(function) {
-            if (!function.symbol.hasAnnotation(SkyHanniFqNames.HANDLE_EVENT_ID)) return@analyze null
+            if (!function.symbol.hasAnnotation(SkyHanniFqNames.HANDLE_EVENT)) return@analyze null
             val eventId = (eventParameterType(function) as? KaClassType)?.classId ?: return@analyze null
             if (isUsed(parameter, function) || isReferencedInFile(function)) return@analyze null
             val primary = index.lookup(this, name) ?: return@analyze null

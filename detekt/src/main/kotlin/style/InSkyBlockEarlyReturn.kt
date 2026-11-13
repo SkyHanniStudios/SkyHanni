@@ -7,8 +7,10 @@ import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtIfExpression
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtPrefixExpression
+import org.jetbrains.kotlin.psi.KtPsiUtil
 import org.jetbrains.kotlin.psi.psiUtil.collectDescendantsOfType
 import utils.DetektUtils.getAnnotation
+import utils.SkyHanniFqNames
 
 class InSkyBlockEarlyReturn(config: Config) : HandleEventEarlyReturnRule(
     config,
@@ -24,7 +26,7 @@ class InSkyBlockEarlyReturn(config: Config) : HandleEventEarlyReturnRule(
 
     override fun visitNamedFunction(function: KtNamedFunction) {
         super.visitNamedFunction(function)
-        val annotation = function.getAnnotation("HandleEvent") ?: return
+        val annotation = function.getAnnotation(SkyHanniFqNames.HANDLE_EVENT) ?: return
         val ifExpressions = function.bodyExpression?.collectDescendantsOfType<KtIfExpression>() ?: return
 
         for (ifExpression in ifExpressions) {
@@ -43,13 +45,12 @@ class InSkyBlockEarlyReturn(config: Config) : HandleEventEarlyReturnRule(
         val names = annotation.argumentNames()
         if (OUTSIDE_SKYBLOCK_ARGUMENT in names || names.any { it in ISLAND_ARGUMENTS }) return
         val skyblockArgument = annotation.namedArgument(SKYBLOCK_ARGUMENT)
-        if (skyblockArgument != null && skyblockArgument.getArgumentExpression()?.text != "true") return
+        if (skyblockArgument != null && !KtPsiUtil.isTrueConstant(skyblockArgument.getArgumentExpression())) return
         if (!removeGuard(ifExpression, operand)) return
         if (skyblockArgument == null) annotation.addArgument("$SKYBLOCK_ARGUMENT = true")
     }
 
     companion object {
         private const val IN_SKYBLOCK = "SkyBlockUtils.inSkyBlock"
-        private const val SKYBLOCK_ARGUMENT = "onlyOnSkyblock"
     }
 }

@@ -1,6 +1,6 @@
 package style
 
-import SkyHanniRule
+import SkyHanniAnalysisRule
 import dev.detekt.api.Config
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.KtBinaryExpression
@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtPrefixExpression
 import org.jetbrains.kotlin.psi.KtReturnExpression
 
-abstract class HandleEventEarlyReturnRule(config: Config, description: String) : SkyHanniRule(config, description) {
+abstract class HandleEventEarlyReturnRule(config: Config, description: String) : SkyHanniAnalysisRule(config, description) {
 
     protected fun KtExpression.isEarlyReturn(): Boolean = this is KtIfExpression && then is KtReturnExpression
 
@@ -42,5 +42,7 @@ abstract class HandleEventEarlyReturnRule(config: Config, description: String) :
     companion object {
         val ISLAND_ARGUMENTS = setOf("onlyOnIsland", "onlyOnIslands", "onlyOnIslandTypeTag")
         const val OUTSIDE_SKYBLOCK_ARGUMENT = "onlyOnSkyblockOrFeatures"
+        const val SKYBLOCK_ARGUMENT = "onlyOnSkyblock"
+        const val ISLAND_ARGUMENT = "onlyOnIsland"
     }
 }

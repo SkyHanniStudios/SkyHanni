@@ -17,7 +17,7 @@ class IsInIslandEarlyReturn(config: Config) : HandleEventEarlyReturnRule(
 
     override fun visitNamedFunction(function: KtNamedFunction) {
         super.visitNamedFunction(function)
-        val annotation = function.getAnnotation("HandleEvent") ?: return
+        val annotation = function.getAnnotation(SkyHanniFqNames.HANDLE_EVENT) ?: return
         val ifExpressions = function.bodyExpression?.collectDescendantsOfType<KtIfExpression>() ?: return
 
         for (ifExpression in ifExpressions) {
@@ -44,12 +44,12 @@ class IsInIslandEarlyReturn(config: Config) : HandleEventEarlyReturnRule(
         val names = annotation.argumentNames()
         if (names.any { it in ISLAND_ARGUMENTS } || OUTSIDE_SKYBLOCK_ARGUMENT in names) return
         if (!removeGuard(ifExpression, operand)) return
-        val skyblockArgument = annotation.namedArgument("onlyOnSkyblock")
+        val skyblockArgument = annotation.namedArgument(SKYBLOCK_ARGUMENT)
         if (skyblockArgument != null) {
             skyblockArgument.getArgumentExpression()?.replaceText(island)
-            skyblockArgument.getArgumentName()?.replaceText("onlyOnIsland")
+            skyblockArgument.getArgumentName()?.replaceText(ISLAND_ARGUMENT)
         } else {
-            annotation.addArgument("onlyOnIsland = $island")
+            annotation.addArgument("$ISLAND_ARGUMENT = $island")
         }
         function.containingKtFile.addImport(SkyHanniFqNames.ISLAND_TYPE)
     }
