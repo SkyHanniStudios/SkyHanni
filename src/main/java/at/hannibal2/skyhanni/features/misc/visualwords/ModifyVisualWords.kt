@@ -43,7 +43,7 @@ object ModifyVisualWords {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shwords") {
             description = "Opens the config list for modifying visual words"
             callback { openScreen() }

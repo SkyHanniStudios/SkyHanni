@@ -28,6 +28,8 @@ class ChangeLogViewerScreen : SkyHanniChromeScreen() {
 
     private lateinit var scrollList: Renderable
     private var cacheWasReady = false
+    private var lastListWidth = 0
+    private var lastListHeight = 0
 
     override fun onChromeDrawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         val ready = ChangelogViewer.cache.containsKeys(ChangelogViewer.startVersion, ChangelogViewer.endVersion)
@@ -71,10 +73,20 @@ class ChangeLogViewerScreen : SkyHanniChromeScreen() {
     override fun buildContent(): Renderable {
         ChangelogViewer.openTime = SimpleTimeMark.now()
 
+        val versionLabel = Renderable.drawInsideDarkRect(
+            Renderable.text("§9${ChangelogViewer.startVersion} §e➜ §9${ChangelogViewer.endVersion}"),
+            horizontalAlign = RenderUtils.HorizontalAlignment.LEFT,
+        )
+        val listWidth = maxContentWidth
+        val listHeight = maxContentHeight - buttonPanel.height - versionLabel.height - CONTENT_SPACING * 2
+
         val cacheContainsKey = ChangelogViewer.cache.containsKeys(ChangelogViewer.startVersion, ChangelogViewer.endVersion)
-        if (cacheContainsKey && (ChangelogViewer.shouldMakeNewList || !::scrollList.isInitialized)) {
+        val sizeChanged = listWidth != lastListWidth || listHeight != lastListHeight
+        if (cacheContainsKey && (ChangelogViewer.shouldMakeNewList || sizeChanged || !::scrollList.isInitialized)) {
             ChangelogViewer.shouldMakeNewList = false
-            scrollList = makeScrollList(buildChangelogMap(), 400, 300)
+            lastListWidth = listWidth
+            lastListHeight = listHeight
+            scrollList = makeScrollList(buildChangelogMap(), listWidth, listHeight)
         }
 
         val content = if (!cacheContainsKey) Renderable.text(
@@ -86,15 +98,8 @@ class ChangeLogViewerScreen : SkyHanniChromeScreen() {
         ) else scrollList
 
         return Renderable.vertical(
-            listOf(
-                buttonPanel,
-                Renderable.drawInsideDarkRect(
-                    Renderable.text("§9${ChangelogViewer.startVersion} §e➜ §9${ChangelogViewer.endVersion}"),
-                    horizontalAlign = RenderUtils.HorizontalAlignment.LEFT,
-                ),
-                content,
-            ),
-            spacing = 5,
+            listOf(buttonPanel, versionLabel, content),
+            spacing = CONTENT_SPACING,
         )
     }
 
@@ -104,7 +109,6 @@ class ChangeLogViewerScreen : SkyHanniChromeScreen() {
         return changelogMap.descendingMap()
     }
 
-    @Suppress("SameParameterValue")
     private fun makeScrollList(
         changelogList: NavigableMap<ModVersion, Map<String, List<String>>>,
         width: Int,
@@ -151,4 +155,8 @@ class ChangeLogViewerScreen : SkyHanniChromeScreen() {
             Renderable.wrappedText(it, width)
         }
     }.flatten()
+
+    companion object {
+        private const val CONTENT_SPACING = 5
+    }
 }

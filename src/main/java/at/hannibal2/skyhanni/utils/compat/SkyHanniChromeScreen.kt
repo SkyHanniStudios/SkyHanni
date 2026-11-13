@@ -14,7 +14,6 @@ import at.hannibal2.skyhanni.utils.renderables.primitives.text
  * panel, title bar with separator) is rendered automatically. Call [rebuildDisplay]
  * whenever the content structure changes (e.g., mode switch, list mutation).
  *
- * @see SkyHanniTabScreen for tab-navigated screens.
  * @see SkyHanniCanvasScreen for full-canvas screens without chrome.
  */
 abstract class SkyHanniChromeScreen : SkyHanniBaseScreen() {
@@ -36,22 +35,32 @@ abstract class SkyHanniChromeScreen : SkyHanniBaseScreen() {
         display = buildChrome(buildContent())
     }
 
+    private fun buildTitle(): Renderable = Renderable.text("§l$screenTitle")
+
+    val maxContentWidth: Int get() = width * SCREEN_SHARE_NUMERATOR / SCREEN_SHARE_DENOMINATOR - SkyHanniScreenTheme.PANEL_PADDING * 2
+
+    val maxContentHeight: Int
+        get() = height * SCREEN_SHARE_NUMERATOR / SCREEN_SHARE_DENOMINATOR -
+            SkyHanniScreenTheme.PANEL_PADDING * 2 - buildTitle().height - SEPARATOR_HEIGHT - BODY_SPACING * 2
+
+    protected open fun renderPanel(render: () -> Unit) = render()
+
     private fun buildChrome(content: Renderable): Renderable {
-        val titleText = Renderable.text("§l$screenTitle")
+        val titleText = buildTitle()
         val separatorInt = SkyHanniScreenTheme.SEPARATOR_INT
         val panelWidth = content.width.coerceAtLeast(titleText.width)
         val separator = object : Renderable {
             override val width = panelWidth
-            override val height = 1
+            override val height = SEPARATOR_HEIGHT
             override val horizontalAlign = HorizontalAlignment.LEFT
             override val verticalAlign = VerticalAlignment.TOP
             override fun render(mouseOffsetX: Int, mouseOffsetY: Int) {
-                GuiRenderUtils.drawRect(0, 0, width, 1, separatorInt)
+                GuiRenderUtils.drawRect(0, 0, width, SEPARATOR_HEIGHT, separatorInt)
             }
         }
         val body = Renderable.vertical(
             listOf(titleText, separator, content),
-            spacing = 4,
+            spacing = BODY_SPACING,
         )
         return Renderable.drawInsideFloatingRectWithBorder(
             body,
@@ -82,10 +91,12 @@ abstract class SkyHanniChromeScreen : SkyHanniBaseScreen() {
         GuiRenderUtils.drawRect(startX + o1, startY + o1, startX + panel.width + o1, startY + panel.height + o1, shadow)
         GuiRenderUtils.drawRect(startX + o2, startY + o2, startX + panel.width + o2, startY + panel.height + o2, shadow)
 
-        DrawContextUtils.pushPop {
-            DrawContextUtils.translate(startX.toFloat(), startY.toFloat())
-            Renderable.withMousePosition(mouseX - startX, mouseY - startY) {
-                panel.render(0, 0)
+        renderPanel {
+            DrawContextUtils.pushPop {
+                DrawContextUtils.translate(startX.toFloat(), startY.toFloat())
+                Renderable.withMousePosition(mouseX - startX, mouseY - startY) {
+                    panel.render(0, 0)
+                }
             }
         }
     }
@@ -103,4 +114,11 @@ abstract class SkyHanniChromeScreen : SkyHanniBaseScreen() {
      * [rebuildDisplay] when content needs to change (e.g., data finished loading).
      */
     open fun onChromeDrawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {}
+
+    companion object {
+        private const val SCREEN_SHARE_NUMERATOR = 4
+        private const val SCREEN_SHARE_DENOMINATOR = 5
+        private const val SEPARATOR_HEIGHT = 1
+        private const val BODY_SPACING = 4
+    }
 }

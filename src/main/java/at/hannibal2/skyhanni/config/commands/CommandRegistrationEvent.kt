@@ -7,9 +7,7 @@ import at.hannibal2.skyhanni.config.commands.brigadier.BaseBrigadierBuilder
 import at.hannibal2.skyhanni.config.commands.brigadier.CommandData
 import com.mojang.brigadier.CommandDispatcher
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
-import at.hannibal2.skyhanni.skyhannimodule.PrimaryFunction
 
-@PrimaryFunction("onCommandRegistration")
 class CommandRegistrationEvent(
     val dispatcher: CommandDispatcher<FabricClientCommandSource>,
 ) : SkyHanniEvent() {

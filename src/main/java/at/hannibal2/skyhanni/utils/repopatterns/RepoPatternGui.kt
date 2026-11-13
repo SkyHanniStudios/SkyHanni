@@ -1,5 +1,6 @@
 package at.hannibal2.skyhanni.utils.repopatterns
 
+import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.commands.CommandCategory
 import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
@@ -10,13 +11,16 @@ import at.hannibal2.skyhanni.utils.renderables.RenderableTooltips
 import at.hannibal2.skyhanni.utils.renderables.container.HorizontalContainerRenderable.Companion.horizontal
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
 import at.hannibal2.skyhanni.utils.renderables.searchableList
-import at.hannibal2.skyhanni.SkyHanniMod
 
 @SkyHanniModule
 object RepoPatternGui {
 
+    private const val LIST_HEIGHT = 280
+    private const val SEARCH_FIELD_HEIGHT = 16
+    private const val SEARCH_SPACING = 4
+
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shrepopatterns") {
             description = "See where regexes are loaded from"
             category = CommandCategory.DEVELOPER_TEST
@@ -33,7 +37,7 @@ object RepoPatternGui {
         }
         return Renderable.searchableList(
             items = items,
-            height = 280,
+            height = LIST_HEIGHT.coerceAtMost(screen.maxContentHeight - SEARCH_FIELD_HEIGHT - SEARCH_SPACING),
             scrollValue = screen.scrollValue,
             searchInput = screen.searchInput,
             isSearchActive = { screen.isSearchActive },
@@ -74,15 +78,8 @@ object RepoPatternGui {
             spacing = 8,
         )
 
-        val hoveredRow = Renderable.drawInsideRoundedRect(row, SkyHanniScreenTheme.COLOR_ROW_HOVER, padding = 2, radius = 3)
-
         val tooltip = buildTooltip(pattern, remotePatterns, localPatterns)
-        return Renderable.hoverable(
-            hoveredRow,
-            row,
-            bypassChecks = true,
-            onHover = { RenderableTooltips.setTooltipForRender(tooltip) },
-        )
+        return SkyHanniScreenTheme.hoverRow(row) { RenderableTooltips.setTooltipForRender(tooltip) }
     }
 
     /**
@@ -118,6 +115,7 @@ object RepoPatternGui {
                         add(Renderable.text("  §7Local: §e$local"))
                     }
                 }
+
                 remote != null -> add(Renderable.text("  §7Remote: §f$remote §c(no local fallback)"))
                 local != null -> add(Renderable.text("  §7Local: §f$local §c(no remote value)"))
             }

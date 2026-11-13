@@ -29,7 +29,6 @@ import at.hannibal2.skyhanni.utils.compat.DrawContextUtils
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.compat.RenderCompat
 import at.hannibal2.skyhanni.utils.compat.createResourceLocation
-import at.hannibal2.skyhanni.utils.compat.SkyHanniTabScreen
 import at.hannibal2.skyhanni.utils.render.ShaderRenderUtils
 import at.hannibal2.skyhanni.utils.render.SkyHanniRenderLayers
 import at.hannibal2.skyhanni.utils.renderables.RenderableUtils.renderXAligned
@@ -352,7 +351,7 @@ interface Renderable {
 
             val inMenu = MinecraftCompat.screen !is PauseScreen
             val isGuiPositionEditor = guiScreen !is GuiPositionEditor
-            val isNotInSignAndOnSlot = if (guiScreen !is SignEditScreen && guiScreen !is SkyHanniTabScreen<*>) {
+            val isNotInSignAndOnSlot = if (guiScreen !is SignEditScreen) {
                 ToolTipData.lastSlot == null
                     || GuiData.preDrawEventCancelled
             } else true
