@@ -6,6 +6,7 @@ import at.hannibal2.skyhanni.events.DebugDataCollectEvent
 import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.InventoryOpenEvent
 import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
+import at.hannibal2.skyhanni.events.NeuRepositoryReloadEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 
 @SkyHanniModule
@@ -37,6 +38,9 @@ object ArmorWardrobeApi : AbstractWardrobeApi() {
 
     @HandleEvent
     private fun onDebugDataCollect(event: DebugDataCollectEvent) = handleDebugDataCollect(event)
+
+    @HandleEvent
+    private fun onNeuRepoReload(event: NeuRepositoryReloadEvent) = handleNeuRepoReload()
 
     // This also modifies the "inWardrobe" property
     internal fun matchesInventoryName(inventoryName: String): Boolean {

@@ -3,7 +3,6 @@ package at.hannibal2.skyhanni.features.inventory.wardrobe
 import at.hannibal2.skyhanni.config.storage.ProfileSpecificStorage
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
 import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
-import at.hannibal2.skyhanni.events.NeuRepositoryReloadEvent
 import at.hannibal2.skyhanni.features.misc.items.EstimatedItemValueCalculator
 import at.hannibal2.skyhanni.utils.AnimatedSkinUtils
 import at.hannibal2.skyhanni.utils.DelayedRun
@@ -11,16 +10,14 @@ import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.ItemUtils
 import at.hannibal2.skyhanni.utils.ItemUtils.cleanName
 import at.hannibal2.skyhanni.utils.ItemUtils.getInternalNameOrNull
-import at.hannibal2.skyhanni.utils.SkyBlockItemModifierUtils.getArmorDye
-import at.hannibal2.skyhanni.utils.SkyBlockItemModifierUtils.getExtraAttributes
-import at.hannibal2.skyhanni.utils.SkyBlockItemModifierUtils.getHelmetSkin
-import net.minecraft.core.component.DataComponents
-import net.minecraft.world.item.component.DyedItemColor
 import at.hannibal2.skyhanni.utils.NumberUtil.formatInt
 import at.hannibal2.skyhanni.utils.NumberUtil.shortFormat
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.SafeItemStack
+import at.hannibal2.skyhanni.utils.SkyBlockItemModifierUtils.getArmorDye
+import at.hannibal2.skyhanni.utils.SkyBlockItemModifierUtils.getExtraAttributes
+import at.hannibal2.skyhanni.utils.SkyBlockItemModifierUtils.getHelmetSkin
 import at.hannibal2.skyhanni.utils.compat.ColoredBlockCompat.Companion.isStainedGlassPane
 import at.hannibal2.skyhanni.utils.compat.DyeCompat
 import at.hannibal2.skyhanni.utils.compat.DyeCompat.Companion.isDye
@@ -28,6 +25,8 @@ import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLeadingWhiteLessRes
 import at.hannibal2.skyhanni.utils.renderables.animated.framed.ItemStackAnimatedFrame
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import com.google.gson.annotations.Expose
+import net.minecraft.core.component.DataComponents
+import net.minecraft.world.item.component.DyedItemColor
 import java.util.regex.Pattern
 import kotlin.time.Duration.Companion.milliseconds
 

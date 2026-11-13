@@ -10,7 +10,6 @@ import at.hannibal2.skyhanni.data.CrimsonIsleReputationApi
 import at.hannibal2.skyhanni.data.PetData
 import at.hannibal2.skyhanni.data.jsonobjects.repo.PetsJson
 import at.hannibal2.skyhanni.data.jsonobjects.repo.neu.AnimatedSkinJson
-import at.hannibal2.skyhanni.utils.AnimatedSkinUtils
 import at.hannibal2.skyhanni.data.jsonobjects.repo.neu.NeuItemJson
 import at.hannibal2.skyhanni.data.jsonobjects.repo.neu.NeuPetData
 import at.hannibal2.skyhanni.data.jsonobjects.repo.neu.NeuPetsJson
@@ -89,6 +88,7 @@ object PetUtils {
         fun NeuInternalName?.takeIfPetItem() = this?.takeIf {
             !it.isPet && it.getItemStackOrNull()?.getItemCategoryOrNull() == ItemCategory.PET_ITEM
         }
+
         val result = petItemResolution[itemName]
             ?: petItemResolution[cleanItemName]
             ?: NeuInternalName.fromItemNameOrNull(itemName).takeIfPetItem()

@@ -52,7 +52,7 @@ object AnimatedSkinUtils {
         private set
 
     @HandleEvent
-    fun onNeuRepoReload(event: NeuRepositoryReloadEvent) = repoReloadCoroutine.launch {
+    private fun onNeuRepoReload(event: NeuRepositoryReloadEvent) = repoReloadCoroutine.launch {
         val dyeData = event.getConstantAsync<NeuAnimatedDyeJson>("dyes")
         animatedDyes = dyeData.animated.mapValues { (_, colors) -> colors.map { it.trimStart('#').toLong(16).toInt() } }
 

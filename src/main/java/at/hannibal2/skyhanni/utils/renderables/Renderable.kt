@@ -299,7 +299,7 @@ interface Renderable {
             content: Any,
             tipsProvider: () -> List<Any>,
             highlightsOnHoverSlots: List<Int> = listOf(),
-            stack: ItemStack? = null,
+            stack: SafeItemStack? = null,
             color: LorenzColor? = null,
             spacedTitle: Boolean = false,
             bypassChecks: Boolean = false,

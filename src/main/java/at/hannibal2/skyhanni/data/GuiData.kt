@@ -12,7 +12,6 @@ import at.hannibal2.skyhanni.utils.DelayedRun
 import at.hannibal2.skyhanni.utils.KeyboardManager.isActive
 import at.hannibal2.skyhanni.utils.KeyboardManager.isKeyHeld
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
-import at.hannibal2.skyhanni.utils.compat.SkyHanniContainerOverlayScreen
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.screens.inventory.ContainerScreen
 import org.lwjgl.glfw.GLFW
@@ -45,7 +44,6 @@ object GuiData {
         if (allowedKeys.any { it.isActive() }) return
         if (GLFW.GLFW_KEY_ESCAPE.isKeyHeld()) return
 
-        if (SkyHanniContainerOverlayScreen.activeOverlay?.allowKeyboardClick() == true) return
         if (CustomLoadoutKeybinds.allowInput()) return
 
         if (preDrawEventCancelled) event.cancel()

@@ -3,7 +3,7 @@ package at.hannibal2.skyhanni.utils.compat
 import java.awt.Color
 
 /**
- * Defines the visual style for a [SkyHanniContainerOverlayScreen].
+ * Defines the visual style for a screen drawn over a container.
  * Subclass and override fields for custom screen styling.
  *
  * @param backgroundColor The overlay background color.

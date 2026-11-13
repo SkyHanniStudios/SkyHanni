@@ -74,5 +74,5 @@ class EquipmentSlotAnimationState(
         ticksInFrame = 0.0
     }
 
-    val currentStack: ItemStack get() = frames[currentFrameIndex].stack
+    val currentStack: SafeItemStack get() = frames[currentFrameIndex].stack
 }
