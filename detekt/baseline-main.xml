@@ -2559,75 +2559,75 @@
     <ID>PropertyName:WorldEdit.kt:WorldEdit$private const val legacyBlockPos = "net.minecraft.util.BlockPos"</ID>
     <ID>PropertyName:WorldEdit.kt:WorldEdit$private const val modernAABB = "net.minecraft.util.math.Box"</ID>
     <ID>PropertyName:WorldEdit.kt:WorldEdit$private const val modernBlockPos = "net.minecraft.util.math.BlockPos"</ID>
-    <ID>RepoPatternRegexTestMissing:AshfangFreezeCooldown.kt:AshfangFreezeCooldown$by RepoPattern.pattern( "ashfang.freeze.cryogenic", "§cAshfang Follower's Cryogenic Blast hit you for .* damage!", )</ID>
-    <ID>RepoPatternRegexTestMissing:BingoCardReader.kt:BingoCardReader$by patternGroup.pattern( "goalcomplete", "§6§lBINGO GOAL COMPLETE! §r§e(?&lt;name&gt;.*)" )</ID>
-    <ID>RepoPatternRegexTestMissing:BingoCardReader.kt:BingoCardReader$by patternGroup.pattern( "hiddengoal", ".*§7§eThe next hint will unlock in (?&lt;time&gt;.*)" )</ID>
-    <ID>RepoPatternRegexTestMissing:BingoCardReader.kt:BingoCardReader$by patternGroup.pattern( "percentage", " {2}§8Top §.(?&lt;percentage&gt;.*)%" )</ID>
-    <ID>RepoPatternRegexTestMissing:BingoNextStepHelper.kt:BingoNextStepHelper$by patternGroup.pattern( "crystal.found", " *§r§5§l✦ CRYSTAL FOUND §r§7\\(.§r§7/5§r§7\\)", )</ID>
-    <ID>RepoPatternRegexTestMissing:BingoNextStepHelper.kt:BingoNextStepHelper$by patternGroup.pattern( "crystal.obtain", "Obtain a (?&lt;name&gt;\\w+) Crystal in the Crystal Hollows\\.", )</ID>
-    <ID>RepoPatternRegexTestMissing:BingoNextStepHelper.kt:BingoNextStepHelper$by patternGroup.pattern( "crystal.obtained", " *§r§e(?&lt;crystalName&gt;Topaz|Sapphire|Jade|Amethyst|Amber) Crystal", )</ID>
-    <ID>RepoPatternRegexTestMissing:CarryTracker.kt:CarryTracker$by patternGroup.pattern( "trade.coins.gained", " §r§a§l\\+ §r§6(?&lt;coins&gt;.*) coins", )</ID>
-    <ID>RepoPatternRegexTestMissing:CarryTracker.kt:CarryTracker$by patternGroup.pattern( "trade.completed", "§6Trade completed with (?&lt;name&gt;.*)§r§6!", )</ID>
-    <ID>RepoPatternRegexTestMissing:ChatFilter.kt:ChatFilter$by RepoPattern.pattern( "chat.firesale", "§6§k§lA§r §c§lFIRE SALE §r§6§k§lA(?:\\n|.)*", )</ID>
-    <ID>RepoPatternRegexTestMissing:CityProjectFeatures.kt:CityProjectFeatures$by patternGroup.pattern( "completed", "§aProject is (?:being built|released)!", )</ID>
-    <ID>RepoPatternRegexTestMissing:CityProjectFeatures.kt:CityProjectFeatures$by patternGroup.pattern( "contribute", "§7Contribute again: §e(?&lt;time&gt;.*)", )</ID>
-    <ID>RepoPatternRegexTestMissing:CompactBingoChat.kt:CompactBingoChat$by patternGroup.pattern( "border", "§[e3]§l▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬" )</ID>
-    <ID>RepoPatternRegexTestMissing:DojoRankDisplay.kt:DojoRankDisplay$by patternGroup.pattern( "name", "(?&lt;color&gt;§\\w)Test of (?&lt;name&gt;.*)", )</ID>
-    <ID>RepoPatternRegexTestMissing:DojoRankDisplay.kt:DojoRankDisplay$by patternGroup.pattern( "rank", "(?:§\\w)+Your Rank: (?&lt;rank&gt;§\\w.) §8\\((?&lt;score&gt;\\d+)\\)", )</ID>
-    <ID>RepoPatternRegexTestMissing:DungeonArchitectFeatures.kt:DungeonArchitectFeatures$by patternGroup.pattern( "puzzle.fail.normal", "(?:§c§lPUZZLE FAIL!|§4) §.§.(?&lt;name&gt;\\S*) .*", )</ID>
-    <ID>RepoPatternRegexTestMissing:DungeonArchitectFeatures.kt:DungeonArchitectFeatures$by patternGroup.pattern( "puzzle.fail.quiz", "§4\\[STATUE] Oruo the Omniscient§r§f: (?:§.)*(?&lt;name&gt;\\S*) (?:§.)*chose the wrong .*", )</ID>
-    <ID>RepoPatternRegexTestMissing:DungeonCopilot.kt:DungeonCopilot$by patternGroup.pattern( "countdown", ".* has started the dungeon countdown. The dungeon will begin in 1 minute.", )</ID>
-    <ID>RepoPatternRegexTestMissing:DungeonFinderFeatures.kt:DungeonFinderFeatures$by patternGroup.pattern( "nonpug", "(?i).*(?:PERM|VC|DISCORD).*", )</ID>
-    <ID>RepoPatternRegexTestMissing:FarmingFortuneDisplay.kt:FarmingFortuneDisplay$by patternGroup.pattern( "armorability", "Tiered Bonus: .* [(](?&lt;pieces&gt;.*)/4[)]", )</ID>
-    <ID>RepoPatternRegexTestMissing:FarmingFortuneDisplay.kt:FarmingFortuneDisplay$by patternGroup.pattern( "tooltip.new", "^§7Farming Fortune: §6\\+(?&lt;display&gt;[\\d.]+)(?: §2\\(\\+\\d\\))?(?: §9\\(\\+(?&lt;reforge&gt;\\d+)\\))?(?: §d\\(\\+(?&lt;gemstone&gt;\\d+)\\))?\$", )</ID>
-    <ID>RepoPatternRegexTestMissing:GlacitePowderFeatures.kt:GlacitePowderFeatures$by patternGroup.pattern( "glacitepowder", "Glacite Powder x(?&lt;amount&gt;.*)" )</ID>
-    <ID>RepoPatternRegexTestMissing:HalloweenBasketWaypoints.kt:HalloweenBasketWaypoints$by patternGroup.pattern( "basket", "^(?:(?:§.)+You found a Candy Basket! (?:(?:§.)+\\((?:§.)+(?&lt;current&gt;\\d+)(?:§.)+/(?:§.)+(?&lt;max&gt;\\d+)(?:§.)+\\))?|(?:§.)+You already found this Candy Basket!)\$", )</ID>
-    <ID>RepoPatternRegexTestMissing:HalloweenBasketWaypoints.kt:HalloweenBasketWaypoints$by patternGroup.pattern( "main.scoreboard.basket", "^Baskets Found: §a\\d+§f/§a\\d+\$", )</ID>
-    <ID>RepoPatternRegexTestMissing:HalloweenBasketWaypoints.kt:HalloweenBasketWaypoints$by patternGroup.pattern( "main.scoreboard.halloween", "^§6Halloween \\d+$", )</ID>
-    <ID>RepoPatternRegexTestMissing:HighlightPlaceableNpcs.kt:HighlightPlaceableNpcs$by patternGroup.pattern( "location", "§7Location: §f\\[§e\\d+§f, §e\\d+§f, §e\\d+§f]", )</ID>
-    <ID>RepoPatternRegexTestMissing:ItemAbilityCooldown.kt:ItemAbilityCooldown$by patternGroup.pattern( "alignedother", "§eYou aligned §r§a.* §r§eother players?!", )</ID>
-    <ID>RepoPatternRegexTestMissing:ItemDisplayOverlayFeatures.kt:ItemDisplayOverlayFeatures$by patternGroup.pattern( "bestiarystack", "§7Progress to Tier (?&lt;tier&gt;[\\dIVXC]+): §b[\\d.]+%", )</ID>
-    <ID>RepoPatternRegexTestMissing:ItemDisplayOverlayFeatures.kt:ItemDisplayOverlayFeatures$by patternGroup.pattern( "bingogoalrank", "(?:§.)*You were the (?:§.)*(?&lt;rank&gt;\\w+)(?&lt;ordinal&gt;st|nd|rd|th) (?:§.)*to", )</ID>
-    <ID>RepoPatternRegexTestMissing:ItemDisplayOverlayFeatures.kt:ItemDisplayOverlayFeatures$by patternGroup.pattern( "harvest", "§7§7You may harvest §6(?&lt;amount&gt;.).*", )</ID>
-    <ID>RepoPatternRegexTestMissing:KuudraApi.kt:KuudraApi$by patternGroup.pattern( "chat.complete", "§.\\s*(?:§.)*KUUDRA DOWN!", )</ID>
-    <ID>RepoPatternRegexTestMissing:MaxPurseItems.kt:MaxPurseItems$by patternGroup.pattern( "instant", ".*Price per unit: §6(?&lt;coins&gt;[\\d.,]+) coins.*", )</ID>
-    <ID>RepoPatternRegexTestMissing:MaxPurseItems.kt:MaxPurseItems$by patternGroup.pattern( "order", ".*§6(?&lt;coins&gt;[\\d.,]+) coins §7each.*", )</ID>
-    <ID>RepoPatternRegexTestMissing:MaxwellApi.kt:MaxwellApi$by patternGroup.pattern( "gui.noselectedpower", "(?:§.)*Visit Maxwell in the Hub to learn", )</ID>
-    <ID>RepoPatternRegexTestMissing:MaxwellApi.kt:MaxwellApi$by patternGroup.pattern( "gui.thaumaturgy.data", "§(?&lt;color&gt;.)\\+(?&lt;amount&gt;[^ ]+)(?&lt;icon&gt;.) (?&lt;name&gt;.+)", )</ID>
-    <ID>RepoPatternRegexTestMissing:MobFilter.kt:MobFilter$by patternGroup.pattern( "filter.dojo", "^(?:(?&lt;points&gt;\\d+) pts|(?&lt;empty&gt;\\w+))$", )</ID>
-    <ID>RepoPatternRegexTestMissing:MobFilter.kt:MobFilter$by patternGroup.pattern( "filter.summon", "^(?&lt;owner&gt;\\w+)'s (?&lt;name&gt;.*) \\d+.*", )</ID>
-    <ID>RepoPatternRegexTestMissing:MobFilter.kt:MobFilter$by patternGroup.pattern( "pattern.dungeon.woke.golem", "(?:§c§lWoke|§5§lSleeping) Golem§r", )</ID>
-    <ID>RepoPatternRegexTestMissing:MobFilter.kt:MobFilter$by patternGroup.pattern( "pattern.petcare", "^\\[\\w+ (?&lt;level&gt;\\d+)\\] (?&lt;name&gt;.*)", )</ID>
-    <ID>RepoPatternRegexTestMissing:MobFilter.kt:MobFilter$by patternGroup.pattern("displaynpc.name", "[a-z0-9]{10}")</ID>
-    <ID>RepoPatternRegexTestMissing:NewYearCakeReminder.kt:NewYearCakeReminder$by RepoPattern.pattern( "event.winter.newyearcake.reminder.sidebar", "§dNew Year Event!§f (?&lt;time&gt;.*)", )</ID>
-    <ID>RepoPatternRegexTestMissing:PartyApi.kt:PartyApi$by patternGroup.pattern( "kuudrafinder.join", "§dParty Finder §f&gt; (?&lt;name&gt;.*?) §ejoined the group! \\(§[a-fA-F0-9]+Combat Level \\d+§e\\)", )</ID>
-    <ID>RepoPatternRegexTestMissing:PresentWaypoints.kt:PresentWaypoints$by patternGroup.pattern( "found", "§aYou found a.*present! §r§e\\(§r§b\\d+§r§e/§r§b\\d+§r§e\\)", )</ID>
-    <ID>RepoPatternRegexTestMissing:QuiverApi.kt:QuiverApi$by chatGroup.pattern( "addedtoquiver", "(?:§.)*You've added (?:§.)*(?&lt;type&gt;.*) x(?&lt;amount&gt;.*) (?:§.)*to your quiver!", )</ID>
-    <ID>RepoPatternRegexTestMissing:QuiverApi.kt:QuiverApi$by chatGroup.pattern( "cleared", "§aCleared your quiver!|§c§lYour quiver is now completely empty!", )</ID>
-    <ID>RepoPatternRegexTestMissing:ScoreboardPattern.kt:ScoreboardPattern$by dungeonSB.pattern( "cleared", "(?:§.)*Cleared: (?:§.)*(?&lt;percent&gt;[\\w,.]+)% (?:§.)*\\((?:§.)*(?&lt;score&gt;[\\w,.]+)(?:§.)*\\)", )</ID>
-    <ID>RepoPatternRegexTestMissing:ScoreboardPattern.kt:ScoreboardPattern$by dungeonSB.pattern( "keys", "Keys: §.■ §.[✗✓] §.■ §a.x", )</ID>
-    <ID>RepoPatternRegexTestMissing:ShowMotesNpcSellPrice.kt:ShowMotesNpcSellPrice$by RepoPattern.pattern( "rift.everywhere.burger", ".*(?:§\\w)+You have (?:§\\w)+(?&lt;amount&gt;\\d) Grubber Stacks.*", )</ID>
-    <ID>RepoPatternRegexTestMissing:SkillExperience.kt:SkillExperience$by patternGroup.pattern( "inventory", ".* §e(?&lt;number&gt;.*)§6/.*", )</ID>
-    <ID>RepoPatternRegexTestMissing:SlayerRngMeterDisplay.kt:SlayerRngMeterDisplay$by patternGroup.pattern( "changeditem", "§aYou set your §r.* RNG Meter §r§ato drop §r.*§a!", )</ID>
-    <ID>RepoPatternRegexTestMissing:SlayerRngMeterDisplay.kt:SlayerRngMeterDisplay$by patternGroup.pattern( "inventoryname", "(?&lt;name&gt;.*) RNG Meter", )</ID>
-    <ID>RepoPatternRegexTestMissing:SlayerRngMeterDisplay.kt:SlayerRngMeterDisplay$by patternGroup.pattern( "update", " {3}§dRNG Meter §f- §d(?&lt;exp&gt;.*) Stored XP", )</ID>
-    <ID>RepoPatternRegexTestMissing:TabListRenderer.kt:TabListRenderer$by RepoPattern.pattern( "tablist.firesaletitle", "§.§lFire Sales: §r§f\\([0-9]+\\)", )</ID>
-    <ID>RepoPatternRegexTestMissing:TeleportPadInventoryNumber.kt:TeleportPadInventoryNumber$by RepoPattern.pattern( "misc.teleportpad.number", "§.(?&lt;number&gt;.*) teleport pad" )</ID>
-    <ID>RepoPatternRegexTestMissing:TerracottaPhase.kt:TerracottaPhase$by patternGroup.pattern( "start", "§c\\[BOSS] Sadan§r§f: So you made it all the way here... Now you wish to defy me\\? Sadan\\?!", )</ID>
-    <ID>RepoPatternRegexTestMissing:TunnelsMaps.kt:TunnelsMaps$by RepoPattern.pattern( "mining.commisson.collector.invalid", "Glacite|Scrap", )</ID>
-    <ID>RepoPatternRegexTestMissing:TunnelsMaps.kt:TunnelsMaps$by RepoPattern.pattern( "mining.tunnels.maps.gem.new", ".*(?:Aquamarine|Onyx|Citrine|Peridot).*", )</ID>
-    <ID>RepoPatternRegexTestMissing:TunnelsMaps.kt:TunnelsMaps$by RepoPattern.pattern( "mining.tunnels.maps.gem.old", ".*(?:Ruby|Amethyst|Jade|Sapphire|Amber|Topaz).*", )</ID>
-    <ID>RepoPatternRegexTestMissing:UniqueGiftCounter.kt:UniqueGiftCounter$by RepoPattern.pattern( "event.winter.uniqugifts.counter.amount", "§7Unique Players Gifted: §a(?&lt;amount&gt;.*)", )</ID>
-    <ID>RepoPatternRegexTestMissing:UpgradeReminder.kt:UpgradeReminder$by patternGroup.pattern( "claimed", "§eYou claimed the §r§a(?&lt;upgrade&gt;.+) §r§eupgrade!", )</ID>
-    <ID>RepoPatternRegexTestMissing:UpgradeReminder.kt:UpgradeReminder$by patternGroup.pattern( "duration", "§8Duration: (?&lt;duration&gt;.+)", )</ID>
-    <ID>RepoPatternRegexTestMissing:UpgradeReminder.kt:UpgradeReminder$by patternGroup.pattern( "started", "§eYou started the §r§a(?&lt;upgrade&gt;.+) §r§eupgrade!", )</ID>
-    <ID>RepoPatternRegexTestMissing:UtilsPatterns.kt:UtilsPatterns$by RepoPattern.pattern( "string.isroman", "^M{0,3}(?:CM|CD|D?C{0,3})(?:XC|XL|L?X{0,3})(?:IX|IV|V?I{0,3})", )</ID>
-    <ID>RepoPatternRegexTestMissing:UtilsPatterns.kt:UtilsPatterns$by patternGroup.pattern( "item.amount.behind", "(?&lt;name&gt;(?:§.)*(?:[^§] ?)+)(?:§8x(?&lt;amount&gt;[\\d,]+))?", )</ID>
-    <ID>RepoPatternRegexTestMissing:UtilsPatterns.kt:UtilsPatterns$by patternGroup.pattern( "item.name.potion", ".*Potion", )</ID>
-    <ID>RepoPatternRegexTestMissing:UtilsPatterns.kt:UtilsPatterns$by patternGroup.pattern( "item.neuitems.enchantmentname", "^(?&lt;format&gt;(?:§.)*)(?&lt;name&gt;[^§]+) (?&lt;level&gt;[IVXL]+)(?: Book)?$", )</ID>
-    <ID>RepoPatternRegexTestMissing:UtilsPatterns.kt:UtilsPatterns$by patternGroup.pattern( "string.playerchat", "(?&lt;important&gt;.*?)(?:§[f7r])*: .*", )</ID>
-    <ID>RepoPatternRegexTestMissing:UtilsPatterns.kt:UtilsPatterns$by patternGroup.pattern( "time.amount", "(?:(?&lt;y&gt;\\d+) ?y(?:\\w* ?)?)?(?:(?&lt;d&gt;\\d+) ?d(?:\\w* ?)?)?(?:(?&lt;h&gt;\\d+) ?h(?:\\w* ?)?)?(?:(?&lt;m&gt;\\d+) ?m(?:\\w* ?)?)?(?:(?&lt;s&gt;\\d+) ?s(?:\\w* ?)?)?", )</ID>
-    <ID>RepoPatternRegexTestMissing:VisitorListener.kt:VisitorListener$by RepoPattern.pattern( "garden.visitor.offersaccepted", "§7Offers Accepted: §a(?&lt;offersAccepted&gt;\\d+)", )</ID>
+    <ID>RepoPatternRegexTestMissing:AshfangFreezeCooldown.kt:AshfangFreezeCooldown$cryogenicBlastPattern</ID>
+    <ID>RepoPatternRegexTestMissing:BingoCardReader.kt:BingoCardReader$goalCompletePattern</ID>
+    <ID>RepoPatternRegexTestMissing:BingoCardReader.kt:BingoCardReader$percentagePattern</ID>
+    <ID>RepoPatternRegexTestMissing:BingoCardReader.kt:BingoCardReader$personalHiddenGoalPattern</ID>
+    <ID>RepoPatternRegexTestMissing:BingoNextStepHelper.kt:BingoNextStepHelper$crystalFoundPattern</ID>
+    <ID>RepoPatternRegexTestMissing:BingoNextStepHelper.kt:BingoNextStepHelper$crystalObtainedPattern</ID>
+    <ID>RepoPatternRegexTestMissing:BingoNextStepHelper.kt:BingoNextStepHelper$crystalPattern</ID>
+    <ID>RepoPatternRegexTestMissing:CarryTracker.kt:CarryTracker$rawNamePattern</ID>
+    <ID>RepoPatternRegexTestMissing:CarryTracker.kt:CarryTracker$tradeCompletedPattern</ID>
+    <ID>RepoPatternRegexTestMissing:ChatFilter.kt:ChatFilter$fireSalePattern</ID>
+    <ID>RepoPatternRegexTestMissing:CityProjectFeatures.kt:CityProjectFeatures$completedPattern</ID>
+    <ID>RepoPatternRegexTestMissing:CityProjectFeatures.kt:CityProjectFeatures$contributeAgainPattern</ID>
+    <ID>RepoPatternRegexTestMissing:CompactBingoChat.kt:CompactBingoChat$borderPattern</ID>
+    <ID>RepoPatternRegexTestMissing:DojoRankDisplay.kt:DojoRankDisplay$testNamePattern</ID>
+    <ID>RepoPatternRegexTestMissing:DojoRankDisplay.kt:DojoRankDisplay$testRankPattern</ID>
+    <ID>RepoPatternRegexTestMissing:DungeonArchitectFeatures.kt:DungeonArchitectFeatures$puzzleFailPattern</ID>
+    <ID>RepoPatternRegexTestMissing:DungeonArchitectFeatures.kt:DungeonArchitectFeatures$quizPuzzleFailPattern</ID>
+    <ID>RepoPatternRegexTestMissing:DungeonCopilot.kt:DungeonCopilot$countdownPattern</ID>
+    <ID>RepoPatternRegexTestMissing:DungeonFinderFeatures.kt:DungeonFinderFeatures$nonPugPattern</ID>
+    <ID>RepoPatternRegexTestMissing:FarmingFortuneDisplay.kt:FarmingFortuneDisplay$armorAbilityPattern</ID>
+    <ID>RepoPatternRegexTestMissing:FarmingFortuneDisplay.kt:FarmingFortuneDisplay$tooltipFortunePattern</ID>
+    <ID>RepoPatternRegexTestMissing:GlacitePowderFeatures.kt:GlacitePowderFeatures$glacitePowderPattern</ID>
+    <ID>RepoPatternRegexTestMissing:HalloweenBasketWaypoints.kt:HalloweenBasketWaypoints$basketPattern</ID>
+    <ID>RepoPatternRegexTestMissing:HalloweenBasketWaypoints.kt:HalloweenBasketWaypoints$halloweenEventPattern</ID>
+    <ID>RepoPatternRegexTestMissing:HalloweenBasketWaypoints.kt:HalloweenBasketWaypoints$scoreboardBasketPattern</ID>
+    <ID>RepoPatternRegexTestMissing:HighlightPlaceableNpcs.kt:HighlightPlaceableNpcs$locationPattern</ID>
+    <ID>RepoPatternRegexTestMissing:ItemAbilityCooldown.kt:ItemAbilityCooldown$youAlignedOthersPattern</ID>
+    <ID>RepoPatternRegexTestMissing:ItemDisplayOverlayFeatures.kt:ItemDisplayOverlayFeatures$bestiaryStackPattern</ID>
+    <ID>RepoPatternRegexTestMissing:ItemDisplayOverlayFeatures.kt:ItemDisplayOverlayFeatures$bingoGoalRankPattern</ID>
+    <ID>RepoPatternRegexTestMissing:ItemDisplayOverlayFeatures.kt:ItemDisplayOverlayFeatures$harvestPattern</ID>
+    <ID>RepoPatternRegexTestMissing:KuudraApi.kt:KuudraApi$completePattern</ID>
+    <ID>RepoPatternRegexTestMissing:MaxPurseItems.kt:MaxPurseItems$instantPattern</ID>
+    <ID>RepoPatternRegexTestMissing:MaxPurseItems.kt:MaxPurseItems$orderPattern</ID>
+    <ID>RepoPatternRegexTestMissing:MaxwellApi.kt:MaxwellApi$noPowerSelectedPattern</ID>
+    <ID>RepoPatternRegexTestMissing:MaxwellApi.kt:MaxwellApi$thaumaturgyDataPattern</ID>
+    <ID>RepoPatternRegexTestMissing:MobFilter.kt:MobFilter$displayNpcCompressedNamePattern</ID>
+    <ID>RepoPatternRegexTestMissing:MobFilter.kt:MobFilter$dojoFilter</ID>
+    <ID>RepoPatternRegexTestMissing:MobFilter.kt:MobFilter$petCareNamePattern</ID>
+    <ID>RepoPatternRegexTestMissing:MobFilter.kt:MobFilter$summonFilter</ID>
+    <ID>RepoPatternRegexTestMissing:MobFilter.kt:MobFilter$wokeSleepingGolemPattern</ID>
+    <ID>RepoPatternRegexTestMissing:NewYearCakeReminder.kt:NewYearCakeReminder$sidebarDetectionPattern</ID>
+    <ID>RepoPatternRegexTestMissing:PartyApi.kt:PartyApi$kuudraFinderJoinPattern</ID>
+    <ID>RepoPatternRegexTestMissing:PresentWaypoints.kt:PresentWaypoints$presentFoundPattern</ID>
+    <ID>RepoPatternRegexTestMissing:QuiverApi.kt:QuiverApi$addedToQuiverPattern</ID>
+    <ID>RepoPatternRegexTestMissing:QuiverApi.kt:QuiverApi$clearedPattern</ID>
+    <ID>RepoPatternRegexTestMissing:ScoreboardPattern.kt:ScoreboardPattern$clearedPattern</ID>
+    <ID>RepoPatternRegexTestMissing:ScoreboardPattern.kt:ScoreboardPattern$keysPattern</ID>
+    <ID>RepoPatternRegexTestMissing:ShowMotesNpcSellPrice.kt:ShowMotesNpcSellPrice$burgerPattern</ID>
+    <ID>RepoPatternRegexTestMissing:SkillExperience.kt:SkillExperience$inventoryPattern</ID>
+    <ID>RepoPatternRegexTestMissing:SlayerRngMeterDisplay.kt:SlayerRngMeterDisplay$changedItemPattern</ID>
+    <ID>RepoPatternRegexTestMissing:SlayerRngMeterDisplay.kt:SlayerRngMeterDisplay$inventoryNamePattern</ID>
+    <ID>RepoPatternRegexTestMissing:SlayerRngMeterDisplay.kt:SlayerRngMeterDisplay$updatePattern</ID>
+    <ID>RepoPatternRegexTestMissing:TabListRenderer.kt:TabListRenderer$fireSalePattern</ID>
+    <ID>RepoPatternRegexTestMissing:TeleportPadInventoryNumber.kt:TeleportPadInventoryNumber$padNumberPattern</ID>
+    <ID>RepoPatternRegexTestMissing:TerracottaPhase.kt:TerracottaPhase$terracottaStartPattern</ID>
+    <ID>RepoPatternRegexTestMissing:TunnelsMaps.kt:TunnelsMaps$invalidGoalPattern</ID>
+    <ID>RepoPatternRegexTestMissing:TunnelsMaps.kt:TunnelsMaps$newGemstonePattern</ID>
+    <ID>RepoPatternRegexTestMissing:TunnelsMaps.kt:TunnelsMaps$oldGemstonePattern</ID>
+    <ID>RepoPatternRegexTestMissing:UniqueGiftCounter.kt:UniqueGiftCounter$giftedAmountPattern</ID>
+    <ID>RepoPatternRegexTestMissing:UpgradeReminder.kt:UpgradeReminder$upgradeClaimedPattern</ID>
+    <ID>RepoPatternRegexTestMissing:UpgradeReminder.kt:UpgradeReminder$upgradeDurationPattern</ID>
+    <ID>RepoPatternRegexTestMissing:UpgradeReminder.kt:UpgradeReminder$upgradeStartedPattern</ID>
+    <ID>RepoPatternRegexTestMissing:UtilsPatterns.kt:UtilsPatterns$enchantmentNamePattern</ID>
+    <ID>RepoPatternRegexTestMissing:UtilsPatterns.kt:UtilsPatterns$isRomanPattern</ID>
+    <ID>RepoPatternRegexTestMissing:UtilsPatterns.kt:UtilsPatterns$playerChatPattern</ID>
+    <ID>RepoPatternRegexTestMissing:UtilsPatterns.kt:UtilsPatterns$potionPattern</ID>
+    <ID>RepoPatternRegexTestMissing:UtilsPatterns.kt:UtilsPatterns$readAmountAfterPattern</ID>
+    <ID>RepoPatternRegexTestMissing:UtilsPatterns.kt:UtilsPatterns$timeAmountPattern</ID>
+    <ID>RepoPatternRegexTestMissing:VisitorListener.kt:VisitorListener$offersAcceptedPattern</ID>
     <ID>ReturnCount:ArachneChatMessageHider.kt:ArachneChatMessageHider$private fun shouldHide: Boolean</ID>
     <ID>ReturnCount:BingoNextStepHelper.kt:BingoNextStepHelper$private fun readDescription: NextStep?</ID>
     <ID>ReturnCount:CompactBingoChat.kt:CompactBingoChat$private fun onSkyBlockLevelUp: Boolean</ID>
