@@ -153,7 +153,8 @@ object NeuItems {
             // NeuInternalName.fromItemNameOrNull strips it from every query before the lookup.
             // Stripping it from a non-pet would cache that item under a key no query can reach.
             val isKnownPet = PetUtils.isKnownPetInternalName(internalName)
-            val cleanName = internalName.getRepoItemNameFromJson(itemInfo)?.lowercase()?.removePrefix(neuPetLevelPattern)
+            val cleanName = internalName.getRepoItemNameFromJson(itemInfo, replaceRomanNumerals = false)?.lowercase()
+                ?.removePrefix(neuPetLevelPattern)
                 ?.let { if (isKnownPet) it.removeSuffix(" pet") else it }?.takeIf { it.isNotEmpty() } ?: run {
                 ChatUtils.debug("skipped `$internalName` from readAllNeuItems")
                 return@forEach

@@ -16,7 +16,8 @@ class PrimaryFunctionProcessor(environment: SymbolProcessorEnvironment) : BasePr
         val skyHanniEvent = resolver.getClassDeclarationByName("at.hannibal2.skyhanni.api.event.SkyHanniEvent")
             ?.asStarProjectedType() ?: return emptyList()
 
-        val symbols = resolver.getSymbolsWithAnnotation(PrimaryFunction::class.qualifiedName!!)
+        val primaryClass = PrimaryFunction::class.qualifiedName ?: return emptyList()
+        val symbols = resolver.getSymbolsWithAnnotation(primaryClass)
             .filterIsInstance<KSClassDeclaration>()
             .filter { skyHanniEvent.isAssignableFrom(it.asStarProjectedType()) }
             .toList()
