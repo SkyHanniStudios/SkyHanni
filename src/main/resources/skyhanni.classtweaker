@@ -66,6 +66,7 @@ accessible method net/minecraft/client/gui/components/ChatComponent logChatMessa
 accessible method net/minecraft/client/gui/components/ChatComponent refreshTrimmedMessages ()V
 accessible method net/minecraft/client/gui/screens/inventory/AbstractContainerScreen slotClicked (Lnet/minecraft/world/inventory/Slot;IILnet/minecraft/world/inventory/ContainerInput;)V
 accessible method net/minecraft/client/gui/screens/inventory/AbstractSignEditScreen setMessage (Ljava/lang/String;)V
+mutable field net/minecraft/client/gui/screens/Screen title Lnet/minecraft/network/chat/Component;
 accessible method net/minecraft/client/renderer/rendertype/RenderType <init> (Ljava/lang/String;Lnet/minecraft/client/renderer/rendertype/RenderSetup;)V
 accessible method net/minecraft/network/chat/TextColor <init> (ILjava/lang/String;)V
 extendable class net/minecraft/world/item/ItemStack
@@ -74,7 +75,6 @@ inject-interface net/minecraft/network/protocol/game/ClientboundLevelParticlesPa
 inject-interface net/minecraft/network/chat/MutableComponent at/hannibal2/skyhanni/mixins/hooks/ComponentCreatedStore
 mutable field net/minecraft/client/gui/components/ChatComponent allMessages Ljava/util/List;
 mutable field net/minecraft/client/gui/components/ChatComponent trimmedMessages Ljava/util/List;
-mutable field net/minecraft/client/gui/screens/Screen title Lnet/minecraft/network/chat/Component;
 mutable field net/minecraft/core/particles/ColorParticleOption color I
 mutable field net/minecraft/world/item/ItemStack components Lnet/minecraft/core/component/PatchedDataComponentMap;
 mutable field net/minecraft/world/item/ItemStack item Lnet/minecraft/core/Holder;
