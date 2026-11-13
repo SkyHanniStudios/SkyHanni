@@ -149,7 +149,7 @@ class CustomImportOrdering(config: Config) : SkyHanniRule(
         val ordering = findOrderingViolations(blocks)
         ordering.forEach {
             reportIssue(
-                "Imports must be ordered in lexicographic order with \"java\", \"javax\", \"kotlin\", \"kotlinx\" and aliases in the end.",
+                """Imports must be ordered in lexicographic order with "java", "javax", "kotlin", "kotlinx" and aliases in the end.""",
                 it.lineIndex,
                 fileLines[it.lineIndex],
                 file,

@@ -34,7 +34,7 @@ plugins {
     kotlin("jvm")
     id("com.google.devtools.ksp")
     `maven-publish`
-    id("dev.detekt")
+    id("io.github.davidarthurcole.daetekt")
 }
 
 val target = ProjectTarget.entries.find { it.projectPath == project.path }!!

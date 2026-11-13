@@ -55,7 +55,7 @@ class IsInIslandEarlyReturn(config: Config) : HandleEventEarlyReturnRule(
     }
 
     companion object {
-        private val isInIslandRegex = Regex(".*!IslandType\\..*\\.isInIsland\\(\\).*")
+        private val isInIslandRegex = Regex(""".*!IslandType\..*\.isInIsland\(\).*""")
         private val isInGardenRegex = Regex(".*!GardenApi.inGarden\\(\\).*")
         private val isInRiftRegex = Regex(".*!RiftApi.inRift\\(\\).*")
         private val isInDungeonRegex = Regex(".*!DungeonApi.inDungeon\\(\\).*")
@@ -69,7 +69,7 @@ class IsInIslandEarlyReturn(config: Config) : HandleEventEarlyReturnRule(
             isInKuudraRegex to "IslandType.KUUDRA_ARENA",
         )
 
-        private val islandTypeCheck = Regex("IslandType\\.([A-Z0-9_]+)\\.isInIsland\\(\\)")
+        private val islandTypeCheck = Regex("""IslandType\.([A-Z0-9_]+)\.isInIsland\(\)""")
 
         private val correctableChecks = mapOf(
             "GardenApi.inGarden()" to "IslandType.GARDEN",

@@ -21,14 +21,14 @@ object ImportOrdering {
 
     fun createImportBlocks(lines: List<String>): List<ImportBlock> {
         val blocks = mutableListOf<ImportBlock>()
-        var currentImports = mutableListOf<ImportLine>()
+        val currentImports = mutableListOf<ImportLine>()
         var inPreprocessingBlock = false
         var inImportSection = false
 
         fun flush() {
             if (currentImports.isNotEmpty()) {
-                blocks += ImportBlock(inPreprocessingBlock, currentImports)
-                currentImports = mutableListOf()
+                blocks += ImportBlock(inPreprocessingBlock, currentImports.toList())
+                currentImports.clear()
             }
         }
 

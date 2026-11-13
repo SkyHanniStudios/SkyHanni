@@ -7,7 +7,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     kotlin("jvm")
     id("com.google.devtools.ksp")
-    id("dev.detekt")
+    id("io.github.davidarthurcole.daetekt")
 }
 
 val moulconfigTarget = ProjectTarget.MODERN_26200.minecraftVersion

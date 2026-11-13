@@ -11,7 +11,9 @@ abstract class SkyHanniRuleSetProvider(id: String) : RuleSetProvider {
 
     private val rules = mutableMapOf<RuleName, (Config) -> Rule>()
 
-    protected inline fun <reified T : Rule> rule(noinline factory: (Config) -> T) = register(T::class.java.simpleName, factory)
+    protected inline fun <reified T : Rule> rule(
+        noinline factory: (Config) -> T,
+    ) = register(T::class.java.simpleName, factory)
 
     protected fun register(name: String, factory: (Config) -> Rule) {
         rules[RuleName(name)] = factory
