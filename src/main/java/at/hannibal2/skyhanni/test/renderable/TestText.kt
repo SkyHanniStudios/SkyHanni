@@ -2,6 +2,7 @@ package at.hannibal2.skyhanni.test.renderable
 
 import at.hannibal2.skyhanni.features.chroma.ChromaManager
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
+import at.hannibal2.skyhanni.utils.ColorUtils.addAlpha
 import at.hannibal2.skyhanni.utils.LorenzColor
 import at.hannibal2.skyhanni.utils.chat.TextHelper
 import at.hannibal2.skyhanni.utils.compat.appendWithColor
@@ -29,6 +30,13 @@ object TestText : RenderableTestSuite.TestRenderable("text") {
                     appendWithColor("This is a chroma text", TextHelper.chromaStyle)
                     append(" and this is normal text")
                 }
+            ),
+            Renderable.text(
+                componentBuilder {
+                    appendWithColor("This is transparent chroma text", TextHelper.chromaStyle)
+                    append(" and this is not")
+                },
+                color = Color.YELLOW.addAlpha(100)
             ),
         )
     }
