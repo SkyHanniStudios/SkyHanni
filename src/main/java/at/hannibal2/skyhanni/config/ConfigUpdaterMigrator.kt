@@ -3,12 +3,14 @@ package at.hannibal2.skyhanni.config
 import at.hannibal2.skyhanni.api.event.SkyHanniEvent
 import at.hannibal2.skyhanni.skyhannimodule.PrimaryFunction
 import at.hannibal2.skyhanni.utils.SkyHanniLogger
+import at.hannibal2.skyhanni.utils.json.asIntOrNull
 import at.hannibal2.skyhanni.utils.json.shDeepCopy
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import org.jetbrains.annotations.VisibleForTesting
+import java.util.ArrayDeque
 
 object ConfigUpdaterMigrator {
     val logger = SkyHanniLogger("ConfigMigration")
@@ -27,21 +29,13 @@ object ConfigUpdaterMigrator {
 
     @PrimaryFunction("onConfigFix")
     data class ConfigFixEvent(
-        val old: JsonObject,
-        val new: JsonObject,
+        val config: JsonObject,
         val dynamicPrefix: Map<String, List<String>>,
         private val currentVersion: Int = CONFIG_VERSION,
     ) : SkyHanniEvent() {
-        constructor(
-            old: JsonObject,
-            new: JsonObject,
-            oldVersion: Int,
-            movesPerformed: Int,
-            dynamicPrefix: Map<String, List<String>>,
-        ) : this(old, new, dynamicPrefix, oldVersion)
-
         private data class Migration(
             val id: String,
+            val since: Int?,
             val reads: Set<String>,
             val writes: Set<String>,
             val apply: (JsonObject) -> Unit,
@@ -52,37 +46,39 @@ object ConfigUpdaterMigrator {
             get() = migrations.mapTo(mutableSetOf()) { it.id }
 
         fun transform(path: String, transform: (JsonElement) -> JsonElement = { it }) {
-            register("transform:$path", setOf(path), setOf(path), true) { config ->
+            register("transform:$path", null, setOf(path), setOf(path), true) { config ->
                 expand(path).forEach { path -> updateAt(config, path) { transform(it.shDeepCopy()) } }
             }
         }
 
         fun transform(since: Int, path: String, transform: (JsonElement) -> JsonElement = { it }) {
-            register("transform@$since:$path", setOf(path), setOf(path), currentVersion < since) { config ->
+            register("transform@$since:$path", since, setOf(path), setOf(path), currentVersion < since) { config ->
                 expand(path).forEach { realPath -> updateAt(config, realPath) { transform(it.shDeepCopy()) } }
             }
         }
 
         fun add(path: String, value: () -> JsonElement) {
-            addInternal(path, value, true)
+            addInternal(path, value, true, null, false)
         }
 
         fun add(since: Int, path: String, value: () -> JsonElement) {
-            addInternal(path, value, currentVersion < since, true, "add@$since:$path")
-        }
-
-        private fun addInternal(path: String, value: () -> JsonElement, shouldRun: Boolean) {
-            addInternal(path, value, shouldRun, false, "add:$path")
+            addInternal(path, value, currentVersion < since, since, true)
         }
 
         private fun addInternal(
             path: String,
             value: () -> JsonElement,
             shouldRun: Boolean,
+            since: Int?,
             overwrite: Boolean,
-            id: String,
         ) {
-            register(id, emptySet(), setOf(path), shouldRun) { config ->
+            register(
+                if (since == null) "add:$path" else "add@$since:$path",
+                since,
+                emptySet(),
+                setOf(path),
+                shouldRun,
+            ) { config ->
                 expand(path).forEach { realPath ->
                     val parts = realPath.split(".")
                     (config.at(parts.dropLast(1), true) as? JsonObject)
@@ -94,7 +90,7 @@ object ConfigUpdaterMigrator {
         }
 
         fun move(fromPath: String, toPath: String, transform: (JsonElement) -> JsonElement = { it }) {
-            moveInternal(fromPath, toPath, transform, true)
+            moveInternal(fromPath, toPath, transform, true, null)
         }
 
         fun move(
@@ -103,7 +99,7 @@ object ConfigUpdaterMigrator {
             toPath: String,
             transform: (JsonElement) -> JsonElement = { it },
         ) {
-            moveInternal(fromPath, toPath, transform, currentVersion < since, "move@$since:$fromPath->$toPath")
+            moveInternal(fromPath, toPath, transform, currentVersion < since, since)
         }
 
         private fun moveInternal(
@@ -111,7 +107,7 @@ object ConfigUpdaterMigrator {
             toPath: String,
             transform: (JsonElement) -> JsonElement,
             shouldRun: Boolean,
-            id: String = "move:$fromPath->$toPath",
+            since: Int?,
         ) {
             check(listOf(fromPath, toPath).none { it.startsWith("feature") }) {
                 "Migration path should not start with 'features.'!"
@@ -120,7 +116,13 @@ object ConfigUpdaterMigrator {
                 fromPath.substringBefore('.') == toPath.substringBefore('.')) {
                 "Dynamic migration prefixes must match: $fromPath -> $toPath"
             }
-            register(id, setOf(fromPath), setOf(toPath), shouldRun) { config ->
+            register(
+                if (since == null) "move:$fromPath->$toPath" else "move@$since:$fromPath->$toPath",
+                since,
+                setOf(fromPath),
+                setOf(toPath),
+                shouldRun,
+            ) { config ->
                 expand(fromPath).forEach { realFromPath ->
                     val realToPath = if (fromPath.startsWith("#")) {
                         realToPath(realFromPath, fromPath, toPath)
@@ -136,15 +138,21 @@ object ConfigUpdaterMigrator {
         }
 
         fun remove(path: String) {
-            removeInternal(path, true)
+            removeInternal(path, true, null)
         }
 
         fun remove(since: Int, path: String) {
-            removeInternal(path, currentVersion < since, "remove@$since:$path")
+            removeInternal(path, currentVersion < since, since)
         }
 
-        private fun removeInternal(path: String, shouldRun: Boolean, id: String = "remove:$path") {
-            register(id, setOf(path), emptySet(), shouldRun) { config ->
+        private fun removeInternal(path: String, shouldRun: Boolean, since: Int?) {
+            register(
+                if (since == null) "remove:$path" else "remove@$since:$path",
+                since,
+                setOf(path),
+                emptySet(),
+                shouldRun,
+            ) { config ->
                 expand(path).forEach { realPath ->
                     val parts = realPath.split(".")
                     (config.at(parts.dropLast(1), false) as? JsonObject)?.remove(parts.last())
@@ -154,13 +162,14 @@ object ConfigUpdaterMigrator {
 
         private fun register(
             id: String,
+            since: Int?,
             reads: Set<String>,
             writes: Set<String>,
             shouldRun: Boolean,
             apply: (JsonObject) -> Unit,
         ) {
             check(migrations.none { it.id == id }) { "Duplicate config migration ID: $id" }
-            migrations += Migration(id, reads, writes, if (shouldRun) apply else { _ -> })
+            if (shouldRun) migrations += Migration(id, since, reads, writes, apply)
         }
 
         private fun expand(path: String): List<String> {
@@ -186,8 +195,18 @@ object ConfigUpdaterMigrator {
         @VisibleForTesting
         internal fun applyPending(applied: MutableSet<String>) {
             val remaining = migrations.filter { it.id !in applied }.toMutableSet()
-            val dependencies = remaining.associateWith { candidate ->
-                remaining.filter { other ->
+            val ordered = remaining.filter { it.since != null }.sortedWith(
+                compareBy<Migration> { it.since }.thenBy { it.id },
+            ) + dependencySort(remaining.filter { it.since == null })
+            ordered.forEach {
+                it.apply(config)
+                applied += it.id
+            }
+        }
+
+        private fun dependencySort(migrations: List<Migration>): List<Migration> {
+            val dependencies = migrations.associateWith { candidate ->
+                migrations.filter { other ->
                     other !== candidate && other.writes.any { write ->
                         candidate.reads.any { read -> pathsOverlap(read, write) }
                     }
@@ -196,15 +215,13 @@ object ConfigUpdaterMigrator {
             val ordered = mutableListOf<Migration>()
             while (dependencies.isNotEmpty()) {
                 val ready = dependencies.filterValues { it.isEmpty() }.keys.minByOrNull { it.id }
-                    ?: error("Cyclic config migration dependencies: ${dependencies.keys.map { it.id }}")
+                    ?: dependencies.keys.minByOrNull { it.id }
+                    ?: error("No pending migrations")
                 ordered += ready
                 dependencies.remove(ready)
                 dependencies.values.forEach { it.remove(ready) }
             }
-            ordered.forEach {
-                it.apply(old)
-                applied += it.id
-            }
+            return ordered
         }
 
         private fun pathsOverlap(first: String, second: String): Boolean {
@@ -213,14 +230,18 @@ object ConfigUpdaterMigrator {
     }
 
     fun fixConfig(config: JsonObject): JsonObject {
-        val storedVersion = (config["lastVersion"] as? JsonPrimitive)?.asInt
+        val storedVersion = (config["lastVersion"] as? JsonPrimitive)?.asIntOrNull
         val hasLedger = config["appliedMigrations"] is JsonArray
-        val oldVersion = storedVersion ?: if (hasLedger) CONFIG_VERSION else -1
         val applied = (config["appliedMigrations"] as? JsonArray)
             ?.mapNotNull { it.takeUnless(JsonElement::isJsonNull)?.asString }
             ?.toMutableSet() ?: mutableSetOf()
+        if (storedVersion == null && applied.isEmpty()) {
+            config.remove("lastVersion")
+            config.add("appliedMigrations", JsonArray())
+            return config
+        }
+        val oldVersion = storedVersion ?: if (hasLedger) CONFIG_VERSION else -1
         val event = ConfigFixEvent(
-            config,
             config,
             dynamicPrefixes(config["storage"]?.asJsonObject),
             oldVersion,

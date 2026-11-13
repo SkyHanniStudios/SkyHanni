@@ -19,7 +19,7 @@ class ConfigUpdaterMigratorTest {
 
         fun run() {
             ConfigUpdaterMigrator.ConfigFixEvent(
-                config, config, emptyMap(),
+                config, emptyMap(),
             ).apply {
                 move("old", "middle")
                 move("middle", "new")
@@ -46,7 +46,7 @@ class ConfigUpdaterMigratorTest {
         val old = JsonObject().apply { addProperty("old", "value") }
         val new = JsonObject()
         ConfigUpdaterMigrator.ConfigFixEvent(
-            old, new, 0, 0, emptyMap(),
+            old, emptyMap(), currentVersion = 0,
         ).apply {
             move(149, "old", "new")
             applyPending(mutableSetOf())
@@ -57,12 +57,12 @@ class ConfigUpdaterMigratorTest {
     }
 
     @Test
-    fun `versioned migration above config version is recorded without running`() {
+    fun `versioned migration already covered by config version is not registered`() {
         val config = JsonObject().apply { addProperty("old", "value") }
         val applied = mutableSetOf<String>()
 
         ConfigUpdaterMigrator.ConfigFixEvent(
-            config, config, 150, 0, emptyMap(),
+            config, emptyMap(), currentVersion = 150,
         ).apply {
             move(149, "old", "new")
             applyPending(applied)
@@ -70,7 +70,7 @@ class ConfigUpdaterMigratorTest {
 
         assertEquals("value", config["old"].asString)
         assertFalse(config.has("new"))
-        assertEquals(setOf("move@149:old->new"), applied)
+        assertEquals(emptySet<String>(), applied)
     }
 
     @Test
@@ -78,7 +78,7 @@ class ConfigUpdaterMigratorTest {
         val config = JsonObject()
         val applied = mutableSetOf<String>()
 
-        ConfigUpdaterMigrator.ConfigFixEvent(config, config, emptyMap()).apply {
+        ConfigUpdaterMigrator.ConfigFixEvent(config, emptyMap()).apply {
             move("missing", "new")
             applyPending(applied)
         }
@@ -99,7 +99,6 @@ class ConfigUpdaterMigratorTest {
 
         ConfigUpdaterMigrator.ConfigFixEvent(
             config,
-            config,
             mapOf("#player" to listOf("players.alice", "players.bob")),
         ).apply {
             move("#player.old", "#player.new")
@@ -114,7 +113,7 @@ class ConfigUpdaterMigratorTest {
     fun `duplicate migration ids fail fast`() {
         assertThrows(IllegalStateException::class.java) {
             ConfigUpdaterMigrator.ConfigFixEvent(
-                JsonObject(), JsonObject(), emptyMap(),
+                JsonObject(), emptyMap(),
             ).apply {
                 move("old", "new")
                 move("old", "new")
