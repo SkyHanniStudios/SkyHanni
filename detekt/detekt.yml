@@ -104,6 +104,11 @@ style:
     UnusedPrivateProperty: # loops that don't use their iterator
         active: true
         allowedNames: "^(unused|_)$"
+    StringShouldBeRawString:
+        active: true
+        ignoredCharacters:
+            - '\\'
+            - '\n'
     ForbiddenComment: # every TODO gets flagged
         active: false
     DestructuringDeclarationWithTooManyEntries: # too aggressive

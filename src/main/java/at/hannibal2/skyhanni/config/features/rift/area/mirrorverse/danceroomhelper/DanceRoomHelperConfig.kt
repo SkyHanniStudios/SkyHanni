@@ -38,7 +38,7 @@ class DanceRoomHelperConfig {
     @Expose
     @ConfigOption(
         name = "Hide Title",
-        desc = "Hide Instructions, \"§aIt's happening!\" §7and \"§aKeep it up!\" §7titles."
+        desc = """Hide Instructions, "§aIt's happening!" §7and "§aKeep it up!" §7titles."""
     )
     @ConfigEditorBoolean
     @FeatureToggle

@@ -142,14 +142,14 @@ object CakeCounterFeatures {
         soulsStandExists = nearbyArmorStands.any { armorStand ->
             soulsFoundPattern.matchMatcher(armorStand.name.formattedTextCompatLessResets()) {
                 soulsFoundEntityId = armorStand.id
-                ChatUtils.debug("Found \"Souls Found\" entity (from \"Cakes Eaten\" location)")
+                ChatUtils.debug("""Found "Souls Found" entity (from "Cakes Eaten" location)""")
                 updateSoulsFound()
                 true
             } ?: false
         }
         if (!soulsStandExists) {
             ChatUtils.debug(
-                "Couldn't find \"Souls Found\" entity near \"Cakes Eaten\" entity: " + "assuming it doesn't exist",
+                """Couldn't find "Souls Found" entity near "Cakes Eaten" entity: assuming it doesn't exist""",
             )
         }
     }
