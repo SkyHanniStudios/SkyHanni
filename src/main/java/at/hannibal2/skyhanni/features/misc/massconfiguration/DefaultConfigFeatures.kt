@@ -108,7 +108,7 @@ object DefaultConfigFeatures {
             ChatUtils.chat("There are no new options to configure between $old and $new")
             return
         }
-        SkyHanniMod.screenToOpen = DefaultConfigOptionGui(optionList, old, new)
+        SkyHanniMod.screenToOpen = DefaultConfigScreen(optionList, old, new)
     }
 
     fun applyCategorySelections(
@@ -119,13 +119,7 @@ object DefaultConfigFeatures {
             for (option in options) {
                 val resetState = option.toggleOverride ?: resetSuggestionState[cat]!!
                 if (resetState == ResetSuggestionState.LEAVE_DEFAULTS) continue
-                val onState = option.isTrueEnabled
-                val setTo = if (resetState == ResetSuggestionState.TURN_ALL_ON) {
-                    onState
-                } else {
-                    !onState
-                }
-                option.setter(setTo)
+                option.setter((resetState == ResetSuggestionState.TURN_ALL_ON) == option.isTrueEnabled)
             }
         }
     }

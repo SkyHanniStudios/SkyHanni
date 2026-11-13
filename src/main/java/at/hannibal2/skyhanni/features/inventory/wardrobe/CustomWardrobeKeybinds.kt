@@ -28,7 +28,7 @@ object CustomWardrobeKeybinds {
         if (!isEnabled()) return
         val slots = ArmorWardrobeApi.slots.filter { it.isInCurrentPage() }
             .filterNot { config.onlyFavorites && !it.favorite }
-            .filterNot { config.hideEmptySlots && it.armor.all { piece -> piece == null } }
+            .filterNot { config.hideEmptySlots.get() && it.armor.all { piece -> piece == null } }
 
         for ((index, key) in keybinds.withIndex()) {
             if (!key.isKeyHeld()) continue
@@ -41,5 +41,5 @@ object CustomWardrobeKeybinds {
     }
 
     private fun isEnabled() =
-        SkyBlockUtils.inSkyBlock && CustomWardrobe.inCustomWardrobe && config.keybinds.slotKeybindsToggle && config.enabled
+        SkyBlockUtils.inSkyBlock && CustomWardrobe.inCustomWardrobe && config.keybinds.slotKeybindsToggle && config.enabled.get()
 }

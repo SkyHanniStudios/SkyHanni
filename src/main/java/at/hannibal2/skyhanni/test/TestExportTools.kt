@@ -12,6 +12,7 @@ import at.hannibal2.skyhanni.utils.KotlinTypeAdapterFactory
 import at.hannibal2.skyhanni.utils.OSUtils
 import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.json.fromJson
+import at.hannibal2.skyhanni.utils.json.registerSkyHanniAdapters
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
@@ -39,6 +40,7 @@ object TestExportTools {
     @PublishedApi
     internal val gson: Gson = GsonBuilder()
         .registerTypeAdapterFactory(KotlinTypeAdapterFactory())
+        .registerSkyHanniAdapters()
         .registerTypeAdapter(SafeItemStack::class.java, LegacyItemStackTypeAdapter())
         .create()
 
@@ -89,7 +91,8 @@ object TestExportTools {
         return gson.toJson(TestValue(key.name, gson.toJsonTree(value)))
     }
 
-    inline fun <reified T> fromJson(key: Key<T>, reader: Reader): T {
+    @PublishedApi
+    internal inline fun <reified T> fromJson(key: Key<T>, reader: Reader): T {
         val serializable = gson.fromJson<TestValue>(reader)
         require(key.name == serializable.type)
         return gson.fromJson(serializable.data)

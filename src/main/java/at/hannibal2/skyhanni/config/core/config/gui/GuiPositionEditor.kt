@@ -32,7 +32,7 @@ import at.hannibal2.skyhanni.utils.compat.DrawContextUtils
 import at.hannibal2.skyhanni.utils.compat.GuiScreenUtils
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.compat.MouseCompat
-import at.hannibal2.skyhanni.utils.compat.SkyHanniBaseScreen
+import at.hannibal2.skyhanni.utils.compat.SkyHanniCanvasScreen
 import at.hannibal2.skyhanni.utils.compat.SkyHanniGuiContainer
 import at.hannibal2.skyhanni.utils.renderables.RenderableTooltips
 import at.hannibal2.skyhanni.utils.renderables.primitives.StringRenderable
@@ -48,7 +48,7 @@ class GuiPositionEditor(
     private val border: Int,
     private val oldScreen: SkyHanniGuiContainer? = null,
     private val chestGuiPositions: Set<Position> = emptySet(),
-) : SkyHanniBaseScreen() {
+) : SkyHanniCanvasScreen() {
 
     private val config get() = SkyHanniMod.feature.gui
     private var grabbedX = 0
