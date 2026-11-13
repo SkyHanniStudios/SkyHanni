@@ -44,10 +44,7 @@ value class NeuInternalName private constructor(private val internalName: String
     val skyblockCommandId: String
         get() = when {
             isPet -> internalName.split(";").first()
-            isEnchantedBook && internalName.contains(";") -> {
-                val (name, level) = internalName.split(";", limit = 2)
-                "ENCHANTED_BOOK_${name}_$level"
-            }
+            isEnchantedBook && internalName.contains(";") -> ItemNameResolver.enchantedBookCommandId(internalName)
 
             else -> internalName
         }

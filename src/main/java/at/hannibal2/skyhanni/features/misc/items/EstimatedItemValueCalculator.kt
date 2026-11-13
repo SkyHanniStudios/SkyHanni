@@ -12,6 +12,7 @@ import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.EssenceUtils
 import at.hannibal2.skyhanni.utils.EssenceUtils.getEssencePrices
 import at.hannibal2.skyhanni.utils.InventoryUtils
+import at.hannibal2.skyhanni.utils.ItemNameResolver
 import at.hannibal2.skyhanni.utils.ItemPriceUtils.formatCoin
 import at.hannibal2.skyhanni.utils.ItemPriceUtils.formatCoinWithBrackets
 import at.hannibal2.skyhanni.utils.ItemPriceUtils.getNpcPriceOrNull
@@ -727,7 +728,7 @@ object EstimatedItemValueCalculator {
                 }
             }
 
-            val enchantmentName = "$rawName;$level".toInternalName()
+            val enchantmentName = ItemNameResolver.fixEnchantmentName("$rawName;$level")
 
             if (isBazaarItem(enchantmentName)) {
                 items[enchantmentName] = multiplier
