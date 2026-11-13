@@ -2,7 +2,7 @@ package at.hannibal2.skyhanni.utils
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import java.util.Base64
+import kotlin.io.encoding.Base64
 
 // Taken and modified from Not Enough Updates https://github.com/NotEnoughUpdates/NotEnoughUpdates
 object TemplateUtil {
@@ -18,7 +18,7 @@ object TemplateUtil {
 
     @JvmStatic
     fun intoBase64Encoded(raw: String): String {
-        return Base64.getEncoder().encodeToString(raw.encodeToByteArray())
+        return Base64.encode(raw.encodeToByteArray())
     }
 
     private val base64Alphabet = charArrayOf(
@@ -36,7 +36,7 @@ object TemplateUtil {
             return null
         }
         return try {
-            Base64.getDecoder().decode(trimmed).decodeToString()
+            StringUtils.lenientBase64.decode(trimmed).decodeToString()
         } catch (ex: Exception) {
             null
         }
@@ -49,9 +49,7 @@ object TemplateUtil {
      */
     @JvmStatic
     fun getPrefixComparisonSafeBase64Encoding(prefix: String): String {
-        val rawEncoded =
-            Base64.getEncoder().encodeToString(prefix.encodeToByteArray())
-                .replace("=", "")
+        val rawEncoded = Base64.encode(prefix.encodeToByteArray()).replace("=", "")
         return rawEncoded.substring(0, rawEncoded.length - rawEncoded.length % 4)
     }
 

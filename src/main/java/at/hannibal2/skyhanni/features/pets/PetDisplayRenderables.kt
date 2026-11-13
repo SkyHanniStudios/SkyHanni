@@ -154,10 +154,10 @@ private class PreviewCircularContainerRenderable(
         val radiusSquared = radius.toDouble() * radius
         val alpha = color ushr 24 and 0xFF
         val rgb = color and 0x00FFFFFF
-        for (y in 0 until width) {
+        for (y in 0..<width) {
             var runStart: Int? = null
             var runColor = 0
-            for (x in 0 until width) {
+            for (x in 0..<width) {
                 var samplesInside = 0
                 for (sampleY in SAMPLE_OFFSETS) {
                     for (sampleX in SAMPLE_OFFSETS) {

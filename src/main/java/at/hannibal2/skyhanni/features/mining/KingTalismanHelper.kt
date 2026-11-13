@@ -22,7 +22,6 @@ import at.hannibal2.skyhanni.utils.TimeUtils.format
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.sorted
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.sortedDesc
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
-import java.util.Collections
 import kotlin.collections.buildList
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -73,7 +72,7 @@ object KingTalismanHelper {
         if (!isEnabled()) return
 
         update()
-        display = if (isNearby()) allKingsDisplay else Collections.singletonList(farDisplay)
+        display = if (isNearby()) allKingsDisplay else listOf(farDisplay)
     }
 
 
@@ -100,7 +99,7 @@ object KingTalismanHelper {
     private fun update() {
         val kingsTalkedTo = storage?.kingsTalkedTo ?: return
         if (kingsTalkedTo.size == kingCircles.size) {
-            allKingsDisplay = Collections.singletonList("§eAll Kings found.")
+            allKingsDisplay = listOf("§eAll Kings found.")
             farDisplay = ""
             return
         }

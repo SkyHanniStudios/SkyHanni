@@ -38,7 +38,6 @@ import net.minecraft.ChatFormatting
 import org.lwjgl.glfw.GLFW
 import java.util.zip.GZIPInputStream
 import kotlin.io.encoding.Base64
-import kotlin.io.encoding.ExperimentalEncodingApi
 
 @SkyHanniModule
 object ShardTrackerDisplay {
@@ -178,7 +177,6 @@ object ShardTrackerDisplay {
         trackedShards.clear()
     }
 
-    @OptIn(ExperimentalEncodingApi::class)
     fun importFromSkyShards() {
         if (!isEnabled()) {
             ChatUtils.chatAndOpenConfig(

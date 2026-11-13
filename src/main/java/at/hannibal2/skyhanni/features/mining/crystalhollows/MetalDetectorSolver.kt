@@ -224,9 +224,9 @@ object MetalDetectorSolver {
         lastSearchedForBase = SimpleTimeMark.now()
         val player = LocationUtils.playerLocation().roundToBlock()
 
-        for (i in -50 until 50) {
+        for (i in -50..<50) {
             for (j in 30 downTo -30) {
-                for (k in -50 until 50) {
+                for (k in -50..<50) {
                     val blockPosition = player.add(i, j, k).roundToBlock()
                     val nextBlockPosition = blockPosition.add(0, 13, 0)
                     if (blockPosition.getBlockAt() == Blocks.QUARTZ_STAIRS && nextBlockPosition.getBlockAt() == Blocks.BARRIER) {

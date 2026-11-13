@@ -402,7 +402,7 @@ object DragonFeatures {
         if (!event.isWidget(TabWidget.DRAGON)) return
         if (!displayIsEnabled()) return
         widgetActive = true
-        for (i in 1 until event.lines.size) {
+        for (i in 1..<event.lines.size) {
             tabDamagePattern.matchMatcher(event.lines[i]) {
                 if (i == 1) {
                     currentTopDamage = group("damage").formatDouble()

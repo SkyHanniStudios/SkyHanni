@@ -15,6 +15,7 @@ import at.hannibal2.skyhanni.utils.ConditionalUtils
 import at.hannibal2.skyhanni.utils.NumberUtil.formatPercentage
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RenderUtils.renderStrings
+import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.TimeUtils
 import at.hannibal2.skyhanni.utils.TimeUtils.format
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
@@ -43,7 +44,7 @@ object RiftTimer {
     private var maxTime = 0.seconds
     private var currentTime = 0.seconds
     private var latestTime = 0.seconds
-    private val changes = mutableMapOf<Long, String>()
+    private val changes = mutableMapOf<SimpleTimeMark, String>()
 
     @HandleEvent
     fun onWorldChange() {
@@ -96,7 +97,7 @@ object RiftTimer {
 
         display = buildList {
             add(firstLine)
-            changes.keys.removeIf { System.currentTimeMillis() > it + 4_000 }
+            changes.keys.removeIf { it.passedSince() > 4.seconds }
             for (entry in changes.values) {
                 add(entry)
             }
@@ -110,7 +111,7 @@ object RiftTimer {
             "§c-${(-diff).format()}"
         } else return
 
-        changes[System.currentTimeMillis()] = diffFormat
+        changes[SimpleTimeMark.now()] = diffFormat
     }
 
     @HandleEvent

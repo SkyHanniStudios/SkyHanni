@@ -11,13 +11,15 @@ import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.HypixelCommands
 import at.hannibal2.skyhanni.utils.LorenzColor
 import at.hannibal2.skyhanni.utils.LorenzVec
+import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
+import kotlin.time.Duration.Companion.minutes
 
 @SkyHanniModule
 object JoinCrystalHollows {
 
-    private var lastWrongPassTime = 0L
+    private var lastWrongPassTime = SimpleTimeMark.farPast()
     private val location = LorenzVec(88, 198, -99)
 
     @HandleEvent
@@ -26,7 +28,7 @@ object JoinCrystalHollows {
 
         val message = event.message
         if (message == "§cYou do not have an active Crystal Hollows pass!") {
-            lastWrongPassTime = System.currentTimeMillis()
+            lastWrongPassTime = SimpleTimeMark.now()
             if (!IslandType.DWARVEN_MINES.isInIsland()) {
                 ChatUtils.clickableChat(
                     "Click here to warp to Dwarven Mines!",
@@ -54,7 +56,7 @@ object JoinCrystalHollows {
             ChatUtils.chat("Buy a §2Crystal Hollows Pass §efrom §5Gwendolyn§e!")
         }
         if (event.newIsland == IslandType.CRYSTAL_HOLLOWS) {
-            lastWrongPassTime = 0
+            lastWrongPassTime = SimpleTimeMark.farPast()
         }
     }
 
@@ -68,7 +70,7 @@ object JoinCrystalHollows {
         }
     }
 
-    private fun inTime() = lastWrongPassTime + 1000 * 60 * 2 > System.currentTimeMillis()
+    private fun inTime() = lastWrongPassTime.passedSince() < 2.minutes
 
     fun isEnabled() = SkyHanniMod.feature.misc.crystalHollowsJoin
 }

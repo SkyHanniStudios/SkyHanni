@@ -79,7 +79,7 @@ object PersonalCompactorOverlay {
 
         val fakeInventory = compactorRenderableMap.getOrPut(uuid) {
             val slots = slotsMap[tier] ?: return
-            val itemList = (0 until slots).map { slot ->
+            val itemList = (0..<slots).map { slot ->
                 val skyblockId = itemStack.getAttributeString(prefix + slot)
                 skyblockId?.let { getInternalNameFromHypixelIdOrNull(it) }?.getItemStack()
             }

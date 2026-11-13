@@ -13,7 +13,6 @@ import at.hannibal2.skyhanni.utils.renderables.primitives.ItemStackRenderable.Co
 import at.hannibal2.skyhanni.utils.renderables.primitives.placeholder
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
 import at.hannibal2.skyhanni.utils.renderables.toSearchable
-import java.util.Collections
 
 // TODO move the type specific into the companion objects, the rest goes back into the RenderableUtils
 object RenderableCollectionUtils {
@@ -46,7 +45,7 @@ object RenderableCollectionUtils {
     }
 
     fun MutableList<List<Renderable>>.addSingleString(text: String) {
-        add(Collections.singletonList(Renderable.text(text)))
+        add(listOf(Renderable.text(text)))
     }
 
     fun MutableList<Renderable>.addItemStack(
