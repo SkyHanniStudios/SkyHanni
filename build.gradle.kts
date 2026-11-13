@@ -215,7 +215,6 @@ dependencies {
 
     val reiVersion = when (target) {
         ProjectTarget.MODERN_26200 -> "26.2.820"
-        ProjectTarget.MODERN_26100 -> "26.1.819"
     }
     val reiApi = "me.shedaniel:RoughlyEnoughItems-api:$reiVersion"
     compileOnly(reiApi) { isTransitive = false }

@@ -7,30 +7,24 @@ import net.minecraft.client.renderer.DynamicUniformStorage
 import java.nio.ByteBuffer
 
 class SkyHanniChromaUniform : AutoCloseable {
+    companion object {
+        const val UNIFORM_NAME = "SkyHanniChromaUniforms"
+    }
+
     private val uniformSize = Std140SizeCalculator().putFloat().putFloat().putFloat().putInt().get()
 
-    val storage = DynamicUniformStorage<UniformValue>("SkyHanni Chroma UBO", uniformSize, 2)
+    private val storage = DynamicUniformStorage<UniformValue>("SkyHanni Chroma UBO", uniformSize, 2)
 
     fun writeWith(
         chromaSize: Float,
         timeOffset: Float,
         saturation: Float,
         forwardDirection: Int,
-    ): GpuBufferSlice {
-        return storage.writeUniform(
-            UniformValue(chromaSize, timeOffset, saturation, forwardDirection),
-        )
-    }
+    ): GpuBufferSlice = storage.writeUniform(UniformValue(chromaSize, timeOffset, saturation, forwardDirection))
 
-    // Imperative to clear DynamicUniformStorage every frame.
-    // Handled in MixinRenderSystem.
-    fun clear() {
-        storage.endFrame()
-    }
+    fun clear() = storage.endFrame()
 
-    override fun close() {
-        storage.close()
-    }
+    override fun close() = storage.close()
 
     data class UniformValue(
         val chromaSize: Float,

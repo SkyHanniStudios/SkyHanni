@@ -13,7 +13,6 @@ import at.hannibal2.skyhanni.utils.render.states.SkyHanniRoundedTexturedRectRend
 import io.github.notenoughupdates.moulconfig.ChromaColour
 import net.minecraft.client.renderer.state.gui.GuiRenderState
 import net.minecraft.resources.Identifier
-import org.joml.Matrix3x2f
 import java.awt.Color
 import kotlin.math.max
 
@@ -195,7 +194,7 @@ object ShaderRenderUtils {
         val halfSizeY = (height * scaleFactor) / 2f
         val centerPosX = (x * scaleFactor) + halfSizeX
         val centerPosY = GuiScreenUtils.displayHeight - ((y * scaleFactor) + halfSizeY)
-        val matrix = Matrix3x2f(DrawContextUtils.drawContext.pose())
+        val matrix = DrawContextUtils.copyPose()
         val xScale = matrix.m00()
         val yScale = matrix.m11()
         val xTranslation = matrix.m20()
