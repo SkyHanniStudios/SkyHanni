@@ -213,7 +213,7 @@ abstract class SkyHanniRule(config: Config, description: String, url: URI? = nul
     companion object {
         val CONVENTIONS_URI = URI("https://github.com/SkyHanniStudios/SkyHanni/blob/beta/CONTRIBUTING.md#coding-styles-and-conventions")
 
-        private val SUPPRESS_ANNOTATIONS = setOf("Suppress", "SuppressWarnings")
+        private val SUPPRESS_ANNOTATIONS = setOf(Suppress::class.java.simpleName, SuppressWarnings::class.java.simpleName)
         private val BLANK_OR_QUOTES = """[\s"]*""".toRegex()
 
         private fun findFirstMeaningfulKtElementInParents(

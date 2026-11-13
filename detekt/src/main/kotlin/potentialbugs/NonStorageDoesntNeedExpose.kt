@@ -1,7 +1,10 @@
 package potentialbugs
 
 import SkyHanniRule
+import com.google.gson.annotations.Expose
 import dev.detekt.api.Config
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorButton
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorInfoText
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.psiUtil.isPrivate
@@ -22,7 +25,7 @@ class NonStorageDoesntNeedExpose(config: Config) : SkyHanniRule(
     }
 
     override fun visitProperty(property: KtProperty) {
-        val expose = property.getAnnotation("Expose")
+        val expose = property.getAnnotation<Expose>()
         if (expose != null) {
             // Reasons to NOT have Expose annotation:
             //  - The property is local
@@ -33,9 +36,9 @@ class NonStorageDoesntNeedExpose(config: Config) : SkyHanniRule(
             //  - The property is annotated with Transient
             val hasExplicitGetter = property.getter?.hasBody() ?: false
             val doWeCare = property.isLocal || property.isPrivate() || hasExplicitGetter ||
-                property.hasAnnotation("ConfigEditorInfoText") ||
-                property.hasAnnotation("ConfigEditorButton") ||
-                property.hasAnnotation("Transient")
+                property.hasAnnotation<ConfigEditorInfoText>() ||
+                property.hasAnnotation<ConfigEditorButton>() ||
+                property.hasAnnotation<Transient>()
 
             if (doWeCare) {
                 expose.reportIssue("@Expose annotation is not needed on property ${property.name}", property)

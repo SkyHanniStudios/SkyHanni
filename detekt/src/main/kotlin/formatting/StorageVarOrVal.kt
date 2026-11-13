@@ -3,16 +3,18 @@ package formatting
 import SkyHanniRule
 import dev.detekt.api.Config
 import dev.detekt.api.RequiresAnalysisApi
+import io.github.notenoughupdates.moulconfig.ChromaColour
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorInfoText
 import org.jetbrains.kotlin.analysis.api.analyze
 import org.jetbrains.kotlin.analysis.api.symbols.KaClassKind
 import org.jetbrains.kotlin.analysis.api.types.KaClassType
-import org.jetbrains.kotlin.name.ClassId
-import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.StandardClassIds
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtProperty
 import potentialbugs.StorageNeedsExpose.Companion.CONFIG_PACKAGE
 import utils.DetektUtils.doWeNeedToCheckConfigProp
+import utils.DetektUtils.hasAnnotation
+import utils.DetektUtils.javaClassId
 
 class StorageVarOrVal(config: Config) : RequiresAnalysisApi, SkyHanniRule(
     config,
@@ -21,13 +23,9 @@ class StorageVarOrVal(config: Config) : RequiresAnalysisApi, SkyHanniRule(
     private enum class StorageType { VAR, VAL }
 
     companion object {
-        private val CHROMA_COLOUR_CLASS_ID = ClassId(
-            FqName("io.github.notenoughupdates.moulconfig"),
-            FqName("ChromaColour"),
-            false,
-        )
+        private val CHROMA_COLOUR_CLASS_ID = ChromaColour::class.javaClassId()
         private val PRIMITIVE_CLASS_IDS = with(StandardClassIds) {
-            setOf(Boolean, Byte,Char, Double, Float, Int, Long, Short)
+            setOf(Boolean, Byte, Char, Double, Float, Int, Long, Short)
         }
     }
 
@@ -54,7 +52,7 @@ class StorageVarOrVal(config: Config) : RequiresAnalysisApi, SkyHanniRule(
     }
 
     private fun shouldBeVar(property: KtProperty): Boolean {
-        val isInfoText = property.annotationEntries.any { it.shortName?.asString() == "ConfigEditorInfoText" }
+        val isInfoText = property.hasAnnotation<ConfigEditorInfoText>()
         return !isInfoText && analyze(property) {
             val type = property.returnType
             val classId = (type as? KaClassType)?.classId

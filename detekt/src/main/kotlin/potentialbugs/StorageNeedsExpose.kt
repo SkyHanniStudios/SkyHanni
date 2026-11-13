@@ -1,12 +1,15 @@
 package potentialbugs
 
 import SkyHanniRule
+import com.google.gson.annotations.Expose
 import dev.detekt.api.Config
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorButton
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorInfoText
+import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtProperty
 import utils.DetektUtils.doWeNeedToCheckConfigProp
 import utils.DetektUtils.hasAnnotation
-import utils.SkyHanniFqNames
 
 class StorageNeedsExpose(config: Config) : SkyHanniRule(
     config,
@@ -26,15 +29,15 @@ class StorageNeedsExpose(config: Config) : SkyHanniRule(
 
     private fun checkProperty(property: KtProperty) {
         if (!property.doWeNeedToCheckConfigProp()) return
-        if (property.hasAnnotation("Expose")) return
+        if (property.hasAnnotation<Expose>()) return
 
         // If the property is not annotated with @Expose, report it
-        if (property.hasAnnotation("ConfigOption")) {
+        if (property.hasAnnotation<ConfigOption>()) {
             // Valid reasons to not have the @Expose annotation on a config option:
             //  - Has the ConfigEditorInfoText annotation
             //  - Has the ConfigEditorButton annotation
-            if (property.hasAnnotation("ConfigEditorInfoText")) return
-            if (property.hasAnnotation("ConfigEditorButton")) return
+            if (property.hasAnnotation<ConfigEditorInfoText>()) return
+            if (property.hasAnnotation<ConfigEditorButton>()) return
         }
 
         (property.nameIdentifier ?: property).reportIssue("@Expose annotation is missing from property ${property.name}", property)
@@ -48,8 +51,8 @@ class StorageNeedsExpose(config: Config) : SkyHanniRule(
         val lineStart = text.lastIndexOf('\n', anchor.textRange.startOffset - 1) + 1
         val indent = text.substring(lineStart, anchor.textRange.startOffset)
         val separator = if (indent.isBlank()) "\n$indent" else " "
-        anchor.insertTextBefore("@Expose$separator")
-        property.containingKtFile.addImport(SkyHanniFqNames.EXPOSE)
+        anchor.insertTextBefore("@${Expose::class.java.simpleName}$separator")
+        property.containingKtFile.addImport(Expose::class.java.name)
     }
 
     override fun visitProperty(property: KtProperty) {
