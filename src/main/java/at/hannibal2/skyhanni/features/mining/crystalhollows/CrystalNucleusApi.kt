@@ -62,7 +62,7 @@ object CrystalNucleusApi {
 
     // Fallback to the inventory based system in case of changed chat message
     @HandleEvent
-    fun onOwnInventoryItemUpdate(event: OwnInventoryItemUpdateEvent) {
+    private fun onOwnInventoryItemUpdate(event: OwnInventoryItemUpdateEvent) {
         if (unCheckedBooks == 0) return
         if (event.itemStack.hoverName.string != "Enchanted Book") return
         when (event.itemStack.getHypixelEnchantments()?.keys?.firstOrNull() ?: return) {
@@ -77,7 +77,7 @@ object CrystalNucleusApi {
     }
 
     @HandleEvent
-    fun onIslandChange(event: IslandChangeEvent) {
+    private fun onIslandChange(event: IslandChangeEvent) {
         if (unCheckedBooks == 0 ||
             event.oldIsland != IslandType.CRYSTAL_HOLLOWS ||
             event.newIsland == IslandType.CRYSTAL_HOLLOWS
@@ -90,7 +90,7 @@ object CrystalNucleusApi {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CRYSTAL_HOLLOWS)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         val message = event.message
 
         if (startPattern.matches(message)) {

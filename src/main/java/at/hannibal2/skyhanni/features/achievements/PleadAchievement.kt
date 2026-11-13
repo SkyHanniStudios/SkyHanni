@@ -15,7 +15,7 @@ object PleadAchievement {
     private const val PLEAD_ACHIEVEMENT = "Plead"
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = pleadComponent,
             description = pleadComponent,
@@ -26,7 +26,7 @@ object PleadAchievement {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: PlayerAllChatEvent.Allow) {
+    private fun onChat(event: PlayerAllChatEvent.Allow) {
         if (!event.author.contains(PlayerUtils.getName())) return
         if (!event.cleanMessage.contains("plead")) return
         AchievementManager.completeAchievement(PLEAD_ACHIEVEMENT)

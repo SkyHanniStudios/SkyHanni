@@ -79,7 +79,7 @@ object SuperCraftingInventory {
     } * 1_000_000L
 
     @HandleEvent
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         if (!invDetector.isInside()) return
         if (!config.enabled) return
         if (HypixelData.noTrade) return

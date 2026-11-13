@@ -36,7 +36,7 @@ object ChargeBottleNotification {
     private var lastChecked = SimpleTimeMark.farPast()
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         if (!isEnabled()) return
         if (lastChecked.passedSince() < 10.seconds) return
 
@@ -56,7 +56,7 @@ object ChargeBottleNotification {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(76, "misc.thunderBottleNotification", "misc.chargeBottleNotification")
     }
 

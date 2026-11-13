@@ -71,7 +71,7 @@ object MiningEventsApi {
 
 
     @HandleEvent(onlyOnIslands = [IslandType.CRYSTAL_HOLLOWS, IslandType.DWARVEN_MINES])
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         val msg = event.message
 
         for (eventType in MiningEventType.entries) {
@@ -87,7 +87,7 @@ object MiningEventsApi {
     }
 
     @HandleEvent(onlyOnIslands = [IslandType.CRYSTAL_HOLLOWS, IslandType.DWARVEN_MINES])
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
 
         if (TabWidget.EVENT.isActive) {
             for (eventType in MiningEventType.entries) {

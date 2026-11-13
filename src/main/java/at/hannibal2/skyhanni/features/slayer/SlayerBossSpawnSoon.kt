@@ -30,7 +30,7 @@ object SlayerBossSpawnSoon {
     private var warned = false
 
     @HandleEvent
-    fun onSlayerProgressChange(event: SlayerProgressChangeEvent) {
+    private fun onSlayerProgressChange(event: SlayerProgressChangeEvent) {
         if (!isEnabled()) return
         if (!SlayerApi.isInCorrectArea) return
 

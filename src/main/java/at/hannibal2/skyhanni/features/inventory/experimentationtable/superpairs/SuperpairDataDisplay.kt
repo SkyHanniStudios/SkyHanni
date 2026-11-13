@@ -24,18 +24,18 @@ object SuperpairDataDisplay {
     private var display = emptyList<String>()
 
     @HandleEvent
-    fun onInventoryClose() {
+    private fun onInventoryClose() {
         display = emptyList()
     }
 
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onSuperpairDataUpdated(event: TableSuperpairDataUpdatedEvent) {
+    private fun onSuperpairDataUpdated(event: TableSuperpairDataUpdatedEvent) {
         if (!config.superpairs.display) return
         display = drawDisplay()
     }
 
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
+    private fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
         if (!config.superpairs.display || !ExperimentationTableApi.inTable) return
 
         display = display.takeIfNotEmpty()
@@ -106,7 +106,7 @@ object SuperpairDataDisplay {
     private fun determinePrefix(index: Int, lastIndex: Int) = if (index == lastIndex) "└" else "├"
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         val pathBase = "inventory.experimentationTable"
         event.move(92, "$pathBase.superpairDisplay", "$pathBase.superpairs.display")
         event.move(92, "$pathBase.superpairDisplayPosition", "$pathBase.superpairs.displayPosition")

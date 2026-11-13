@@ -59,7 +59,7 @@ class SkyhanniTimedTracker<Data : TrackerData<*>, Type : TimedGenericIndividualC
         private val trackerSet: MutableSet<SkyhanniTimedTracker<*, *>> = mutableSetOf()
 
         @HandleEvent
-        fun onConfigLoad() {
+        private fun onConfigLoad() {
             trackerSet.forEach { it.cleanEntries() }
         }
     }

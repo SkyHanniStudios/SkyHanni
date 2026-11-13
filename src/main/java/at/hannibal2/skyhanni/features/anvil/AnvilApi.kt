@@ -34,7 +34,7 @@ object AnvilApi {
 
     // InventoryUpdatedEvent only reacts on packets from the server, but the anvil interactions are client side only
     @HandleEvent(priority = HandleEvent.HIGH)
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         if (!inventory.isInside()) return
 
         DelayedRun.runNextTick {
@@ -63,7 +63,7 @@ object AnvilApi {
     }
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    private fun onInventoryClose(event: InventoryCloseEvent) {
         // hypixel delays the pickup
 
         var hadItems = false

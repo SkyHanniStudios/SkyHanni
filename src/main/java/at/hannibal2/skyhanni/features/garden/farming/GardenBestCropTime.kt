@@ -36,7 +36,7 @@ object GardenBestCropTime {
     private var allCropsMaxed = false
 
     @HandleEvent
-    fun onConfigLoad() {
+    private fun onConfigLoad() {
         ConditionalUtils.onToggle(
             config.next.bestType,
             config.next.showOnlyBest,
@@ -165,7 +165,7 @@ object GardenBestCropTime {
     private fun getGardenExpForTier(gardenLevel: Int) = if (gardenLevel > 30) 300 else gardenLevel * 10
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(3, "garden.cropMilestoneBestType", "garden.cropMilestones.next.bestType")
         event.move(3, "garden.cropMilestoneShowOnlyBest", "garden.cropMilestones.next.showOnlyBest")
         event.move(3, "garden.cropMilestoneShowCurrent", "garden.cropMilestones.next.showCurrent")

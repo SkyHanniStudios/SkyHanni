@@ -10,7 +10,7 @@ import at.hannibal2.skyhanni.utils.HypixelCommands
 object WarpIsCommand {
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onMessageSendToServer(event: MessageSendToServerEvent) {
+    private fun onMessageSendToServer(event: MessageSendToServerEvent) {
         if (!SkyHanniMod.feature.misc.commands.replaceWarpIs) return
 
         if (event.message.lowercase() == "/warp is") {

@@ -219,7 +219,7 @@ object ActualGemstonePowderDisplay {
     }
 
     @HandleEvent(priority = HandleEvent.LOW)
-    fun onChat(event: SkyHanniChatEvent.Modify) {
+    private fun onChat(event: SkyHanniChatEvent.Modify) {
         if (!isEnabled()) return
 
         PowderChestReward.GEMSTONE_POWDER.chatPattern.matchMatcher(event.cleanMessage) {

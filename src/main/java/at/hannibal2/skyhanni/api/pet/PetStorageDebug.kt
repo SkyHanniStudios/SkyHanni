@@ -13,7 +13,7 @@ import java.util.UUID
 object PetStorageDebug {
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Pet Storage API")
         event.addIrrelevant {
             val petStorage = ProfileStorageData.petProfiles ?: run {

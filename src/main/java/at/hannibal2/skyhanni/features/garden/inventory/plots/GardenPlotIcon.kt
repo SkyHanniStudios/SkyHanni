@@ -42,7 +42,7 @@ object GardenPlotIcon {
     fun isEnabled() = GardenApi.inGarden() && config.enabled && inInventory
 
     @HandleEvent(priority = HandleEvent.HIGHEST)
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         inInventory = event.inventoryName == "Configure Plots"
         if (!isEnabled()) return
 
@@ -58,13 +58,13 @@ object GardenPlotIcon {
     }
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    private fun onInventoryClose(event: InventoryCloseEvent) {
         inInventory = false
         editMode = 0
     }
 
     @HandleEvent(priority = HandleEvent.HIGH)
-    fun replaceItem(event: ReplaceItemEvent) {
+    private fun replaceItem(event: ReplaceItemEvent) {
         if (!isEnabled()) return
         val plotList = plotList ?: return
         if (hardReset) {
@@ -88,7 +88,7 @@ object GardenPlotIcon {
     }
 
     @HandleEvent(priority = HandleEvent.HIGH)
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         if (!isEnabled()) return
         lastClickedSlotId = event.slotId
         if (event.slotId == 53) {
@@ -128,7 +128,7 @@ object GardenPlotIcon {
     }
 
     @HandleEvent
-    fun onToolTip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!isEnabled()) return
         val plotList = plotList ?: return
         val list = event.toolTip

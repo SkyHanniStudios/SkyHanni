@@ -37,7 +37,7 @@ object QuiverDisplay {
     private var hideAmount = false
 
     @HandleEvent
-    fun onProfileJoin(event: ProfileJoinEvent) {
+    private fun onProfileJoin(event: ProfileJoinEvent) {
         display = emptyList()
         arrow = QuiverApi.currentArrow
         amount = QuiverApi.currentAmount
@@ -64,7 +64,7 @@ object QuiverDisplay {
     }
 
     @HandleEvent
-    fun onQuiverUpdate(event: QuiverUpdateEvent) {
+    private fun onQuiverUpdate(event: QuiverUpdateEvent) {
         arrow = event.currentArrow
         amount = event.currentAmount
         hideAmount = QuiverApi.wearingSkeletonMasterChestplate
@@ -73,7 +73,7 @@ object QuiverDisplay {
     }
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
         if (!isEnabled()) return
         if (display.isEmpty()) updateDisplay()
         val whenToShow = config.whenToShow.get()
@@ -93,7 +93,7 @@ object QuiverDisplay {
     }
 
     @HandleEvent
-    fun onConfigLoad(event: ConfigLoadEvent) {
+    private fun onConfigLoad(event: ConfigLoadEvent) {
         ConditionalUtils.onToggle(
             config.whenToShow,
             config.showIcon,

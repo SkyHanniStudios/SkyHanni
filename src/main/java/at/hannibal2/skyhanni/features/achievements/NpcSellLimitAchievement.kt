@@ -18,7 +18,7 @@ object NpcSellLimitAchievement {
     private const val NPC_SELL_LIMIT_ACHIEVEMENT = "npc sell limit"
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "Bankrolled by NPCs",
             description = "Steal 500mil coins from an NPC in one day",
@@ -28,7 +28,7 @@ object NpcSellLimitAchievement {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (sellLimitPattern.matches(event.cleanMessage)) {
             AchievementManager.completeAchievement(NPC_SELL_LIMIT_ACHIEVEMENT)
         }

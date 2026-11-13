@@ -46,7 +46,7 @@ object ComposterUpgradesData {
     )
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         if (!composterUpgradesInventoryPattern.matches(event.inventoryName)) return
         for (item in event.inventoryItems.values) {
             composterUpgradePattern.matchMatcher(item.cleanName) {

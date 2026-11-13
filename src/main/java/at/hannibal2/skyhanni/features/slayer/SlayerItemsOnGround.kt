@@ -23,7 +23,7 @@ object SlayerItemsOnGround {
     private val itemsOnGround = TimeLimitedCache<ItemEntity, String>(2.seconds, useWeakKeys = true)
 
     @HandleEvent
-    fun onTick() {
+    private fun onTick() {
         if (!isEnabled()) return
         for (entityItem in EntityUtils.getEntitiesNearby<ItemEntity>(15.0)) {
             val itemStack = entityItem.item
@@ -36,7 +36,7 @@ object SlayerItemsOnGround {
     }
 
     @HandleEvent
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!isEnabled()) return
 
         for ((item, text) in itemsOnGround) {

@@ -122,7 +122,7 @@ object ItemDisplayOverlayFeatures {
     )
 
     @HandleEvent
-    fun onRenderItemTip(event: RenderItemTipEvent) {
+    private fun onRenderItemTip(event: RenderItemTipEvent) {
         val currentSize = config.itemNumberAsStackSize.size
         if (lastSize != currentSize) {
             lastSize = currentSize
@@ -357,7 +357,7 @@ object ItemDisplayOverlayFeatures {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.transform(29, "inventory.itemNumberAsStackSize") { element ->
             fixRemovedConfigElement(element)
         }

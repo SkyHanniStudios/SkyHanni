@@ -16,7 +16,7 @@ object JerrySeedAchievement {
     private const val JERRYSEED_ACHIEVEMENT = "OFA Jerryseed"
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "Jerry",
             description = "Make an Unripe Jerryseed do 5x damage",
@@ -26,7 +26,7 @@ object JerrySeedAchievement {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onInventoryUpdated(event: OwnInventoryItemUpdateEvent) {
+    private fun onInventoryUpdated(event: OwnInventoryItemUpdateEvent) {
         if (AchievementManager.isCompleted(JERRYSEED_ACHIEVEMENT)) return
         val stack = event.itemStack
         if (stack.getInternalNameOrNull() != JERRYSEED) return

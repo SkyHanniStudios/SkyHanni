@@ -40,7 +40,7 @@ object ExperimentsDryStreakDisplay {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shresetdrystreak") {
             description = "Resets the Experimentation Table dry-streak counter."
             category = CommandCategory.USERS_RESET
@@ -49,7 +49,7 @@ object ExperimentsDryStreakDisplay {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
+    private fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
         if (!isEnabled() || !ExperimentationTableApi.inTable) return
 
         display = display.takeIfNotEmpty() ?: drawDisplay()
@@ -60,7 +60,7 @@ object ExperimentsDryStreakDisplay {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onTableRareUncover(event: TableRareUncoverEvent) {
+    private fun onTableRareUncover(event: TableRareUncoverEvent) {
         if (!isEnabled()) return
         val storage = storage ?: return
         val attemptsFormat = "attempt".pluralize(storage.attemptsSince)
@@ -88,7 +88,7 @@ object ExperimentsDryStreakDisplay {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onTableTaskCompleted(event: TableTaskCompletedEvent) {
+    private fun onTableTaskCompleted(event: TableTaskCompletedEvent) {
         if (ignoreNextFinish) {
             ignoreNextFinish = false
             return

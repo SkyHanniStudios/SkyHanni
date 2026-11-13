@@ -81,14 +81,14 @@ object CorpseTracker : SkyHanniBucketedItemTracker<CorpseType, CorpseTracker.Buc
     }
 
     @HandleEvent
-    fun onItemAdd(event: ItemAddEvent) {
+    private fun onItemAdd(event: ItemAddEvent) {
         if (isEnabled() && event.source == ItemAddManager.Source.COMMAND) {
             event.addItemFromEvent()
         }
     }
 
     @HandleEvent
-    fun onCorpseLooted(event: CorpseLootedEvent) {
+    private fun onCorpseLooted(event: CorpseLootedEvent) {
         addLootedCorpse(event.corpseType, event.keyConsumed)
         for ((itemName, amount) in event.loot) {
             if (itemName.removeColor().trim() == "Glacite Powder") continue
@@ -153,14 +153,14 @@ object CorpseTracker : SkyHanniBucketedItemTracker<CorpseType, CorpseTracker.Buc
     }
 
     @HandleEvent
-    fun onIslandChange(event: IslandChangeEvent) {
+    private fun onIslandChange(event: IslandChangeEvent) {
         if (event.newIsland == IslandType.MINESHAFT || event.newIsland == IslandType.DWARVEN_MINES) {
             firstUpdate()
         }
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shresetcorpsetracker") {
             description = "Resets the Glacite Mineshaft Corpse Tracker"
             category = CommandCategory.USERS_RESET

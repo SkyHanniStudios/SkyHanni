@@ -59,13 +59,13 @@ object JacobFarmingContestsInventory {
     )
 
     @HandleEvent
-    fun onInventoryClose() {
+    private fun onInventoryClose() {
         realTime.clear()
         hideEverything = true
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onInventoryUpdated(event: InventoryUpdatedEvent) {
+    private fun onInventoryUpdated(event: InventoryUpdatedEvent) {
         if (!FarmingContestApi.inInventory) return
 
         realTime.clear()
@@ -90,7 +90,7 @@ object JacobFarmingContestsInventory {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         // TODO add tooltip line "click + press <keybind> to open on elite website
         if (!config.openOnElite.isKeyHeld()) return
 
@@ -171,7 +171,7 @@ object JacobFarmingContestsInventory {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
+    private fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
         if (!FarmingContestApi.inInventory) return
         if (!config.highlightRewards) return
 
@@ -191,7 +191,7 @@ object JacobFarmingContestsInventory {
     fun isClaimableContest(stack: SafeItemStack): Boolean = stack.getLore().lastOrNull() == "§eClick to claim reward!"
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onToolTip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         event.slot ?: return
         if (!FarmingContestApi.inInventory) return
 
@@ -207,7 +207,7 @@ object JacobFarmingContestsInventory {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onRenderItemOverlayPost(event: GuiRenderItemEvent.RenderOverlayEvent.GuiRenderItemPost) {
+    private fun onRenderItemOverlayPost(event: GuiRenderItemEvent.RenderOverlayEvent.GuiRenderItemPost) {
         if (!config.medalIcon) return
         if (!FarmingContestApi.inInventory) return
 
@@ -237,7 +237,7 @@ object JacobFarmingContestsInventory {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(
             3,
             "inventory.jacobFarmingContestHighlightRewards",

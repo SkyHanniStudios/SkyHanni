@@ -31,7 +31,7 @@ object GardenCropBreakTracker {
     private var mooshroomCowCrops: Int = 0
 
     @HandleEvent
-    fun onToolChange(event: GardenToolChangeEvent) {
+    private fun onToolChange(event: GardenToolChangeEvent) {
         heldItem = event.toolItem
         if (event.toolItem == null || event.toolInHand == null) return
         val counter = readCounter(event.toolItem)
@@ -48,7 +48,7 @@ object GardenCropBreakTracker {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onCropBreak(event: CropClickEvent) {
+    private fun onCropBreak(event: CropClickEvent) {
         if (event.crop != lastBrokenCropType) lastBrokenCropType = event.crop
 
         if (GardenApi.mushroomCowPet) {
@@ -65,7 +65,7 @@ object GardenCropBreakTracker {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onOwnInventoryItemUpdate(event: OwnInventoryItemUpdateEvent) {
+    private fun onOwnInventoryItemUpdate(event: OwnInventoryItemUpdateEvent) {
         if (!itemHasCounter || event.itemStack.getItemUuid() != heldItem?.getItemUuid()) return
         val item = event.itemStack
         val uuid = item.getItemUuid() ?: return
@@ -87,7 +87,7 @@ object GardenCropBreakTracker {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onTick(event: SkyHanniTickEvent) {
+    private fun onTick(event: SkyHanniTickEvent) {
         if (!event.isMod(5)) return
         if (cropMap.isEmpty()) return
 

@@ -16,7 +16,7 @@ object PetCandyUsedDisplay {
     private val config get() = SkyHanniMod.feature.misc.petCandy
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onRenderItemOverlayPost(event: GuiRenderItemEvent.RenderOverlayEvent.GuiRenderItemPost) {
+    private fun onRenderItemOverlayPost(event: GuiRenderItemEvent.RenderOverlayEvent.GuiRenderItemPost) {
         if (!config.showCandy) return
 
         val stack = event.stack?.takeIf { it.count == 1 } ?: return
@@ -35,7 +35,7 @@ object PetCandyUsedDisplay {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(22, "misc.petCandyUsed", "misc.petCandy.showCandy")
     }
 }

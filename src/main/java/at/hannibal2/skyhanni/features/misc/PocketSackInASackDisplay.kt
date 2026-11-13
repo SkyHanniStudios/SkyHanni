@@ -18,7 +18,7 @@ object PocketSackInASackDisplay {
     private const val MAX_STITCHES = 3
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onRenderItemOverlayPost(event: GuiRenderItemEvent.RenderOverlayEvent.GuiRenderItemPost) {
+    private fun onRenderItemOverlayPost(event: GuiRenderItemEvent.RenderOverlayEvent.GuiRenderItemPost) {
         val stack = event.stack?.takeIf { it.count == 1 } ?: return
         if (!config.showOverlay) return
         val pocketSackInASackApplied = stack.getAppliedPocketSackInASack() ?: return
@@ -31,7 +31,7 @@ object PocketSackInASackDisplay {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onToolTip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!config.replaceLore) return
         val itemStack = event.itemStack
         val applied = itemStack.getAppliedPocketSackInASack() ?: return
@@ -54,7 +54,7 @@ object PocketSackInASackDisplay {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(31, "misc.pocketSackInASack", "inventory.pocketSackInASack")
     }
 }

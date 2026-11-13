@@ -32,7 +32,7 @@ object SowdustAchievement {
     val chipsDetector = InventoryDetector { manageChipsInventoryPattern }
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "Funky Tasting Chips",
             description = "Put maximum seasoning on your chips",
@@ -42,7 +42,7 @@ object SowdustAchievement {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         if (AchievementManager.isCompleted(SOWDUST_ACHIEVEMENT)) return
         if (!chipsDetector.isInside()) return
         val milestoneSlot = 53

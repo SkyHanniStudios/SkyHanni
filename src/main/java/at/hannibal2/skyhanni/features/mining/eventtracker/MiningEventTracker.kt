@@ -85,13 +85,13 @@ object MiningEventTracker {
     val apiError get() = apiErrorCount > 0
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         eventEndTime = SimpleTimeMark.farPast()
         lastSentEvent = null
     }
 
     @HandleEvent
-    fun onBossbarChange(event: BossbarUpdateEvent) {
+    private fun onBossbarChange(event: BossbarUpdateEvent) {
         if (!isMiningIsland()) return
         if (SkyBlockUtils.lastWorldSwitch.passedSince() < 5.seconds) return
         if (!eventEndTime.isInPast()) {
@@ -107,7 +107,7 @@ object MiningEventTracker {
     }
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!isMiningIsland()) return
 
         eventStartedPattern.matchMatcher(event.message) {
@@ -119,7 +119,7 @@ object MiningEventTracker {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         if (!config.enabled) return
         if (!config.outsideMining && !isMiningIsland()) return
         if (!canRequestAt.isInPast()) return
@@ -197,7 +197,7 @@ object MiningEventTracker {
     }
 
     @HandleEvent
-    fun onIslandChange(event: IslandChangeEvent) {
+    private fun onIslandChange(event: IslandChangeEvent) {
         if (apiError) canRequestAt = SimpleTimeMark.now()
     }
 
@@ -242,7 +242,7 @@ object MiningEventTracker {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.transform(29, "mining.miningEvent.showType") { element ->
             if (element.asString == "BOTH") JsonPrimitive("ALL") else element
         }

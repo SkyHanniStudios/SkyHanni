@@ -43,7 +43,7 @@ object HighlightBonzoMasks {
     private val redHue = Color.RGBtoHSB(255, 0, 0, null)[0].toDouble()
 
     @HandleEvent
-    fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
+    private fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
         if (!config.depletedBonzosMasks) return
         for (slot in event.container.slots) {
             val internalName = slot.item.getInternalName()
@@ -58,7 +58,7 @@ object HighlightBonzoMasks {
     }
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         val message = event.cleanMessage
         // TODO move pattern into enum
         if (bonzoMaskPattern.matches(message)) {
@@ -69,12 +69,12 @@ object HighlightBonzoMasks {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         maskTimers.clear()
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(2, "inventory.highlightDepletedBonzosMasks", "itemAbilities.depletedBonzosMasks")
     }
 

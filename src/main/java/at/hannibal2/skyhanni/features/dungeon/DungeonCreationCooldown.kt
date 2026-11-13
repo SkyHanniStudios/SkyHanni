@@ -39,7 +39,7 @@ object DungeonCreationCooldown {
 
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         join.matchMatcher(event.message) {
             val player = group("player").cleanPlayerName()
             if (player == PlayerUtils.getName()) {
@@ -50,7 +50,7 @@ object DungeonCreationCooldown {
     }
 
     @HandleEvent
-    fun onCommand(event: MessageSendToServerEvent) {
+    private fun onCommand(event: MessageSendToServerEvent) {
         if (!shouldBlock()) return
         if (event.message.startsWith("/joininstance")) {
             event.cancel()
@@ -62,7 +62,7 @@ object DungeonCreationCooldown {
     }
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
         if (!isEnabled()) return
         if (!cooldown.isInFuture()) return
         val display = Renderable.text("§eDungeon Creation Cooldown: §b${cooldown.timeUntil().format()}")
@@ -70,7 +70,7 @@ object DungeonCreationCooldown {
     }
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         if (hasWarned || !config.sendChatMessage) return
         if (cooldown.isInPast()) {
             ChatUtils.chat("Dungeon creation cooldown is over!")

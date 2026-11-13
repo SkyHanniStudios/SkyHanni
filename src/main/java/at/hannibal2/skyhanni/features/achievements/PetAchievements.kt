@@ -35,7 +35,7 @@ object PetAchievements {
     private val SLIME_HAT = "SLIME_HAT".toInternalName()
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val petScoreAchievement = Achievement(
             name = "Oringo Competitor",
             description = "Oringo thinks true pet collectors have at least 400 Pet Score",
@@ -58,7 +58,7 @@ object PetAchievements {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         if (AchievementManager.isCompleted(TURTLE_ACHIEVEMENT)) return
         if (!event.repeatSeconds(10)) return
         val pets = ProfileStorageData.petProfiles?.pets ?: return
@@ -71,7 +71,7 @@ object PetAchievements {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         if (!PetStorageApi.inMainPetMenuName()) return
         val pets = ProfileStorageData.petProfiles?.pets ?: return
         for (pet in pets) {

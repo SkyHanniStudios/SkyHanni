@@ -12,7 +12,7 @@ import net.minecraft.world.entity.decoration.ArmorStand
 object HideDamageSplash {
 
     @HandleEvent(priority = HandleEvent.HIGH, onlyOnSkyblock = true)
-    fun onCheckRender(event: CheckRenderEntityEvent<ArmorStand>) {
+    private fun onCheckRender(event: CheckRenderEntityEvent<ArmorStand>) {
         if (!SkyHanniMod.feature.combat.hideDamageSplash) return
 
         if (DamageIndicatorManager.isDamageSplash(event.entity)) {
@@ -21,7 +21,7 @@ object HideDamageSplash {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(2, "misc.hideDamageSplash", "combat.hideDamageSplash")
     }
 }

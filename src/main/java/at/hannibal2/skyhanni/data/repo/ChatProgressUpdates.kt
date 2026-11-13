@@ -294,7 +294,7 @@ class ChatProgressUpdates private constructor(val category: ChatProgressCategory
         }
 
         @HandleEvent
-        fun onGuiRenderTop() {
+        private fun onGuiRenderTop() {
             if (InventoryUtils.inAnyInventory()) {
                 InventoryGuiScaleCompat.withOriginalHudScale {
                     renderDisplay()
@@ -311,7 +311,7 @@ class ChatProgressUpdates private constructor(val category: ChatProgressCategory
         }
 
         @HandleEvent
-        fun onCommandRegistration(event: CommandRegistrationEvent) {
+        private fun onCommandRegistration(event: CommandRegistrationEvent) {
             event.registerBrigadier("shdebugprogress") {
                 description = "Toggling chat progress updates"
                 category = CommandCategory.DEVELOPER_DEBUG
@@ -324,7 +324,7 @@ class ChatProgressUpdates private constructor(val category: ChatProgressCategory
         }
 
         @HandleEvent(onlyOnSkyblock = true)
-        fun onTick(event: SkyHanniTickEvent) {
+        private fun onTick(event: SkyHanniTickEvent) {
             if (!event.isMod(2)) return
 
             for (update in updates.filter { it.isEnabled() && it.currentlyRunning }) {

@@ -216,7 +216,7 @@ object GiftProfitTracker {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shaddusedgifts") {
             description = "Add used gifts to the gift profit tracker."
             category = CommandCategory.USERS_ACTIVE
@@ -240,7 +240,7 @@ object GiftProfitTracker {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         northStarsPattern.matchMatcher(event.message) {
             val amount = group("amount").formatInt()
             tracker.modify {

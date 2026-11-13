@@ -12,7 +12,7 @@ object JawbusAchievements {
     private const val JAWBUS_ACHIEVEMENT = "Double Jawbus"
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "Lord Almighty",
             description = "Double Hook a Lord Jawbus",
@@ -22,7 +22,7 @@ object JawbusAchievements {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSeaCreature(event: SeaCreatureFishEvent) {
+    private fun onSeaCreature(event: SeaCreatureFishEvent) {
         if (!event.doubleHook) return
         if (event.seaCreature.name != "Lord Jawbus") return
         AchievementManager.completeAchievement(JAWBUS_ACHIEVEMENT)

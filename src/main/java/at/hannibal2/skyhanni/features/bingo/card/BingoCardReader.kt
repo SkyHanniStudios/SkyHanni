@@ -42,7 +42,7 @@ object BingoCardReader {
     )
 
     @HandleEvent
-    fun onInventoryUpdated(event: InventoryUpdatedEvent) {
+    private fun onInventoryUpdated(event: InventoryUpdatedEvent) {
         if (!config.enabled) return
         if (event.inventoryName != "Bingo Card") return
 
@@ -150,7 +150,7 @@ object BingoCardReader {
     }
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!SkyBlockUtils.isBingoProfile) return
         if (!config.enabled) return
 

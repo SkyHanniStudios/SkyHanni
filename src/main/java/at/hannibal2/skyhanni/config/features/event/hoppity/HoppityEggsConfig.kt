@@ -113,7 +113,7 @@ class HoppityEggsConfig {
     @SkyHanniModule
     companion object {
         @HandleEvent
-        fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+        private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
             event.move(126, "event.hoppityEggs.playerOpacity", "event.hoppityEggs.playerTransparency")
         }
     }

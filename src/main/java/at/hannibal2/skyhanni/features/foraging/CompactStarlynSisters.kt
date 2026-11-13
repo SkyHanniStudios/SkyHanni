@@ -146,14 +146,14 @@ object CompactStarlynSisters {
     private var collectionPB = StarlynCollectionPersonalBests()
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!isInIsland()) return
         event.blockAndCompact()
         event.achievements()
     }
 
     @HandleEvent
-    fun onIslandLeave() {
+    private fun onIslandLeave() {
         resetContestResultVariables()
         resetPersonalBestVariables()
     }
@@ -169,7 +169,7 @@ object CompactStarlynSisters {
     private const val STARLYN_CONTEST_ACHIEVEMENT = "Very Special Bracket"
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "Very Special Contest".asComponent(),
             description = Component.literal("Get 20,000 Starlyn Sister points in a contest").withColor(ChatFormatting.RED),

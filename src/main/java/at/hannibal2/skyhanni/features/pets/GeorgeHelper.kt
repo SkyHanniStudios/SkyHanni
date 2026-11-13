@@ -140,14 +140,14 @@ object GeorgeHelper {
     )
 
     @HandleEvent(onlyOnIsland = IslandType.HUB)
-    fun onChestGuiRender() {
+    private fun onChestGuiRender() {
         if (!config.enabled) return
         if (display.isEmpty()) return
         config.position.renderRenderables(display, posLabel = "Taming 60 Helper")
     }
 
     @HandleEvent
-    fun onInventoryClose() {
+    private fun onInventoryClose() {
         display = emptyList()
     }
 

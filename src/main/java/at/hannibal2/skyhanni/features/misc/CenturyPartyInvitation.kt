@@ -82,12 +82,12 @@ object CenturyPartyInvitation {
     )
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         playerColors.clear()
     }
 
     @HandleEvent
-    fun onItemInHandChange() {
+    private fun onItemInHandChange() {
         if (!isEnabled()) return
 
         colorsNeeded = updateColorsNeeded()
@@ -127,7 +127,7 @@ object CenturyPartyInvitation {
     }
 
     @HandleEvent
-    fun onTick() {
+    private fun onTick() {
         if (!isEnabled()) return
         for (mob in MobData.players) {
             if (mob !in playerColors) {
@@ -173,7 +173,7 @@ object CenturyPartyInvitation {
     }
 
     @HandleEvent
-    fun onSystemMessage(event: SystemMessageEvent.Allow) {
+    private fun onSystemMessage(event: SystemMessageEvent.Allow) {
         if (!isEnabled()) return
 
         val message = event.message
@@ -204,7 +204,7 @@ object CenturyPartyInvitation {
     }
 
     @HandleEvent
-    fun onConfigLoad() {
+    private fun onConfigLoad() {
         with(config) {
             ConditionalUtils.onToggle(canColor, canNotColor) {
                 if (isEnabled()) {

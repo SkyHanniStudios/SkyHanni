@@ -35,7 +35,7 @@ import at.hannibal2.skyhanni.utils.SimpleTimeMark
 @SkyHanniModule
 object WrongDataFix {
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         if (event.inventoryName != "Crop Milestones") return
 
         clearMilestoneCache()
@@ -55,7 +55,7 @@ object WrongDataFix {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         levelUpPattern.matchMatcher(event.message) {
             val cropName = group("crop")
             val crop = CropType.getByNameOrNull(cropName) ?: return
@@ -66,7 +66,7 @@ object WrongDataFix {
     }
 
     @HandleEvent
-    fun onWidgetUpdate(event: WidgetUpdateEvent) {
+    private fun onWidgetUpdate(event: WidgetUpdateEvent) {
         if (!event.isWidget(TabWidget.CROP_MILESTONE)) return
         tabListPercentPattern.firstMatcher(event.lines.map { it.string }) {
             val tier = group("tier").toInt()

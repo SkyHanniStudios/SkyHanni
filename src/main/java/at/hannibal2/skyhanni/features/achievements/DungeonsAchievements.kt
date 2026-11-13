@@ -23,7 +23,7 @@ object DungeonsAchievements {
     private const val WOOD_ACHIEVEMENT = "small rng drop"
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "Use RNG Meter to get a Book from F1 Wood Chest".asComponent(),
             description = "Even the smallest rng drop can be chosen.".asComponent(),
@@ -34,7 +34,7 @@ object DungeonsAchievements {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (woodRngPattern.matches(event.cleanMessage)) {
             AchievementManager.completeAchievement(WOOD_ACHIEVEMENT)
         }

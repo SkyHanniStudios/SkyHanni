@@ -20,7 +20,7 @@ object ReminderHudDisplay {
     private var display: Renderable? = null
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         if (!config.showHud) return
         val reminders = storage.values.sortedBy { it.remindAt }
         if (reminders.isEmpty()) {
@@ -36,7 +36,7 @@ object ReminderHudDisplay {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
         if (!config.showHud) return
         val display = display ?: return
         config.hudPosition.renderRenderable(display, posLabel = "Reminders HUD")

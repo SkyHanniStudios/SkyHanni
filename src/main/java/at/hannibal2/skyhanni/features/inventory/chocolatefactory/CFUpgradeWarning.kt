@@ -22,7 +22,7 @@ object CFUpgradeWarning {
     private var lastUpgradeLevel = 0
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         val profileStorage = profileStorage ?: return
 
         val upgradeAvailableAt = profileStorage.bestUpgradeAvailableAt
@@ -51,7 +51,7 @@ object CFUpgradeWarning {
     }
 
     @HandleEvent
-    fun onProfileChange(event: ProfileJoinEvent) {
+    private fun onProfileChange(event: ProfileJoinEvent) {
         lastUpgradeWarning = SimpleTimeMark.farPast()
     }
 

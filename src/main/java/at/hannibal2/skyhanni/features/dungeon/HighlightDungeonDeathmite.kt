@@ -13,7 +13,7 @@ import at.hannibal2.skyhanni.utils.LorenzColor
 object HighlightDungeonDeathmite {
 
     @HandleEvent(onlyOnIsland = IslandType.CATACOMBS)
-    fun onMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
+    private fun onMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
         if (!SkyHanniMod.feature.dungeon.highlightDeathmites) return
         // TODO config option, with chroma color
         if (event.mob.name == "Deathmite") event.mob.highlight(LorenzColor.DARK_RED.toColor().addAlpha(20).toChromaColor())

@@ -32,7 +32,7 @@ object AshfangManager {
     val active get() = ashfang != null
 
     @HandleEvent(onlyOnIsland = IslandType.CRIMSON_ISLE)
-    fun onMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
+    private fun onMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
         val mob = event.mob
         // TODO add config options for colors
         val color = when (mob.name) {
@@ -51,14 +51,14 @@ object AshfangManager {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CRIMSON_ISLE)
-    fun onMobFirstSeen(event: MobEvent.FirstSeen.SkyblockMob) {
+    private fun onMobFirstSeen(event: MobEvent.FirstSeen.SkyblockMob) {
         if (!event.mob.name.contains("Ashfang ")) return
         if (lastSpawnTime.passedSince() < 10.seconds) return
         lastSpawnTime = SimpleTimeMark.now()
     }
 
     @HandleEvent
-    fun onMobDespawn(event: MobEvent.DeSpawn.SkyblockMob) {
+    private fun onMobDespawn(event: MobEvent.DeSpawn.SkyblockMob) {
         val mob = event.mob
         ashfangMobs -= mob
         if (ashfang == mob) {
@@ -68,7 +68,7 @@ object AshfangManager {
     }
 
     @HandleEvent(priority = HandleEvent.HIGH)
-    fun onRenderLiving(event: SkyHanniRenderEntityEvent.Specials.Pre<ArmorStand>) {
+    private fun onRenderLiving(event: SkyHanniRenderEntityEvent.Specials.Pre<ArmorStand>) {
         if (!active || !config.hide.fullNames) return
         val mob = event.entity.mob ?: return
         if (mob !in ashfangMobs) return
@@ -76,12 +76,12 @@ object AshfangManager {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         lastSpawnTime = SimpleTimeMark.farPast()
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(2, "ashfang.nextResetCooldown", "crimsonIsle.ashfang.nextResetCooldown")
         event.move(2, "ashfang.highlightBlazes", "crimsonIsle.ashfang.highlightBlazes")
         event.move(2, "ashfang.hideNames", "crimsonIsle.ashfang.hide.fullNames")

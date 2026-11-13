@@ -87,7 +87,7 @@ object HypixelLocationApi {
     private var previousIsland = IslandType.NONE
 
     @HandleEvent(priority = HandleEvent.HIGHEST)
-    fun onHypixelJoin(event: HypixelApiJoinEvent) {
+    private fun onHypixelJoin(event: HypixelApiJoinEvent) {
         logger.log(event.toString())
         logger.log("Connected to Hypixel")
         inAlpha = event.alpha
@@ -99,7 +99,7 @@ object HypixelLocationApi {
     }
 
     @HandleEvent(priority = HandleEvent.HIGHEST)
-    fun onServerChange(event: HypixelApiServerChangeEvent) {
+    private fun onServerChange(event: HypixelApiServerChangeEvent) {
         logger.log(event.toString())
         inHypixel = true
         inSkyblock = event.serverType == GameType.SKYBLOCK
@@ -140,7 +140,7 @@ object HypixelLocationApi {
     }
 
     @HandleEvent
-    fun onScoreboardTitle(event: ScoreboardTitleUpdateEvent) {
+    private fun onScoreboardTitle(event: ScoreboardTitleUpdateEvent) {
         if (!inHypixel || !inSkyblock || sentIslandEvent || !event.isSkyblock) return
         isGuest = event.title.trim().removeColor().endsWith("GUEST")
         sentIslandEvent = true
@@ -176,7 +176,7 @@ object HypixelLocationApi {
     }
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Hypixel Mod API")
         event.addIrrelevant {
             addAll(debugData.map(::dataToString))
@@ -184,7 +184,7 @@ object HypixelLocationApi {
     }
 
     @HandleEvent
-    fun onDisconnect() {
+    private fun onDisconnect() {
         if (inSkyblock || island != IslandType.NONE) {
             internalIsland = IslandType.NONE
             changeIsland()

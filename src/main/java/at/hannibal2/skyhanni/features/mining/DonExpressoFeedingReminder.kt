@@ -30,7 +30,7 @@ object DonExpressoFeedingReminder {
     private val TASTY_MITHRIL = "MITHRIL_GOURMAND".toInternalName()
 
     @HandleEvent(onlyOnIsland = IslandType.DWARVEN_MINES)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!config.donExpressoFeedingReminder) return
         if (!fullPattern.matches(event.cleanMessage)) return
         if (!InventoryUtils.isItemInInventory(TASTY_MITHRIL)) return

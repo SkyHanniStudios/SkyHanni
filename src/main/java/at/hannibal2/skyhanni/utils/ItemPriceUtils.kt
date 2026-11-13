@@ -147,7 +147,7 @@ object ItemPriceUtils {
     private fun getShLowestBin(internalName: NeuInternalName): Long = lowestBins[internalName] ?: -1L
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         if (ApiUtils.isLowestBinApiDisabled()) return
         if (lastLowestBinRefresh.passedSince() < 2.minutes) return
         lastLowestBinRefresh = SimpleTimeMark.now()
@@ -184,7 +184,7 @@ object ItemPriceUtils {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shdebugprice") {
             description = "Debug different price sources for an item."
             category = CommandCategory.DEVELOPER_DEBUG

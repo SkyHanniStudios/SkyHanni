@@ -41,7 +41,7 @@ object AuctionsHighlighter {
     )
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
+    private fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
         if (!config.highlightAuctions) return
         if (event.gui !is ContainerScreen) return
 
@@ -72,7 +72,7 @@ object AuctionsHighlighter {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(25, "inventory.highlightAuctions", "inventory.auctions.highlightAuctions")
         event.move(25, "inventory.highlightAuctionsUnderbid", "inventory.auctions.highlightAuctionsUnderbid")
     }

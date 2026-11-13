@@ -22,7 +22,7 @@ object SealAchievement {
     private const val SEAL_BOUNCE_ACHIEVEMENT = "Seal Bounces"
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "Seal Lookalike",
             description = "Bounce a ball 100 times",
@@ -32,7 +32,7 @@ object SealAchievement {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         sealBouncePattern.matchMatcher(event.cleanMessage) {
             if (group("bounces").formatInt() >= 100) {
                 AchievementManager.completeAchievement(SEAL_BOUNCE_ACHIEVEMENT)

@@ -34,7 +34,7 @@ object FixDoubleClicks {
      * could lead to Watchdog bans.
      */
     @HandleEvent(onlyOnSkyblock = true, priority = HandleEvent.HIGHEST)
-    fun onPacketSent(event: PacketSentEvent) {
+    private fun onPacketSent(event: PacketSentEvent) {
         if (event.packet !is ServerboundUseItemOnPacket) return
         if (!SkyHanniMod.feature.misc.fixDoubleClicks) return
 

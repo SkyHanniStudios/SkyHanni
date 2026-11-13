@@ -35,7 +35,7 @@ object GardenVisitorHighlight {
      * Shows status (NEW/READY/WAITING) and reward warnings.
      */
     @HandleEvent
-    fun onVisitorRender(event: VisitorRenderEvent) {
+    private fun onVisitorRender(event: VisitorRenderEvent) {
         val visitor = event.visitor
         val text = visitor.status.displayName
         val location = event.location
@@ -93,7 +93,7 @@ object GardenVisitorHighlight {
      * Spaceman → Blinks Space Helmet
      */
     @HandleEvent
-    fun onVisitorArrival(event: VisitorArrivalEvent) {
+    private fun onVisitorArrival(event: VisitorArrivalEvent) {
         triggerArrivalEffects(event.visitor.visitorName)
     }
 

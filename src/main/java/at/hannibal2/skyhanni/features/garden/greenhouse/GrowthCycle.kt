@@ -48,7 +48,7 @@ object GrowthCycle {
     private var hasNotified = true
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onInventoryUpdated(event: InventoryUpdatedEvent) {
+    private fun onInventoryUpdated(event: InventoryUpdatedEvent) {
         if (!GreenhouseUtils.cropDiagnosticInventory.isInside()) return
         val item = event.inventoryItemsWithNull[20] ?: return
         val lore = item.getLoreComponent()
@@ -63,7 +63,7 @@ object GrowthCycle {
     }
 
     @HandleEvent
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         if (!config.showDisplay) return
 
         updateDisplay()
@@ -104,7 +104,7 @@ object GrowthCycle {
     }
 
     @HandleEvent
-    fun onGuiRenderOverlay() {
+    private fun onGuiRenderOverlay() {
         if (!config.showDisplay) return
 
         display?.let {

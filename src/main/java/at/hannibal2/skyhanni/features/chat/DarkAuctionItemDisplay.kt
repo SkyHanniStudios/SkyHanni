@@ -40,12 +40,12 @@ object DarkAuctionItemDisplay {
     private var lastItem: String? = null
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         lastItem = null
     }
 
     @HandleEvent(onlyOnIsland = IslandType.DARK_AUCTION)
-    fun onChat(event: SkyHanniChatEvent.Modify) {
+    private fun onChat(event: SkyHanniChatEvent.Modify) {
         if (!config.darkAuctionItemDisplay) return
 
         val message = event.cleanMessage
