@@ -2,7 +2,6 @@ package at.hannibal2.skyhanni.config.storage
 
 import at.hannibal2.skyhanni.config.core.config.Position
 import at.hannibal2.skyhanni.features.misc.reminders.Reminder
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.tracker.SkyHanniTracker
 import com.google.gson.annotations.Expose
 import java.util.UUID
