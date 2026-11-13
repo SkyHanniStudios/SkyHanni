@@ -6,7 +6,6 @@ import at.hannibal2.skyhanni.events.GuiKeyPressEvent
 import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.NeuRenderEvent
 import at.hannibal2.skyhanni.events.minecraft.ClientDisconnectEvent
-import at.hannibal2.skyhanni.events.render.gui.GuiMouseInputEvent
 import at.hannibal2.skyhanni.features.inventory.loadout.CustomLoadoutKeybinds
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.compat.SkyHanniContainerOverlayScreen
@@ -25,25 +24,17 @@ object GuiData {
     var preDrawEventCancelled = false
 
     @HandleEvent(priority = HandleEvent.HIGH)
-    fun onNeuRenderEvent(event: NeuRenderEvent) {
+    private fun onNeuRenderEvent(event: NeuRenderEvent) {
         if (preDrawEventCancelled) event.cancel()
     }
 
     @HandleEvent(priority = HandleEvent.HIGH)
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
-        if (preDrawEventCancelled) event.cancel()
-    }
-
-    @HandleEvent
-    fun onMouseInput(event: GuiMouseInputEvent) {
-        if (SkyHanniContainerOverlayScreen.activeOverlay?.allowMouseClick() == true) return
-        if (CustomLoadoutKeybinds.allowMouseClick()) return
-
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         if (preDrawEventCancelled) event.cancel()
     }
 
     @HandleEvent(priority = HandleEvent.HIGHEST)
-    fun onGuiKeyPress(event: GuiKeyPressEvent) {
+    private fun onGuiKeyPress(event: GuiKeyPressEvent) {
         val allowedKeys = with(Minecraft.getInstance().options) {
             listOf(
                 keyInventory,
@@ -55,13 +46,13 @@ object GuiData {
         if (GLFW.GLFW_KEY_ESCAPE.isKeyHeld()) return
 
         if (SkyHanniContainerOverlayScreen.activeOverlay?.allowKeyboardClick() == true) return
-        if (CustomLoadoutKeybinds.allowKeyboardClick()) return
+        if (CustomLoadoutKeybinds.allowInput()) return
 
         if (preDrawEventCancelled) event.cancel()
     }
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    private fun onInventoryClose(event: InventoryCloseEvent) {
         DelayedRun.runNextTick {
             if (MinecraftCompat.screen !is ContainerScreen) {
                 preDrawEventCancelled = false
@@ -70,12 +61,12 @@ object GuiData {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         preDrawEventCancelled = false
     }
 
     @HandleEvent
-    fun onDisconnect(event: ClientDisconnectEvent) {
+    private fun onDisconnect(event: ClientDisconnectEvent) {
         preDrawEventCancelled = false
     }
 }
