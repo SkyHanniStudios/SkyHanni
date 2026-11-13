@@ -87,7 +87,6 @@ import net.minecraft.world.item.component.ResolvableProfile
 import net.minecraft.world.item.component.TooltipDisplay
 import net.minecraft.world.item.enchantment.ItemEnchantments
 import java.util.LinkedList
-import java.util.UUID
 import java.util.regex.Matcher
 import kotlin.time.Duration.Companion.INFINITE
 import kotlin.time.Duration.Companion.minutes
@@ -369,7 +368,7 @@ object ItemUtils {
         val stack = SafeItemStack(Items.PLAYER_HEAD)
         val builder = ImmutableMultimap.builder<String, Property>()
         builder.put("textures", Property("textures", value))
-        val profile = GameProfile(UUID.fromString(uuid), "Throwpo", PropertyMap(builder.build()))
+        val profile = GameProfile(StringUtils.parseUUID(uuid), "Throwpo", PropertyMap(builder.build()))
         stack.set(DataComponents.PROFILE, ResolvableProfile.createResolved(profile))
         stack.setCustomItemName(displayName)
         stack.setLoreString(lore.toList())

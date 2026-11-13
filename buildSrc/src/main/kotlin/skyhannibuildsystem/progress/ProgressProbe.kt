@@ -1,16 +1,17 @@
 package skyhannibuildsystem.progress
 
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.atomic.AtomicInteger
+import kotlin.concurrent.atomics.AtomicInt
+import kotlin.concurrent.atomics.incrementAndFetch
 
 abstract class ProgressProbe(protected val report: ProgressReport) {
 
     protected fun entered(hook: ProgressHook, fileCount: Int = 0) = report.enter(hook, fileCount)
 
     protected inner class Counter(private val hook: ProgressHook, private val total: () -> Int) {
-        private val count = AtomicInteger()
+        private val count = AtomicInt(0)
 
-        fun tick(fileName: String? = null) = report.step(hook, count.incrementAndGet(), total(), fileName)
+        fun tick(fileName: String? = null) = report.step(hook, count.incrementAndFetch(), total(), fileName)
     }
 
     protected inner class FileSet(private val hook: ProgressHook, private val total: () -> Int) {

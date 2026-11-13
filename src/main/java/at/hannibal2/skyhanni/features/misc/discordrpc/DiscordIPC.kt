@@ -6,7 +6,7 @@ import java.io.Closeable
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import java.util.UUID
+import kotlin.uuid.Uuid
 
 /**
  * A lightweight Discord IPC client implementing the Rich Presence protocol.
@@ -226,6 +226,6 @@ class DiscordIPC(
     private fun buildActivityPayload(presence: DiscordRichPresence) = buildActivityPayload(
         presence,
         ProcessHandle.current().pid().toInt(),
-        UUID.randomUUID().toString(),
+        Uuid.random().toString(),
     )
 }

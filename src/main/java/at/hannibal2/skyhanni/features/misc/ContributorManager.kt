@@ -24,6 +24,7 @@ import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.PlayerUtils
 import at.hannibal2.skyhanni.utils.RegexUtils.find
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
+import at.hannibal2.skyhanni.utils.StringUtils
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.mapKeysNotNull
 import at.hannibal2.skyhanni.utils.compat.append
 import at.hannibal2.skyhanni.utils.compat.appendWithColor
@@ -95,7 +96,7 @@ object ContributorManager {
 
         contributors = map.mapKeysNotNull {
             try {
-                UUID.fromString(it.key)
+                StringUtils.parseUUID(it.key)
             } catch (e: IllegalArgumentException) {
                 ErrorManager.logErrorWithData(
                     e,
