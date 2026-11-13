@@ -83,6 +83,7 @@ accessible field net/minecraft/core/component/DataComponentPatch map Lit/unimi/d
 accessible field net/minecraft/world/level/block/entity/SignText$Mutable messages [Lnet/minecraft/network/chat/Component;
 accessible method net/minecraft/client/gui/GuiGraphicsExtractor fill (Lcom/mojang/renderpearl/api/pipeline/RenderPipeline;IIIII)V
 accessible method net/minecraft/client/gui/GuiGraphicsExtractor innerBlit (Lcom/mojang/renderpearl/api/pipeline/RenderPipeline;Lcom/mojang/renderpearl/api/textures/GpuTextureView;Lcom/mojang/renderpearl/api/textures/GpuSampler;IIIIFFFFI)V
+accessible method net/minecraft/client/gui/GuiGraphicsExtractor innerFill (Lcom/mojang/renderpearl/api/pipeline/RenderPipeline;Lnet/minecraft/client/gui/render/TextureSetup;IIIIILjava/lang/Integer;)V
 #?} else {
 #accessible field net/minecraft/client/gui/screens/inventory/AbstractSignEditScreen text Lnet/minecraft/world/level/block/entity/SignText;
 #accessible field net/minecraft/client/renderer/RenderPipelines DEBUG_FILLED_SNIPPET Lcom/mojang/renderpearl/api/pipeline/RenderPipeline$Snippet;
