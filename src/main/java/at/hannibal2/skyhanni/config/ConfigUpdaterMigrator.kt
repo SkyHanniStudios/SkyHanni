@@ -2,6 +2,7 @@ package at.hannibal2.skyhanni.config
 
 import at.hannibal2.skyhanni.api.event.SkyHanniEvent
 import at.hannibal2.skyhanni.skyhannimodule.PrimaryFunction
+import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.SkyHanniLogger
 import at.hannibal2.skyhanni.utils.json.asIntOrNull
 import at.hannibal2.skyhanni.utils.json.shDeepCopy
@@ -14,6 +15,9 @@ import org.jetbrains.annotations.VisibleForTesting
 object ConfigUpdaterMigrator {
     val logger = SkyHanniLogger("ConfigMigration")
     private const val CONFIG_VERSION = 149
+
+    /** Present in every ledger after the first run, so a ledger is never empty (an empty one means "fresh install"). */
+    private const val BASELINE_ID = "baseline"
 
     fun JsonElement.at(chain: List<String>, init: Boolean): JsonElement? {
         if (chain.isEmpty()) return this
@@ -34,6 +38,7 @@ object ConfigUpdaterMigrator {
     ) : SkyHanniEvent() {
         private data class Migration(
             val id: String,
+            /** Non-null only for legacy `since = N` migrations. */
             val since: Int?,
             val reads: Set<String>,
             val writes: Set<String>,
@@ -54,7 +59,7 @@ object ConfigUpdaterMigrator {
             transform: (JsonElement) -> JsonElement = { it },
         ) {
             register(transformId(path, discriminator), null, setOf(path), setOf(path), true) { config ->
-                expand(path).forEach { path -> updateAt(config, path) { transform(it.shDeepCopy()) } }
+                expand(path).forEach { realPath -> updateAt(config, realPath) { transform(it.shDeepCopy()) } }
             }
         }
 
@@ -131,11 +136,13 @@ object ConfigUpdaterMigrator {
             shouldRun: Boolean,
             since: Int?,
         ) {
-            check(listOf(fromPath, toPath).none { it.startsWith("feature") }) {
-                "Migration path should not start with 'features.'!"
+            if (listOf(fromPath, toPath).any { it.startsWith("feature") }) {
+                ErrorManager.crashInDevEnv("Migration path should not start with 'features.'!")
             }
-            require(!fromPath.substringBefore('.').startsWith("#") ||
-                fromPath.substringBefore('.') == toPath.substringBefore('.')) {
+            require(
+                !fromPath.substringBefore('.').startsWith("#") ||
+                    fromPath.substringBefore('.') == toPath.substringBefore('.'),
+            ) {
                 "Dynamic migration prefixes must match: $fromPath -> $toPath"
             }
             register(
@@ -220,42 +227,55 @@ object ConfigUpdaterMigrator {
 
         @VisibleForTesting
         internal fun applyPending(applied: MutableSet<String>): Boolean {
-            val remaining = migrations.filter { it.id !in applied }.toMutableSet()
-            val ordered = remaining.filter { it.since != null }.sortedWith(
-                compareBy<Migration> { it.since }.thenBy { it.id },
-            ) + dependencySort(remaining.filter { it.since == null })
-            var legacyFailure = false
-            ordered.forEach {
+            val pending = migrations.filter { it.id !in applied }
+            val legacy = pending.filter { it.since != null }
+                .groupBy { it.since }
+                .toSortedMap(compareBy { it })
+                .values
+                .flatMap { group -> order(group) { candidate, other -> overlaps(other.reads, candidate.writes) } }
+            val modern = order(pending.filter { it.since == null }) { candidate, other ->
+                overlaps(candidate.reads, other.writes)
+            }
+
+            var legacyFailed = false
+            for (migration in legacy + modern) {
+                if (legacyFailed && migration.since != null) continue
                 try {
-                    it.apply(config)
-                    applied += it.id
+                    migration.apply(config)
+                    applied += migration.id
                 } catch (error: Exception) {
-                    logger.logError("Config migration ${it.id} failed; it will be retried", error)
-                    legacyFailure = legacyFailure || it.since != null
+                    logger.log("Config migration ${migration.id} failed and will be retried: $error")
+                    if (migration.since != null) legacyFailed = true
                 }
             }
-            return legacyFailure
+            return legacyFailed
         }
 
-        private fun dependencySort(migrations: List<Migration>): List<Migration> {
-            val dependencies = migrations.associateWith { candidate ->
-                migrations.filter { other ->
-                    other !== candidate && other.writes.any { write ->
-                        candidate.reads.any { read -> pathsOverlap(read, write) }
-                    }
-                }.toMutableSet()
+        /**
+         * Topological sort. [waitsFor] says whether the first migration has to run after the second one.
+         * Ties and dependency cycles are resolved by migration ID, so the result is deterministic.
+         */
+        private fun order(
+            list: List<Migration>,
+            waitsFor: (candidate: Migration, other: Migration) -> Boolean,
+        ): List<Migration> {
+            val dependencies = list.associateWith { candidate ->
+                list.filter { other -> other !== candidate && waitsFor(candidate, other) }.toMutableSet()
             }.toMutableMap()
             val ordered = mutableListOf<Migration>()
             while (dependencies.isNotEmpty()) {
-                val ready = dependencies.filterValues { it.isEmpty() }.keys.minByOrNull { it.id }
+                val next = dependencies.filterValues { it.isEmpty() }.keys.minByOrNull { it.id }
                     ?: dependencies.keys.minByOrNull { it.id }
-                    ?: error("No pending migrations")
-                ordered += ready
-                dependencies.remove(ready)
-                dependencies.values.forEach { it.remove(ready) }
+                    ?: break
+                ordered += next
+                dependencies.remove(next)
+                dependencies.values.forEach { it.remove(next) }
             }
             return ordered
         }
+
+        private fun overlaps(first: Set<String>, second: Set<String>): Boolean =
+            first.any { a -> second.any { b -> pathsOverlap(a, b) } }
 
         private fun pathsOverlap(first: String, second: String): Boolean {
             return first == second || first.startsWith("$second.") || second.startsWith("$first.")
@@ -263,24 +283,32 @@ object ConfigUpdaterMigrator {
     }
 
     fun fixConfig(config: JsonObject): JsonObject {
-        val storedVersion = (config["lastVersion"] as? JsonPrimitive)?.asIntOrNull
+        val hasLastVersion = config.has("lastVersion")
+        // An unreadable lastVersion counts as -1 (run everything), like before. A missing one means "already current".
+        val oldVersion = if (hasLastVersion) {
+            (config["lastVersion"] as? JsonPrimitive)?.asIntOrNull ?: -1
+        } else CONFIG_VERSION
         val applied = (config["appliedMigrations"] as? JsonArray)
             ?.mapNotNull { it.takeUnless(JsonElement::isJsonNull)?.asString }
             ?.toMutableSet() ?: mutableSetOf()
-        val isFresh = storedVersion == null && applied.isEmpty()
-        val oldVersion = storedVersion ?: CONFIG_VERSION
-        val legacyFailure = if (isFresh) {
+        val isFresh = !hasLastVersion && applied.isEmpty()
+
+        val event = ConfigFixEvent(
+            config,
+            dynamicPrefixes(config["storage"]?.asJsonObject),
+            oldVersion,
+        ).also { it.post() }
+
+        val legacyFailed = if (isFresh) {
+            // Nothing to upgrade: mark everything as done without touching the default values.
+            applied += event.registeredMigrationIds
             false
         } else {
-            val event = ConfigFixEvent(
-                config,
-                dynamicPrefixes(config["storage"]?.asJsonObject),
-                oldVersion,
-            ).also { it.post() }
             event.applyPending(applied)
         }
-        if (!legacyFailure) config.remove("lastVersion")
-        applied += "baseline"
+
+        if (!legacyFailed) config.remove("lastVersion")
+        applied += BASELINE_ID
         config.add("appliedMigrations", JsonArray().also { array -> applied.forEach(array::add) })
         return config
     }
