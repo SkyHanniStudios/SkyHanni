@@ -21,11 +21,11 @@ class CustomImportOrdering(config: Config) : SkyHanniRule(
     ): ImportLine? {
         var preprocessingStarted = false
 
-        for (block in blocks) {
-            if (block.inPreprocessingBlock) {
+        for ((inPreprocessingBlock, importLines) in blocks) {
+            if (inPreprocessingBlock) {
                 preprocessingStarted = true
             } else if (preprocessingStarted) {
-                return block.importLines.first()
+                return importLines.first()
             }
         }
 

@@ -10,15 +10,13 @@ import dev.detekt.api.RuleSetProvider
 class SkyHanniStyleProvider : RuleSetProvider {
     override val ruleSetId: RuleSetId = RuleSetId("SkyHanniStyle")
 
-    override fun instance(): RuleSet {
-        return RuleSet(
-            ruleSetId,
-            mapOf(
-                RuleName("InSkyBlockEarlyReturn") to ::InSkyBlockEarlyReturn,
-                RuleName("IsInIslandEarlyReturn") to ::IsInIslandEarlyReturn,
-                RuleName("OnlyOnIslandSpecificity") to ::OnlyOnIslandSpecificity,
-                RuleName("PrivateEventListener") to ::PrivateEventListener,
-            ),
-        )
-    }
+    override fun instance(): RuleSet = RuleSet(
+        ruleSetId,
+        mapOf(
+            RuleName("InSkyBlockEarlyReturn") to ::InSkyBlockEarlyReturn,
+            RuleName("IsInIslandEarlyReturn") to ::IsInIslandEarlyReturn,
+            RuleName("OnlyOnIslandSpecificity") to ::OnlyOnIslandSpecificity,
+            RuleName("PrivateEventListener") to ::PrivateEventListener,
+        ),
+    )
 }

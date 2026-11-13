@@ -1,5 +1,7 @@
 import dev.detekt.gradle.Detekt
 import dev.detekt.gradle.DetektCreateBaselineTask
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm")
@@ -15,6 +17,14 @@ dependencies {
     testImplementation(libs.detekt.test)
     detektPlugins(libs.detektrules.authors)
     detektPlugins(libs.detektrules.ktlint)
+}
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(25))
+}
+
+tasks.withType<KotlinCompile>().configureEach {
+    compilerOptions.jvmTarget.set(JvmTarget.fromTarget("25"))
 }
 
 tasks.withType<Detekt>().configureEach {

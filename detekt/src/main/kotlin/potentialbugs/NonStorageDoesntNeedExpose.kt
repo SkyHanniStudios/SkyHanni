@@ -1,14 +1,14 @@
 package potentialbugs
 
 import SkyHanniRule
-import potentialbugs.StorageNeedsExpose.Companion.CONFIG_PACKAGE
-import potentialbugs.StorageNeedsExpose.Companion.STORAGE_PACKAGE
 import dev.detekt.api.Config
-import utils.DetektUtils.getAnnotation
-import utils.DetektUtils.hasAnnotation
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.psiUtil.isPrivate
+import potentialbugs.StorageNeedsExpose.Companion.CONFIG_PACKAGE
+import potentialbugs.StorageNeedsExpose.Companion.STORAGE_PACKAGE
+import utils.DetektUtils.getAnnotation
+import utils.DetektUtils.hasAnnotation
 
 class NonStorageDoesntNeedExpose(config: Config) : SkyHanniRule(
     config,
@@ -16,7 +16,7 @@ class NonStorageDoesntNeedExpose(config: Config) : SkyHanniRule(
 ) {
 
     override fun visitKtFile(file: KtFile) {
-        val packageName = file.packageDirective?.fqName?.asString() ?: ""
+        val packageName = file.packageDirective?.fqName?.asString().orEmpty()
         if (!packageName.startsWith(CONFIG_PACKAGE) && !packageName.startsWith(STORAGE_PACKAGE)) return
         super.visitKtFile(file)
     }

@@ -9,19 +9,16 @@ import dev.detekt.api.RuleSetProvider
 @AutoService(RuleSetProvider::class)
 class RepoRuleSetProvider : RuleSetProvider {
     override val ruleSetId: RuleSetId = RuleSetId("RepoRules")
+    private val repoContext = RepoPatternContext()
 
-    override fun instance(): RuleSet {
-        val context = RepoPatternContext()
-
-        return RuleSet(
-            ruleSetId,
-            mapOf(
-                RuleName("SkullTexturesUseRepo") to ::SkullTexturesUseRepo,
-                RuleName("RepoPatternRegexTestFailed") to { config -> RepoPatternRegexTestFailed(config, context) },
-                RuleName("RepoPatternRegexTestMissing") to { config -> RepoPatternRegexTestMissing(config, context) },
-                RuleName("RepoPatternUnnamedGroup") to { config -> RepoPatternUnnamedGroup(config, context) },
-                RuleName("RepoPatternPassesShapeRequirement") to { config -> RepoPatternPassesShapeRequirement(config, context) },
-            ),
-        )
-    }
+    override fun instance(): RuleSet = RuleSet(
+        ruleSetId,
+        mapOf(
+            RuleName("SkullTexturesUseRepo") to ::SkullTexturesUseRepo,
+            RuleName("RepoPatternRegexTestFailed") to { config -> RepoPatternRegexTestFailed(config, repoContext) },
+            RuleName("RepoPatternRegexTestMissing") to { config -> RepoPatternRegexTestMissing(config, repoContext) },
+            RuleName("RepoPatternUnnamedGroup") to { config -> RepoPatternUnnamedGroup(config, repoContext) },
+            RuleName("RepoPatternPassesShapeRequirement") to { config -> RepoPatternPassesShapeRequirement(config, repoContext) },
+        ),
+    )
 }

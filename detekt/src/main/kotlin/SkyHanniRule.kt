@@ -204,14 +204,14 @@ abstract class SkyHanniRule(config: Config, description: String, url: URI? = nul
         file: KtFile,
         sourceFileLinesMapping: KtPsiSourceFileLinesMapping? = null,
     ) {
-        val sourceFileLinesMapping = sourceFileLinesMapping ?: KtPsiSourceFileLinesMapping(file)
-        val offset = sourceFileLinesMapping.getLineStartOffset(lineIndex)
+        val robustSourceFileLinesMapping = sourceFileLinesMapping ?: KtPsiSourceFileLinesMapping(file)
+        val offset = robustSourceFileLinesMapping.getLineStartOffset(lineIndex)
         val element = findFirstMeaningfulKtElementInParents(file, offset, line) ?: file
         element.reportRange(TextRange(offset, offset + line.length), message)
     }
 
     companion object {
-        val CONVENTIONS_URI: URI = URI("https://github.com/SkyHanniStudios/SkyHanni/blob/beta/CONTRIBUTING.md#coding-styles-and-conventions")
+        val CONVENTIONS_URI = URI("https://github.com/SkyHanniStudios/SkyHanni/blob/beta/CONTRIBUTING.md#coding-styles-and-conventions")
 
         private val SUPPRESS_ANNOTATIONS = setOf("Suppress", "SuppressWarnings")
         private val BLANK_OR_QUOTES = """[\s"]*""".toRegex()

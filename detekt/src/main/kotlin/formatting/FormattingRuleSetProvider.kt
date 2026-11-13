@@ -10,14 +10,12 @@ import dev.detekt.api.RuleSetProvider
 class FormattingRuleSetProvider : RuleSetProvider {
     override val ruleSetId: RuleSetId = RuleSetId("FormattingRules")
 
-    override fun instance(): RuleSet {
-        return RuleSet(
-            ruleSetId,
-            mapOf(
-                RuleName("CustomAnnotationSpacing") to ::CustomAnnotationSpacing,
-                RuleName("CustomCommentSpacing") to ::CustomCommentSpacing,
-                RuleName("StorageVarOrVal") to ::StorageVarOrVal,
-            ),
-        )
-    }
+    override fun instance(): RuleSet = RuleSet(
+        ruleSetId,
+        mapOf(
+            RuleName("CustomAnnotationSpacing") to ::CustomAnnotationSpacing,
+            RuleName("CustomCommentSpacing") to ::CustomCommentSpacing,
+            RuleName("StorageVarOrVal") to ::StorageVarOrVal,
+        ),
+    )
 }

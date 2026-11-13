@@ -14,7 +14,7 @@ import org.jetbrains.kotlin.psi.KtAnnotated
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtProperty
 
-class ImmutableTypesWithExpectedInteriorMutabilityInConfig(config: Config) : RequiresAnalysisApi, SkyHanniRule(
+class ImmutableWritableConfigDeclaration(config: Config) : RequiresAnalysisApi, SkyHanniRule(
     config,
     "Config options should use mutable collection types so MoulConfig can modify them in place.",
 ) {

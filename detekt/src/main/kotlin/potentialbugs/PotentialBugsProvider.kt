@@ -10,14 +10,12 @@ import dev.detekt.api.RuleSetProvider
 class PotentialBugsProvider : RuleSetProvider {
     override val ruleSetId: RuleSetId = RuleSetId("potential-bugs")
 
-    override fun instance(): RuleSet {
-        return RuleSet(
-            ruleSetId,
-            mapOf(
-                RuleName("ImmutableTypesWithExpectedInteriorMutabilityInConfig") to ::ImmutableTypesWithExpectedInteriorMutabilityInConfig,
-                RuleName("StorageNeedsExpose") to ::StorageNeedsExpose,
-                RuleName("NonStorageDoesntNeedExpose") to ::NonStorageDoesntNeedExpose,
-            ),
-        )
-    }
+    override fun instance(): RuleSet = RuleSet(
+        ruleSetId,
+        mapOf(
+            RuleName("ImmutableWritableConfigDeclaration") to ::ImmutableWritableConfigDeclaration,
+            RuleName("StorageNeedsExpose") to ::StorageNeedsExpose,
+            RuleName("NonStorageDoesntNeedExpose") to ::NonStorageDoesntNeedExpose,
+        ),
+    )
 }

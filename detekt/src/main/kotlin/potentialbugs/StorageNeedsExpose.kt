@@ -1,11 +1,11 @@
 package potentialbugs
 
-import utils.DetektUtils.doWeNeedToCheckConfigProp
 import SkyHanniRule
 import dev.detekt.api.Config
-import utils.DetektUtils.hasAnnotation
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtProperty
+import utils.DetektUtils.doWeNeedToCheckConfigProp
+import utils.DetektUtils.hasAnnotation
 import utils.SkyHanniFqNames
 
 class StorageNeedsExpose(config: Config) : SkyHanniRule(
@@ -19,7 +19,7 @@ class StorageNeedsExpose(config: Config) : SkyHanniRule(
     }
 
     override fun visitKtFile(file: KtFile) {
-        val packageName = file.packageDirective?.fqName?.asString() ?: ""
+        val packageName = file.packageDirective?.fqName?.asString().orEmpty()
         if (!packageName.startsWith(CONFIG_PACKAGE) && !packageName.startsWith(STORAGE_PACKAGE)) return
         super.visitKtFile(file)
     }

@@ -10,12 +10,10 @@ import dev.detekt.api.RuleSetProvider
 class GrammarRuleSetProvider : RuleSetProvider {
     override val ruleSetId: RuleSetId = RuleSetId("GrammarRules")
 
-    override fun instance(): RuleSet {
-        return RuleSet(
-            ruleSetId,
-            mapOf(
-                RuleName("AvoidBritishSpelling") to ::AvoidBritishSpelling,
-            ),
-        )
-    }
+    override fun instance(): RuleSet = RuleSet(
+        ruleSetId,
+        mapOf(
+            RuleName("AvoidBritishSpelling") to ::AvoidBritishSpelling,
+        ),
+    )
 }

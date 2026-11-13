@@ -1,8 +1,6 @@
 package formatting
 
-import utils.DetektUtils.doWeNeedToCheckConfigProp
 import SkyHanniRule
-import potentialbugs.StorageNeedsExpose.Companion.CONFIG_PACKAGE
 import dev.detekt.api.Config
 import dev.detekt.api.RequiresAnalysisApi
 import org.jetbrains.kotlin.analysis.api.analyze
@@ -13,6 +11,8 @@ import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.StandardClassIds
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtProperty
+import potentialbugs.StorageNeedsExpose.Companion.CONFIG_PACKAGE
+import utils.DetektUtils.doWeNeedToCheckConfigProp
 
 class StorageVarOrVal(config: Config) : RequiresAnalysisApi, SkyHanniRule(
     config,
@@ -26,20 +26,13 @@ class StorageVarOrVal(config: Config) : RequiresAnalysisApi, SkyHanniRule(
             FqName("ChromaColour"),
             false,
         )
-        private val PRIMITIVE_CLASS_IDS = setOf(
-            StandardClassIds.Boolean,
-            StandardClassIds.Byte,
-            StandardClassIds.Char,
-            StandardClassIds.Double,
-            StandardClassIds.Float,
-            StandardClassIds.Int,
-            StandardClassIds.Long,
-            StandardClassIds.Short,
-        )
+        private val PRIMITIVE_CLASS_IDS = with(StandardClassIds) {
+            setOf(Boolean, Byte,Char, Double, Float, Int, Long, Short)
+        }
     }
 
     override fun visitKtFile(file: KtFile) {
-        val packageName = file.packageDirective?.fqName?.asString() ?: ""
+        val packageName = file.packageDirective?.fqName?.asString().orEmpty()
         if (!packageName.startsWith(CONFIG_PACKAGE)) return
         super.visitKtFile(file)
     }

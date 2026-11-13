@@ -1,7 +1,6 @@
 package repo
 
 import com.intellij.psi.PsiElement
-
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
 import org.jetbrains.kotlin.psi.KtEscapeStringTemplateEntry
@@ -39,7 +38,18 @@ class RepoPatternElement private constructor(
     companion object {
         // A sentinel value to indicate that a KtPropertyDelegate has been processed but does not correspond to a valid RepoPatternElement.
         // Must be internal so that it can be accessed from RepoPatternContext.
-        internal val SENTINEL_VALUE = RepoPatternElement("SENTINEL", null, "", emptyList(), emptyList(), emptyList(), null, null, null, null)
+        internal val SENTINEL_VALUE = RepoPatternElement(
+            "SENTINEL",
+            null,
+            "",
+            emptyList(),
+            emptyList(),
+            emptyList(),
+            null,
+            null,
+            null,
+            null,
+        )
 
         private val wrappedRegexTestPattern = "WRAPPED-REGEX-TEST: \"(?<test>.*)\"".toPattern()
         private val wrappedRegexFailPattern = "WRAPPED-REGEX-FAIL: \"(?<test>.*)\"".toPattern()

@@ -10,13 +10,11 @@ import dev.detekt.api.RuleSetProvider
 class CompatRuleSetProvider : RuleSetProvider {
     override val ruleSetId: RuleSetId = RuleSetId("CompatRules")
 
-    override fun instance(): RuleSet {
-        return RuleSet(
-            ruleSetId,
-            mapOf(
-                RuleName("MinecraftCompat") to ::MinecraftCompat,
-                RuleName("VanillaItemStackImport") to ::VanillaItemStackImport,
-            ),
-        )
-    }
+    override fun instance(): RuleSet = RuleSet(
+        ruleSetId,
+        mapOf(
+            RuleName("MinecraftCompat") to ::MinecraftCompat,
+            RuleName("VanillaItemStackImport") to ::VanillaItemStackImport,
+        ),
+    )
 }

@@ -10,12 +10,10 @@ import dev.detekt.api.RuleSetProvider
 class ImportRuleSetProvider : RuleSetProvider {
     override val ruleSetId: RuleSetId = RuleSetId("ImportRules")
 
-    override fun instance(): RuleSet {
-        return RuleSet(
-            ruleSetId,
-            mapOf(
-                RuleName("CustomImportOrdering") to ::CustomImportOrdering,
-            ),
-        )
-    }
+    override fun instance(): RuleSet = RuleSet(
+        ruleSetId,
+        mapOf(
+            RuleName("CustomImportOrdering") to ::CustomImportOrdering,
+        ),
+    )
 }

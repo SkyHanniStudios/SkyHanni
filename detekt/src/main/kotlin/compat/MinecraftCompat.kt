@@ -9,6 +9,7 @@ class MinecraftCompat(config: Config) : SkyHanniRule(
     "Use MinecraftCompat instead of reading the player or world from Minecraft.getMinecraft() directly.",
 ) {
 
+    @Suppress("MinecraftCompat")
     private val replacements = mapOf(
         "Minecraft.getMinecraft().thePlayer" to "MinecraftCompat.localPlayer",
         "Minecraft.getMinecraft().theWorld" to "MinecraftCompat.world",
