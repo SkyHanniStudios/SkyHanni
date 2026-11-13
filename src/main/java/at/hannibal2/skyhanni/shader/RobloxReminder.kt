@@ -2,10 +2,9 @@ package at.hannibal2.skyhanni.shader
 
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.data.IslandType
+import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
 import at.hannibal2.skyhanni.data.NotificationManager
 import at.hannibal2.skyhanni.data.SkyHanniNotification
-import at.hannibal2.skyhanni.events.IslandChangeEvent
 import at.hannibal2.skyhanni.features.misc.ContributorManager
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
@@ -40,8 +39,7 @@ object RobloxReminder {
     }
 
     @HandleEvent
-    fun onIslandChange(event: IslandChangeEvent) {
-        if (event.newIsland == IslandType.NONE) return
+    private fun onIslandJoin() {
         if (!TimeUtils.isAprilFoolsDay) return
 
         versionReminder()
@@ -114,5 +112,37 @@ object RobloxReminder {
             hover = "§eClick to copy!",
             prefix = false,
         )
+    }
+
+    fun getWeedHack(): String {
+        return """
+  Woof   __             _,-"~^"-.
+       _// )      _,-"~`         `.
+     ." ( /`"-,-"`                 ;
+    / 6                             ;
+   /           ,             ,-"     ;
+  (,__.--.      \           /        ;
+   //'   /`-.\   |          |        `._________
+     _.-'_/`  )  )--...,,,___\     \-----------,)
+   ((("~` _.-'.-'           __`-.   )         //
+     jgs ((("`             (((---~"`         //
+                                            ((________________
+                                            `----""~~~~~~^^^```
+    Powered by WeedHack | Version Meow
+
+        """.trimIndent()
+    }
+
+    @HandleEvent
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
+        if (!TimeUtils.isAprilFoolsDay) return
+        event.registerBrigadier("shrat") {
+            description = "Rat"
+            category = DEVELOPER_TEST
+            aliases = listOf("shweedhack")
+            simpleCallback {
+                ChatUtils.chat(getWeedHack())
+            }
+        }
     }
 }
