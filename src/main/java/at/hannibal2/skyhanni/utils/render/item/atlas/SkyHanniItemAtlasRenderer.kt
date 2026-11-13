@@ -1,6 +1,6 @@
 package at.hannibal2.skyhanni.utils.render.item.atlas
 
-import at.hannibal2.skyhanni.utils.render.item.SkyHanniAbstractItemTexture.Companion.CLEAR_DEPTH
+import at.hannibal2.skyhanni.utils.render.item.SkyHanniAbstractItemTexture
 import at.hannibal2.skyhanni.utils.render.item.SkyHanniGuiItemRenderState
 import com.mojang.blaze3d.ProjectionType
 import com.mojang.blaze3d.systems.RenderSystem
@@ -86,13 +86,13 @@ internal class SkyHanniItemAtlasRenderer(
                 u, u1, v, v1,
                 ((shState.alpha * 255).roundToInt() shl 24) or 0x00FFFFFF,
                 shState.scissorArea(),
-            )
+            ),
         )
     }
 
     fun clearSlot(x: Int, y: Int, size: Int) {
         RenderSystem.getDevice().createCommandEncoder().clearColorAndDepthTextures(
-            texture, GuiRenderer.CLEAR_COLOR, depthTexture, CLEAR_DEPTH,
+            texture, GuiRenderer.CLEAR_COLOR, depthTexture, SkyHanniAbstractItemTexture.CLEAR_DEPTH,
             x, sizePixels - y - size, size, size,
         )
     }
