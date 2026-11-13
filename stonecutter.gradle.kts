@@ -6,14 +6,10 @@ plugins {
     id("dev.kikugie.stonecutter")
 }
 
+val projectVersion = providers.fileContents(layout.projectDirectory.file("buildSrc/PROJECT_VERSION")).asText.map(String::trim)
+
 allprojects {
     group = "at.hannibal2.skyhanni"
-
-    val buildToolsPath = when (name) {
-        "SkyHanni" -> layout.projectDirectory.dir("buildTools")
-        "annotation-processors", "detekt" -> layout.projectDirectory.dir("../buildTools")
-        else -> layout.projectDirectory.dir("../../buildTools")
-    }
 
     /**
      * The version of the project.
@@ -21,7 +17,7 @@ allprojects {
      * Beta version
      * Bugfix version
      */
-    version = providers.fileContents(buildToolsPath.file("PROJECT_VERSION")).asText.map { it.trim() }.get()
+    version = projectVersion.get()
 
     repositories {
         mavenCentral()
