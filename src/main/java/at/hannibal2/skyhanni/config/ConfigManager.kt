@@ -149,12 +149,12 @@ class ConfigManager {
         }
     }
 
-    private fun firstLoadFile(file: File?, fileType: ConfigFileType, defaultValue: Any): Any {
+    private fun firstLoadFile(file: File, fileType: ConfigFileType, defaultValue: Any): Any {
         val fileName = fileType.fileName
         logger.log("Trying to load $fileName from $file")
         var output: Any? = defaultValue
 
-        if (file!!.exists()) {
+        if (file.exists()) {
             try {
                 val text = StringFileHandler(file).load()
                 val lenientGson = BaseGsonBuilder.lenientGson().create()

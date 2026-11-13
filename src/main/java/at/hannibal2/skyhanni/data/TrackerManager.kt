@@ -144,9 +144,9 @@ object TrackerManager {
         }
         // if we don't include the transformation it bricks the config
         event.move(121, "$oldBase.warnings", "$newBase.warnings") { entry ->
+            shouldSyncTrackers = true
             entry
         }
-        if (event.oldVersion < 121) shouldSyncTrackers = true
 
         event.move(121, "misc.tracker.hideItemTrackersOutsideInventory", "misc.tracker.hideOutsideInventory")
 

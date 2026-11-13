@@ -147,8 +147,7 @@ class SkyHanniConfig : Config() {
     val storage: Storage = Storage()
 
     @Expose
-    @Suppress("unused")
-    var lastVersion: Int = ConfigUpdaterMigrator.CONFIG_VERSION
+    var appliedMigrations: MutableSet<String> = mutableSetOf()
 
     @Expose
     var lastMinecraftVersion: String? = null
