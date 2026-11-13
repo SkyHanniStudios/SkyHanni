@@ -219,19 +219,22 @@ object ConfigUpdaterMigrator {
         }
 
         @VisibleForTesting
-        internal fun applyPending(applied: MutableSet<String>) {
+        internal fun applyPending(applied: MutableSet<String>): Boolean {
             val remaining = migrations.filter { it.id !in applied }.toMutableSet()
             val ordered = remaining.filter { it.since != null }.sortedWith(
                 compareBy<Migration> { it.since }.thenBy { it.id },
             ) + dependencySort(remaining.filter { it.since == null })
+            var legacyFailure = false
             ordered.forEach {
                 try {
                     it.apply(config)
                     applied += it.id
-                } catch (error: Throwable) {
+                } catch (error: Exception) {
                     logger.logError("Config migration ${it.id} failed; it will be retried", error)
+                    legacyFailure = legacyFailure || it.since != null
                 }
             }
+            return legacyFailure
         }
 
         private fun dependencySort(migrations: List<Migration>): List<Migration> {
@@ -261,23 +264,23 @@ object ConfigUpdaterMigrator {
 
     fun fixConfig(config: JsonObject): JsonObject {
         val storedVersion = (config["lastVersion"] as? JsonPrimitive)?.asIntOrNull
-        val hasLedger = config["appliedMigrations"] is JsonArray
         val applied = (config["appliedMigrations"] as? JsonArray)
             ?.mapNotNull { it.takeUnless(JsonElement::isJsonNull)?.asString }
             ?.toMutableSet() ?: mutableSetOf()
         val isFresh = storedVersion == null && applied.isEmpty()
-        val oldVersion = storedVersion ?: if (hasLedger) CONFIG_VERSION else -1
-        val event = ConfigFixEvent(
-            config,
-            dynamicPrefixes(config["storage"]?.asJsonObject),
-            oldVersion,
-        ).also { it.post() }
-        if (isFresh) {
-            applied += event.registeredMigrationIds
+        val oldVersion = storedVersion ?: CONFIG_VERSION
+        val legacyFailure = if (isFresh) {
+            false
         } else {
+            val event = ConfigFixEvent(
+                config,
+                dynamicPrefixes(config["storage"]?.asJsonObject),
+                oldVersion,
+            ).also { it.post() }
             event.applyPending(applied)
         }
-        config.remove("lastVersion")
+        if (!legacyFailure) config.remove("lastVersion")
+        applied += "baseline"
         config.add("appliedMigrations", JsonArray().also { array -> applied.forEach(array::add) })
         return config
     }
