@@ -8,6 +8,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
+import org.jetbrains.annotations.VisibleForTesting
 
 object ConfigUpdaterMigrator {
     val logger = SkyHanniLogger("ConfigMigration")
@@ -38,8 +39,6 @@ object ConfigUpdaterMigrator {
             movesPerformed: Int,
             dynamicPrefix: Map<String, List<String>>,
         ) : this(old, new, dynamicPrefix, oldVersion)
-
-        private val deferred = old === new
 
         private data class Migration(
             val id: String,
@@ -113,23 +112,6 @@ object ConfigUpdaterMigrator {
                 fromPath.substringBefore('.') == toPath.substringBefore('.')) {
                 "Dynamic migration prefixes must match: $fromPath -> $toPath"
             }
-            if (!deferred) {
-                if (shouldRun) {
-                    expand(fromPath).forEach { realFromPath ->
-                        val realToPath = if (fromPath.startsWith("#")) {
-                            realToPath(realFromPath, fromPath, toPath)
-                        } else toPath
-                        val source = old.at(realFromPath.split("."), false) ?: return@forEach
-                        val target = new.at(realToPath.split(".").dropLast(1), true) as? JsonObject
-                            ?: return@forEach
-                        target.add(realToPath.substringAfterLast('.'), transform(source.shDeepCopy()))
-                        (old.at(realFromPath.split(".").dropLast(1), false) as? JsonObject)
-                            ?.remove(realFromPath.substringAfterLast('.'))
-                    }
-                }
-                register("move:$fromPath->$toPath", setOf(fromPath), setOf(toPath), false) {}
-                return
-            }
             register("move:$fromPath->$toPath", setOf(fromPath), setOf(toPath), shouldRun) { config ->
                 expand(fromPath).forEach { realFromPath ->
                     val realToPath = if (fromPath.startsWith("#")) {
@@ -171,7 +153,6 @@ object ConfigUpdaterMigrator {
         ) {
             check(migrations.none { it.id == id }) { "Duplicate config migration ID: $id" }
             migrations += Migration(id, reads, writes, if (shouldRun) apply else { _ -> })
-            if (!deferred && shouldRun) apply(new)
         }
 
         private fun expand(path: String): List<String> {
@@ -194,7 +175,8 @@ object ConfigUpdaterMigrator {
             parent[parts.last()]?.let { parent.add(parts.last(), transform(it)) }
         }
 
-        fun applyPending(applied: MutableSet<String>) {
+        @VisibleForTesting
+        internal fun applyPending(applied: MutableSet<String>) {
             val remaining = migrations.filter { it.id !in applied }.toMutableSet()
             val ordered = mutableListOf<Migration>()
             while (remaining.isNotEmpty()) {

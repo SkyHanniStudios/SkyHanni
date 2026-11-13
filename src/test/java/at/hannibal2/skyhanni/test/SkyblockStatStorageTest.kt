@@ -70,8 +70,9 @@ class SkyblockStatStorageTest {
             dynamicPrefix = mapOf("#profile" to listOf(profilePath)),
         )
         SkyblockStat.onConfigFix(event)
+        event.applyPending(mutableSetOf())
 
-        val migrated = checkNotNull(event.new.at("$profilePath.stats".split("."), false) as? JsonObject) {
+        val migrated = checkNotNull(event.old.at("$profilePath.stats".split("."), false) as? JsonObject) {
             "migration did not move any stats"
         }
         assertEquals(121.0, migrated["hunting_fortune"].asDouble)
@@ -100,8 +101,9 @@ class SkyblockStatStorageTest {
             dynamicPrefix = mapOf("#profile" to listOf(profilePath)),
         )
         SkyblockStat.onConfigFix(event)
+        event.applyPending(mutableSetOf())
 
-        val migrated = checkNotNull(event.new.at("$profilePath.stats".split("."), false) as? JsonObject)
+        val migrated = checkNotNull(event.old.at("$profilePath.stats".split("."), false) as? JsonObject)
         assertEquals(5.0, migrated["trophy_chance"].asDouble)
         assertNull(migrated["trophy_fish_chance"])
     }

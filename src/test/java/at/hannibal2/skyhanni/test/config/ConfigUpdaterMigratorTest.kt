@@ -1,6 +1,7 @@
 package at.hannibal2.skyhanni.test.config
 
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
+import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator.at
 import com.google.gson.JsonObject
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -46,9 +47,12 @@ class ConfigUpdaterMigratorTest {
         val new = JsonObject()
         ConfigUpdaterMigrator.ConfigFixEvent(
             old, new, 0, 0, emptyMap(),
-        ).move(149, "old", "new")
+        ).apply {
+            move(149, "old", "new")
+            applyPending(mutableSetOf())
+        }
 
-        assertEquals("value", new["new"].asString)
+        assertEquals("value", old["new"].asString)
         assertFalse(old.has("old"))
     }
 
