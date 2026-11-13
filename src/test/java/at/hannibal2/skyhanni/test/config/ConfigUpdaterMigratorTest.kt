@@ -70,7 +70,7 @@ class ConfigUpdaterMigratorTest {
 
         assertEquals("value", config["old"].asString)
         assertFalse(config.has("new"))
-        assertEquals(setOf("move:old->new"), applied)
+        assertEquals(setOf("move@149:old->new"), applied)
     }
 
     @Test

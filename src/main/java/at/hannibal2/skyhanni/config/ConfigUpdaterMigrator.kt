@@ -12,7 +12,7 @@ import org.jetbrains.annotations.VisibleForTesting
 
 object ConfigUpdaterMigrator {
     val logger = SkyHanniLogger("ConfigMigration")
-    const val CONFIG_VERSION = 149
+    private const val CONFIG_VERSION = 149
 
     fun JsonElement.at(chain: List<String>, init: Boolean): JsonElement? {
         if (chain.isEmpty()) return this
@@ -58,12 +58,8 @@ object ConfigUpdaterMigrator {
         }
 
         fun transform(since: Int, path: String, transform: (JsonElement) -> JsonElement = { it }) {
-            transform(path, transform, since)
-        }
-
-        private fun transform(path: String, transform: (JsonElement) -> JsonElement, since: Int) {
-            register("transform:$path", setOf(path), setOf(path), currentVersion < since) { config ->
-                expand(path).forEach { path -> updateAt(config, path) { transform(it.shDeepCopy()) } }
+            register("transform@$since:$path", setOf(path), setOf(path), currentVersion < since) { config ->
+                expand(path).forEach { realPath -> updateAt(config, realPath) { transform(it.shDeepCopy()) } }
             }
         }
 
@@ -72,16 +68,27 @@ object ConfigUpdaterMigrator {
         }
 
         fun add(since: Int, path: String, value: () -> JsonElement) {
-            addInternal(path, value, currentVersion < since)
+            addInternal(path, value, currentVersion < since, true, "add@$since:$path")
         }
 
         private fun addInternal(path: String, value: () -> JsonElement, shouldRun: Boolean) {
-            register("add:$path", emptySet(), setOf(path), shouldRun) { config ->
+            addInternal(path, value, shouldRun, false, "add:$path")
+        }
+
+        private fun addInternal(
+            path: String,
+            value: () -> JsonElement,
+            shouldRun: Boolean,
+            overwrite: Boolean,
+            id: String,
+        ) {
+            register(id, emptySet(), setOf(path), shouldRun) { config ->
                 expand(path).forEach { realPath ->
                     val parts = realPath.split(".")
                     (config.at(parts.dropLast(1), true) as? JsonObject)
-                        ?.takeUnless { it.has(parts.last()) }
-                        ?.add(parts.last(), value())
+                        ?.also { parent ->
+                            if (overwrite || !parent.has(parts.last())) parent.add(parts.last(), value())
+                        }
                 }
             }
         }
@@ -96,7 +103,7 @@ object ConfigUpdaterMigrator {
             toPath: String,
             transform: (JsonElement) -> JsonElement = { it },
         ) {
-            moveInternal(fromPath, toPath, transform, currentVersion < since)
+            moveInternal(fromPath, toPath, transform, currentVersion < since, "move@$since:$fromPath->$toPath")
         }
 
         private fun moveInternal(
@@ -104,6 +111,7 @@ object ConfigUpdaterMigrator {
             toPath: String,
             transform: (JsonElement) -> JsonElement,
             shouldRun: Boolean,
+            id: String = "move:$fromPath->$toPath",
         ) {
             check(listOf(fromPath, toPath).none { it.startsWith("feature") }) {
                 "Migration path should not start with 'features.'!"
@@ -112,7 +120,7 @@ object ConfigUpdaterMigrator {
                 fromPath.substringBefore('.') == toPath.substringBefore('.')) {
                 "Dynamic migration prefixes must match: $fromPath -> $toPath"
             }
-            register("move:$fromPath->$toPath", setOf(fromPath), setOf(toPath), shouldRun) { config ->
+            register(id, setOf(fromPath), setOf(toPath), shouldRun) { config ->
                 expand(fromPath).forEach { realFromPath ->
                     val realToPath = if (fromPath.startsWith("#")) {
                         realToPath(realFromPath, fromPath, toPath)
@@ -132,11 +140,11 @@ object ConfigUpdaterMigrator {
         }
 
         fun remove(since: Int, path: String) {
-            removeInternal(path, currentVersion < since)
+            removeInternal(path, currentVersion < since, "remove@$since:$path")
         }
 
-        private fun removeInternal(path: String, shouldRun: Boolean) {
-            register("remove:$path", setOf(path), emptySet(), shouldRun) { config ->
+        private fun removeInternal(path: String, shouldRun: Boolean, id: String = "remove:$path") {
+            register(id, setOf(path), emptySet(), shouldRun) { config ->
                 expand(path).forEach { realPath ->
                     val parts = realPath.split(".")
                     (config.at(parts.dropLast(1), false) as? JsonObject)?.remove(parts.last())
@@ -178,27 +186,36 @@ object ConfigUpdaterMigrator {
         @VisibleForTesting
         internal fun applyPending(applied: MutableSet<String>) {
             val remaining = migrations.filter { it.id !in applied }.toMutableSet()
-            val ordered = mutableListOf<Migration>()
-            while (remaining.isNotEmpty()) {
-                val next = remaining.filter { candidate ->
-                    remaining.none { other ->
-                        other !== candidate && other.writes.any { write ->
-                            candidate.reads.any { read -> read == write }
-                        }
+            val dependencies = remaining.associateWith { candidate ->
+                remaining.filter { other ->
+                    other !== candidate && other.writes.any { write ->
+                        candidate.reads.any { read -> pathsOverlap(read, write) }
                     }
-                }.minByOrNull { it.id } ?: error("Cyclic config migration dependencies: ${remaining.map { it.id }}")
-                remaining.remove(next)
-                ordered += next
+                }.toMutableSet()
+            }.toMutableMap()
+            val ordered = mutableListOf<Migration>()
+            while (dependencies.isNotEmpty()) {
+                val ready = dependencies.filterValues { it.isEmpty() }.keys.minByOrNull { it.id }
+                    ?: error("Cyclic config migration dependencies: ${dependencies.keys.map { it.id }}")
+                ordered += ready
+                dependencies.remove(ready)
+                dependencies.values.forEach { it.remove(ready) }
             }
             ordered.forEach {
                 it.apply(old)
                 applied += it.id
             }
         }
+
+        private fun pathsOverlap(first: String, second: String): Boolean {
+            return first == second || first.startsWith("$second.") || second.startsWith("$first.")
+        }
     }
 
     fun fixConfig(config: JsonObject): JsonObject {
-        val oldVersion = (config["lastVersion"] as? JsonPrimitive)?.asInt ?: -1
+        val storedVersion = (config["lastVersion"] as? JsonPrimitive)?.asInt
+        val hasLedger = config["appliedMigrations"] is JsonArray
+        val oldVersion = storedVersion ?: if (hasLedger) CONFIG_VERSION else -1
         val applied = (config["appliedMigrations"] as? JsonArray)
             ?.mapNotNull { it.takeUnless(JsonElement::isJsonNull)?.asString }
             ?.toMutableSet() ?: mutableSetOf()
