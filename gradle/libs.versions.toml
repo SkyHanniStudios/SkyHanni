@@ -1,6 +1,5 @@
 [versions]
 libautoupdate = "1.3.1"
-moulconfig = "4.7.2"
 jbAnnotations = "26.1.0"
 basicMath = "0.6.1"
 autoservice-ksp = "1.2.0"
@@ -14,6 +13,9 @@ shadow = "9.6.1"
 loom = "1.19.3"
 kotlin = "2.4.21"
 fabricLanguageKotlin = "1.14.2+kotlin.2.4.21"
+fabric-loader = "0.19.5"
+hypixel-modapi = "1.0.2"
+hypixel-modapi-fabric = "1.0.2+build.1+mc26.1"
 keval = "2.0.1"
 ksp = "2.3.13"
 detekt = "2.0.0-alpha.6"
@@ -31,6 +33,9 @@ jbAnnotations = { module = "org.jetbrains:annotations", version.ref = "jbAnnotat
 autoservice-ksp = { module = "dev.zacsweers.autoservice:auto-service-ksp", version.ref = "autoservice-ksp" }
 autoservice-annotations = { module = "com.google.auto.service:auto-service-annotations", version.ref = "autoservice-annotations" }
 fabricLanguageKotlin = { module = "net.fabricmc:fabric-language-kotlin", version.ref = "fabricLanguageKotlin" }
+fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric-loader" }
+hypixel-modapi = { module = "net.hypixel:mod-api", version.ref = "hypixel-modapi" }
+hypixel-modapi-fabric = { module = "maven.modrinth:hypixel-mod-api", version.ref = "hypixel-modapi-fabric" }
 basicMath = { module = "me.shedaniel.cloth:basic-math", version.ref = "basicMath" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
