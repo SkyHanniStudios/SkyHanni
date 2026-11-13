@@ -36,6 +36,7 @@ class RepoPatternUnnamedGroup(config: Config, private val ctx: RepoPatternContex
                 is KtLiteralStringTemplateEntry -> entry.text.forEachIndexed { index, char ->
                     if (char != '\n') chars += char to entry.textRange.startOffset + index
                 }
+
                 is KtEscapeStringTemplateEntry -> entry.unescapedValue.forEach { chars += it to entry.textRange.startOffset }
                 else -> return
             }
@@ -52,6 +53,7 @@ class RepoPatternUnnamedGroup(config: Config, private val ctx: RepoPatternContex
                     if (chars.getOrNull(index + 1)?.first == '^') index++
                     if (chars.getOrNull(index + 1)?.first == ']') index++
                 }
+
                 char == '(' && chars.getOrNull(index + 1)?.first != '?' -> correct(template, offset + 1, offset + 1, "?:")
             }
             index++
@@ -68,6 +70,7 @@ class RepoPatternUnnamedGroup(config: Config, private val ctx: RepoPatternContex
     companion object {
         // Regex to find content inside square brackets, including nested brackets
         private val squareBracketRegex = Regex("""(?<!\\)\[(?:\^])?(?:\\.|[^]])*]""")
+
         // Regex to find unescaped '(' not followed by '?'
         private val unnamedGroupRegex = Regex("""(?<!\\)\((?!\?)""")
     }

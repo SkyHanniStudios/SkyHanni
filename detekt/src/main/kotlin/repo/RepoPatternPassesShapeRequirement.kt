@@ -20,7 +20,7 @@ class RepoPatternPassesShapeRequirement(config: Config, private val ctx: RepoPat
         if (!keyShape.containsMatchIn(rawKey)) {
             (repoPatternElement.keyElement ?: delegate).reportIssue(
                 "Repo pattern `$variableName` did not meet shape requirements. " +
-                    "The patten key: \"$rawKey\" must match \"${keyShape.pattern}\"",
+                    "The pattern key: \"$rawKey\" must match \"${keyShape.pattern}\"",
                 delegate,
             )
         }

@@ -7,7 +7,7 @@ import org.jetbrains.kotlin.psi.KtLiteralStringTemplateEntry
 import org.jetbrains.kotlin.psi.KtStringTemplateExpression
 
 /**
- * This rule reports all usages of the british spelling over the american spelling in the codebase,
+ * This rule reports all usages of the British spelling over the American spelling in the codebase,
  * this will ignore any type annotations, i.e., `@ConfigEditorColour` will not be reported.
  */
 @Suppress("AvoidBritishSpelling")

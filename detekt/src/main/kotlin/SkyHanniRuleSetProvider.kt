@@ -6,9 +6,16 @@ import dev.detekt.api.RuleSetId
 import dev.detekt.api.RuleSetProvider
 
 abstract class SkyHanniRuleSetProvider(id: String) : RuleSetProvider {
+
     final override val ruleSetId: RuleSetId = RuleSetId(id)
 
-    protected abstract fun rules(): Map<String, (Config) -> Rule>
+    private val rules = mutableMapOf<RuleName, (Config) -> Rule>()
 
-    final override fun instance(): RuleSet = RuleSet(ruleSetId, rules().mapKeys { RuleName(it.key) })
+    protected inline fun <reified T : Rule> rule(noinline factory: (Config) -> T) = register(T::class.java.simpleName, factory)
+
+    protected fun register(name: String, factory: (Config) -> Rule) {
+        rules[RuleName(name)] = factory
+    }
+
+    final override fun instance(): RuleSet = RuleSet(ruleSetId, rules.toMap())
 }

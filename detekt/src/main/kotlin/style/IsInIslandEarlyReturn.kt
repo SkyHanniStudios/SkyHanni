@@ -66,7 +66,7 @@ class IsInIslandEarlyReturn(config: Config) : HandleEventEarlyReturnRule(
             isInGardenRegex to "IslandType.GARDEN",
             isInRiftRegex to "IslandType.THE_RIFT",
             isInDungeonRegex to "IslandType.CATACOMBS",
-            isInKuudraRegex to "IslandType.KUUDRA_ARENA"
+            isInKuudraRegex to "IslandType.KUUDRA_ARENA",
         )
 
         private val islandTypeCheck = Regex("IslandType\\.([A-Z0-9_]+)\\.isInIsland\\(\\)")

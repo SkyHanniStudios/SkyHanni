@@ -20,14 +20,12 @@ class RepoPatternRegexTestMissing(config: Config, private val ctx: RepoPatternCo
         if (!rawPattern.needsRegexTest()) return
 
         if (repoPatternElement.regexTests.isEmpty()) {
-            (repoPatternElement.nameElement ?: delegate).reportIssue("Repo pattern `$variableName` must have a regex test.", delegate)
-            return
+            val target = (repoPatternElement.nameElement ?: delegate)
+            return target.reportIssue("Repo pattern `$variableName` must have a regex test.", target)
         }
     }
 
-    private fun String.needsRegexTest(): Boolean {
-        return regexConstructs.containsMatchIn(this)
-    }
+    private fun String.needsRegexTest(): Boolean = regexConstructs.containsMatchIn(this)
 
     companion object {
         val regexConstructs = Regex("""(?<!\\)[.*+(){}\[|?]""")

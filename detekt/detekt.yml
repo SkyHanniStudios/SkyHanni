@@ -217,7 +217,7 @@ potential-bugs:
     NonStorageDoesntNeedExpose:
         active: true
         autoCorrect: true
-    ImmutableTypesWithExpectedInteriorMutabilityInConfig:
+    ImmutableWritableConfigDeclaration:
         active: true
     UnreachableCode:
         active: false
