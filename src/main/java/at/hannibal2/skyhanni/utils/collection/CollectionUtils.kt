@@ -47,6 +47,8 @@ object CollectionUtils {
         this[pairs.first] = pairs.second
     }
 
+    inline fun <K, V> MutableMap<K, V>.getOrCompute(key: K, loader: (K) -> V): V = getOrPut(key) { loader(key) }
+
     // Taken and modified from Skytils
     @JvmStatic
     fun <T> T?.equalsOneOf(vararg other: T): Boolean {

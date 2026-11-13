@@ -5,7 +5,6 @@ import com.google.common.cache.RemovalCause
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
 
-@Suppress("UnstableApiUsage")
 class TimeLimitedCache<K : Any, V : Any>(
     expireAfterWrite: Duration,
     useWeakKeys: Boolean = false,
