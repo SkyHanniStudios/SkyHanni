@@ -1,22 +1,15 @@
 package style
 
+import SkyHanniRuleSetProvider
 import com.google.auto.service.AutoService
-import dev.detekt.api.RuleName
-import dev.detekt.api.RuleSet
-import dev.detekt.api.RuleSetId
 import dev.detekt.api.RuleSetProvider
 
 @AutoService(RuleSetProvider::class)
-class SkyHanniStyleProvider : RuleSetProvider {
-    override val ruleSetId: RuleSetId = RuleSetId("SkyHanniStyle")
-
-    override fun instance(): RuleSet = RuleSet(
-        ruleSetId,
-        mapOf(
-            RuleName("InSkyBlockEarlyReturn") to ::InSkyBlockEarlyReturn,
-            RuleName("IsInIslandEarlyReturn") to ::IsInIslandEarlyReturn,
-            RuleName("OnlyOnIslandSpecificity") to ::OnlyOnIslandSpecificity,
-            RuleName("PrivateEventListener") to ::PrivateEventListener,
-        ),
-    )
+class SkyHanniStyleProvider : SkyHanniRuleSetProvider("SkyHanniStyle") {
+    init {
+        rule(::InSkyBlockEarlyReturn)
+        rule(::IsInIslandEarlyReturn)
+        rule(::OnlyOnIslandSpecificity)
+        rule(::PrivateEventListener)
+    }
 }

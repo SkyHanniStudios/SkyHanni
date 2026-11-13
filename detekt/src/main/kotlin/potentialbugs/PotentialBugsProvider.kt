@@ -1,21 +1,14 @@
 package potentialbugs
 
+import SkyHanniRuleSetProvider
 import com.google.auto.service.AutoService
-import dev.detekt.api.RuleName
-import dev.detekt.api.RuleSet
-import dev.detekt.api.RuleSetId
 import dev.detekt.api.RuleSetProvider
 
 @AutoService(RuleSetProvider::class)
-class PotentialBugsProvider : RuleSetProvider {
-    override val ruleSetId: RuleSetId = RuleSetId("potential-bugs")
-
-    override fun instance(): RuleSet = RuleSet(
-        ruleSetId,
-        mapOf(
-            RuleName("ImmutableWritableConfigDeclaration") to ::ImmutableWritableConfigDeclaration,
-            RuleName("StorageNeedsExpose") to ::StorageNeedsExpose,
-            RuleName("NonStorageDoesntNeedExpose") to ::NonStorageDoesntNeedExpose,
-        ),
-    )
+class PotentialBugsProvider : SkyHanniRuleSetProvider("potential-bugs") {
+    init {
+        rule(::ImmutableWritableConfigDeclaration)
+        rule(::StorageNeedsExpose)
+        rule(::NonStorageDoesntNeedExpose)
+    }
 }
