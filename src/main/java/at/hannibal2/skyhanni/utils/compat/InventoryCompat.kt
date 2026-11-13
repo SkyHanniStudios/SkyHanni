@@ -25,6 +25,7 @@ val ContainerScreen.container: AbstractContainerMenu
     get() = this.menu
 
 object InventoryCompat {
+
     /**
      * Use [at.hannibal2.skyhanni.events.GuiKeyPressEvent.stackUnderCursor] instead when handling a
      * [at.hannibal2.skyhanni.events.GuiKeyPressEvent].
@@ -33,7 +34,6 @@ object InventoryCompat {
         val screen = MinecraftCompat.screen as? SkyHanniGuiContainer ?: return null
         val stack = screen.hoveredSlot?.item
         if (stack != null) return stack
-
         return ReiCompat.getHoveredStackFromRei()
     }
 

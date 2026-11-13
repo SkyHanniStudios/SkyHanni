@@ -10,6 +10,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @SkyHanniModule
 object CustomLoadoutKeybinds {
+
     private val config get() = LoadoutApi.config.keybinds
     private val keybinds
         get() = listOf(
