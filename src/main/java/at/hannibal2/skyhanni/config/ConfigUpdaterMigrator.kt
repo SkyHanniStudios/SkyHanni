@@ -45,13 +45,36 @@ object ConfigUpdaterMigrator {
             get() = migrations.mapTo(mutableSetOf()) { it.id }
 
         fun transform(path: String, transform: (JsonElement) -> JsonElement = { it }) {
-            register("transform:$path", null, setOf(path), setOf(path), true) { config ->
+            transform(path, null, transform)
+        }
+
+        fun transform(
+            path: String,
+            discriminator: String?,
+            transform: (JsonElement) -> JsonElement = { it },
+        ) {
+            register(transformId(path, discriminator), null, setOf(path), setOf(path), true) { config ->
                 expand(path).forEach { path -> updateAt(config, path) { transform(it.shDeepCopy()) } }
             }
         }
 
         fun transform(since: Int, path: String, transform: (JsonElement) -> JsonElement = { it }) {
-            register("transform@$since:$path", since, setOf(path), setOf(path), currentVersion < since) { config ->
+            transform(since, path, null, transform)
+        }
+
+        fun transform(
+            since: Int,
+            path: String,
+            discriminator: String?,
+            transform: (JsonElement) -> JsonElement = { it },
+        ) {
+            register(
+                "transform@$since:${transformId(path, discriminator)}",
+                since,
+                setOf(path),
+                setOf(path),
+                currentVersion < since,
+            ) { config ->
                 expand(path).forEach { realPath -> updateAt(config, realPath) { transform(it.shDeepCopy()) } }
             }
         }
@@ -171,6 +194,10 @@ object ConfigUpdaterMigrator {
             if (shouldRun) migrations += Migration(id, since, reads, writes, apply)
         }
 
+        private fun transformId(path: String, discriminator: String?): String {
+            return if (discriminator == null) "transform:$path" else "transform:$path#$discriminator"
+        }
+
         private fun expand(path: String): List<String> {
             val prefix = path.substringBefore('.')
             val suffix = path.substringAfter('.', "")
@@ -198,8 +225,12 @@ object ConfigUpdaterMigrator {
                 compareBy<Migration> { it.since }.thenBy { it.id },
             ) + dependencySort(remaining.filter { it.since == null })
             ordered.forEach {
-                it.apply(config)
-                applied += it.id
+                try {
+                    it.apply(config)
+                    applied += it.id
+                } catch (error: Throwable) {
+                    logger.logError("Config migration ${it.id} failed; it will be retried", error)
+                }
             }
         }
 
@@ -234,18 +265,18 @@ object ConfigUpdaterMigrator {
         val applied = (config["appliedMigrations"] as? JsonArray)
             ?.mapNotNull { it.takeUnless(JsonElement::isJsonNull)?.asString }
             ?.toMutableSet() ?: mutableSetOf()
-        if (storedVersion == null && applied.isEmpty()) {
-            config.remove("lastVersion")
-            config.add("appliedMigrations", JsonArray())
-            return config
-        }
+        val isFresh = storedVersion == null && applied.isEmpty()
         val oldVersion = storedVersion ?: if (hasLedger) CONFIG_VERSION else -1
         val event = ConfigFixEvent(
             config,
             dynamicPrefixes(config["storage"]?.asJsonObject),
             oldVersion,
         ).also { it.post() }
-        event.applyPending(applied)
+        if (isFresh) {
+            applied += event.registeredMigrationIds
+        } else {
+            event.applyPending(applied)
+        }
         config.remove("lastVersion")
         config.add("appliedMigrations", JsonArray().also { array -> applied.forEach(array::add) })
         return config
