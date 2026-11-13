@@ -225,10 +225,6 @@ dependencies {
     compileOnly(libs.basicMath)
     "minecraftTestClientRuntimeLibraries"(libs.basicMath)
 
-    // getting clock offset
-    shadowImpl(libs.commons.net)
-    "minecraftTestClientRuntimeLibraries"(libs.commons.net)
-
     // Calculator
     shadowImpl(libs.keval) {
         exclude(group = "org.jetbrains.kotlin")
@@ -238,9 +234,6 @@ dependencies {
     detektPlugins(libs.detektrules.neu)
     detektPlugins(project(":detekt"))
     detektPlugins(libs.detektrules.ktlint)
-
-    shadowImpl(libs.httpclient)
-    "minecraftTestClientRuntimeLibraries"(libs.httpclient)
 
     target.renderChestVersion?.let {
         includeImplementation("net.azureaaron:render-chest:$it")
