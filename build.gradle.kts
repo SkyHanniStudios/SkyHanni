@@ -341,7 +341,7 @@ tasks.processResources {
         put("minecraft", minecraftVersion)
         put("fapi", fapiVersion)
         put("fabloader", fabLoaderVersion)
-        put ("fablangkotlin", fabLangKotlinVersion)
+        put("fablangkotlin", fabLangKotlinVersion)
         put("hypixelmodapi", hypixelModApiVersion)
         put("renderchest", renderChestVersion)
     }
