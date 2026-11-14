@@ -1,13 +1,11 @@
 package at.hannibal2.skyhanni.features.combat
 
 import at.hannibal2.skyhanni.SkyHanniMod
-import at.hannibal2.skyhanni.api.enoughupdates.ItemResolutionQuery
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.ProfileStorageData
 import at.hannibal2.skyhanni.events.GuiContainerEvent
 import at.hannibal2.skyhanni.events.GuiKeyPressEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
 import at.hannibal2.skyhanni.events.RenderItemTipEvent
@@ -21,6 +19,7 @@ import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.DiscountUtils.getDiscountedPrice
 import at.hannibal2.skyhanni.utils.InventoryUtils
+import at.hannibal2.skyhanni.utils.ItemNameResolver
 import at.hannibal2.skyhanni.utils.ItemPriceUtils.formatCoin
 import at.hannibal2.skyhanni.utils.ItemPriceUtils.getPrice
 import at.hannibal2.skyhanni.utils.ItemUtils
@@ -30,7 +29,6 @@ import at.hannibal2.skyhanni.utils.ItemUtils.getLore
 import at.hannibal2.skyhanni.utils.ItemUtils.repoItemName
 import at.hannibal2.skyhanni.utils.KeyboardManager.isKeyHeld
 import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.LorenzRarity
 import at.hannibal2.skyhanni.utils.NeuInternalName
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.NONE
 import at.hannibal2.skyhanni.utils.NumberUtil.formatInt
@@ -40,16 +38,15 @@ import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.RenderUtils.highlight
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderable
+import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.addOrPut
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLeadingWhite
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLeadingWhiteLessResets
-import at.hannibal2.skyhanni.utils.compat.stackUnderCursor
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.container.VerticalContainerRenderable.Companion.vertical
 import at.hannibal2.skyhanni.utils.renderables.primitives.emptyText
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
-import net.minecraft.world.item.ItemStack
 
 @SkyHanniModule
 @Suppress("UnusedPrivateProperty")
@@ -159,7 +156,7 @@ object InstanceChestProfit {
     private val profileStorage get() = ProfileStorageData.profileSpecific
 
     @HandleEvent
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         if (!config.enabled && !config.croesusAllChestsOverlay && !config.croesusHighlight) return
 
         if (isInCroesusMenu() && (config.croesusAllChestsOverlay || config.croesusHighlight)) {
@@ -179,7 +176,7 @@ object InstanceChestProfit {
     }
 
     @HandleEvent(priority = HandleEvent.LOWEST, onlyOnSkyblock = true)
-    fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
+    private fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
         val slot = slotToHighlight?.first
         if (isInCroesusMenu() && slot != null && config.croesusHighlight) {
             event.container.slots[slot].highlight(LorenzColor.GREEN)
@@ -187,7 +184,7 @@ object InstanceChestProfit {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onRenderItemTip(event: RenderItemTipEvent) {
+    private fun onRenderItemTip(event: RenderItemTipEvent) {
         val slots = slotsWithFavorites
         if (isInCroesusMenu()) {
             slots.forEach {
@@ -199,11 +196,11 @@ object InstanceChestProfit {
         }
     }
 
-    @HandleEvent(GuiKeyPressEvent::class)
-    fun onGuiKeyPress() {
+    @HandleEvent
+    private fun onGuiKeyPress(event: GuiKeyPressEvent) {
         if (!config.keybind.isKeyHeld()) return
         val favoriteItems = profileStorage?.instanceChestFavoriteItems ?: mutableListOf()
-        stackUnderCursor()?.getInternalNameOrNull()?.let {
+        event.stackUnderCursor?.getInternalNameOrNull()?.let {
             if (favoriteItems.contains(it)) {
                 favoriteItems.remove(it)
                 ChatUtils.chat("Removed ${it.repoItemName}§e from Favorites List.")
@@ -216,7 +213,7 @@ object InstanceChestProfit {
     }
 
     @HandleEvent(InventoryCloseEvent::class)
-    fun onInventoryClose() {
+    private fun onInventoryClose() {
         alreadyProcessedChests.clear()
         croesusDisplayList.clear()
         slotsWithFavorites.clear()
@@ -224,7 +221,7 @@ object InstanceChestProfit {
         croesusDisplay = null
     }
 
-    private fun parseCroesusChest(itemStack: ItemStack?, chestType: CroesusChestType, slot: Int) {
+    private fun parseCroesusChest(itemStack: SafeItemStack?, chestType: CroesusChestType, slot: Int) {
         val chestList = mutableListOf<NeuInternalName>()
         val chestTips = mutableListOf<String>()
         chestTips.add("${chestType.stackChestName}:")
@@ -240,12 +237,10 @@ object InstanceChestProfit {
                 }
             } else {
                 var itemPrice: Double
-                val bookCheckedLoreLine = ItemUtils.readBookType(loreLine) ?: loreLine
-                var itemInternalName = NeuInternalName.fromItemNameOrNull(bookCheckedLoreLine)
-                bookColorFixer.matchMatcher(bookCheckedLoreLine) {
-                    itemInternalName = ItemResolutionQuery.resolveEnchantmentByName(group("item")) ?: itemInternalName
-                }
-                val internalName = itemInternalName
+                val bookType = ItemUtils.readBookType(loreLine)
+                val internalName = if (bookType != null) {
+                    ItemNameResolver.resolveEnchantedBook(bookColorFixer.matchMatcher(bookType) { group("item") } ?: bookType)
+                } else NeuInternalName.fromItemNameOrNull(loreLine)
                 var favorited = ""
                 if (profileStorage?.instanceChestFavoriteItems?.contains(internalName) == true) {
                     slotsWithFavorites.add(chestType.stackChestName)
@@ -322,7 +317,7 @@ object InstanceChestProfit {
         count * getPrice(NeuInternalName.fromItemName(name))
     } ?: 0.0
 
-    private fun createDisplay(inventoryName: String, items: Map<Int, ItemStack>) {
+    private fun createDisplay(inventoryName: String, items: Map<Int, SafeItemStack>) {
         /**
          * Kuudra chests say "Free Chest Chest" and "Paid Chest Chest" due to Hypixel issue
          */
@@ -422,17 +417,17 @@ object InstanceChestProfit {
 
     private fun getKuudraEssenceBonus(): Double =
         ProfileStorageData.petProfiles?.pets?.filter { PetUtils.getPetProperName(it.fauxInternalName) == "KUUDRA" }
-            ?.maxByOrNull { it.rarity.id }
+            ?.maxByOrNull { it.rarity }
             ?.let {
                 when (it.rarity) {
-                    LorenzRarity.RARE -> 0.15 / 100 * it.level
-                    LorenzRarity.EPIC, LorenzRarity.LEGENDARY -> 0.2 / 100 * it.level
+                    RARE -> 0.15 / 100 * it.level
+                    EPIC, LEGENDARY -> 0.2 / 100 * it.level
                     else -> 0.0
                 }
             } ?: 0.0
 
-    @HandleEvent(GuiRenderEvent::class)
-    fun onGuiRender() {
+    @HandleEvent
+    private fun onChestGuiRender() {
         if (config.enabled && InventoryUtils.inInventory())
             if (isInstanceChestGUI()) {
                 chestDisplay?.let {
@@ -448,12 +443,12 @@ object InstanceChestProfit {
     }
 
     @HandleEvent(DungeonEnterEvent::class)
-    fun onDungeonEnter() {
+    private fun onDungeonEnter() {
         chestProfits.clear()
     }
 
     @HandleEvent(KuudraEnterEvent::class)
-    fun onKuudraEnter() {
+    private fun onKuudraEnter() {
         chestProfits.clear()
     }
 }

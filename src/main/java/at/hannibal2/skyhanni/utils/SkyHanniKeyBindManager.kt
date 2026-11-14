@@ -24,11 +24,8 @@ object SkyHanniKeyBindManager {
     }
 
     @HandleEvent
-    fun onConfigLoad(event: ConfigLoadEvent) {
-        if (initialized) {
-            syncAllValues()
-            return
-        }
+    private fun onConfigLoad() {
+        if (initialized) return syncAllValues()
         setupKeyMappings()
         initialized = true
     }
@@ -106,11 +103,9 @@ object SkyHanniKeyBindManager {
         }
     }
 
-    fun getActiveKeyMappings(): Array<KeyMapping> =
-        keyMappingToKeybind.entries
-            .filter { (_, keybind) -> keybind.condition() }
-            .map { (keyMapping, _) -> keyMapping }
-            .toTypedArray()
+    fun getActiveKeyMappings(): Array<KeyMapping> = keyMappingToKeybind.filterValues { keybind ->
+        keybind.condition()
+    }.keys.toTypedArray()
 }
 
 private fun Int.toInputConstantsKey(): InputConstants.Key = when {

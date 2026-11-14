@@ -2,83 +2,68 @@ package at.hannibal2.skyhanni.utils
 
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.utils.TimeUtils.formatCurrentTime
-import java.io.File
-import java.io.IOException
+import at.hannibal2.skyhanni.utils.system.PlatformUtils
+import java.nio.file.Path
 import java.text.SimpleDateFormat
 import java.util.logging.FileHandler
 import java.util.logging.Formatter
 import java.util.logging.LogRecord
 import java.util.logging.Logger
+import kotlin.io.path.pathString
 import kotlin.time.Duration.Companion.days
 
-class SkyHanniLogger(filePath: String) {
+open class SkyHanniLogger(private val filePath: String) {
 
-    private val format = SimpleDateFormat("HH:mm:ss")
-    private val fileName = "$PREFIX_PATH$filePath.log"
-
-    companion object {
-
-        private val LOG_DIRECTORY = File("config/skyhanni/logs")
-        // I'm ab to change this in another PR I CBA - daveed
-        @Suppress("PropertyName")
-        private var PREFIX_PATH: String
-        var hasDone = false
-
-        init {
-            val format = SimpleDateFormat("yyyy_MM_dd/HH_mm_ss").formatCurrentTime()
-            PREFIX_PATH = "config/skyhanni/logs/$format/"
-        }
+    private val logFilePath: Path by lazy {
+        SkyHanniMod.logsDir
+            .toPath()
+            .resolve(startTimeFormatted)
+            .resolve("$filePath.log")
     }
 
-    private lateinit var logger: Logger
+    private val format = SimpleDateFormat("HH:mm:ss")
 
-    private fun getLogger(): Logger {
-        if (::logger.isInitialized) {
-            return logger
-        }
+    companion object {
+        private var deletedExpired = false
 
-        val initLogger = initLogger()
-        this.logger = initLogger
-        return initLogger
+        private val startTimeFormatted = SimpleDateFormat("yyyy_MM_dd/HH_mm_ss").formatCurrentTime()
     }
 
     @Suppress("PrintStackTrace")
-    private fun initLogger(): Logger {
-        val logger = Logger.getLogger("Lorenz-Logger-" + System.nanoTime())
-        try {
-            createParent(File(fileName))
-            val handler = FileHandler(fileName)
-            handler.encoding = "utf-8"
-            logger.addHandler(handler)
-            logger.useParentHandlers = false
-            handler.formatter = object : Formatter() {
-                override fun format(logRecord: LogRecord): String {
-                    val message = logRecord.message
-                    return format.formatCurrentTime() + " $message\n"
-                }
+    private val logger: Logger by lazy {
+        Logger.getLogger("SkyHanni-Logger-" + System.nanoTime()).apply {
+            try {
+                logFilePath.toFile().parentFile?.takeIf { !it.isDirectory }?.mkdirs()
+                FileHandler(logFilePath.pathString).apply {
+                    encoding = Charsets.UTF_8.name()
+                    formatter = object : Formatter() {
+                        override fun format(logRecord: LogRecord) = "${format.formatCurrentTime()} ${logRecord.message}\n"
+                    }
+                }.let(::addHandler)
+                useParentHandlers = false
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-        } catch (e: SecurityException) {
-            e.printStackTrace()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
 
-        if (!hasDone && SkyBlockUtils.onHypixel) {
-            hasDone = true
-            OSUtils.deleteExpiredFiles(LOG_DIRECTORY, SkyHanniMod.feature.dev.logExpiryTime.days)
-        }
-
-        return logger
-    }
-
-    private fun createParent(file: File) {
-        val parent = file.parentFile
-        if (parent != null && !parent.isDirectory) {
-            parent.mkdirs()
+            if (!deletedExpired && SkyBlockUtils.onHypixel) {
+                deletedExpired = true
+                OSUtils.deleteExpiredFiles(SkyHanniMod.logsDir, SkyHanniMod.feature.dev.logExpiryTime.days)
+            }
         }
     }
 
-    fun log(text: String?) {
-        getLogger().info(text)
+    fun log(text: String?) = logger.info(text)
+
+    /**
+     * Logs [message] and the stack trace of [error] to the log file.
+     * In a development environment the same text also goes to the console,
+     * so a failure is visible without opening the log file first.
+     */
+    fun logError(message: String, error: Throwable) {
+        val text = "$message\n${error.stackTraceToString()}"
+        log(text)
+        if (PlatformUtils.isDevEnvironment) {
+            System.err.println("SkyHanni logger '$filePath': $text")
+        }
     }
 }

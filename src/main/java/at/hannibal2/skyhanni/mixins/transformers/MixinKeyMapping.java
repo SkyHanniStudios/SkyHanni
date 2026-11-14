@@ -16,16 +16,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(KeyMapping.class)
-public class MixinKeyMapping {
+public abstract class MixinKeyMapping {
 
+    @Shadow
+    private boolean isDown;
+
+    @SuppressWarnings("FieldCanBeLocal")
     @Mutable
     @Shadow
     private int clickCount;
 
     @Inject(method = "isDown", at = @At("HEAD"), cancellable = true)
     public void noIsKeyDown(CallbackInfoReturnable<Boolean> cir) {
+        @SuppressWarnings("DataFlowIssue")
         KeyMapping keyBinding = (KeyMapping) (Object) this;
-        GardenCustomKeybinds.isKeyDown(keyBinding, cir);
+        GardenCustomKeybinds.isKeyDown(keyBinding, this.isDown, cir);
         if (keyBinding instanceof ToggleKeyMapping stickyKeyBinding) {
             if (stickyKeyBinding.needsToggle.getAsBoolean()) {
                 return;
@@ -37,6 +42,7 @@ public class MixinKeyMapping {
 
     @Inject(method = "consumeClick", at = @At("HEAD"), cancellable = true)
     public void noIsPressed(CallbackInfoReturnable<Boolean> cir) {
+        @SuppressWarnings("DataFlowIssue")
         KeyMapping keyBinding = (KeyMapping) (Object) this;
         GardenCustomKeybinds.isKeyPressed(keyBinding, cir);
         if (cir.isCancelled()) {

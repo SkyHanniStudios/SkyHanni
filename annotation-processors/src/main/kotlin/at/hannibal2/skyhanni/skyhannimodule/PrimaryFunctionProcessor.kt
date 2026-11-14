@@ -1,30 +1,43 @@
 package at.hannibal2.skyhanni.skyhannimodule
 
 import com.google.devtools.ksp.getClassDeclarationByName
-import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Dependencies
-import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
+import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.KSAnnotated
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import java.io.OutputStreamWriter
 
-class PrimaryFunctionProcessor(
-    codeGenerator: CodeGenerator,
-    logger: KSPLogger,
-    modVersion: String,
-) : BaseProcessor(codeGenerator, logger, modVersion) {
+class PrimaryFunctionProcessor(environment: SymbolProcessorEnvironment) : BaseProcessor(environment) {
+
+    private val cache = KspIncrementalCache(options[CACHE_DIR_OPTION], mcVersion, "ksp-primary-function-state")
 
     override fun processSymbols(resolver: Resolver): List<KSAnnotated> {
         val skyHanniEvent = resolver.getClassDeclarationByName("at.hannibal2.skyhanni.api.event.SkyHanniEvent")
             ?.asStarProjectedType() ?: return emptyList()
 
-        val symbols = resolver.getSymbolsWithAnnotation(PrimaryFunction::class.qualifiedName!!)
+        val primaryClass = PrimaryFunction::class.qualifiedName ?: return emptyList()
+        val symbols = resolver.getSymbolsWithAnnotation(primaryClass)
             .filterIsInstance<KSClassDeclaration>()
             .filter { skyHanniEvent.isAssignableFrom(it.asStarProjectedType()) }
             .toList()
 
+        val filePaths = symbols.mapNotNull { it.containingFile?.filePath }.toSet()
+        val outputFile = cache.outputFile("at/hannibal2/skyhanni/api/event", "GeneratedEventPrimaryFunctionNames")
+        val dirtyFilePaths = cache.evaluate(filePaths, outputFile)
+
+        if (dirtyFilePaths == null) {
+            logger.warn("No @PrimaryFunction files changed, skipping GeneratedEventPrimaryFunctionNames regeneration")
+            cache.commit()
+            return emptyList()
+        }
+
+        if (dirtyFilePaths.isEmpty()) {
+            logger.warn("No @PrimaryFunction files changed but GeneratedEventPrimaryFunctionNames.kt is missing, regenerating")
+        }
+
         generate(symbols)
+        cache.commit()
         return emptyList()
     }
 
@@ -39,13 +52,18 @@ class PrimaryFunctionProcessor(
         val dependencies = Dependencies(true, *symbols.mapNotNull { it.containingFile }.toTypedArray())
         val file = codeGenerator.createNewFile(dependencies, "at.hannibal2.skyhanni.api.event", "GeneratedEventPrimaryFunctionNames")
         OutputStreamWriter(file).use {
-            it.write("package at.hannibal2.skyhanni.api.event\n\n")
-            it.write("object GeneratedEventPrimaryFunctionNames {\n")
-            it.write("    val map: Map<String, Class<out SkyHanniEvent>> = mapOf(\n")
-            it.write("        $entries\n")
-            it.write("    )\n")
-            it.write("}\n")
+            it.appendLine(
+                """
+                |package at.hannibal2.skyhanni.api.event
+                |
+                |object GeneratedEventPrimaryFunctionNames {
+                |    val map: Map<String, Class<out SkyHanniEvent>> = mapOf(
+                |        $entries
+                |    )
+                |}
+                """.trimMargin(),
+            )
         }
-        logger.warn("Generated GeneratedEventPrimaryFunctionNames with ${symbols.size} entries")
+        println("Generated GeneratedEventPrimaryFunctionNames with ${symbols.size} entries")
     }
 }
