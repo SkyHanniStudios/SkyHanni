@@ -56,7 +56,7 @@ class DefaultConfigScreen(
             Renderable.text("§7${cat.description}"),
         ) + orderedOptions[cat]?.map { Renderable.text("§7 - §a${it.name}") }.orEmpty()
 
-        val row = SkyHanniScreenTheme.hoverRow(card, padding = 3, radius = 5, idleBackground = true) {
+        val row = SkyHanniScreenTheme.hoverRow(card, padding = 3, idleBackground = true) {
             RenderableTooltips.setTooltipForRender(if (KeyboardManager.isShiftKeyDown()) shiftTooltip else normalTooltip)
         }
 
@@ -76,17 +76,17 @@ class DefaultConfigScreen(
     }
 
     private fun setAllButton(label: String, state: ResetSuggestionState) =
-        SkyHanniScreenTheme.buildButton(label, SkyHanniScreenTheme.COLOR_BTN_NEUTRAL) {
+        SkyHanniScreenTheme.buildButton(label) {
             orderedOptions.keys.forEach { setState(it, state) }
             rebuildDisplay()
         }
 
     private fun buildActionBar(): Renderable {
-        val applyBtn = SkyHanniScreenTheme.buildButton("Apply choices", SkyHanniScreenTheme.COLOR_BTN_PRIMARY) {
+        val applyBtn = SkyHanniScreenTheme.buildButton("§aApply choices") {
             DefaultConfigFeatures.applyCategorySelections(resetSuggestionState, orderedOptions)
             MinecraftCompat.screen = null
         }
-        val cancelBtn = SkyHanniScreenTheme.buildButton("Cancel", SkyHanniScreenTheme.COLOR_BTN_DANGER) {
+        val cancelBtn = SkyHanniScreenTheme.buildButton("§cCancel") {
             MinecraftCompat.screen = null
         }
 

@@ -22,6 +22,10 @@ import at.hannibal2.skyhanni.utils.RenderUtils.VerticalAlignment as VA
  */
 object VisualWordGui {
 
+    private const val LIST_HEIGHT = 150
+    private const val SCROLLBAR_WIDTH = 7
+    private val PLACEHOLDER_WORD = VisualWord("", "", enabled = true, caseSensitive = false)
+
     private val upSkull = ItemUtils.repoSkullProvider(
         displayName = "§aMove Up",
         uuid = "7f68dd73-1ff6-4193-b246-820975d6fab1",
@@ -64,17 +68,26 @@ object VisualWordGui {
             horizontalAlign = HA.CENTER,
         )
 
-        val listArea = if (screen.modifiedWords.isEmpty()) {
-            Renderable.text("§7No entries yet. Click §aAdd New§7 to start.", horizontalAlign = HA.CENTER)
+        val listContent = if (screen.modifiedWords.isEmpty()) {
+            Renderable.text(
+                "§7No entries yet. Click §aAdd New§7 to start.",
+                horizontalAlign = HA.CENTER,
+                verticalAlign = VA.CENTER,
+            )
         } else {
             SkyHanniScreenTheme.scrollList(
                 screen.modifiedWords.mapIndexed { index, word -> buildWordRow(screen, index, word) },
-                height = 150,
+                height = LIST_HEIGHT,
                 scrollValue = screen.listScrollValue,
                 velocity = 4.0,
                 bypassChecks = true,
             )
         }
+        val listWidth = buildWordRow(screen, 0, PLACEHOLDER_WORD).width + SCROLLBAR_WIDTH
+        val listArea = Renderable.fixedSizeColumn(
+            Renderable.fixedSizeLine(listContent, listWidth, verticalAlign = VA.CENTER),
+            LIST_HEIGHT,
+        )
 
         return Renderable.vertical(
             listOf(header, subtitle, listArea, buildListBottomRow(screen)),
@@ -128,11 +141,11 @@ object VisualWordGui {
             spacing = 4,
             verticalAlign = VA.CENTER,
         )
-        return SkyHanniScreenTheme.hoverRow(rowContent, padding = 3, radius = 5, idleBackground = true)
+        return SkyHanniScreenTheme.hoverRow(rowContent, padding = 3, idleBackground = true)
     }
 
     private fun buildListBottomRow(screen: VisualWordScreen): Renderable =
-        SkyHanniScreenTheme.buildButton("§a+ Add New", SkyHanniScreenTheme.COLOR_BTN_PRIMARY) { screen.addNewWord() }
+        SkyHanniScreenTheme.buildButton("§a+ Add New") { screen.addNewWord() }
 
     private fun buildEditView(screen: VisualWordScreen): Renderable {
         val word = screen.modifiedWords.getOrNull(screen.currentIndex) ?: return buildListView(screen)
@@ -145,14 +158,12 @@ object VisualWordGui {
 
         val toggleRow = Renderable.horizontal(
             listOf(
-                SkyHanniScreenTheme.buildButton(
-                    if (word.enabled) "§a● Enabled" else "§c● Disabled",
-                    if (word.enabled) SkyHanniScreenTheme.COLOR_BTN_PRIMARY else SkyHanniScreenTheme.COLOR_BTN_DANGER,
-                ) { screen.toggleEnabled(screen.currentIndex) },
-                SkyHanniScreenTheme.buildButton(
-                    if (word.isCaseSensitive()) "§bCase Sensitive" else "§7Case Insensitive",
-                    SkyHanniScreenTheme.COLOR_BTN_NEUTRAL,
-                ) { screen.toggleCaseSensitive(screen.currentIndex) },
+                SkyHanniScreenTheme.buildButton(if (word.enabled) "§a● Enabled" else "§c● Disabled") {
+                    screen.toggleEnabled(screen.currentIndex)
+                },
+                SkyHanniScreenTheme.buildButton(if (word.isCaseSensitive()) "§bCase Sensitive" else "§7Case Insensitive") {
+                    screen.toggleCaseSensitive(screen.currentIndex)
+                },
             ),
             spacing = 8,
             verticalAlign = VA.CENTER,
@@ -160,10 +171,10 @@ object VisualWordGui {
 
         val actionRow = Renderable.horizontal(
             listOf(
-                SkyHanniScreenTheme.buildButton("§c✗ Delete", SkyHanniScreenTheme.COLOR_BTN_DANGER) {
+                SkyHanniScreenTheme.buildButton("§c✗ Delete") {
                     screen.deleteWord(screen.currentIndex)
                 },
-                SkyHanniScreenTheme.buildButton("§e← Back", SkyHanniScreenTheme.COLOR_BTN_WARNING) { screen.exitEditMode() },
+                SkyHanniScreenTheme.buildButton("§e← Back") { screen.exitEditMode() },
             ),
             spacing = 8,
             verticalAlign = VA.CENTER,

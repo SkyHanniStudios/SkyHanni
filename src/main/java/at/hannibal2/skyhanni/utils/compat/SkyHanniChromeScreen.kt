@@ -10,8 +10,8 @@ import at.hannibal2.skyhanni.utils.renderables.primitives.text
 /**
  * Abstract base for SkyHanni content screens.
  *
- * Subclasses provide [title] and [buildContent]. The dark chrome (shadow, rounded
- * panel, title bar with separator) is rendered automatically. Call [rebuildDisplay]
+ * Subclasses provide [screenTitle] and [buildContent]. The panel, title and separator
+ * are rendered automatically. Call [rebuildDisplay]
  * whenever the content structure changes (e.g., mode switch, list mutation).
  *
  * @see SkyHanniCanvasScreen for full-canvas screens without chrome.
@@ -47,7 +47,6 @@ abstract class SkyHanniChromeScreen : SkyHanniBaseScreen() {
 
     private fun buildChrome(content: Renderable): Renderable {
         val titleText = buildTitle()
-        val separatorInt = SkyHanniScreenTheme.SEPARATOR_INT
         val panelWidth = content.width.coerceAtLeast(titleText.width)
         val separator = object : Renderable {
             override val width = panelWidth
@@ -55,22 +54,14 @@ abstract class SkyHanniChromeScreen : SkyHanniBaseScreen() {
             override val horizontalAlign = HorizontalAlignment.LEFT
             override val verticalAlign = VerticalAlignment.TOP
             override fun render(mouseOffsetX: Int, mouseOffsetY: Int) {
-                GuiRenderUtils.drawRect(0, 0, width, SEPARATOR_HEIGHT, separatorInt)
+                GuiRenderUtils.drawRect(0, 0, width, SEPARATOR_HEIGHT, SkyHanniScreenTheme.SEPARATOR_COLOR)
             }
         }
         val body = Renderable.vertical(
             listOf(titleText, separator, content),
             spacing = BODY_SPACING,
         )
-        return Renderable.drawInsideFloatingRectWithBorder(
-            body,
-            backgroundColor = SkyHanniScreenTheme.COLOR_BG,
-            lightColor = SkyHanniScreenTheme.COLOR_BORDER_TOP,
-            darkColor = SkyHanniScreenTheme.COLOR_BORDER_BOT,
-            padding = SkyHanniScreenTheme.PANEL_PADDING,
-            radius = SkyHanniScreenTheme.PANEL_RADIUS,
-            borderThickness = SkyHanniScreenTheme.PANEL_BORDER,
-        )
+        return Renderable.drawInsideDarkRect(body, padding = SkyHanniScreenTheme.PANEL_PADDING)
     }
 
     final override fun onDrawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -84,12 +75,6 @@ abstract class SkyHanniChromeScreen : SkyHanniBaseScreen() {
         val panel = display ?: return
         val startX = (width - panel.width) / 2
         val startY = (height - panel.height) / 2
-
-        val shadow = SkyHanniScreenTheme.SHADOW_INT
-        val o1 = SkyHanniScreenTheme.SHADOW_OFFSET_1
-        val o2 = SkyHanniScreenTheme.SHADOW_OFFSET_2
-        GuiRenderUtils.drawRect(startX + o1, startY + o1, startX + panel.width + o1, startY + panel.height + o1, shadow)
-        GuiRenderUtils.drawRect(startX + o2, startY + o2, startX + panel.width + o2, startY + panel.height + o2, shadow)
 
         renderPanel {
             DrawContextUtils.pushPop {
