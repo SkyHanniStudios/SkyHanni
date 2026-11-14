@@ -4,8 +4,6 @@ import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.jsonobjects.repo.BeltsJson
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -34,10 +32,10 @@ object DojoRankDisplay {
         "rank",
         "(?:§\\w)+Your Rank: (?<rank>§\\w.) §8\\((?<score>\\d+)\\)",
     )
-    private var belts = mapOf<String, Int>()
+    private var belts = emptyMap<String, Int>()
 
     @HandleEvent
-    fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
+    fun onChestGuiRender() {
         if (!isEnabled()) return
         config.dojoRankDisplayPosition.renderStrings(display, posLabel = "Dojo Rank Display")
     }
@@ -86,7 +84,7 @@ object DojoRankDisplay {
     }
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    fun onInventoryClose() {
         display = emptyList()
     }
 

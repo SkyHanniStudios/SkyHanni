@@ -15,18 +15,14 @@ object DungeonShadowAssassinNotification {
     private val config get() = SkyHanniMod.feature.dungeon
 
     @HandleEvent(onlyOnIsland = IslandType.CATACOMBS)
-    fun onWorldBorderChange(event: PacketReceivedEvent) {
-        if (!isEnabled()) return
+    private fun onPacketReceived(event: PacketReceivedEvent) {
+        if (!config.shadowAssassinJumpNotifier) return
         if (DungeonApi.dungeonFloor?.contains("3") == true && DungeonApi.inBossRoom) return
 
         val packet = event.packet as? ClientboundInitializeBorderPacket ?: return
-        val warningTime = packet.warningTime
-
-        if (warningTime == 10000) {
+        if (packet.warningTime == 10000) {
             TitleManager.sendTitle("§cShadow Assassin Jumping!")
             SoundUtils.playBeepSound()
         }
     }
-
-    private fun isEnabled() = config.shadowAssassinJumpNotifier
 }

@@ -5,8 +5,6 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.title.TitleManager
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.WidgetUpdateEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
@@ -166,7 +164,7 @@ object BroodmotherFeatures {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.SPIDER_DEN)
-    private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay() {
         if (!isCountdownEnabled()) return
         val display = if (broodmotherSpawnTime.isInPast() && !broodmotherSpawnTime.isFarPast()) {
             Renderable.text("§4Broodmother spawning now!")
@@ -175,7 +173,7 @@ object BroodmotherFeatures {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.SPIDER_DEN)
-    private fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed() {
         if (!isCountdownEnabled()) return
 
         if (broodmotherSpawnTime.isFarPast()) {

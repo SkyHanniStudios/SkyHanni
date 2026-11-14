@@ -6,7 +6,6 @@ import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.events.GuiContainerEvent
 import at.hannibal2.skyhanni.events.PlaySoundEvent
 import at.hannibal2.skyhanni.events.RenderInventoryItemTipEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.HypixelCommands
@@ -54,7 +53,7 @@ object TiaRelayHelper {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed(event: SecondPassedEvent) {
+    fun onSecondPassed() {
         if (!config.soundHelper) return
 
         if (InventoryUtils.openInventoryName().contains("Network Relay")) {

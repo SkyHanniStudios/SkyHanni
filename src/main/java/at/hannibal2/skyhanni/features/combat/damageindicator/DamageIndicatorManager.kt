@@ -353,7 +353,7 @@ object DamageIndicatorManager {
 
         BossType.SLAYER_SPIDER_5_1,
 
-            // TODO f3/m3 4 guardians, f2/m2 4 boss room fighters
+        // TODO f3/m3 4 guardians, f2/m2 4 boss room fighters
         -> true
 
         else -> false
@@ -1006,7 +1006,7 @@ object DamageIndicatorManager {
     private val dummyDamageCache = mutableListOf<UUID>()
 
     @HandleEvent(priority = HandleEvent.HIGH)
-    private fun onCheckRender(event: CheckRenderEntityEvent<ArmorStand>) {
+    private fun onCheckRenderEntity(event: CheckRenderEntityEvent<ArmorStand>) {
         if (!isEnabled()) return
         val entity = event.entity
 

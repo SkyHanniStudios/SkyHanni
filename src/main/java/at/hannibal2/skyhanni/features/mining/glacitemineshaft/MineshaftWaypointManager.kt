@@ -9,7 +9,6 @@ import at.hannibal2.skyhanni.events.minecraft.KeyPressEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.events.minecraft.packet.PacketReceivedEvent
 import at.hannibal2.skyhanni.events.mining.CorpseFoundEvent
-import at.hannibal2.skyhanni.events.mining.CorpseLootedEvent
 import at.hannibal2.skyhanni.features.mining.glacitemineshaft.corpse.CorpseType
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
@@ -84,7 +83,7 @@ object MineshaftWaypointManager {
     }
 
     @HandleEvent
-    private fun onCorpseLooted(event: CorpseLootedEvent) {
+    private fun onCorpseLooted() {
         val closestWaypoint = waypoints.filter { it.isCorpse && it.location.distanceToPlayer() <= 5 }
             .minByOrNull { it.location.distanceToPlayer() } ?: return
 

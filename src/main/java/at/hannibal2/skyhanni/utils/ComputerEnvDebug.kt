@@ -21,8 +21,8 @@ import kotlin.time.Duration.Companion.milliseconds
 @SkyHanniModule
 object ComputerEnvDebug {
 
-    private var launchers: List<LauncherEntry> = listOf()
-    private var genericStacks: List<String> = listOf()
+    private var launchers: List<LauncherEntry> = emptyList()
+    private var genericStacks: List<String> = emptyList()
 
     @HandleEvent
     private fun onDebugDataCollect(event: DebugDataCollectEvent) {

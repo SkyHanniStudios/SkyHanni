@@ -14,12 +14,8 @@ import at.hannibal2.skyhanni.data.jsonobjects.elitedev.EliteFarmingContest
 import at.hannibal2.skyhanni.data.model.SkyblockStat
 import at.hannibal2.skyhanni.data.model.TabWidget
 import at.hannibal2.skyhanni.data.title.TitleManager
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.WidgetUpdateEvent
 import at.hannibal2.skyhanni.features.garden.GardenApi.getItemStackCopy
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -81,7 +77,7 @@ object GardenNextJacobContest {
 
     private var display: Renderable? = null
     private var simpleDisplay: Renderable? = null
-    private var knownContests: List<EliteFarmingContest> = listOf()
+    private var knownContests: List<EliteFarmingContest> = emptyList()
     private var nextContestsAvailableAt = SimpleTimeMark.farPast()
     private var lastFetchAttempted = SimpleTimeMark.farPast()
     private var lastWarningTime = SimpleTimeMark.farPast()
@@ -96,7 +92,7 @@ object GardenNextJacobContest {
     } ?: false
 
     fun resetContestData(force: Boolean = false) {
-        knownContests = listOf()
+        knownContests = emptyList()
         fetchedFromElite = false
         if (force) lastFetchAttempted = SimpleTimeMark.farPast()
         fetchContestsIfAble()
@@ -217,13 +213,13 @@ object GardenNextJacobContest {
         }
     }
 
-    @HandleEvent(SecondPassedEvent::class)
+    @HandleEvent
     private fun onSecondPassed() {
         if (!isEnabled() || calendarDetector.isInside()) return
         update()
     }
 
-    @HandleEvent(InventoryCloseEvent::class, onlyOnIsland = IslandType.GARDEN)
+    @HandleEvent(onlyOnIsland = IslandType.GARDEN)
     private fun onInventoryClose() {
         if (!isEnabled()) return
         update()
@@ -246,7 +242,7 @@ object GardenNextJacobContest {
         if (knownContests.isNotEmpty() && loadedContestsYear != year) {
             val endTime = knownContests.first().endTime
             val lastYear = endTime.toSkyBlockTime().year
-            if (year != lastYear) knownContests = listOf()
+            if (year != lastYear) knownContests = emptyList()
             if (nextContestsAvailableAt.isInFuture() || nextContestsAvailableAt.isFarPast()) {
                 nextContestsAvailableAt = SimpleTimeMark.now() - 1.milliseconds
                 fetchContestsIfAble()
@@ -321,13 +317,13 @@ object GardenNextJacobContest {
         SkyHanniMod.configManager.saveConfig(ConfigFileType.JACOB_CONTESTS, "Save contests")
     }
 
-    @HandleEvent(ConfigLoadEvent::class)
+    @HandleEvent
     private fun onConfigLoad() {
         val savedContests = SkyHanniMod.jacobContestsData.knownContests
         val savedYear = savedContests.firstOrNull()?.endTime?.toSkyBlockTime()?.year ?: return
         // Clear contests if from previous year
         if (savedYear != SkyBlockTime.now().year) {
-            SkyHanniMod.jacobContestsData.knownContests = listOf()
+            SkyHanniMod.jacobContestsData.knownContests = emptyList()
         } else knownContests = savedContests
     }
 
@@ -450,14 +446,14 @@ object GardenNextJacobContest {
         )
     }
 
-    @HandleEvent(GuiRenderEvent.GuiOverlayRenderEvent::class)
+    @HandleEvent
     private fun onGuiRenderOverlay() {
         if (!isEnabled()) return
         val display = display ?: simpleDisplay ?: return
         config.position.renderRenderable(display, posLabel = "Next Jacob Contest")
     }
 
-    @HandleEvent(GuiRenderEvent.ChestGuiOverlayRenderEvent::class)
+    @HandleEvent
     private fun onChestGuiRender() {
         if (!config.display || !calendarDetector.isInside()) return
         val display = display ?: return

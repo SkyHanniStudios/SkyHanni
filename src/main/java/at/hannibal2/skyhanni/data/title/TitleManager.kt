@@ -8,9 +8,6 @@ import at.hannibal2.skyhanni.config.commands.brigadier.BrigadierArguments
 import at.hannibal2.skyhanni.config.core.config.Position
 import at.hannibal2.skyhanni.data.title.CountdownTitleContext.Companion.fromTitleData
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
-import at.hannibal2.skyhanni.events.minecraft.WorldChangeEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.ChatUtils
@@ -31,7 +28,8 @@ object TitleManager {
     val existingIntentions = guiConfig.titleIntentionPositions.values.flatMap { it.keys }.toSet()
     val intentionMapper: MutableMap<String, TitleIntention> = mutableMapOf()
 
-    inline fun<reified E : Enum<E>> registerIntentions(
+    // TODO it makes me sad that this is unused :( -Dae
+    inline fun <reified E : Enum<E>> registerIntentions(
         invokerClazz: Class<Any>,
         defaultPosition: Position? = null,
     ) {
@@ -168,7 +166,7 @@ object TitleManager {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shsendtitle") {
             description = "Display a title on the screen with the specified settings."
             category = CommandCategory.DEVELOPER_TEST
@@ -240,7 +238,7 @@ object TitleManager {
     }
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("TitleManager")
         event.addIrrelevant {
             add(
@@ -268,8 +266,8 @@ object TitleManager {
         }
     }
 
-    @HandleEvent(WorldChangeEvent::class)
-    fun onWorldChange() {
+    @HandleEvent
+    private fun onWorldChange() {
         titleLocationQueues.forEach { queue ->
             val (location, titleQueue) = queue
             titleLocationQueues[location] = titleQueue.copyWithFilter { !it.discardOnWorldChange }
@@ -283,12 +281,12 @@ object TitleManager {
     }
 
     @HandleEvent
-    fun onProfileJoin() {
+    private fun onProfileJoin() {
         stop()
     }
 
     @HandleEvent
-    fun onInventoryClose() {
+    private fun onInventoryClose() {
         stop(TitleLocation.INVENTORY)
     }
 
@@ -299,8 +297,8 @@ object TitleManager {
         }
     }
 
-    @HandleEvent(SkyHanniTickEvent::class)
-    fun onTick() {
+    @HandleEvent
+    private fun onTick() {
         TitleLocation.entries.filter {
             it.activationRequirement.invoke()
         }.forEach { location ->
@@ -339,14 +337,14 @@ object TitleManager {
     }
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay() {
         if (InventoryUtils.inInventory()) return
         val globalTitle = currentTitles[TitleLocation.GLOBAL] ?: return
         globalTitle.tryRenderGlobalTitle()
     }
 
     @HandleEvent
-    fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
+    private fun onChestGuiRender() {
         if (!InventoryUtils.inInventory()) return
         val inventoryTitle = currentTitles[TitleLocation.INVENTORY] ?: return
         inventoryTitle.tryRenderInventoryTitle()

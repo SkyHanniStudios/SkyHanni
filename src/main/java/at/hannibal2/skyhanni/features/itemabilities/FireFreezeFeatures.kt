@@ -88,7 +88,7 @@ object FireFreezeFeatures {
     private val freezeDuration = 10.seconds
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onPlaySound(event: PlaySoundEvent) {
+    private fun onPlaySound(event: PlaySoundEvent) {
         when (event.soundName) {
             "entity.elder_guardian.ambient" -> handleActiveSound(event)
             "block.anvil.land" -> handleAnvilSound(event)
@@ -124,7 +124,7 @@ object FireFreezeFeatures {
     }
 
     @HandleEvent(onlyOnSkyblock = true, receiveCancelled = true)
-    fun onParticle(event: ParticleEvent) {
+    private fun onParticle(event: ParticleEvent) {
         if (event.type != ParticleTypes.DUST) return
         if (event.count != 0 || event.speed != 1.0f || !event.isFreezeParticle()) return
         if (!config.customCircle) return
@@ -140,28 +140,28 @@ object FireFreezeFeatures {
     }
 
     @HandleEvent(onlyOnSkyblock = true, priority = HandleEvent.HIGH)
-    fun onRenderLiving(event: CheckRenderEntityEvent<ArmorStand>) {
+    private fun onCheckRenderEntity(event: CheckRenderEntityEvent<ArmorStand>) {
         if (!config.customCircle) return
         if (event.entity.isFireFreeze()) event.cancel()
     }
 
     @HandleEvent
-    fun onMobDeSpawn(event: MobEvent.DeSpawn.SkyblockMob) = affectedMobs.remove(event.mob)
+    private fun onSkyblockMobDeSpawn(event: MobEvent.DeSpawn.SkyblockMob) = affectedMobs.remove(event.mob)
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         affectedMobs.clear()
         fireFreezes.clear()
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         fireFreezes.values.removeIf { it.frozen || it.startTime.passedSince() > 2.seconds }
         affectedMobs.removeIf { (mob, time) -> !mob.isAlive || time.isInPast() }
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (config.customCircle) event.renderCustomCircle()
         if (config.freezeTimer) event.renderCircleTimer()
         if (config.mobHighlight || config.mobTimer) event.renderMobs()

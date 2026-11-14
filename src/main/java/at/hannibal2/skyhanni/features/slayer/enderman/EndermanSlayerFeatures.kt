@@ -6,7 +6,6 @@ import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.SlayerApi
 import at.hannibal2.skyhanni.data.title.TitleManager
 import at.hannibal2.skyhanni.events.CheckRenderEntityEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.ServerBlockChangeEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.mixins.hooks.RenderLivingEntityHelper
@@ -47,13 +46,13 @@ object EndermanSlayerFeatures {
     private val endermenWithBeacons = mutableListOf<EnderMan>()
     private val flyingBeacons = mutableSetOf<ArmorStand>()
     private val nukekubiSkulls = mutableSetOf<ArmorStand>()
-    private var sittingBeacon = mapOf<LorenzVec, SimpleTimeMark>()
+    private var sittingBeacon = emptyMap<LorenzVec, SimpleTimeMark>()
     private val logger = SkyHanniLogger("slayer/enderman")
 
     private val NUKEKUBI_SKULL_TEXTURE by SkullTextureHolder.texture("MOB_NUKEKUBI")
 
     @HandleEvent(onlyOnIsland = IslandType.THE_END)
-    fun onCheckRender(event: CheckRenderEntityEvent<Entity>) {
+    private fun onCheckRenderEntity(event: CheckRenderEntityEvent<Entity>) {
         val entity = event.entity
         if (entity in endermenWithBeacons || entity in flyingBeacons) return
 
@@ -100,7 +99,7 @@ object EndermanSlayerFeatures {
     private fun showBeacon() = beaconConfig.highlightBeacon || beaconConfig.showWarning || beaconConfig.showLine
 
     @HandleEvent(onlyOnIsland = IslandType.THE_END)
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (beaconConfig.highlightBeacon) {
             endermenWithBeacons.removeIf { it.deceased || !hasBeaconInHand(it) }
 
@@ -183,7 +182,7 @@ object EndermanSlayerFeatures {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_END)
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed() {
         nukekubiSkulls.removeAll {
             if (it.deceased) {
                 RenderLivingEntityHelper.removeEntityColor(it)
@@ -208,7 +207,7 @@ object EndermanSlayerFeatures {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_END)
-    fun onBlockChange(event: ServerBlockChangeEvent) {
+    private fun onServerBlockChange(event: ServerBlockChangeEvent) {
         if (!showBeacon()) return
 
         val location = event.location
@@ -229,7 +228,7 @@ object EndermanSlayerFeatures {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         endermenWithBeacons.clear()
         flyingBeacons.clear()
         nukekubiSkulls.clear()
@@ -238,7 +237,7 @@ object EndermanSlayerFeatures {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(
             3,
             "slayer.endermanBeaconConfig.highlightBeacon",

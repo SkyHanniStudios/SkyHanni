@@ -53,7 +53,7 @@ object NavigateAllApi {
     private val currentTarget get() = route.getOrNull(currentIndex)
 
     private var navigationId = 0
-    private var route: List<GraphNode> = listOf()
+    private var route: List<GraphNode> = emptyList()
     private var currentIndex = 0
     private var currentTargetName: String? = null
     private var color = LorenzColor.WHITE.toColor()

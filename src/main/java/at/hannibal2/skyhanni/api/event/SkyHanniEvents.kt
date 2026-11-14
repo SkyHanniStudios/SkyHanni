@@ -220,7 +220,7 @@ object SkyHanniEvents {
     class EventInvokeLog {
         var invokeCount: Long = 0L
 
-        var overTimeLog = mutableMapOf<Int, EventInvokeData>()
+        val overTimeLog = mutableMapOf<Int, EventInvokeData>()
     }
 
     @HandleEvent

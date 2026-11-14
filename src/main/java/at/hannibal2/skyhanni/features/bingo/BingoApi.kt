@@ -64,7 +64,7 @@ object BingoApi {
     private var bingoEventStart = getStartOfMonth()
     private var bingoEventEnd = bingoEventStart + 7.days
 
-    private var ranks = mapOf<String, Int>()
+    private var ranks = emptyMap<String, Int>()
     private var data: Map<String, BingoData> = emptyMap()
 
     private var bingoNpcHidden = false
@@ -89,7 +89,7 @@ object BingoApi {
     )
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Bingo Card")
 
         if (!SkyBlockUtils.isBingoProfile) {
@@ -120,7 +120,7 @@ object BingoApi {
     }
 
     @HandleEvent
-    fun onRepositoryReload(event: RepositoryReloadEvent) {
+    private fun onRepoReload(event: RepositoryReloadEvent) {
         ranks = event.getConstant<BingoRanksJson>("BingoRanks").ranks
         data = event.getConstant<BingoJson>("Bingo").bingoTips
     }
@@ -180,7 +180,7 @@ object BingoApi {
     }
 
     @HandleEvent
-    fun onIslandGraphReload() {
+    private fun onIslandGraphReload() {
         bingoNpcHidden = false
         alixerHidden = false
         checkBingoNpcs()
@@ -189,7 +189,7 @@ object BingoApi {
     // Reset state on every world change in case IslandGraphReloadEvent does not fire for this
     // island (Private Island, Garden)
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         bingoNpcHidden = false
         alixerHidden = false
     }
@@ -211,7 +211,7 @@ object BingoApi {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         if (!event.repeatSeconds(60) || lastFetchTime.passedSince() < UPDATE_INTERVAL) return
         backgroundCoroutine.launchCoroutine {
             updateBingoData()
@@ -243,7 +243,7 @@ object BingoApi {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shupdatebingodata") {
             description = "Update Bingo event data from Hypixel API"
             category = CommandCategory.USERS_BUG_FIX

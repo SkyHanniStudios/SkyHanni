@@ -46,7 +46,29 @@ SkyHanniStyle:
         active: true
     OnlyOnIslandSpecificity:
         active: true
+
+EventRules:
     PrivateEventListener:
+        active: true
+    MissingHandleEvent:
+        active: true
+    RedundantHandleEvent:
+        active: true
+    MissingPrimaryFunction:
+        active: true
+    DuplicatePrimaryFunction:
+        active: true
+    MismatchedPrimaryFunction:
+        active: true
+    UnusedEventParameter:
+        active: true
+    RedundantEventType:
+        active: true
+
+ModuleRules:
+    MissingSkyHanniModule:
+        active: true
+    SkyHanniModuleOnlyOnObjects:
         active: true
 
 style:
@@ -82,14 +104,21 @@ style:
     UnusedPrivateProperty: # loops that don't use their iterator
         active: true
         allowedNames: "^(unused|_)$"
-    UseCheckOrError:
-        active: false
+    StringShouldBeRawString:
+        active: true
+        ignoredCharacters:
+            - '\\'
+            - '\n'
     ForbiddenComment: # every TODO gets flagged
         active: false
     DestructuringDeclarationWithTooManyEntries: # too aggressive
         active: true
         maxDestructuringEntries: 5
     AbstractClassCanBeConcreteClass: # this is usually intentional
+        active: false
+
+standard-library:
+    UseCheckOrError:
         active: false
 
 ktlint:
@@ -191,9 +220,11 @@ potential-bugs:
         active: false
     StorageNeedsExpose:
         active: true
+        autoCorrect: true
     NonStorageDoesntNeedExpose:
         active: true
-    ImmutableTypesWithExpectedInteriorMutabilityInConfig:
+        autoCorrect: true
+    ImmutableWritableConfigDeclaration:
         active: true
     UnreachableCode:
         active: false

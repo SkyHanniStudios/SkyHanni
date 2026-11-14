@@ -3,8 +3,6 @@ package at.hannibal2.skyhanni.features.garden.pests
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.features.garden.pests.MantidDisplayConfig
 import at.hannibal2.skyhanni.data.IslandType
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.garden.pests.PestKillEvent
 import at.hannibal2.skyhanni.features.garden.GardenApi
 import at.hannibal2.skyhanni.features.garden.tracker.RareCropTracker
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -38,8 +36,8 @@ object MantidKillDisplay {
     private var nextExpireGroup: Int = 0
     private var displayCache = emptyList<Renderable>()
 
-    @HandleEvent(PestKillEvent::class)
-    fun onPestKill() {
+    @HandleEvent
+    private fun onPestKill() {
         if (!checkMantid()) return
         pestExpireQueue.add(SimpleTimeMark.now() + EXPIRE_TIME)
         removeExtraEntries()
@@ -47,18 +45,18 @@ object MantidKillDisplay {
 
     // mantid bonus resets on world change
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         resetKills()
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         checkForExpired()
         updateDisplay()
     }
 
-    @HandleEvent(GuiRenderEvent.GuiOverlayRenderEvent::class, onlyOnIsland = IslandType.GARDEN)
-    fun onGuiRenderOverlay() {
+    @HandleEvent(onlyOnIsland = IslandType.GARDEN)
+    private fun onGuiRenderOverlay() {
         if (!shouldShow()) return
         config.pos.renderRenderables(displayCache, posLabel = "Mantid Kill Display")
     }

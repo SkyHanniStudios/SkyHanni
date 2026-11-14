@@ -32,21 +32,21 @@ import kotlin.time.Duration.Companion.minutes
 @SkyHanniModule
 object PetUtils {
     // Late load from NEU repo
-    private var petSkins = mutableMapOf<String, MutableList<NeuItemJson>>()
-    private var basePetLeveling: List<Int> = listOf()
-    private var customPetLeveling: Map<String, NeuPetData> = mapOf()
-    private var petTypes: Map<String, String> = mapOf()
-    private var animatedPetSkins: Map<String, AnimatedSkinJson> = mapOf()
-    private var displayNameMap: Map<String, String> = mapOf()
-    private var petSkinVariants: Map<NeuInternalName, List<String>> = mapOf()
-    private var petInternalNames: Set<NeuInternalName> = setOf()
-    private var petSkinNbtNames: Set<String> = setOf()
-    private var petItemResolution: Map<String, NeuInternalName> = mapOf()
+    private var petSkins: Map<String, List<NeuItemJson>> = emptyMap()
+    private var basePetLeveling: List<Int> = emptyList()
+    private var customPetLeveling: Map<String, NeuPetData> = emptyMap()
+    private var petTypes: Map<String, String> = emptyMap()
+    private var animatedPetSkins: Map<String, AnimatedSkinJson> = emptyMap()
+    private var displayNameMap: Map<String, String> = emptyMap()
+    private var petSkinVariants: Map<NeuInternalName, List<String>> = emptyMap()
+    private var petInternalNames: Set<NeuInternalName> = emptySet()
+    private var petSkinNbtNames: Set<String> = emptySet()
+    private var petItemResolution: Map<String, NeuInternalName> = emptyMap()
 
     // Late load from SH repo
-    private var seasonalVariants: Set<NeuInternalName> = setOf()
-    private var dayNightVariants: Set<NeuInternalName> = setOf()
-    private var ciFactionVariants: Set<NeuInternalName> = setOf()
+    private var seasonalVariants: Set<NeuInternalName> = emptySet()
+    private var dayNightVariants: Set<NeuInternalName> = emptySet()
+    private var ciFactionVariants: Set<NeuInternalName> = emptySet()
 
     private fun getSeasonalVariantOrNull(skinInternalName: NeuInternalName): AnimatedSkinJson? {
         val variantId = SkyblockSeason.currentSeason?.name ?: "SPRING"

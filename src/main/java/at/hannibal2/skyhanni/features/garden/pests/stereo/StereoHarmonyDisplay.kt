@@ -1,8 +1,6 @@
 package at.hannibal2.skyhanni.features.garden.pests.stereo
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
 import at.hannibal2.skyhanni.events.OwnInventoryItemUpdateEvent
 import at.hannibal2.skyhanni.features.garden.GardenApi
@@ -81,7 +79,7 @@ object StereoHarmonyDisplay {
 
     // NOTE: Do not mark this as Garden only, it is possible to change the active vinyl outside the Garden
     @HandleEvent(onlyOnSkyblock = true)
-    fun onInventoryUpdated(event: InventoryUpdatedEvent) {
+    private fun onInventoryUpdated(event: InventoryUpdatedEvent) {
         if (PestApi.stereoInventory.isInside()) {
             updateActiveVinyl(event.inventoryItemsWithNull[4])
         }
@@ -89,14 +87,14 @@ object StereoHarmonyDisplay {
 
     // NOTE: Do not mark this as Garden only, it is possible to change the active vinyl outside the Garden
     @HandleEvent(onlyOnSkyblock = true)
-    fun onOwnInventoryItemUpdate(event: OwnInventoryItemUpdateEvent) {
+    private fun onOwnInventoryItemUpdate(event: OwnInventoryItemUpdateEvent) {
         if (event.itemStack.getItemCategoryOrNull() == ItemCategory.VACUUM) {
             updateActiveVinyl(event.itemStack)
         }
     }
 
-    @HandleEvent(GuiRenderEvent.GuiOverlayRenderEvent::class)
-    fun onGuiRenderOverlay() {
+    @HandleEvent
+    private fun onGuiRenderOverlay() {
         if (!isEnabled()) return
         if (!GardenApi.isCurrentlyFarming() && !config.alwaysShow) return
 
@@ -109,12 +107,12 @@ object StereoHarmonyDisplay {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         display = emptyList()
     }
 
-    @HandleEvent(ConfigLoadEvent::class)
-    fun onConfigLoad() {
+    @HandleEvent
+    private fun onConfigLoad() {
         ConditionalUtils.onToggle(config.showHead, config.showCrop) { update() }
     }
 

@@ -55,10 +55,10 @@ object Calculator {
             description = "Calculates a math expression"
 
             argCallback("expr", BrigadierArguments.greedyString()) { expr ->
-                ChatUtils.chat(calculateOrNull(expr)?.let { result ->
-                    "$expr = §a${result.addSeparators()}"
-                } ?: "§cFailed to calculate $expr")
-
+                val chatMessage = calculateOrNull(expr)?.let { parsed ->
+                    "$expr = §a${parsed.addSeparators()}"
+                } ?: "§cFailed to calculate $expr"
+                ChatUtils.chat(chatMessage)
             }
         }
     }

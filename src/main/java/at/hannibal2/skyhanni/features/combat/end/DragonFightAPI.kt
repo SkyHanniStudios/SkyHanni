@@ -59,7 +59,7 @@ object DragonFightAPI {
     fun inNestArea() = IslandType.THE_END.isInIsland() && nestAreaPattern.matches(SkyBlockUtils.graphArea)
 
     @HandleEvent
-    fun onChat(event: SystemMessageEvent.Allow) {
+    private fun onSystemMessage(event: SystemMessageEvent.Allow) {
         chatSpawnPattern.matchMatcher(event.cleanMessage) {
             currentType = group("type")
         }
@@ -75,12 +75,10 @@ object DragonFightAPI {
     }
 
     @HandleEvent
-    fun onWorldChange() {
-        reset()
-    }
+    private fun onWorldChange() = reset()
 
     @HandleEvent
-    fun onScoreboardChange(event: ScoreboardUpdateEvent) {
+    private fun onScoreboardUpdate(event: ScoreboardUpdateEvent) {
         for (line in event.added.map { it.removeColor() }) {
             scoreboardHPPattern.matchMatcher(line) {
                 currentHp = group("hp").formatInt()

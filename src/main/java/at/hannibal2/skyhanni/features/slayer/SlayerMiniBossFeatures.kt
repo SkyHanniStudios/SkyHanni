@@ -19,11 +19,11 @@ import net.minecraft.world.entity.Entity
 object SlayerMiniBossFeatures {
 
     private val config get() = SlayerApi.config
-    private var miniBosses = mutableSetOf<Mob>()
-    private var cocoons = mutableSetOf<Entity>()
+    private val miniBosses = mutableSetOf<Mob>()
+    private val cocoons = mutableSetOf<Entity>()
 
     @HandleEvent
-    fun onMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
+    private fun onSkyblockMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
         val mob = event.mob
         if (!SlayerMiniBossType.isMiniboss(mob.name)) return
         miniBosses += mob
@@ -32,12 +32,12 @@ object SlayerMiniBossFeatures {
     }
 
     @HandleEvent
-    fun onMobDespawn(event: MobEvent.DeSpawn.SkyblockMob) {
+    private fun onSkyblockMobDeSpawn(event: MobEvent.DeSpawn.SkyblockMob) {
         miniBosses -= event.mob
     }
 
     @HandleEvent
-    fun onCocoonSpawn(event: CocoonSpawnEvent) {
+    private fun onCocoonSpawn(event: CocoonSpawnEvent) {
         val cocoon = event.cocoonMob
         if (!SlayerMiniBossType.isMiniboss(cocoon.mob.name)) return
         cocoons += cocoon.cocoonEntity
@@ -47,13 +47,13 @@ object SlayerMiniBossFeatures {
     }
 
     @HandleEvent
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         cocoons.removeIf { it.deceased }
         miniBosses.removeIf { it.baseEntity.deceased }
     }
 
     @HandleEvent
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!SlayerApi.isInAnyArea) return
         if (!config.slayerMinibossLine) return
         for (mob in miniBosses) {

@@ -21,8 +21,8 @@ object SeaCreatureManager {
     private var lastDoubleHookTime = SimpleTimeMark.farPast()
 
     private val seaCreatureMap = mutableMapOf<String, SeaCreature>()
-    var allFishingMobs = mapOf<String, SeaCreature>()
-    var allVariants = mapOf<String, List<String>>()
+    var allFishingMobs = emptyMap<String, SeaCreature>()
+    var allVariants = emptyMap<String, List<String>>()
 
     private val patternGroup = RepoPattern.group("fishing.seacreature")
 
@@ -62,7 +62,7 @@ object SeaCreatureManager {
 
     // if you can do it better make a pr
     @HandleEvent(onlyOnSkyblock = true)
-    private fun onChat(event: SkyHanniChatEvent.Modify) {
+    private fun onChatModify(event: SkyHanniChatEvent.Modify) {
         val message = event.cleanMessage
         if (doubleHookPattern.matches(message)) {
             lastDoubleHookTime = SimpleTimeMark.now()

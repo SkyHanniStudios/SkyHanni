@@ -5,7 +5,6 @@ import at.hannibal2.skyhanni.data.IslandGraphs
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.Perk
 import at.hannibal2.skyhanni.data.model.graph.GraphNodeTag
-import at.hannibal2.skyhanni.events.MayorChangeEvent
 import at.hannibal2.skyhanni.events.skyblock.GraphAreaChangeEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 
@@ -19,12 +18,12 @@ object CarnivalAPI {
     private var isAreaHidden = false
 
     @HandleEvent
-    fun onAreaChange(event: GraphAreaChangeEvent) {
+    private fun onAreaChange(event: GraphAreaChangeEvent) {
         inArea = event.area == "Carnival"
     }
 
-    @HandleEvent(MayorChangeEvent::class, onlyOnIsland = IslandType.HUB)
-    fun onMayorChange() {
+    @HandleEvent(onlyOnIsland = IslandType.HUB)
+    private fun onMayorChange() {
         if (isActive != isAreaHidden) return
 
         for (node in IslandGraphs.nodes("Carnival", GraphNodeTag.SMALL_AREA)) {

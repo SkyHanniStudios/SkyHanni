@@ -50,7 +50,7 @@ object MarkedPlayerManager {
 
     private val notifyList = mutableSetOf<String>()
     private val currentLobbyPlayers = mutableSetOf<String>()
-    private var personOfInterest = listOf<String>()
+    private var personOfInterest = emptyList<String>()
 
     @HandleEvent
     fun onEntityEnterWorld(event: EntityEnterWorldEvent<RemotePlayer>) {

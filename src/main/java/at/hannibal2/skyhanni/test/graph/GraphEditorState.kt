@@ -41,7 +41,7 @@ class GraphEditorState {
             }
         }
 
-    var cachedNearbyNodes = listOf<GraphingNode>()
+    var cachedNearbyNodes = emptyList<GraphingNode>()
     var lastCacheUpdate = SimpleTimeMark.farPast()
 
     fun findEdgeBetweenActiveAndClosest(): GraphingEdge? =

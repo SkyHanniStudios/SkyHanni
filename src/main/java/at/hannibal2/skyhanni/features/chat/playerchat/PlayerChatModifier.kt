@@ -20,11 +20,11 @@ object PlayerChatModifier {
 
     init {
         patterns.add("§[ab6]\\[(?:VIP|MVP)(?:§.|\\+)*] {1,2}(?:§[7ab6])?(\\w{2,16})".toRegex()) // ranked player with prefix everywhere
-        patterns.add("§[7ab6](\\w{2,16})§r(?!§7x)(?!\$)".toRegex()) // all players without rank prefix in notification messages
+        patterns.add("§[7ab6](\\w{2,16})§r(?!§7x)(?!$)".toRegex()) // all players without rank prefix in notification messages
     }
 
     @HandleEvent
-    fun onChat(event: SystemMessageEvent.Modify) {
+    private fun onSystemMessageModify(event: SystemMessageEvent.Modify) {
         event.applyIfPossible("PLAYER_CHAT") { cutMessage(it) }
     }
 
@@ -63,7 +63,7 @@ object PlayerChatModifier {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(3, "chat.playerRankHider", "chat.playerMessage.playerRankHider")
         event.move(3, "chat.chatFilter", "chat.playerMessage.chatFilter")
     }

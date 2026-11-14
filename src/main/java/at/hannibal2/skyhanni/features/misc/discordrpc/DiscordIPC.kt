@@ -22,7 +22,7 @@ class DiscordIPC(
     private val onDebugInfo: (Map<String, String>) -> Unit = {},
 ) : Closeable {
     @Volatile
-    private var _connected = false
+    private var _isConnected = false
     private var pipe: DiscordIPCPipe? = null
 
     // Because IPC is separate from the mod, we need our own registered hook
@@ -33,7 +33,7 @@ class DiscordIPC(
     private val gson = com.google.gson.GsonBuilder().create()
 
     /** Whether this client is currently connected and ready for Discord IPC. */
-    val isConnected: Boolean get() = _connected
+    val isConnected: Boolean get() = _isConnected
     private val clientPayload = """{"v":1,"client_id":"$clientId"}"""
 
     /**
@@ -50,7 +50,7 @@ class DiscordIPC(
         ChatUtils.debug("Discord RPC: handshake response opcode=$opcode")
         if (opcode != Opcode.FRAME) throw DiscordIPCException("Expected FRAME after handshake, got $opcode. Body: $body")
         validateReadyBody(body)
-        _connected = true
+        _isConnected = true
         shutdownHook = Thread(::close, "discord-rpc-shutdown").also(Runtime.getRuntime()::addShutdownHook)
     }
 
@@ -95,7 +95,7 @@ class DiscordIPC(
      * @throws DiscordIPCException If the client is not connected or writing to the pipe fails.
      */
     fun setActivity(presence: DiscordRichPresence) {
-        if (!_connected) throw DiscordIPCException("setActivity called while not connected")
+        if (!_isConnected) throw DiscordIPCException("setActivity called while not connected")
         val json = gson.toJson(buildActivityPayload(presence))
         lastActivityJson = json
         ChatUtils.debug("Discord RPC: sending SET_ACTIVITY (${json.length} bytes)")
@@ -111,12 +111,12 @@ class DiscordIPC(
      * Any other frame (e.g. the SET_ACTIVITY response) is stored in [lastDiscordResponse].
      */
     private fun readUntilFrame() {
-        while (_connected) {
+        while (_isConnected) {
             val (opcode, body) = readFrame()
             when (opcode) {
                 Opcode.PING -> sendFrame(Opcode.PONG, body)
                 Opcode.CLOSE -> {
-                    _connected = false
+                    _isConnected = false
                     ChatUtils.debug("Discord RPC: CLOSE frame received: $body")
                     return
                 }
@@ -142,10 +142,10 @@ class DiscordIPC(
      * The CLOSE frame itself is optional. Discord handles disconnects gracefully without it.
      */
     override fun close() {
-        ChatUtils.debug("Discord RPC: close() called, was connected=$_connected")
+        ChatUtils.debug("Discord RPC: close() called, was connected=$_isConnected")
         shutdownHook?.let { runCatching { Runtime.getRuntime().removeShutdownHook(it) } }
         shutdownHook = null
-        _connected = false
+        _isConnected = false
         val oldPipe = pipe
         pipe = null
         runCatching { oldPipe?.close() }
@@ -185,7 +185,7 @@ class DiscordIPC(
             out.write(frame.array())
             out.flush()
         } catch (e: IOException) {
-            _connected = false
+            _isConnected = false
             throw DiscordIPCException("IPC write failed: ${e.message}", e)
         }
     }
@@ -204,7 +204,7 @@ class DiscordIPC(
         try {
             val header = inp.readNBytes(8)
             if (header.size < 8) {
-                _connected = false
+                _isConnected = false
                 throw DiscordIPCException("Discord closed the IPC pipe unexpectedly (EOF in frame header)")
             }
             val buffer = ByteBuffer.wrap(header).order(ByteOrder.LITTLE_ENDIAN)
@@ -213,7 +213,7 @@ class DiscordIPC(
             val length = buffer.int
             return opcode to String(inp.readNBytes(length), Charsets.UTF_8)
         } catch (e: IOException) {
-            _connected = false
+            _isConnected = false
             throw DiscordIPCException("IPC read failed: ${e.message}", e)
         }
     }

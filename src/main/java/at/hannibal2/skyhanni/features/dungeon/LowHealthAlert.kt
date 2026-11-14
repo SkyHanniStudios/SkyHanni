@@ -22,7 +22,7 @@ object LowHealthAlert {
     private val alertSound get() = SoundUtils.createSound(soundConfig.alertSound, soundConfig.pitch, isWarning = true)
 
     @HandleEvent(onlyOnIsland = IslandType.CATACOMBS)
-    fun onScoreboardChange(event: ScoreboardUpdateEvent) {
+    private fun onScoreboardUpdate(event: ScoreboardUpdateEvent) {
         if (!isEnabled()) return
         ScoreboardPattern.teammatesPattern.matchAll(event.added) {
             val username = group("username")

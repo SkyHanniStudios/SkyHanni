@@ -3,7 +3,6 @@ package at.hannibal2.skyhanni.features.garden.pests
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
-import at.hannibal2.skyhanni.features.garden.pests.PestApi
 import at.hannibal2.skyhanni.features.garden.plot.GardenPlotApi
 import at.hannibal2.skyhanni.features.garden.plot.GardenPlotApi.renderPlot
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule

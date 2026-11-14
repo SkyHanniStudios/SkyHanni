@@ -2,8 +2,6 @@ package at.hannibal2.skyhanni.features.garden.farming
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
-import at.hannibal2.skyhanni.events.ProfileJoinEvent
-import at.hannibal2.skyhanni.events.garden.GardenToolChangeEvent
 import at.hannibal2.skyhanni.events.garden.farming.CropClickEvent
 import at.hannibal2.skyhanni.features.garden.CropType
 import at.hannibal2.skyhanni.features.garden.GardenApi
@@ -24,7 +22,7 @@ object GardenCropSpeed {
 
     var averageBlocksPerSecond = 0.0
 
-    private var blocksSpeedList = listOf<Int>()
+    private var blocksSpeedList = emptyList<Int>()
     private var blocksBroken = 0
     private var secondsStopped = 0
 
@@ -38,12 +36,12 @@ object GardenCropSpeed {
     }
 
     @HandleEvent
-    fun onProfileJoin(event: ProfileJoinEvent) {
+    fun onProfileJoin() {
         lastBrokenCrop = null
     }
 
     @HandleEvent
-    fun onGardenToolChange(event: GardenToolChangeEvent) {
+    fun onGardenToolChange() {
         if (isEnabled()) {
             resetSpeed()
             update()

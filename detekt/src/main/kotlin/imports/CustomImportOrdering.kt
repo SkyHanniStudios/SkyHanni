@@ -1,93 +1,20 @@
 package imports
 
-import PreprocessingPattern
 import SkyHanniRule
+import corrections.OffsetMapper
 import dev.detekt.api.Config
+import imports.ImportOrdering.ImportBlock
+import imports.ImportOrdering.ImportLine
 import org.jetbrains.kotlin.KtPsiSourceFileLinesMapping
 import org.jetbrains.kotlin.psi.KtFile
 
 /**
  * This rule enforces correct import ordering, while taking preprocessed imports into account.
  */
-class CustomImportOrdering(config: Config) :
-    SkyHanniRule(config, "Enforces correct import ordering, taking into account preprocessed imports.") {
-
-    private data class ImportLine(
-        val text: String,
-        val lineIndex: Int,
-    )
-
-    private data class ImportBlock(
-        val inPreprocessingBlock: Boolean,
-        val importLines: List<ImportLine>,
-    )
-
-    private fun createImportBlocks(file: KtFile): List<ImportBlock> {
-        val blocks = mutableListOf<ImportBlock>()
-        var currentImports = mutableListOf<ImportLine>()
-        var inPreprocessingBlock = false
-        var inImportSection = false
-
-        fun flush() {
-            if (currentImports.isNotEmpty()) {
-                blocks += ImportBlock(inPreprocessingBlock, currentImports)
-                currentImports = mutableListOf()
-            }
-        }
-
-        fun isImportLine(line: String): Boolean =
-            line.startsWith("import ") ||
-                line.startsWith("/*import ")
-
-        for ((index, rawLine) in file.text.lineSequence().withIndex()) {
-            val line = rawLine.trim()
-
-            when {
-                line.startsWith("package ") -> continue
-
-                !inImportSection && line.isBlank() -> continue
-
-                PreprocessingPattern.IF.matches(line) -> {
-                    inImportSection = true
-                    flush()
-                    inPreprocessingBlock = true
-                }
-
-                PreprocessingPattern.ELSEIF.matches(line) ||
-                    PreprocessingPattern.ELSE.matches(line) -> {
-                    flush()
-                    inPreprocessingBlock = true
-                }
-
-                PreprocessingPattern.ENDIF.matches(line) -> {
-                    flush()
-                    inPreprocessingBlock = false
-                }
-
-                isImportLine(line) -> {
-                    inImportSection = true
-
-                    currentImports += ImportLine(
-                        line.removePrefix("/*"),
-                        index,
-                    )
-                }
-
-                line.isBlank() && inImportSection -> {
-                    // Keep blank lines because spacing validation needs them.
-                }
-
-                inImportSection -> {
-                    flush()
-                    break
-                }
-            }
-        }
-
-        flush()
-
-        return blocks
-    }
+class CustomImportOrdering(config: Config) : SkyHanniRule(
+    config,
+    "Imports should be sorted lexicographically, with Stonecutter-conditional import blocks last and separated by a blank line.",
+) {
 
     // Preprocessed blocks must be at the end of the import list.
     private fun findPreprocessingBlockOrderViolation(
@@ -95,11 +22,11 @@ class CustomImportOrdering(config: Config) :
     ): ImportLine? {
         var preprocessingStarted = false
 
-        for (block in blocks) {
-            if (block.inPreprocessingBlock) {
+        for ((inPreprocessingBlock, importLines) in blocks) {
+            if (inPreprocessingBlock) {
                 preprocessingStarted = true
             } else if (preprocessingStarted) {
-                return block.importLines.first()
+                return importLines.first()
             }
         }
 
@@ -110,21 +37,15 @@ class CustomImportOrdering(config: Config) :
     private fun findSpacingBetweenBlocksViolations(
         fileLines: List<String>,
         blocks: List<ImportBlock>,
-    ): List<ImportLine> =
-        blocks.zipWithNext().mapNotNull { (current, next) ->
-            if (
-                current.inPreprocessingBlock != next.inPreprocessingBlock &&
+    ): List<Pair<ImportBlock, ImportBlock>> =
+        blocks.zipWithNext().filter { (current, next) ->
+            current.inPreprocessingBlock != next.inPreprocessingBlock &&
                 fileLines
                     .subList(
                         current.importLines.last().lineIndex + 1,
                         next.importLines.first().lineIndex,
                     )
                     .none(String::isBlank)
-            ) {
-                next.importLines.first()
-            } else {
-                null
-            }
         }
 
     // Must not have empty lines inside a block.
@@ -165,14 +86,32 @@ class CustomImportOrdering(config: Config) :
                 ?.first
         }
 
+    private fun correctBlock(file: KtFile, fileLines: List<String>, starts: IntArray, block: ImportBlock) {
+        val first = block.importLines.first()
+        val last = block.importLines.last()
+        if (block.importLines.any { "*/" in it.text }) return
+        val prefix = if (fileLines[first.lineIndex].trim().startsWith("/*")) "/*" else ""
+        val sorted = block.importLines.map { it.text }.distinct().sortedWith(ImportOrdering.getOrdering())
+        val replacement = prefix + sorted.joinToString("\n")
+        val start = starts[first.lineIndex]
+        val end = starts[last.lineIndex] + fileLines[last.lineIndex].length
+        if (file.text.substring(start, end) != replacement) correct(file, start, end, replacement)
+    }
+
+    private fun correctSpacingBetween(file: KtFile, starts: IntArray, current: ImportBlock, next: ImportBlock) {
+        val lineIndex = if (current.inPreprocessingBlock) next.importLines.first().lineIndex else current.importLines.last().lineIndex + 1
+        correct(file, starts[lineIndex], starts[lineIndex], "\n")
+    }
+
     override fun visitKtFile(file: KtFile) {
-        val blocks = createImportBlocks(file)
+        val fileLines = file.text.lines()
+        val blocks = ImportOrdering.createImportBlocks(fileLines)
         if (blocks.isEmpty()) {
             return
         }
 
-        val fileLines by lazy { file.text.lines() }
         val sourceFileLinesMapping by lazy { KtPsiSourceFileLinesMapping(file) }
+        val starts by lazy { OffsetMapper.lineStartOffsets(fileLines) }
 
         findPreprocessingBlockOrderViolation(blocks)?.let {
             reportIssue(
@@ -180,38 +119,46 @@ class CustomImportOrdering(config: Config) :
                 it.lineIndex,
                 fileLines[it.lineIndex],
                 file,
-                sourceFileLinesMapping
+                sourceFileLinesMapping,
             )
         }
 
-        findSpacingInsideBlockViolations(fileLines, blocks).forEach {
+        val insideSpacing = findSpacingInsideBlockViolations(fileLines, blocks)
+        insideSpacing.forEach {
             reportIssue(
                 "Import blocks must not contain empty lines between imports.",
                 it.lineIndex,
                 fileLines[it.lineIndex],
                 file,
-                sourceFileLinesMapping
+                sourceFileLinesMapping,
             )
         }
 
-        findSpacingBetweenBlocksViolations(fileLines, blocks).forEach {
+        findSpacingBetweenBlocksViolations(fileLines, blocks).forEach { (current, next) ->
+            val line = next.importLines.first()
             reportIssue(
                 "Preprocessed and non-preprocessed import blocks must be separated by an empty line.",
+                line.lineIndex,
+                fileLines[line.lineIndex],
+                file,
+                sourceFileLinesMapping,
+            )
+            if (canCorrect(file)) correctSpacingBetween(file, starts, current, next)
+        }
+
+        val ordering = findOrderingViolations(blocks)
+        ordering.forEach {
+            reportIssue(
+                """Imports must be ordered in lexicographic order with "java", "javax", "kotlin", "kotlinx" and aliases in the end.""",
                 it.lineIndex,
                 fileLines[it.lineIndex],
                 file,
-                sourceFileLinesMapping
+                sourceFileLinesMapping,
             )
         }
 
-        findOrderingViolations(blocks).forEach {
-            reportIssue(
-                "Imports must be ordered in lexicographic order with \"java\", \"javax\", \"kotlin\", \"kotlinx\" and aliases in the end.",
-                it.lineIndex,
-                fileLines[it.lineIndex],
-                file,
-                sourceFileLinesMapping
-            )
+        if ((insideSpacing.isNotEmpty() || ordering.isNotEmpty()) && canCorrect(file)) {
+            blocks.forEach { correctBlock(file, fileLines, starts, it) }
         }
 
         super.visitKtFile(file)

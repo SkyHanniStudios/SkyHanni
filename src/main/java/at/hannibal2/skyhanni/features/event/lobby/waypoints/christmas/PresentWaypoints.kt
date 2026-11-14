@@ -25,8 +25,8 @@ import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 object PresentWaypoints {
 
     private val config get() = SkyHanniMod.feature.event.lobbyWaypoints.christmasPresent
-    private var presentLocations = mapOf<String, MutableSet<EventWaypoint>>()
-    private var presentEntranceLocations = mapOf<String, MutableSet<EventWaypoint>>()
+    private var presentLocations = emptyMap<String, MutableSet<EventWaypoint>>()
+    private var presentEntranceLocations = emptyMap<String, MutableSet<EventWaypoint>>()
     private var closest: EventWaypoint? = null
 
     private val presentSet get() = presentLocations[HypixelData.lobbyType]

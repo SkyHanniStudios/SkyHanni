@@ -1,5 +1,6 @@
 package at.hannibal2.skyhanni.data.hypixel.chat.event
 
+import at.hannibal2.skyhanni.skyhannimodule.PrimaryFunction
 import at.hannibal2.skyhanni.utils.ComponentSpan
 import net.minecraft.network.chat.Component
 
@@ -20,6 +21,7 @@ object GuildChatEvent {
      * @param chatComponent The entire original chat component.
      * @param blockedReason The reason if the message should be blocked. null means not blocked.
      */
+    @PrimaryFunction("onGuildChat")
     class Allow(
         author: ComponentSpan,
         message: ComponentSpan,
@@ -38,6 +40,7 @@ object GuildChatEvent {
      * @param guildRank The rank tag of the player within the guild.
      * @param chatComponent The entire original chat component.
      */
+    @PrimaryFunction("onGuildChatModify")
     class Modify(
         author: ComponentSpan,
         message: ComponentSpan,

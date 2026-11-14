@@ -1,10 +1,3 @@
-/**
- * TODO LIST
- *  - countdown events like fishing festival + fiesta when its not on tablist
- *  - choose the amount of decimal places in shorten nums
- *  - heavily optimize elements and events by only updating them when absolutely needed
- */
-
 package at.hannibal2.skyhanni.features.gui.customscoreboard
 
 import at.hannibal2.skyhanni.SkyHanniMod
@@ -15,7 +8,6 @@ import at.hannibal2.skyhanni.data.ScoreboardData
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
 import at.hannibal2.skyhanni.events.GuiPositionMovedEvent
 import at.hannibal2.skyhanni.events.IslandChangeEvent
-import at.hannibal2.skyhanni.events.ScoreboardUpdateEvent
 import at.hannibal2.skyhanni.events.hypixel.HypixelJoinEvent
 import at.hannibal2.skyhanni.features.gui.customscoreboard.ScoreboardLine.Companion.align
 import at.hannibal2.skyhanni.features.gui.customscoreboard.elements.ScoreboardElement
@@ -42,17 +34,23 @@ import java.util.regex.Pattern
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
+/**
+ * TODO LIST
+ *  - countdown events like fishing festival + fiesta when its not on tablist
+ *  - choose the amount of decimal places in shorten nums
+ *  - heavily optimize elements and events by only updating them when absolutely needed
+ */
 @SkyHanniModule
 object CustomScoreboard {
 
     private var display: Renderable? = null
     private var cache: Renderable? = null
 
-    private var currentIslandEntries = listOf<ScoreboardElement>()
-    var currentIslandEvents = listOf<ScoreboardEvent>()
+    private var currentIslandEntries = emptyList<ScoreboardElement>()
+    var currentIslandEvents = emptyList<ScoreboardEvent>()
         private set
 
-    var activePatterns = listOf<Pattern>()
+    var activePatterns = emptyList<Pattern>()
         private set
 
     private const val GUI_NAME = "Custom Scoreboard"
@@ -133,8 +131,8 @@ object CustomScoreboard {
             UnknownLinesHandler.handleUnknownLines()
     }
 
-    @HandleEvent(ScoreboardUpdateEvent::class)
-    private fun onScoreboardChange() {
+    @HandleEvent
+    private fun onScoreboardUpdate() {
         dirty = true
     }
 

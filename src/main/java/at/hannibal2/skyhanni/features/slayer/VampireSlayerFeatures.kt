@@ -8,7 +8,6 @@ import at.hannibal2.skyhanni.data.SlayerApi
 import at.hannibal2.skyhanni.data.title.TitleManager
 import at.hannibal2.skyhanni.events.ParticleEvent
 import at.hannibal2.skyhanni.events.PlaySoundEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.entity.EntityClickEvent
 import at.hannibal2.skyhanni.events.entity.EntityDeathEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
@@ -69,7 +68,7 @@ object VampireSlayerFeatures {
 
     private val entityList = mutableListOf<LivingEntity>()
     private val taggedEntityList = mutableListOf<Int>()
-    private var standList = mapOf<ArmorStand, RemotePlayer>()
+    private var standList = emptyMap<ArmorStand, RemotePlayer>()
 
     // Nicked support
     private val username
@@ -83,7 +82,7 @@ object VampireSlayerFeatures {
     private var lastWitherSpawnSound = ServerTimeMark.farPast()
 
     @HandleEvent
-    fun onTick(event: SkyHanniTickEvent) {
+    private fun onTick(event: SkyHanniTickEvent) {
         if (!isEnabled()) return
         if (!event.isMod(5)) return
         val start = LocationUtils.playerLocation()
@@ -111,16 +110,16 @@ object VampireSlayerFeatures {
         }
     }
 
-    @HandleEvent(SecondPassedEvent::class)
-    fun onSecondPassed() {
+    @HandleEvent
+    private fun onSecondPassed() {
         if (!isEnabled()) return
         entityList.editCopy { removeIf { it.deceased } }
     }
 
     private fun List<String>.spawnedByCoop(stand: ArmorStand): Boolean = any {
         var contain = false
-        if (".*§(?:\\d|\\w)+Spawned by: §(?:\\d|\\w)(\\w*).*".toRegex().matches(stand.name.formattedTextCompatLessResets())) {
-            val name = ".*§(?:\\d|\\w)+Spawned by: §(?:\\d|\\w)(\\w*)".toRegex()
+        if (".*§\\w+Spawned by: §\\w(\\w*).*".toRegex().matches(stand.name.formattedTextCompatLessResets())) {
+            val name = ".*§\\w+Spawned by: §\\w(\\w*)".toRegex()
                 .find(stand.name.formattedTextCompatLessResets())?.groupValues?.get(1)
             contain = it == name
         }
@@ -132,7 +131,7 @@ object VampireSlayerFeatures {
         if (!configEnabled) return
 
         for (stand in getAllNameTagsInRadiusWith("TWINCLAWS")) {
-            if (!".*(?:§(?:\\d|\\w))+TWINCLAWS (?:§(?:\\w|\\d))+[0-9.,]+s.*".toRegex()
+            if (!".*(?:§\\w)+TWINCLAWS (?:§\\w)+[0-9.,]+s.*".toRegex()
                     .matches(stand.name.formattedTextCompatLessResets())
             ) continue
             val coopList = configCoopBoss.coopMembers.split(",").toList()
@@ -207,14 +206,14 @@ object VampireSlayerFeatures {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onEntityClick(event: EntityClickEvent) {
+    private fun onEntityClick(event: EntityClickEvent) {
         if (!isEnabled()) return
         if (event.clickType != InteractClickType.LEFT_CLICK) return
         if (event.clickedEntity !is RemotePlayer) return
         if (!event.clickedEntity.isNpc()) return
         val coopList = configCoopBoss.coopMembers.split(",").toList()
-        val regexA = ".*§(?:\\d|\\w)+Spawned by: §(?:\\d|\\w)(\\w*).*".toRegex()
-        val regexB = ".*§(?:\\d|\\w)+Spawned by: §(?:\\d|\\w)(\\w*)".toRegex()
+        val regexA = ".*§\\w+Spawned by: §\\w(\\w*).*".toRegex()
+        val regexB = ".*§\\w+Spawned by: §\\w(\\w*)".toRegex()
         for (armorStand in event.clickedEntity.getAllNameTagsInRadiusWith("Spawned by")) {
             val containCoop = coopList.isNotEmpty() &&
                 coopList.any {
@@ -233,7 +232,7 @@ object VampireSlayerFeatures {
     }
 
     @HandleEvent
-    fun onEntityDeath(event: EntityDeathEvent<*>) {
+    private fun onEntityDeath(event: EntityDeathEvent<*>) {
         if (!isEnabled()) return
         val entity = event.entity
         if (entityList.contains(entity)) {
@@ -244,8 +243,10 @@ object VampireSlayerFeatures {
         }
     }
 
+    // TODO optimize + split this up
+    @Suppress("CyclomaticComplexMethod")
     @HandleEvent
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!isEnabled()) return
 
         if (config.drawLine) {
@@ -315,14 +316,14 @@ object VampireSlayerFeatures {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         entityList.clear()
         taggedEntityList.clear()
         standList = mutableMapOf()
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT, receiveCancelled = true)
-    fun onParticle(event: ParticleEvent) {
+    private fun onParticle(event: ParticleEvent) {
         if (!isEnabled()) return
         val loc = event.location
         for (boss in loc.getEntitiesNearby<RemotePlayer>(3.0)) {
@@ -336,7 +337,7 @@ object VampireSlayerFeatures {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onPlaySound(event: PlaySoundEvent) {
+    private fun onPlaySound(event: PlaySoundEvent) {
         if (!isEnabled()) return
         if (!configKillerSpring.fixSoundSpam) return
 
@@ -350,7 +351,7 @@ object VampireSlayerFeatures {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(9, "slayer.vampireSlayerConfig", "slayer.vampire")
     }
 

@@ -1,7 +1,6 @@
 package at.hannibal2.skyhanni.api.event
 
 import at.hannibal2.skyhanni.SkyHanniMod.launch
-import at.hannibal2.skyhanni.events.utils.InitFinishedEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.coroutines.CoroutineSettings
@@ -41,7 +40,7 @@ object HandleEventModuleValidator {
     private val settings = CoroutineSettings("@HandleEvent module validation", Duration.INFINITE).withIOContext()
 
     @HandleEvent
-    private fun onInitFinished(event: InitFinishedEvent) {
+    private fun onInitFinished() {
         settings.launch { validate() }
     }
 

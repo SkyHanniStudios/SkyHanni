@@ -56,7 +56,7 @@ object HideMobNames {
     )
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onCheckRender(event: CheckRenderEntityEvent<ArmorStand>) {
+    private fun onCheckRenderEntity(event: CheckRenderEntityEvent<ArmorStand>) {
         if (!SlayerApi.config.hideMobNames) return
 
         val entity = event.entity
@@ -81,7 +81,7 @@ object HideMobNames {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         lastMobName.clear()
         mobNamesHidden.clear()
     }

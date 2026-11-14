@@ -2,9 +2,7 @@ package at.hannibal2.skyhanni.features.dungeon
 
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.MessageSendToServerEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
@@ -39,7 +37,7 @@ object DungeonCreationCooldown {
 
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         join.matchMatcher(event.message) {
             val player = group("player").cleanPlayerName()
             if (player == PlayerUtils.getName()) {
@@ -50,7 +48,7 @@ object DungeonCreationCooldown {
     }
 
     @HandleEvent
-    fun onCommand(event: MessageSendToServerEvent) {
+    private fun onMessageSendToServer(event: MessageSendToServerEvent) {
         if (!shouldBlock()) return
         if (event.message.startsWith("/joininstance")) {
             event.cancel()
@@ -62,7 +60,7 @@ object DungeonCreationCooldown {
     }
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay() {
         if (!isEnabled()) return
         if (!cooldown.isInFuture()) return
         val display = Renderable.text("§eDungeon Creation Cooldown: §b${cooldown.timeUntil().format()}")
@@ -70,7 +68,7 @@ object DungeonCreationCooldown {
     }
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed() {
         if (hasWarned || !config.sendChatMessage) return
         if (cooldown.isInPast()) {
             ChatUtils.chat("Dungeon creation cooldown is over!")

@@ -16,17 +16,15 @@ object BirriesHighlighter {
     val config get() = SkyHanniMod.feature.hunting.mobHighlight.birries
 
     @HandleEvent(onlyOnIsland = IslandType.GALATEA)
-    fun onMob(event: MobEvent.Spawn.SkyblockMob) {
+    private fun onSkyblockMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
         if (event.mob.name != "Birries") return
         RenderLivingEntityHelper.setEntityColor(
             event.mob.baseEntity, config.color.toColor()
-        ) { isEnabled() && event.mob.baseEntity.distanceToPlayer() < 10 }
+        ) { config.enabled && event.mob.baseEntity.distanceToPlayer() < 10 }
     }
 
-    fun isEnabled() = config.enabled
-
     @HandleEvent
-    fun onConfigFixEvent(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(91, "foraging.birriesHighlight", "foraging.mobHighlight.birries")
         event.move(100, "foraging.mobHighlight.birries", "hunting.mobHighlight.birries")
     }

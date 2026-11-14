@@ -6,7 +6,6 @@ import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
 import at.hannibal2.skyhanni.config.storage.Resettable
 import at.hannibal2.skyhanni.data.InteractClickType
 import at.hannibal2.skyhanni.events.BlockClickEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.entity.EntityMoveEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -161,27 +160,27 @@ object TestCanSeeFace {
     private val faceCheckContext = FaceCheckContext()
 
     @HandleEvent
-    fun onConfigLoad() {
+    private fun onConfigLoad() {
         ConditionalUtils.onAnyToggled(config) {
             regenDebugRenderable()
         }
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         lastRenderable = null
         faceCheckContext.reset()
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onPlayerMove(event: EntityMoveEvent<LocalPlayer>) {
+    private fun onPlayerMove(event: EntityMoveEvent<LocalPlayer>) {
         if (!enabled) return
         if (!config.refreshOnMove.get()) return
         recalcContext(true)
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shtestcanseeface") {
             description = "Test if you can see certain faces of a block."
             category = CommandCategory.DEVELOPER_TEST
@@ -207,7 +206,7 @@ object TestCanSeeFace {
     }
 
     @HandleEvent
-    fun onBlockClick(event: BlockClickEvent) {
+    private fun onBlockClick(event: BlockClickEvent) {
         if (!enabled || event.clickType != InteractClickType.LEFT_CLICK) return
         if (!faceCheckContext.waitingForPunch) return
         faceCheckContext.resetFromClickedBlock(event)
@@ -216,13 +215,13 @@ object TestCanSeeFace {
     }
 
     @HandleEvent
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         if (!enabled) return
         recalcContext()
     }
 
     @HandleEvent
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!enabled) return
         for ((face, points) in faceCheckContext.pointSet) {
             event.tryHighlightFace(face)
@@ -230,8 +229,8 @@ object TestCanSeeFace {
         }
     }
 
-    @HandleEvent(GuiRenderEvent::class)
-    fun onGuiRender() {
+    @HandleEvent
+    private fun onGuiRender() {
         if (!enabled || !debugEnabled) return
         val renderable = faceCheckContext.debugRenderable ?: lastRenderable ?: return
         lastRenderable = renderable

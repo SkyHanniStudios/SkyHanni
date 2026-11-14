@@ -3,7 +3,6 @@ package at.hannibal2.skyhanni.data.mob
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.events.MobEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
-import at.hannibal2.skyhanni.events.minecraft.WorldChangeEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawLineToCrosshair
 import io.github.notenoughupdates.moulconfig.ChromaColour
@@ -28,18 +27,18 @@ object LineToMobHandler {
     }
 
     @HandleEvent
-    fun onMobDeSpawn(event: MobEvent.DeSpawn) {
+    private fun onMobDeSpawn(event: MobEvent.DeSpawn) {
         lines.remove(event.mob)
     }
 
     // TODO remove workaround once we can confirm why lines show up after world switch
-    @HandleEvent(WorldChangeEvent::class)
-    fun onWorldChange() {
+    @HandleEvent
+    private fun onWorldChange() {
         lines.clear()
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (lines.isEmpty()) return
 
         for ((mob, settings) in lines) {

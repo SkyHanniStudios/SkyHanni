@@ -12,7 +12,6 @@ import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.ItemUtils.getItemModel
 import at.hannibal2.skyhanni.utils.ItemUtils.getLore
 import at.hannibal2.skyhanni.utils.ItemUtils.setLoreString
-import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompat
 import at.hannibal2.skyhanni.utils.compat.getIdentifierString
 import at.hannibal2.skyhanni.utils.compat.setCustomItemName

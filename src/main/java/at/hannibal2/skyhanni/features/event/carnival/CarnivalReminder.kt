@@ -8,8 +8,6 @@ import at.hannibal2.skyhanni.data.IslandGraphs.pathFind
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.ProfileStorageData
 import at.hannibal2.skyhanni.data.model.graph.GraphNodeTag
-import at.hannibal2.skyhanni.events.ProfileJoinEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.features.fame.ReminderUtils
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -56,13 +54,13 @@ object CarnivalReminder {
     )
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    fun onSecondPassed() {
         if (!isEnabled() || nextCheckTime.isInFuture()) return
         check()
     }
 
     @HandleEvent
-    fun onProfileJoin(event: ProfileJoinEvent) {
+    fun onProfileJoin() {
         claimedToday = false
         if (!isEnabled()) return
         nextCheckTime = 30.0.seconds.fromNow()

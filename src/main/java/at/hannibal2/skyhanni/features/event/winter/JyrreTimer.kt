@@ -3,9 +3,6 @@ package at.hannibal2.skyhanni.features.event.winter
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.model.SkyblockStat
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.ProfileJoinEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.AutoUpdatingItemStack
@@ -38,7 +35,7 @@ object JyrreTimer {
     private var duration = 0.seconds
 
     @HandleEvent
-    fun onProfileJoin(event: ProfileJoinEvent) {
+    fun onProfileJoin() {
         resetDisplay()
     }
 
@@ -55,7 +52,7 @@ object JyrreTimer {
     }
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    fun onGuiRenderOverlay() {
         if (!isEnabled()) return
         display?.let {
             config.pos.renderRenderable(it, posLabel = "Refined Jyrre Timer")
@@ -63,7 +60,7 @@ object JyrreTimer {
     }
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    fun onSecondPassed() {
         if (!isEnabled()) return
 
         if (display != null && !config.showInactive && duration <= 0.seconds) {

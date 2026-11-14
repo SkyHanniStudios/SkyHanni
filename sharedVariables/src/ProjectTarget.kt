@@ -37,12 +37,13 @@ enum class ProjectTarget(
         renderChestVersion = "1.0.3+26.2",
         modrinthInfo = ModrinthInfo.FABRIC_26_2,
     ),
-
     ;
 
     val projectPath get() = ":$projectName"
 
     companion object {
+        val primary get() = MODERN_26200
+
         fun findByMcVersion(mcVersion: String): ProjectTarget? {
             return entries.find { it.minecraftVersion.versionName == mcVersion }
         }

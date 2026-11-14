@@ -34,7 +34,7 @@ object DungeonMobManager {
     private val felMoving = mutableSetOf<Mob>()
 
     @HandleEvent
-    fun onConfigLoad() {
+    private fun onConfigLoad() {
         onToggle(
             starredConfig.highlight,
             starredConfig.color,
@@ -50,14 +50,14 @@ object DungeonMobManager {
     }
 
     @HandleEvent
-    fun onMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
+    private fun onSkyblockMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
         if (event.mob.category != MobCategory.DUNGEON) return
         handleStar(event.mob)
         handleFel(event.mob)
     }
 
     @HandleEvent
-    fun onMobDespawn(event: MobEvent.DeSpawn.SkyblockMob) {
+    private fun onSkyblockMobDeSpawn(event: MobEvent.DeSpawn.SkyblockMob) {
         if (event.mob.category != MobCategory.DUNGEON) return
         if (starredConfig.highlight.get()) {
             staredInvisible.remove(event.mob)
@@ -67,7 +67,7 @@ object DungeonMobManager {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CATACOMBS)
-    fun onEntityMove(event: EntityMoveEvent<LivingEntity>) {
+    private fun onEntityMove(event: EntityMoveEvent<LivingEntity>) {
         val mob = event.entity.mob ?: return
         if (felOnTheGround.remove(mob)) {
             felMoving.add(mob)
@@ -78,12 +78,12 @@ object DungeonMobManager {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CATACOMBS)
-    fun onTick() {
+    private fun onTick() {
         handleInvisibleStar()
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CATACOMBS)
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (fel.line) {
             val color = getFelColor()
             felOnTheGround.filter { it.canBeSeen(30) }.forEach {
@@ -173,7 +173,7 @@ object DungeonMobManager {
 
     @HandleEvent
     @Suppress("AvoidBritishSpelling")
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         val base = "dungeon.objectHighlighter"
         event.move(101, "$base.starred.colour", "$base.starred.color")
         event.move(101, "$base.fel.colour", "$base.fel.color")

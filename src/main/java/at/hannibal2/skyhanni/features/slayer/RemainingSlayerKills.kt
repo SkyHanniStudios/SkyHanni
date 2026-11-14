@@ -7,7 +7,6 @@ import at.hannibal2.skyhanni.data.ElectionApi
 import at.hannibal2.skyhanni.data.SlayerApi
 import at.hannibal2.skyhanni.data.hypixel.chat.event.SystemMessageEvent
 import at.hannibal2.skyhanni.data.model.SkyblockStat
-import at.hannibal2.skyhanni.events.ProfileJoinEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.events.slayer.SlayerProgressChangeEvent
 import at.hannibal2.skyhanni.features.inventory.CurrentEquipmentApi
@@ -121,7 +120,7 @@ object RemainingSlayerKills {
         data = event.getConstant<SlayerData>("Slayer")
     }
 
-    @HandleEvent(ProfileJoinEvent::class)
+    @HandleEvent
     private fun onProfileJoin() {
         lastMissing = null
         lastMax = null
@@ -180,7 +179,7 @@ object RemainingSlayerKills {
     }
 
     private fun getMobNames(missing: Double, totalQuestXP: Double): List<String> {
-        val mobs = getMobs() ?: return listOf()
+        val mobs = getMobs() ?: return emptyList()
 
         val combatWisdomMultiplier = getCombatWisdomMultiplier()
         debugMessage("$combatWisdomMultiplier multiplier for Combat Wisdom .")
@@ -201,8 +200,8 @@ object RemainingSlayerKills {
 
     private fun getMobs(): List<Mob>? {
         val data = data ?: return null
-        val areas = data.normalMobs[SlayerApi.currentAreaType] ?: mapOf()
-        val normalMobs = areas[SkyBlockUtils.graphArea] ?: listOf()
+        val areas = data.normalMobs[SlayerApi.currentAreaType] ?: emptyMap()
+        val normalMobs = areas[SkyBlockUtils.graphArea] ?: emptyList()
 
         return buildList {
             addAll(normalMobs)

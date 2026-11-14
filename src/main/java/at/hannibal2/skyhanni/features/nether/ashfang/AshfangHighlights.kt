@@ -35,7 +35,7 @@ object AshfangHighlights {
     private const val MAX_DISTANCE = 15.0
 
     @HandleEvent(onlyOnIsland = IslandType.CRIMSON_ISLE)
-    fun onEntityJoin(event: EntityEnterWorldEvent<ArmorStand>) {
+    private fun onEntityJoin(event: EntityEnterWorldEvent<ArmorStand>) {
         if (!AshfangManager.active) return
         val entity = event.entity
         DelayedRun.runNextTick {
@@ -47,13 +47,13 @@ object AshfangHighlights {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CRIMSON_ISLE)
-    fun onEntityLeave(event: EntityLeaveWorldEvent<ArmorStand>) {
+    private fun onEntityLeaveWorld(event: EntityLeaveWorldEvent<ArmorStand>) {
         blazingSouls -= event.entity
         gravityOrbs -= event.entity
     }
 
     @HandleEvent
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!AshfangManager.active) return
 
         if (config.blazingSouls.enabled) {
@@ -76,7 +76,7 @@ object AshfangHighlights {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         blazingSouls.clear()
         gravityOrbs.clear()
     }
@@ -99,7 +99,7 @@ object AshfangHighlights {
         ).asText(text)
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(2, "ashfang.blazingSouls", "crimsonIsle.ashfang.blazingSouls.enabled")
         event.move(2, "ashfang.blazingSoulsColor", "crimsonIsle.ashfang.blazingSouls.color")
 

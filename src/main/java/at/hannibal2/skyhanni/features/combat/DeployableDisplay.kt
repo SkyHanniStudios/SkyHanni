@@ -33,7 +33,7 @@ object DeployableDisplay {
     private val knownDeployables = mutableListOf<Deployable>()
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onEntitySpawn(event: EntityCustomNameUpdateEvent<ArmorStand>) {
+    private fun onEntityNameUpdate(event: EntityCustomNameUpdateEvent<ArmorStand>) {
         // TODO: Have some way to not list all the features that need this
         if (!config.enabled && !config.deployableReminder.enabled) return
         val entity = event.entity

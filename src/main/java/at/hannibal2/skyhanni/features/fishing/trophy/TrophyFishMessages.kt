@@ -35,7 +35,7 @@ object TrophyFishMessages {
     )
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         val (displayName, displayRarity) = trophyFishPattern.matchMatcher(event.message) {
             group("displayName").replace("§k", "") to group("displayRarity")
         } ?: return
@@ -57,7 +57,7 @@ object TrophyFishMessages {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Modify) {
+    private fun onChatModify(event: SkyHanniChatEvent.Modify) {
         val (displayName, displayRarity) = trophyFishPattern.matchMatcher(event.message) {
             group("displayName").replace("§k", "") to
                 group("displayRarity")
@@ -119,7 +119,7 @@ object TrophyFishMessages {
             amount != 1
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(2, "fishing.trophyCounter", "fishing.trophyFishing.chatMessages.enabled")
         event.move(2, "fishing.trophyDesign", "fishing.trophyFishing.chatMessages.design")
         event.move(2, "fishing.trophyFishTotalAmount", "fishing.trophyFishing.chatMessages.totalAmount")

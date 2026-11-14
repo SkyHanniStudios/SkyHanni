@@ -4,10 +4,9 @@ import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.features.garden.pests.PestTrapConfig
 import at.hannibal2.skyhanni.data.title.TitleManager
-import at.hannibal2.skyhanni.events.GuiKeyPressEvent
 import at.hannibal2.skyhanni.events.garden.pests.PestTrapDataEvent
-import at.hannibal2.skyhanni.features.garden.pests.PestTrapApi.MAX_TRAPS
 import at.hannibal2.skyhanni.features.garden.pests.PestTrapApi.fullTraps
+import at.hannibal2.skyhanni.features.garden.pests.PestTrapApi.maximumPlaceableTraps
 import at.hannibal2.skyhanni.features.garden.pests.PestTrapApi.noBaitTraps
 import at.hannibal2.skyhanni.features.garden.pests.PestTrapApi.trapsPlaced
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -55,7 +54,7 @@ object PestTrapFeatures {
         soundString.takeIf(String::isNotEmpty)?.let { SoundUtils.createSound(it, 1f, isWarning = true) }
 
     @HandleEvent
-    private fun onKeybind(event: GuiKeyPressEvent) {
+    private fun onGuiKeyPress() {
         if (!PestTrapApi.inInventory) return
         if (!config.releaseHotkey.isKeyHeld()) return
         InventoryUtils.clickSlot(16)
@@ -88,17 +87,17 @@ object PestTrapFeatures {
         }
 
         WarningReason.UNPLACED_TRAPS -> {
-            val trapsLeft = MAX_TRAPS - (trapsPlaced ?: 0)
+            val trapsLeft = maximumPlaceableTraps - (trapsPlaced ?: 0)
             val unPlacedTrapFormatting = StringUtils.pluralize(trapsLeft, "Trap")
             val placedTrapFormatting = StringUtils.pluralize((trapsPlaced ?: 0), "Trap")
-            "§aUnplaced $unPlacedTrapFormatting: §c$trapsPlaced§4/§c$MAX_TRAPS §a$placedTrapFormatting Placed"
+            "§aUnplaced $unPlacedTrapFormatting: §c$trapsPlaced§4/§c$maximumPlaceableTraps §a$placedTrapFormatting Placed"
         }
     }
 
     @HandleEvent
     private fun onPestTrapDataUpdate(event: PestTrapDataEvent) {
         allActiveWarnings.clear()
-        if (event.trapsPlaced < MAX_TRAPS) allActiveWarnings.add(WarningReason.UNPLACED_TRAPS)
+        if (event.trapsPlaced < maximumPlaceableTraps) allActiveWarnings.add(WarningReason.UNPLACED_TRAPS)
         if (event.fullTraps.isNotEmpty()) allActiveWarnings.add(WarningReason.TRAP_FULL)
         if (event.noBaitTraps.isNotEmpty()) allActiveWarnings.add(WarningReason.NO_BAIT)
     }

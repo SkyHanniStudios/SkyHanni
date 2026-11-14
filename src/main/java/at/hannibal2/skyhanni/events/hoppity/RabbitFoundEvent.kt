@@ -3,8 +3,9 @@ package at.hannibal2.skyhanni.events.hoppity
 import at.hannibal2.skyhanni.api.event.SkyHanniEvent
 import at.hannibal2.skyhanni.features.event.hoppity.HoppityApi
 import at.hannibal2.skyhanni.features.event.hoppity.HoppityEggType
+import at.hannibal2.skyhanni.skyhannimodule.PrimaryFunction
 
-// todo 1.21 impl needed
+@PrimaryFunction("onRabbitFound")
 class RabbitFoundEvent(
     val eggType: HoppityEggType,
     val duplicate: Boolean,
@@ -19,6 +20,10 @@ class RabbitFoundEvent(
         dataSet.lastDuplicateAmount ?: 0,
     )
 
-    override fun toString(): String =
-        "§fType§7: ${eggType.coloredName}\n§fDuplicate§7: §b$duplicate\n§fRabbit§7: $rabbitName\n§fChoc Gained§7: §6$chocGained"
+    override fun toString(): String = buildString {
+        appendLine("§fType§7: ${eggType.coloredName}")
+        appendLine("§fDuplicate§7: §b$duplicate")
+        appendLine("§fRabbit§7: $rabbitName")
+        appendLine("§fChoc Gained§7: §6$chocGained")
+    }
 }

@@ -25,11 +25,11 @@ object CFTooltipStray {
     )
 
     @HandleEvent(priority = HandleEvent.HIGH)
-    fun onTooltip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!CFApi.inChocolateFactory) return
         if (!config.showStrayTime) return
-        event.slot ?: return
-        if (event.slot.index > 26 || event.slot.index == CFApi.infoIndex) return
+
+        event.slot?.takeIf { it.index > 26 || it.index == CFApi.infoIndex } ?: return
 
         val tooltip = event.toolTip
         chocolateGainedPattern.firstMatcher(tooltip.map { it.string }) {

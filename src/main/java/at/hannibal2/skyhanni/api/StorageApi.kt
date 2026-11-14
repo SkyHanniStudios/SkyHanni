@@ -9,7 +9,6 @@ import at.hannibal2.skyhanni.data.ProfileStorageData
 import at.hannibal2.skyhanni.data.model.SkyHanniInventoryContainer
 import at.hannibal2.skyhanni.events.BlockClickEvent
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
-import at.hannibal2.skyhanni.events.GuiContainerEvent
 import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
 import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -81,7 +80,7 @@ object StorageApi {
         private set
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         enderChestPattern.matchMatcher(event.inventoryName) {
             val page = groupOrNull("page")?.toInt() ?: 1
             handleRead("Ender Chest $page", event.inventoryItemsWithNull.values)
@@ -108,13 +107,13 @@ object StorageApi {
     private var shouldSave = false
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onGuiContainerSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick() {
         if (currentStorage == null) return
         shouldReCheck = true
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onTick() {
+    private fun onTick() {
         if (!shouldReCheck) return
         currentStorage?.items = InventoryUtils.getItemsInOpenChestWithNull().map { it.item }.drop(9)
         shouldReCheck = false
@@ -122,7 +121,7 @@ object StorageApi {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         if (!shouldSave || saveJob?.isActive == true) return
         setupSaveJob()
     }
@@ -136,7 +135,7 @@ object StorageApi {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onMinutePassed(event: SecondPassedEvent) {
+    private fun onMinutePassed(event: SecondPassedEvent) {
         if (!event.repeatSeconds(60) || !isPrivateIslandStorageEnabled()) return
         mutableIslandChest.removeIf { (_, chest) ->
             if (chest.primaryCords == null) {
@@ -206,7 +205,7 @@ object StorageApi {
         }
 
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onBlockClick(event: BlockClickEvent) {
+    private fun onBlockClick(event: BlockClickEvent) {
         if (event.clickType != InteractClickType.RIGHT_CLICK) return
         if (!isPrivateIslandStorageEnabled()) return
         val chest = event.blockState.block as? ChestBlock ?: return
@@ -225,7 +224,7 @@ object StorageApi {
     }
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Storage Data")
         if (storage.isEmpty()) {
             event.addIrrelevant("Empty")

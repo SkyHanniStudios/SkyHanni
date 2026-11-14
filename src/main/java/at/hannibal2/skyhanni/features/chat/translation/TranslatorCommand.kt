@@ -32,7 +32,7 @@ object TranslatorCommand {
     fun isEnabled() = config.translateOnClick
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shtranslateadvanced") {
             description = "Translates a message in an inputted language to another inputted language."
             category = CommandCategory.DEVELOPER_TEST
@@ -53,7 +53,7 @@ object TranslatorCommand {
 
     // I can't handle the abstract event because NPC chat and show items inherit from it
     // TODO make it so that the plugin doesnt detect this function as an event function
-    @Suppress("HandleEventInspection")
+    @Suppress("MissingHandleEvent")
     fun replaceChatComponent(event: AbstractSourcedChatEvent.Modify) {
         if (!isEnabled()) return
 
@@ -64,19 +64,19 @@ object TranslatorCommand {
     }
 
     @HandleEvent(priority = HandleEvent.LOWEST)
-    fun onAllChat(event: PlayerAllChatEvent.Modify) = replaceChatComponent(event)
+    private fun onPlayerAllChatModify(event: PlayerAllChatEvent.Modify) = replaceChatComponent(event)
 
     @HandleEvent(priority = HandleEvent.LOWEST)
-    fun onGuildChat(event: GuildChatEvent.Modify) = replaceChatComponent(event)
+    private fun onGuildChatModify(event: GuildChatEvent.Modify) = replaceChatComponent(event)
 
     @HandleEvent(priority = HandleEvent.LOWEST)
-    fun onCoopChat(event: CoopChatEvent.Modify) = replaceChatComponent(event)
+    private fun onCoopChatModify(event: CoopChatEvent.Modify) = replaceChatComponent(event)
 
     @HandleEvent(priority = HandleEvent.LOWEST)
-    fun onPartyChat(event: PartyChatEvent.Modify) = replaceChatComponent(event)
+    private fun onPartyChatModify(event: PartyChatEvent.Modify) = replaceChatComponent(event)
 
     @HandleEvent(priority = HandleEvent.LOWEST)
-    fun onPrivateChat(event: PrivateMessageChatEvent.Modify) = replaceChatComponent(event)
+    private fun onPrivateChatModify(event: PrivateMessageChatEvent.Modify) = replaceChatComponent(event)
 
     private fun translateAdvancedCommand(args: Array<String>) {
         if (args.size < 3) {
@@ -105,7 +105,7 @@ object TranslatorCommand {
     }
 
     @HandleEvent
-    fun onConfigLoad() {
+    private fun onConfigLoad() {
         config.languageCode.onToggle {
             if (lastUserChange.passedSince() < 50.milliseconds) return@onToggle
             lastUserChange = SimpleTimeMark.now()
@@ -133,7 +133,7 @@ object TranslatorCommand {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(55, "chat.translator", "chat.translator.translateOnClick")
     }
 }

@@ -259,7 +259,7 @@ interface Renderable {
         fun hoverTips(
             content: Any,
             tips: List<Any>,
-            highlightsOnHoverSlots: List<Int> = listOf(),
+            highlightsOnHoverSlots: List<Int> = emptyList(),
             stack: SafeItemStack? = null,
             color: LorenzColor? = null,
             spacedTitle: Boolean = false,
@@ -393,8 +393,6 @@ interface Renderable {
                 }
             }
         }
-
-        /** Bottom Layer must be bigger then the top layer */
 
         /**
          * Render two renderables, one on top of the other.

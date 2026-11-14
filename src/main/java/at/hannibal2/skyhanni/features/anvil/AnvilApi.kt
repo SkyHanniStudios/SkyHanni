@@ -2,8 +2,6 @@ package at.hannibal2.skyhanni.features.anvil
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.OwnInventoryData
-import at.hannibal2.skyhanni.events.GuiContainerEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.inventory.AnvilUpdateEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.DelayedRun
@@ -34,7 +32,7 @@ object AnvilApi {
 
     // InventoryUpdatedEvent only reacts on packets from the server, but the anvil interactions are client side only
     @HandleEvent(priority = HandleEvent.HIGH)
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    fun onSlotClick() {
         if (!inventory.isInside()) return
 
         DelayedRun.runNextTick {
@@ -63,7 +61,7 @@ object AnvilApi {
     }
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    fun onInventoryClose() {
         // hypixel delays the pickup
 
         var hadItems = false

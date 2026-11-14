@@ -2,7 +2,6 @@ package at.hannibal2.skyhanni.features.garden.inventory.plots
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.events.GuiContainerEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
 import at.hannibal2.skyhanni.events.minecraft.ToolTipTextEvent
 import at.hannibal2.skyhanni.events.minecraft.add
@@ -42,7 +41,7 @@ object GardenPlotIcon {
     fun isEnabled() = GardenApi.inGarden() && config.enabled && inInventory
 
     @HandleEvent(priority = HandleEvent.HIGHEST)
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         inInventory = event.inventoryName == "Configure Plots"
         if (!isEnabled()) return
 
@@ -58,13 +57,13 @@ object GardenPlotIcon {
     }
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    private fun onInventoryClose() {
         inInventory = false
         editMode = 0
     }
 
     @HandleEvent(priority = HandleEvent.HIGH)
-    fun replaceItem(event: ReplaceItemEvent) {
+    private fun onReplaceItem(event: ReplaceItemEvent) {
         if (!isEnabled()) return
         val plotList = plotList ?: return
         if (hardReset) {
@@ -88,7 +87,7 @@ object GardenPlotIcon {
     }
 
     @HandleEvent(priority = HandleEvent.HIGH)
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         if (!isEnabled()) return
         lastClickedSlotId = event.slotId
         if (event.slotId == 53) {
@@ -128,7 +127,7 @@ object GardenPlotIcon {
     }
 
     @HandleEvent
-    fun onToolTip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!isEnabled()) return
         val plotList = plotList ?: return
         val list = event.toolTip

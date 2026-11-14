@@ -9,8 +9,6 @@ import at.hannibal2.skyhanni.data.InteractClickType
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.title.TitleManager
 import at.hannibal2.skyhanni.events.BlockClickEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.BlockUtils.getBlockAt
 import at.hannibal2.skyhanni.utils.ChatUtils
@@ -59,8 +57,8 @@ object FrogMaskFeatures {
     private val FROG_MASK = "FROG_MASK".toInternalName()
     private val frogMaskRenderable = Renderable.item(FROG_MASK)
 
-    @HandleEvent(GuiRenderEvent.GuiOverlayRenderEvent::class, onlyOnSkyblock = true)
-    fun onGuiRenderOverlay() {
+    @HandleEvent(onlyOnSkyblock = true)
+    private fun onGuiRenderOverlay() {
         if (!isEnabled()) return
 
         display?.let {
@@ -68,8 +66,8 @@ object FrogMaskFeatures {
         }
     }
 
-    @HandleEvent(SecondPassedEvent::class, onlyOnSkyblock = true)
-    fun onSecondPassed() {
+    @HandleEvent(onlyOnSkyblock = true)
+    private fun onSecondPassed() {
         if (!isEnabled()) return
         display = null
 
@@ -137,7 +135,7 @@ object FrogMaskFeatures {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(86, "misc.frogMaskDisplay", "misc.frogMaskFeatures.display")
         event.move(86, "misc.frogMaskDisplayPosition", "misc.frogMaskFeatures.position")
         event.transform(97, "misc.frogMaskFeatures.display") {
@@ -150,7 +148,7 @@ object FrogMaskFeatures {
     private val logTypes = BlockCompat.getAllLogs()
 
     @HandleEvent(onlyOnIsland = IslandType.THE_PARK)
-    fun onBlockClick(event: BlockClickEvent) {
+    private fun onBlockClick(event: BlockClickEvent) {
         if (!isEnabled()) return
         if (event.clickType != InteractClickType.LEFT_CLICK) return
         if (event.position.getBlockAt() !in logTypes) return

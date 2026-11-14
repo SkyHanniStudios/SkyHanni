@@ -6,7 +6,6 @@ import at.hannibal2.skyhanni.config.features.misc.CakeCounterConfig.OfflineStats
 import at.hannibal2.skyhanni.config.features.misc.CakeCounterConfig.OfflineTrackingMode
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.ProfileStorageData
-import at.hannibal2.skyhanni.events.IslandChangeEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.entity.EntityCustomNameUpdateEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -98,7 +97,7 @@ object CakeCounterFeatures {
     private var lastSoulFoundBySelf = SimpleTimeMark.farPast()
 
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onEntityChangeName(event: EntityCustomNameUpdateEvent<ArmorStand>) {
+    private fun onEntityNameUpdate(event: EntityCustomNameUpdateEvent<ArmorStand>) {
         val entity = event.entity
         val name = entity.name.formattedTextCompatLessResets()
         val entityId = entity.id
@@ -143,14 +142,14 @@ object CakeCounterFeatures {
         soulsStandExists = nearbyArmorStands.any { armorStand ->
             soulsFoundPattern.matchMatcher(armorStand.name.formattedTextCompatLessResets()) {
                 soulsFoundEntityId = armorStand.id
-                ChatUtils.debug("Found \"Souls Found\" entity (from \"Cakes Eaten\" location)")
+                ChatUtils.debug("""Found "Souls Found" entity (from "Cakes Eaten" location)""")
                 updateSoulsFound()
                 true
             } ?: false
         }
         if (!soulsStandExists) {
             ChatUtils.debug(
-                "Couldn't find \"Souls Found\" entity near \"Cakes Eaten\" entity: " + "assuming it doesn't exist",
+                """Couldn't find "Souls Found" entity near "Cakes Eaten" entity: assuming it doesn't exist""",
             )
         }
     }
@@ -226,7 +225,7 @@ object CakeCounterFeatures {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (cakeSoulFoundPattern.matches(event.cleanMessage)) {
             lastSoulFoundBySelf = SimpleTimeMark.now()
         }
@@ -258,7 +257,7 @@ object CakeCounterFeatures {
     }
 
     @HandleEvent
-    fun onIslandChange(event: IslandChangeEvent) {
+    private fun onIslandChange() {
         cakesEatenEntityId = null
         soulsFoundEntityId = null
         statsToBeSent = true

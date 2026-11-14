@@ -5,7 +5,6 @@ import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.events.GuiContainerEvent
 import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
 import at.hannibal2.skyhanni.events.experiments.TableSuperpairDataUpdatedEvent
-import at.hannibal2.skyhanni.events.experiments.TableTaskStartedEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ItemUtils.cleanName
 import at.hannibal2.skyhanni.utils.ItemUtils.getInternalNameOrNull
@@ -77,7 +76,7 @@ object ExperimentationSuperpairApi {
 
     private val superpairsSlotMap: MutableMap<Int, SafeItemStack> = mutableMapOf()
     private var lastClickedSlot = -1
-    private var currentFoundData = mapOf<FoundType, List<FoundData>>()
+    private var currentFoundData = emptyMap<FoundType, List<FoundData>>()
 
     // True from the second consecutive "Remaining Clicks: 0" reading onward, skipping the
     // round-end reveal of leftover cards while still processing the genuine final click.
@@ -93,7 +92,7 @@ object ExperimentationSuperpairApi {
     fun onInventoryClose() = reset()
 
     @HandleEvent
-    fun onTableTaskStarted(event: TableTaskStartedEvent) = reset()
+    fun onTableTaskStarted() = reset()
 
     private fun reset() {
         superpairsSlotMap.clear()

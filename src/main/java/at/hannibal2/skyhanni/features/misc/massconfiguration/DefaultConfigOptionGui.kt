@@ -99,11 +99,11 @@ class DefaultConfigOptionGui(
                 )
                 i += width + 12
             }
-            button("Apply choices", listOf()) {
+            button("Apply choices", emptyList()) {
                 DefaultConfigFeatures.applyCategorySelections(resetSuggestionState, orderedOptions)
                 MinecraftCompat.screen = null
             }
-            button("Turn all on", listOf()) {
+            button("Turn all on", emptyList()) {
                 for (entry in resetSuggestionState.entries) {
                     entry.setValue(ResetSuggestionState.TURN_ALL_ON)
                     orderedOptions[entry.key]?.let { opts ->
@@ -111,7 +111,7 @@ class DefaultConfigOptionGui(
                     }
                 }
             }
-            button("Turn all off", listOf()) {
+            button("Turn all off", emptyList()) {
                 for (entry in resetSuggestionState.entries) {
                     entry.setValue(ResetSuggestionState.TURN_ALL_OFF)
                     orderedOptions[entry.key]?.let { opts ->
@@ -119,7 +119,7 @@ class DefaultConfigOptionGui(
                     }
                 }
             }
-            button("Leave all untouched", listOf()) {
+            button("Leave all untouched", emptyList()) {
                 for (entry in resetSuggestionState.entries) {
                     entry.setValue(ResetSuggestionState.LEAVE_DEFAULTS)
                     orderedOptions[entry.key]?.let { opts ->
@@ -127,7 +127,7 @@ class DefaultConfigOptionGui(
                     }
                 }
             }
-            button("Cancel", listOf()) {
+            button("Cancel", emptyList()) {
                 MinecraftCompat.screen = null
             }
         }

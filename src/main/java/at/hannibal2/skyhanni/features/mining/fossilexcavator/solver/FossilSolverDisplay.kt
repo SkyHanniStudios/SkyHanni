@@ -5,8 +5,6 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.events.GuiContainerEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.RenderInventoryItemTipEvent
 import at.hannibal2.skyhanni.features.mining.fossilexcavator.FossilExcavatorApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -63,20 +61,20 @@ object FossilSolverDisplay {
     private var isNotPossible = false
     private var isCompleted = false
 
-    private var inventoryItemNames = listOf<String>()
+    private var inventoryItemNames = emptyList<String>()
 
     private const val NOT_POSSIBLE_STRING = "§cNo possible fossils on board."
     private const val SOLVED_STRING = "§aFossil found, get all the loot you can."
     private const val FOSSILS_REMAINING_STRING = "§ePossible fossils remaining: "
     private const val CHARGES_REMAINING_STRING = "§eCharges remaining: "
 
-    var possibleFossilTypes = setOf<FossilType>()
+    var possibleFossilTypes = emptySet<FossilType>()
 
     @HandleEvent
     fun onWorldChange() = clearData()
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) = clearData()
+    fun onInventoryClose() = clearData()
 
     // TODO reshape to a data class, use Resettable
     private fun clearData() {
@@ -160,7 +158,7 @@ object FossilSolverDisplay {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.DWARVEN_MINES)
-    fun onForegroundDrawn(event: GuiContainerEvent.ForegroundDrawnEvent) {
+    fun onForegroundDrawn() {
         if (!isEnabled()) return
         if (inExcavatorMenu) return
         if (slotToClick == null) return
@@ -186,7 +184,7 @@ object FossilSolverDisplay {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.DWARVEN_MINES)
-    fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
+    fun onChestGuiRender() {
         if (!isEnabled()) return
 
         // Render here so they can move it around. As if you press key while doing the excavator you lose the scrap

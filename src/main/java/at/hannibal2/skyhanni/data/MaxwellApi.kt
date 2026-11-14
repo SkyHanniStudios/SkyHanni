@@ -58,7 +58,7 @@ object MaxwellApi {
         }
 
     private val NO_POWER by lazy { getPowerByNameOrNull("No Power") }
-    private var powers = mutableListOf<String>()
+    private var powers = emptyList<String>()
 
     private val patternGroup = RepoPattern.group("data.maxwell")
 
@@ -325,7 +325,7 @@ object MaxwellApi {
                 )
                 currentPower = NO_POWER
                 magicalPower = 0
-                tunings = listOf()
+                tunings = emptyList()
                 return
             }
 
@@ -355,7 +355,7 @@ object MaxwellApi {
         // If Magical Power isn't in the lore
         if (!foundMagicalPower) {
             magicalPower = 0
-            tunings = listOf()
+            tunings = emptyList()
         }
     }
 

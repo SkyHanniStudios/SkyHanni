@@ -91,9 +91,9 @@ object CFApi {
     )
     // </editor-fold>
 
-    var rabbitSlots = mapOf<Int, Int>()
-    var otherUpgradeSlots = setOf<Int>()
-    var noPickblockSlots = setOf<Int>()
+    var rabbitSlots = emptyMap<Int, Int>()
+    var otherUpgradeSlots = emptySet<Int>()
+    var noPickblockSlots = emptySet<Int>()
     var barnIndex = 34
     var infoIndex = 13
     var productionInfoIndex = 45
@@ -108,8 +108,8 @@ object CFApi {
     var maxRabbits = 503
     var hitmanCosts = TreeSet<Long>()
     private var chocolateMilestones = TreeSet<Long>()
-    private var chocolateFactoryMilestones: MutableList<MilestoneJson> = mutableListOf()
-    private var chocolateShopMilestones: MutableList<MilestoneJson> = mutableListOf()
+    private var chocolateFactoryMilestones: List<MilestoneJson> = emptyList()
+    private var chocolateShopMilestones: List<MilestoneJson> = emptyList()
     private var maxPrestige = 6
     var cfShortcutIndex = 16
 
@@ -122,11 +122,11 @@ object CFApi {
     var leaderboardPercentile: Double? = null
     var chocolateForPrestige = 150_000_000L
 
-    var factoryUpgrades = listOf<CFUpgrade>()
+    var factoryUpgrades = emptyList<CFUpgrade>()
     var bestAffordableSlot = -1
     var bestPossibleSlot = -1
 
-    var specialRabbitTextures = listOf<String>()
+    var specialRabbitTextures = emptyList<String>()
     var warningSound = SoundUtils.createSound("block.note_block.pling", 1f, isWarning = true)
     val mainInventory = InventoryDetector { HoppityApi.chocolateFactoryInvPattern }
 
@@ -178,8 +178,8 @@ object CFApi {
         cfShortcutIndex = data.cfShortcutIndex
         chocolateMilestones = data.chocolateMilestones
         hitmanCosts = data.hitmanCosts
-        chocolateFactoryMilestones = data.chocolateFactoryMilestones.toMutableList()
-        chocolateShopMilestones = data.chocolateShopMilestones.toMutableList()
+        chocolateFactoryMilestones = data.chocolateFactoryMilestones
+        chocolateShopMilestones = data.chocolateShopMilestones
         specialRabbitTextures = data.specialRabbits
 
         CFUpgrade.updateIgnoredSlots()

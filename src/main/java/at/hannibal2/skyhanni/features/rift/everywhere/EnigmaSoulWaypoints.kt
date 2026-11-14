@@ -39,7 +39,7 @@ import net.minecraft.world.inventory.ChestMenu
 object EnigmaSoulWaypoints {
     private val config get() = RiftApi.config.enigmaSoulWaypoints
     private var inInventory = false
-    var soulLocations = mapOf<String, Map<String, LorenzVec>>()
+    var soulLocations = emptyMap<String, Map<String, LorenzVec>>()
     private val trackedSouls = mutableMapOf<String, MutableList<String>>()
     private val inventoryUnfound = mutableListOf<String>()
     private var adding = true
@@ -100,7 +100,7 @@ object EnigmaSoulWaypoints {
     )
 
     @HandleEvent
-    private fun replaceItem(event: ReplaceItemEvent) {
+    private fun onReplaceItem(event: ReplaceItemEvent) {
         if (!isEnabled()) return
 
         if (inventoryUnfound.isEmpty()) return

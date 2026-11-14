@@ -30,15 +30,11 @@ object ClearTreeLogs {
     }
 
     @HandleEvent(onlyOnIslandTypeTag = [IslandTypeTag.FORAGING_CUSTOM_TREES])
-    private fun onRender(event: CheckRenderEntityEvent<Display.BlockDisplay>) {
+    private fun onCheckRenderEntity(event: CheckRenderEntityEvent<Display.BlockDisplay>) {
         if (!isEnabled()) return
-        val entity = event.entity
-        if (entity.blockState !in treeBlocks) return
+        val entity = event.entity.takeIf { it.blockState in treeBlocks } ?: return
 
-        if (config.hideTreeBlocks && config.hideRuneEffects) {
-            event.cancel()
-            return
-        }
+        if (config.hideTreeBlocks && config.hideRuneEffects) return event.cancel()
 
         val isFloating = isFloatingTreeBlock(entity) ?: return
         val shouldCancel = if (isFloating) {

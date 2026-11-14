@@ -37,7 +37,7 @@ object HypixelBazaarFetcher {
 
     private val bazaarFetchCoroutine = CoroutineSettings("bazaar api fetch", timeout = 1.minutes)
 
-    var latestProductInformation = mapOf<NeuInternalName, BazaarData>()
+    var latestProductInformation = emptyMap<NeuInternalName, BazaarData>()
     private val isFetching = AtomicBoolean(false)
     private var lastSuccessfulFetch = SimpleTimeMark.farPast()
     private var nextFetchTime = SimpleTimeMark.farPast()

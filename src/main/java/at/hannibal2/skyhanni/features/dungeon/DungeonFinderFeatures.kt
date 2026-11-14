@@ -175,9 +175,9 @@ object DungeonFinderFeatures {
 
     //  Variables used
     private var selectedClass: DungeonClass? = null
-    private var floorStackSize = mapOf<Int, String>()
-    private var highlightParty = mapOf<Int, LorenzColor>()
-    private var toolTipMap = mapOf<Int, List<Component>>()
+    private var floorStackSize = emptyMap<Int, String>()
+    private var highlightParty = emptyMap<Int, LorenzColor>()
+    private var toolTipMap = emptyMap<Int, List<Component>>()
     private var inInventory = false
 
     @HandleEvent(onlyOnSkyblock = true)

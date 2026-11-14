@@ -8,7 +8,7 @@ import at.hannibal2.skyhanni.data.ProfileStorageData
 import at.hannibal2.skyhanni.data.bazaar.HypixelBazaarFetcher
 import at.hannibal2.skyhanni.events.GuiContainerEvent
 import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
-import at.hannibal2.skyhanni.events.bazaar.BazaarOpenedProductEvent
+import at.hannibal2.skyhanni.events.bazaar.BazaarProductOpenedEvent
 import at.hannibal2.skyhanni.events.bazaar.BazaarTransactionEvent
 import at.hannibal2.skyhanni.events.bazaar.BazaarTransactionEvent.TransactionType
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
@@ -181,7 +181,7 @@ object BazaarApi {
             val openedProduct = getOpenedProduct(event.inventoryItems) ?: return
             currentlyOpenedProduct = openedProduct
             lastOpenedProduct = openedProduct
-            BazaarOpenedProductEvent(openedProduct, event).post()
+            BazaarProductOpenedEvent(openedProduct, event).post()
         }
     }
 

@@ -27,7 +27,7 @@ object ColorHexInLore {
     )
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onTooltip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!isEnabled()) return
         val itemCategory = event.itemStack.getItemCategoryOrNull()
         if (itemCategory != ItemCategory.DYE &&

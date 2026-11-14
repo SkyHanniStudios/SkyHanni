@@ -26,7 +26,7 @@ import kotlin.time.Duration.Companion.seconds
 
 @SkyHanniModule
 object LimboPlaytime {
-    private var modifiedList = listOf<Component>()
+    private var modifiedList = emptyList<Component>()
     private var setMinutes = false
     private val patternGroup = RepoPattern.group("misc.limbo.tooltip")
 
@@ -61,7 +61,7 @@ object LimboPlaytime {
     private var lastCreateCooldown = SimpleTimeMark.farPast()
 
     @HandleEvent
-    private fun replaceItem(event: ReplaceItemEvent) {
+    private fun onReplaceItem(event: ReplaceItemEvent) {
         if (!enabled) return
         if (event.inventory !is SimpleContainer) return
         // TODO replace with InventoryDetector

@@ -39,6 +39,7 @@ object SystemMessageEvent {
      * @param message The original message text.
      * @param chatComponent The entire original chat component.
      */
+    @PrimaryFunction("onSystemMessageModify")
     open class Modify(
         open val message: String,
         @set:Deprecated("Use replaceComponent() instead")

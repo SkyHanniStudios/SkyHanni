@@ -4,11 +4,8 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.features.garden.visitor.VisitorConfig
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.SackApi.getAmountInSacks
-import at.hannibal2.skyhanni.events.OwnInventoryItemUpdateEvent
-import at.hannibal2.skyhanni.events.SackDataUpdateEvent
 import at.hannibal2.skyhanni.events.garden.visitor.VisitorAcceptEvent
 import at.hannibal2.skyhanni.events.garden.visitor.VisitorAcceptedEvent
-import at.hannibal2.skyhanni.events.garden.visitor.VisitorRefusedEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
 import at.hannibal2.skyhanni.features.garden.GardenApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -32,7 +29,7 @@ object GardenVisitorStatus {
     private val config get() = VisitorApi.config
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onTick(event: SkyHanniTickEvent) {
+    private fun onTick(event: SkyHanniTickEvent) {
         if (!config.shoppingList.enabled &&
             config.highlightStatus == VisitorConfig.HighlightMode.DISABLED
         ) return
@@ -43,27 +40,27 @@ object GardenVisitorStatus {
         }
     }
 
-    @HandleEvent(OwnInventoryItemUpdateEvent::class)
-    fun onOwnInventoryItemUpdate() {
+    @HandleEvent
+    private fun onOwnInventoryItemUpdate() {
         if (GardenApi.onBarnPlot) {
             update()
         }
     }
 
-    @HandleEvent(SackDataUpdateEvent::class)
-    fun onSackUpdate() {
+    @HandleEvent
+    private fun onSackDataUpdate() {
         update()
     }
 
-    @HandleEvent(VisitorRefusedEvent::class)
-    fun onVisitorRefused() {
+    @HandleEvent
+    private fun onVisitorRefused() {
         update()
         GardenApi.storage?.visitorDrops?.let { it.deniedVisitors += 1 }
         GardenVisitorDropStatistics.saveAndUpdate()
     }
 
     @HandleEvent
-    fun onVisitorAccepted(event: VisitorAcceptedEvent) {
+    private fun onVisitorAccepted(event: VisitorAcceptedEvent) {
         VisitorAcceptEvent(event.visitor).post()
         update()
         GardenApi.storage?.visitorDrops?.let {

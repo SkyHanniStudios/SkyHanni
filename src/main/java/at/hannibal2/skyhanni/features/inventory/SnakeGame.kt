@@ -3,7 +3,6 @@ package at.hannibal2.skyhanni.features.inventory
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.events.GuiKeyPressEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.InventoryOpenEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.InventoryUtils.clickSlot
@@ -42,7 +41,7 @@ object SnakeGame {
         }
 
     @HandleEvent
-    fun onGuiKeyPress(event: GuiKeyPressEvent) {
+    private fun onGuiKeyPress(event: GuiKeyPressEvent) {
         if (!isEnabled()) return
         if (!inInventory) return
 
@@ -62,12 +61,12 @@ object SnakeGame {
     }
 
     @HandleEvent
-    fun onInventoryOpen(event: InventoryOpenEvent) {
+    private fun onInventoryOpen(event: InventoryOpenEvent) {
         inInventory = pattern.matches(event.inventoryName)
     }
 
-    @HandleEvent(InventoryCloseEvent::class)
-    fun onInventoryClose() {
+    @HandleEvent
+    private fun onInventoryClose() {
         inInventory = false
     }
 

@@ -1,9 +1,6 @@
 package at.hannibal2.skyhanni.data.model
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.events.IslandChangeEvent
-import at.hannibal2.skyhanni.events.RepositoryReloadEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.TabListUpdateEvent
 import at.hannibal2.skyhanni.events.WidgetUpdateEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -29,6 +26,7 @@ private val patternGroup by RepoPattern.exclusiveGroup("tab.widgetcomponent.enum
  * The general info widget is broken up into multiple smaller ones.
  * The class facilitates access to the lines associated with each widget and triggers events when a widget undergoes changes or becomes invisible.
  */
+@Suppress("Kdoc")
 enum class TabWidget(
     pattern0: String,
 ) {
@@ -389,7 +387,7 @@ enum class TabWidget(
     ;
 
     /** The pattern for the first line of the widget*/
-    val pattern by patternGroup.pattern(name.replace("_", ".").lowercase(), "\\s*(?:$pattern0)")
+    val pattern by patternGroup.pattern(name.replace("_", ".").lowercase(), "\\s*$pattern0")
 
     /** The current active information from tab list.
      *
@@ -461,7 +459,7 @@ enum class TabWidget(
         private var lastTabComponents: List<Component> = emptyList()
 
         @HandleEvent(onlyOnSkyblock = true)
-        private fun onSecondPassed(event: SecondPassedEvent) {
+        private fun onSecondPassed() {
             if (sentSinceWorldChange) return
             if (SkyBlockUtils.lastWorldSwitch.passedSince() < FORCE_UPDATE_DELAY) return
             sentSinceWorldChange = true
@@ -483,7 +481,7 @@ enum class TabWidget(
 
         // TODO remove this workaround once the WidgetUpdateEvent gets send when the tab list gets first loaded, as intended.
         @HandleEvent(priority = HandleEvent.HIGHEST)
-        private fun onIslandChange(event: IslandChangeEvent) {
+        private fun onIslandChange() {
             for (widget in entries) {
                 widget.sendOnThisIsland = false
             }
@@ -530,7 +528,7 @@ enum class TabWidget(
         }
 
         @HandleEvent(priority = HandleEvent.LOW)
-        private fun onRepoReload(event: RepositoryReloadEvent) {
+        private fun onRepoReload() {
             extraPatterns = patternGroup.getUnusedPatterns()
         }
 
@@ -542,14 +540,16 @@ enum class TabWidget(
 
             val removeIndexes = mutableListOf<Int>()
 
-            for ((index, header) in headers) when {
-                PLAYER_LIST.pattern.matches(header) ->
-                    if (playerListFound) removeIndexes.add(index - removeIndexes.size)
-                    else playerListFound = true
+            for ((index, header) in headers) {
+                when {
+                    PLAYER_LIST.pattern.matches(header) ->
+                        if (playerListFound) removeIndexes.add(index - removeIndexes.size)
+                        else playerListFound = true
 
-                INFO.pattern.matches(header) ->
-                    if (infoFound) removeIndexes.add(index - removeIndexes.size)
-                    else infoFound = true
+                    INFO.pattern.matches(header) ->
+                        if (infoFound) removeIndexes.add(index - removeIndexes.size)
+                        else infoFound = true
+                }
             }
 
             return tabList.transformIf({ size > 81 }, { dropLast(size - 80) }).editCopy {

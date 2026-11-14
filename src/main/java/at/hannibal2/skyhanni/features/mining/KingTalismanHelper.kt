@@ -7,9 +7,7 @@ import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.MiningApi
 import at.hannibal2.skyhanni.data.ProfileStorageData
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
@@ -23,7 +21,6 @@ import at.hannibal2.skyhanni.utils.collection.CollectionUtils.sorted
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.sortedDesc
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import java.util.Collections
-import kotlin.collections.buildList
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
@@ -45,7 +42,7 @@ object KingTalismanHelper {
     )
 
     private fun resetKings() {
-        storage?.kingsTalkedTo = mutableListOf<String>()
+        storage?.kingsTalkedTo?.clear()
         update()
     }
 
@@ -69,7 +66,7 @@ object KingTalismanHelper {
         kingLocation.distanceToPlayer() < 10
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    fun onSecondPassed() {
         if (!isEnabled()) return
 
         update()
@@ -106,7 +103,7 @@ object KingTalismanHelper {
         }
 
         allKingsDisplay = buildList {
-            var farDisplay_: String? = null
+            var localFarDisplayRebuild: String? = null
 
             val currentKing = getCurrentKing()
             for ((king, timeUntil) in getKingTimes()) {
@@ -126,14 +123,14 @@ object KingTalismanHelper {
 
                 val currentString = if (current) "§6King " else ""
                 if (missing && current) {
-                    farDisplay_ = "§cNext missing king: §7$king §eNow $missingTimeFormat"
+                    localFarDisplayRebuild = "§cNext missing king: §7$king §eNow $missingTimeFormat"
                 }
 
                 val timeString = if (missing) " §cMissing $missingTimeFormat" else ""
 
                 add("§7$currentString$king$missingString$timeString")
             }
-            farDisplay = farDisplay_ ?: nextMissingText()
+            farDisplay = localFarDisplayRebuild ?: nextMissingText()
         }
     }
 
@@ -166,7 +163,7 @@ object KingTalismanHelper {
     private fun getCurrentKing() = getKingTimes().sortedDesc().firstNotNullOf { it.key }
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    fun onGuiRenderOverlay() {
         if (!isEnabled()) return
 
         config.position.renderStrings(display, posLabel = "King Talisman Helper")
@@ -178,7 +175,10 @@ object KingTalismanHelper {
         if (!MiningApi.inDwarvenMines) return
 
         if (talismanPattern.matches(event.message)) {
-            storage?.kingsTalkedTo = kingCircles.toMutableList()
+            storage?.kingsTalkedTo?.let {
+                it.clear()
+                it.addAll(kingCircles)
+            }
             update()
         }
     }

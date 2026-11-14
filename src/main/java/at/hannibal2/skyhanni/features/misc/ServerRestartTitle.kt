@@ -5,7 +5,6 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.ScoreboardData
 import at.hannibal2.skyhanni.data.title.TitleContext
 import at.hannibal2.skyhanni.data.title.TitleManager
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.RegexUtils.firstMatcher
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
@@ -36,7 +35,7 @@ object ServerRestartTitle {
     )
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed(event: SecondPassedEvent) {
+    fun onSecondPassed() {
         if (!config.serverRestartTitle) {
             timerTitleContext?.stop()
             timerTitleContext = null

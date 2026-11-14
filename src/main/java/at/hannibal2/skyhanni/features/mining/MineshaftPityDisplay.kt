@@ -13,7 +13,6 @@ import at.hannibal2.skyhanni.data.hotx.HotmReward
 import at.hannibal2.skyhanni.data.model.TabWidget
 import at.hannibal2.skyhanni.events.IslandJoinEvent
 import at.hannibal2.skyhanni.events.IslandLeaveEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.WidgetUpdateEvent
 import at.hannibal2.skyhanni.events.achievements.AchievementRegistrationEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
@@ -57,11 +56,8 @@ object MineshaftPityDisplay {
 
     private val profileStorage get() = ProfileStorageData.profileSpecific?.mining?.mineshaft
 
-    private var minedBlocks: MutableList<PityData>
+    private val minedBlocks: MutableList<PityData>
         get() = profileStorage?.blocksBroken ?: mutableListOf()
-        set(value) {
-            profileStorage?.blocksBroken = value
-        }
 
     private var PityBlock.spreadBlocksBroken: Int
         get() = minedBlocks.firstOrNull { it.pityBlock == this }?.spreadBlocksBroken ?: 0
@@ -95,7 +91,7 @@ object MineshaftPityDisplay {
 
     var lastMineshaftSpawn = SimpleTimeMark.farPast()
 
-    private var display = listOf<Renderable>()
+    private var display = emptyList<Renderable>()
 
     private const val MAX_COUNTER = 2000
 
@@ -110,18 +106,16 @@ object MineshaftPityDisplay {
     )
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onOreMined(event: OreMinedEvent) {
+    private fun onOreMined(event: OreMinedEvent) {
         if (!MiningApi.inGlacialTunnels()) return
 
         val originalOre = event.originalOre
         originalOre?.getPityBlock()?.let { it.blocksBroken++ }
-        event.extraBlocks.toMutableMap()
-            .apply {
-                if (originalOre != null) addOrPut(originalOre, -1)
-            }
-            .map { (block, amount) ->
-                block.getPityBlock()?.let { it.spreadBlocksBroken += amount }
-            }
+        event.extraBlocks.toMutableMap().apply {
+            if (originalOre != null) addOrPut(originalOre, -1)
+        }.forEach { (block, amount) ->
+            block.getPityBlock()?.let { it.spreadBlocksBroken += amount }
+        }
 
         update()
     }
@@ -129,7 +123,7 @@ object MineshaftPityDisplay {
     private const val SHAFT_ACHIEVEMENT = "100 shaft"
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "Quick Shafter",
             description = "Spawn a Mineshaft in under 100 Pity",
@@ -139,7 +133,7 @@ object MineshaftPityDisplay {
     }
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Modify) {
+    private fun onChatModify(event: SkyHanniChatEvent.Modify) {
         if (!MiningApi.inGlacialTunnels()) return
         if (MiningNotifications.mineshaftSpawn.matches(event.message)) {
             val pityCounter = calculateCounter()
@@ -196,7 +190,7 @@ object MineshaftPityDisplay {
     }
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed() {
         if (!isDisplayEnabled()) return
         update()
     }
@@ -205,7 +199,7 @@ object MineshaftPityDisplay {
     private var everFoundPityWidget = false
 
     @HandleEvent(onlyOnIsland = IslandType.DWARVEN_MINES)
-    fun onPityWidget(event: WidgetUpdateEvent) {
+    private fun onWidgetUpdate(event: WidgetUpdateEvent) {
         if (!event.isWidget(TabWidget.PITY)) return
         for (line in event.lines) {
             tabPityPattern.matchMatcher(line) {
@@ -318,13 +312,13 @@ object MineshaftPityDisplay {
     }
 
     private fun resetCounter() {
-        minedBlocks = mutableListOf()
+        minedBlocks.clear()
         lastMineshaftSpawn = SimpleTimeMark.now()
         update()
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shresetmineshaftpitystats") {
             description = "Resets the mineshaft pity display stats"
             category = CommandCategory.USERS_RESET
@@ -341,14 +335,14 @@ object MineshaftPityDisplay {
     }
 
     @HandleEvent
-    fun onIslandChange(event: IslandJoinEvent) {
+    private fun onIslandJoin(event: IslandJoinEvent) {
         if (event.island == IslandType.MINESHAFT) {
             resetCounter()
         }
     }
 
     @HandleEvent
-    fun onIslandLeave(event: IslandLeaveEvent) {
+    private fun onIslandLeave(event: IslandLeaveEvent) {
         if (event.island == IslandType.MINESHAFT) {
             resetCounter()
         }

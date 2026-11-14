@@ -5,5 +5,5 @@ import com.google.gson.annotations.Expose
 
 class VisualWordsJson {
     @Expose
-    var modifiedWords: MutableList<VisualWord> = ArrayList()
+    val modifiedWords: MutableList<VisualWord> = ArrayList()
 }

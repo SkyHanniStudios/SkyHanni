@@ -79,7 +79,7 @@ object PacketTest {
     }
 
     @HandleEvent
-    fun onSendPacket(event: PacketSentEvent) {
+    private fun onPacketSent(event: PacketSentEvent) {
         if (!enabled) return
 
         val packet = event.packet
@@ -100,7 +100,7 @@ object PacketTest {
     }
 
     @HandleEvent(priority = HandleEvent.LOW, receiveCancelled = true)
-    fun onPacketReceive(event: PacketReceivedEvent) {
+    private fun onPacketReceived(event: PacketReceivedEvent) {
         if (!enabled) return
         val packet = event.packet
         packet.print()
@@ -270,7 +270,7 @@ object PacketTest {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shtestpacket") {
             description = "Logs incoming and outgoing packets to the console"
             category = CommandCategory.DEVELOPER_TEST

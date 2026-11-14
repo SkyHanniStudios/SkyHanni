@@ -62,8 +62,8 @@ object ItemAbilityCooldown {
     )
 
     private var lastAbility = ""
-    private var items = mapOf<String, List<ItemText>>()
-    private var abilityItems = mapOf<SafeItemStack, MutableList<ItemAbility>>()
+    private var items = emptyMap<String, List<ItemText>>()
+    private var abilityItems = emptyMap<SafeItemStack, MutableList<ItemAbility>>()
     private val WEIRD_TUBA = "WEIRD_TUBA".toInternalName()
     private val WEIRDER_TUBA = "WEIRDER_TUBA".toInternalName()
     private val VOODOO_DOLL = "VOODOO_DOLL".toInternalName()

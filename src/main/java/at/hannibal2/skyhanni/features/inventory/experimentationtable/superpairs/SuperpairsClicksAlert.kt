@@ -6,7 +6,6 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.events.InventoryOpenEvent
-import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
 import at.hannibal2.skyhanni.features.inventory.experimentationtable.ExperimentsAddonsHelper
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
@@ -42,7 +41,7 @@ object SuperpairsClicksAlert {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onInventoryUpdated(event: InventoryUpdatedEvent) {
+    fun onInventoryUpdated() {
         if (!config.addons.maxSequenceAlert) return
         if (!ExperimentationTableApi.inAddon || roundsNeeded == -1) return
 

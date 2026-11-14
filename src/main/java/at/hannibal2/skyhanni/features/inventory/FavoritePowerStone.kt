@@ -5,7 +5,6 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.MaxwellApi
 import at.hannibal2.skyhanni.data.ProfileStorageData
 import at.hannibal2.skyhanni.events.GuiContainerEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.InventoryOpenEvent
 import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -21,7 +20,7 @@ object FavoritePowerStone {
     private val config get() = SkyHanniMod.feature.inventory
     private val storage get() = ProfileStorageData.profileSpecific
 
-    private var highlightedSlots = setOf<Int>()
+    private var highlightedSlots = emptySet<Int>()
     private var inInventory = false
 
     @HandleEvent
@@ -66,7 +65,7 @@ object FavoritePowerStone {
     }
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    fun onInventoryClose() {
         inInventory = false
     }
 

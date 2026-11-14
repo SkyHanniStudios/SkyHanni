@@ -3,9 +3,7 @@ package at.hannibal2.skyhanni.features.itemabilities
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.features.itemability.CrownOfAvariceConfig.CrownOfAvariceLines
-import at.hannibal2.skyhanni.events.IslandJoinEvent
 import at.hannibal2.skyhanni.events.OwnInventoryArmorUpdateEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.features.event.diana.DianaApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.InventoryUtils
@@ -75,8 +73,8 @@ object CrownOfAvariceCounter {
     }
 
 
-    @HandleEvent(SecondPassedEvent::class)
-    fun onSecondPassed() {
+    @HandleEvent
+    private fun onSecondPassed() {
         if (!isEnabled()) return
         if (!isWearingCrown) return
         // No need to update if paused, we'll unpause with onInventoryUpdated
@@ -85,7 +83,7 @@ object CrownOfAvariceCounter {
     }
 
     @HandleEvent
-    fun onInventoryArmorUpdate(event: OwnInventoryArmorUpdateEvent) {
+    private fun onOwnInventoryArmorUpdate(event: OwnInventoryArmorUpdateEvent) {
         if (!isEnabled() || event.slot != 5) return
         val item = event.itemStack
         if (item.getInternalNameOrNull() != internalName) return
@@ -121,8 +119,8 @@ object CrownOfAvariceCounter {
     fun isAvariceConsuming(): Boolean =
         isWearingCrown && (totalCoins ?: 0) < MAX_AVARICE_COINS
 
-    @HandleEvent(IslandJoinEvent::class)
-    fun onIslandJoin() {
+    @HandleEvent
+    private fun onIslandJoin() {
         if (config.resetOnWorldChange) reset()
         totalCoins = InventoryUtils.getHelmet()?.getCoinsOfAvarice()
     }

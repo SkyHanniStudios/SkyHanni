@@ -81,7 +81,7 @@ object CurrentEquipmentApi {
     private var lastClickedEquipmentTime = SimpleTimeMark.farPast()
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onInventoryUpdate(event: InventoryOpenEvent) {
+    private fun onInventoryOpen(event: InventoryOpenEvent) {
         if (!inventory.isInside()) return
         EquipmentSlot.entries.forEach {
             handleInventoryItem(it, event.inventoryItems[it.slot])
@@ -89,7 +89,7 @@ object CurrentEquipmentApi {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onItemClick(event: ItemClickEvent) {
+    private fun onItemClick(event: ItemClickEvent) {
         if (event.clickType != InteractClickType.RIGHT_CLICK) return
         val item = event.itemInHand ?: return
         val category = item.getItemCategoryOrNull() ?: return
@@ -100,7 +100,7 @@ object CurrentEquipmentApi {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         chatEquipRegex.matchMatcher(event.message) {
             if (lastClickedEquipmentTime.passedSince() > 1.seconds) return@matchMatcher
             val chatItem = group("item").removeColor()
@@ -112,7 +112,7 @@ object CurrentEquipmentApi {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shspoofequipment") {
             description = "Spoofs a SkyBlock equipment slot."
             category = CommandCategory.DEVELOPER_TEST
@@ -126,7 +126,7 @@ object CurrentEquipmentApi {
     }
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Equipment")
         event.addIrrelevant {
             val storage = storage ?: run {

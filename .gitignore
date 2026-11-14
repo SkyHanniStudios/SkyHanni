@@ -5,6 +5,7 @@
 !.idea/externalDependencies.xml
 !.idea/scopes/Mixins.xml
 !.idea/liveTemplates/SkyHanni.xml
+!.idea/daetekt.xml
 .vscode/
 run/
 build/

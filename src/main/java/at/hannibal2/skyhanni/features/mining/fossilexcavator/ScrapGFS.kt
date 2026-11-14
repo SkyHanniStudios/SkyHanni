@@ -5,7 +5,6 @@ import at.hannibal2.skyhanni.api.GetFromSackApi
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.HypixelData
 import at.hannibal2.skyhanni.data.SackApi
-import at.hannibal2.skyhanni.events.OwnInventoryItemUpdateEvent
 import at.hannibal2.skyhanni.events.SackChangeEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ConditionalUtils.afterChange
@@ -80,7 +79,7 @@ object ScrapGFS {
     }
 
     @HandleEvent(onlyOnIsland = DWARVEN_MINES)
-    private fun onOwnInventoryItemUpdate(event: OwnInventoryItemUpdateEvent) {
+    private fun onOwnInventoryItemUpdate() {
         if (!enabled) return
         susScrapInInventory = getSusScrapCurrentlyInInventory()
         uiDirty = true

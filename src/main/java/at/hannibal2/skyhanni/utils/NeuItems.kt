@@ -15,8 +15,8 @@ import at.hannibal2.skyhanni.utils.ItemPriceUtils.getPriceOrNull
 import at.hannibal2.skyhanni.utils.ItemUtils.getInternalName
 import at.hannibal2.skyhanni.utils.ItemUtils.getRepoItemNameFromJson
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
-import at.hannibal2.skyhanni.utils.NeuItems.allItemsCache
 import at.hannibal2.skyhanni.utils.NeuItems.ambiguousDisplayNames
+import at.hannibal2.skyhanni.utils.NeuItems.neuPetLevelPattern
 import at.hannibal2.skyhanni.utils.PrimitiveItemStack.Companion.makePrimitiveStack
 import at.hannibal2.skyhanni.utils.RegexUtils.find
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
@@ -91,7 +91,7 @@ object NeuItems {
     var commonItemAliases: ItemAliases = ItemAliases()
         private set
 
-    var allItemsCache = mapOf<String, NeuInternalName>() // item name -> internal name
+    var allItemsCache = emptyMap<String, NeuInternalName>() // item name -> internal name
         private set
 
     private val fallbackItem by lazy {

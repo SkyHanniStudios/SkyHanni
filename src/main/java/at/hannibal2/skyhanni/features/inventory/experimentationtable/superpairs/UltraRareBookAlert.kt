@@ -5,8 +5,6 @@ import at.hannibal2.skyhanni.api.ExperimentationTableApi
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.data.title.TitleManager
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.experiments.TableRareUncoverEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
@@ -52,7 +50,7 @@ object UltraRareBookAlert {
     }
 
     @HandleEvent(onlyOnIsland = PRIVATE_ISLAND)
-    private fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
+    private fun onChestGuiRender() {
         if (!isEnabled()) return
         if (lastNotificationTime.passedSince() > 5.seconds) return
 
@@ -72,7 +70,7 @@ object UltraRareBookAlert {
     }
 
     @HandleEvent(onlyOnIsland = PRIVATE_ISLAND)
-    private fun onInventoryClose(event: InventoryCloseEvent) {
+    private fun onInventoryClose() {
         enchantsFound = false
     }
 

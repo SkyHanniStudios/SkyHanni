@@ -4,7 +4,6 @@ import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.jsonobjects.repo.InfernoMinionFuelsJson
 import at.hannibal2.skyhanni.events.GuiContainerEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.events.minecraft.ToolTipTextEvent
@@ -35,7 +34,7 @@ object InfernoMinionFeatures {
         "minion.infernominiontitle",
         "Inferno Minion (?:[IVX]{1,4}|\\d+)$",
     )
-    var fuelItemIds = setOf<NeuInternalName>()
+    var fuelItemIds = emptySet<NeuInternalName>()
         private set
     private var inInventory = false
 
@@ -51,7 +50,7 @@ object InfernoMinionFeatures {
     }
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    fun onInventoryClose() {
         inInventory = false
     }
 

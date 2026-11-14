@@ -2,7 +2,6 @@ package at.hannibal2.skyhanni.utils
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.IslandType
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.compat.InventoryGuiScaleCompat
@@ -50,7 +49,7 @@ class RenderDisplayHelper(
         }
 
         @HandleEvent
-        fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
+        fun onChestGuiRender() {
             val isInOwnInventory = MinecraftCompat.screen is InventoryScreen
             for (display in currentlyVisibleDisplays) {
                 if (display.renderIn(isInOwnInventory)) {
@@ -66,7 +65,7 @@ class RenderDisplayHelper(
         }
 
         @HandleEvent
-        fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+        fun onGuiRenderOverlay() {
             val isInOwnInventory = MinecraftCompat.screen is InventoryScreen
             for (display in currentlyVisibleDisplays) {
                 if (display.outsideInventory && !display.renderIn(isInOwnInventory)) {

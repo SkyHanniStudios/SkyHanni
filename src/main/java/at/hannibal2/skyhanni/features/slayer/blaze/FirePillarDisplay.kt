@@ -30,7 +30,7 @@ object FirePillarDisplay {
     private var entityId: Int = 0
 
     @HandleEvent(onlyOnIsland = IslandType.CRIMSON_ISLE)
-    fun onEntityCustomNameUpdate(event: EntityCustomNameUpdateEvent<ArmorStand>) {
+    private fun onEntityNameUpdate(event: EntityCustomNameUpdateEvent<ArmorStand>) {
         if (!config.firePillarDisplay) return
         val seconds = entityNamePattern.matchGroup(event.newNameFormatted ?: return, "seconds") ?: return
         entityId = event.entity.id
@@ -43,7 +43,7 @@ object FirePillarDisplay {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CRIMSON_ISLE)
-    fun onGuiRenderOverlay() {
+    private fun onGuiRenderOverlay() {
         if (!config.firePillarDisplay) return
 
         val display = display ?: return

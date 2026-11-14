@@ -9,7 +9,6 @@ import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.title.TitleContext
 import at.hannibal2.skyhanni.data.title.TitleManager
 import at.hannibal2.skyhanni.events.CheckRenderEntityEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.TabListUpdateEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.entity.EntityEnterWorldEvent
@@ -247,7 +246,7 @@ object TrevorFeatures {
         questActive = active
     }
 
-    @HandleEvent(GuiRenderEvent.GuiOverlayRenderEvent::class, priority = HandleEvent.LOWEST, onlyOnIsland = IslandType.THE_FARMING_ISLANDS)
+    @HandleEvent(priority = HandleEvent.LOWEST, onlyOnIsland = IslandType.THE_FARMING_ISLANDS)
     private fun onGuiRenderOverlay() {
         if (!config.cooldownGui) return
 
@@ -356,7 +355,7 @@ object TrevorFeatures {
     }
 
     @HandleEvent(priority = HandleEvent.HIGHEST, onlyOnIsland = IslandType.THE_FARMING_ISLANDS)
-    private fun onCheckRender(event: CheckRenderEntityEvent<ArmorStand>) {
+    private fun onCheckRenderEntity(event: CheckRenderEntityEvent<ArmorStand>) {
         if (!inTrapperDen || !config.cooldown) return
         if (clickArmorStandPattern.matches(event.entity.name.string)) event.cancel()
     }

@@ -34,7 +34,7 @@ object CrimsonIsleReputationApi {
         }
 
     @HandleEvent
-    fun onWidgetUpdateEvent(event: WidgetUpdateEvent) {
+    private fun onWidgetUpdate(event: WidgetUpdateEvent) {
         if (!event.isWidget(TabWidget.REPUTATION)) return
 
         TabWidget.REPUTATION.matchMatcherFirstLine {
@@ -50,7 +50,7 @@ object CrimsonIsleReputationApi {
     }
 
     @HandleEvent
-    fun onProfileViewerLoad(event: ProfileViewerDataLoadedEvent) {
+    private fun onProfileViewerDataLoaded(event: ProfileViewerDataLoadedEvent) {
         val faction = event.getCurrentPlayerData()?.netherData ?: return
         factionType = FactionType.fromAPIName(faction.currentFaction)
         crimsonStorage?.reputation[FactionType.MAGE] = faction.mageReputation

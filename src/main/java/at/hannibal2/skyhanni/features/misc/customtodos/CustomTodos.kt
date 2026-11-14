@@ -73,7 +73,9 @@ class CustomTodos(
     }
 
     fun save() {
-        SkyHanniMod.customTodos.customTodos = todos.map { it.into() }.toMutableList()
+        val saved = todos.map { it.into() }
+        SkyHanniMod.customTodos.customTodos.clear()
+        SkyHanniMod.customTodos.customTodos.addAll(saved)
         SkyHanniMod.configManager.saveConfig(ConfigFileType.CUSTOM_TODOS, "Save file")
     }
 

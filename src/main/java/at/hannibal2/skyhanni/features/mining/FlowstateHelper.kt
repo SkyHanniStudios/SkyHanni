@@ -4,9 +4,6 @@ import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.IslandTypeTag
 import at.hannibal2.skyhanni.data.ProfileStorageData
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.IslandChangeEvent
-import at.hannibal2.skyhanni.events.ItemInHandChangeEvent
 import at.hannibal2.skyhanni.events.UserLuckCalculateEvent
 import at.hannibal2.skyhanni.events.mining.OreMinedEvent
 import at.hannibal2.skyhanni.features.mining.FlowstateHelper.blockBreakStreak
@@ -68,7 +65,7 @@ object FlowstateHelper {
     private var flowstateCache: Int? = null
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onBlockMined(event: OreMinedEvent) {
+    private fun onOreMined(event: OreMinedEvent) {
         if (!IslandTypeTag.CUSTOM_MINING.isInIsland()) return
         if (flowstateCache == null) return
 
@@ -80,7 +77,7 @@ object FlowstateHelper {
     }
 
     @HandleEvent
-    fun onTick() {
+    private fun onTick() {
         if (!IslandTypeTag.CUSTOM_MINING.isInIsland()) return
 
         attemptClearDisplay()
@@ -121,7 +118,7 @@ object FlowstateHelper {
     }
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay() {
         if (!IslandTypeTag.CUSTOM_MINING.isInIsland() || !config.enabled) return
         if (flowstateCache == null && !streakEndTimer.isInFuture()) return
 
@@ -166,12 +163,12 @@ object FlowstateHelper {
     }
 
     @HandleEvent
-    fun onChangeItem(event: ItemInHandChangeEvent) {
+    private fun onItemInHandChange() {
         hasFlowstate()
     }
 
     @HandleEvent
-    fun onIslandChange(event: IslandChangeEvent) {
+    private fun onIslandChange() {
         streakEndTimer = SimpleTimeMark.farPast()
         attemptClearDisplay()
     }
@@ -259,7 +256,7 @@ object FlowstateHelper {
     }
 
     @HandleEvent
-    fun onUserLuck(event: UserLuckCalculateEvent) {
+    private fun onUserLuckCalculate(event: UserLuckCalculateEvent) {
         if (personalBest < 500) return
         val luck = calculateFlowstateLuck(personalBest)
         event.addLuck(luck)
