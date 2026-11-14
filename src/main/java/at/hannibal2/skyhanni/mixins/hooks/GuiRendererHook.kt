@@ -9,6 +9,7 @@ import at.hannibal2.skyhanni.utils.render.item.SkyHanniGuiItemRenderState
 import at.hannibal2.skyhanni.utils.render.item.SkyHanniItemRenderCoordinator
 import at.hannibal2.skyhanni.utils.render.item.SkyHanniPipCoordinatorRenderer
 import at.hannibal2.skyhanni.utils.render.uniforms.SkyHanniChromaUniform
+import at.hannibal2.skyhanni.utils.render.uniforms.SkyHanniShapeData
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation
 import com.mojang.blaze3d.buffers.GpuBufferSlice
 import com.mojang.blaze3d.pipeline.RenderPipeline
@@ -50,8 +51,12 @@ object GuiRendererHook {
         chromaBufferSlice = chromaUniform.writeWith(chromaSize, timeOffset, saturation, forwardDirection)
     }
 
+    fun uploadShapeData() = SkyHanniShapeData.upload()
+    fun bindShapeData(renderPass: RenderPass) = SkyHanniShapeData.bind(renderPass)
+
     @JvmStatic
-    fun clearChromaUniforms() {
+    fun endFrame() {
+        SkyHanniShapeData.endFrame()
         chromaUniform.clear()
         //? if >= 26.2
         chromaBufferSlice = null

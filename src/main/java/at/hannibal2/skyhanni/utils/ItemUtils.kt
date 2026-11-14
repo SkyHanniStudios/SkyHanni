@@ -73,6 +73,7 @@ import com.mojang.authlib.GameProfile
 import com.mojang.authlib.properties.Property
 import com.mojang.authlib.properties.PropertyMap
 import net.minecraft.ChatFormatting
+import net.minecraft.client.Minecraft
 import net.minecraft.core.component.DataComponentMap
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.registries.BuiltInRegistries
@@ -1056,6 +1057,12 @@ object ItemUtils {
         val identifier = this.get(DataComponents.ITEM_MODEL)
         val itemModel = BuiltInRegistries.ITEM.getValue(identifier)
         return itemModel.takeUnless { it == Items.AIR || this.`is`(it) }
+    }
+
+    fun SafeItemStack.withLoadedItemModel(): SafeItemStack {
+        val modelId = get(DataComponents.ITEM_MODEL) ?: return this
+        if (modelId in Minecraft.getInstance().modelManager.bakedItemStackModels) return this
+        return copy().apply { set(DataComponents.ITEM_MODEL, BuiltInRegistries.ITEM.getKey(getItem())) }
     }
 
     fun SafeItemStack.asTextComponent(): Component? {

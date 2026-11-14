@@ -1,16 +1,20 @@
 #version 150
 
+#moj_import <skyhanni:shape_data.glsl>
+
 const float tau = 6.2831853f;
 
-in vec4 roundedParams0;
-in vec4 roundedParams1;
-in vec4 gradientParams0;
-in vec4 gradientParams1;
-in vec4 gradientParams2;
+flat in int shapeIndex;
 
 out vec4 fragColor;
 
 void main() {
+    vec4 roundedParams0 = ShapeData[shapeIndex];
+    vec4 roundedParams1 = ShapeData[shapeIndex + 1];
+    vec4 gradientParams0 = ShapeData[shapeIndex + 2];
+    vec4 startColor = ShapeData[shapeIndex + 3];
+    vec4 endColor = ShapeData[shapeIndex + 4];
+
     float smoothness = roundedParams0.y;
     vec2 halfSize = roundedParams0.zw;
     vec2 centerPos = roundedParams1.xy;
@@ -19,9 +23,6 @@ void main() {
     float progress = gradientParams0.y;
     float phaseOffset = gradientParams0.z;
     bool reverse = gradientParams0.w > 0.5;
-
-    vec4 startColor = gradientParams1;
-    vec4 endColor = gradientParams2;
 
     float radius = min(halfSize.x, halfSize.y);
 

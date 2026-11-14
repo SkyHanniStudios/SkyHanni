@@ -5,6 +5,8 @@ import at.hannibal2.skyhanni.compat.IrisCompat
 import at.hannibal2.skyhanni.utils.render.SkyHanniRenderPipelineUtils.MATRICES_PROJECTION_SNIPPET
 import at.hannibal2.skyhanni.utils.render.SkyHanniRenderPipelineUtils.PosColorNormal
 import at.hannibal2.skyhanni.utils.render.SkyHanniRenderPipelineUtils.commonChromaUniforms
+import at.hannibal2.skyhanni.utils.render.SkyHanniRenderPipelineUtils.shapeDataUniforms
+import at.hannibal2.skyhanni.utils.render.uniforms.SkyHanniShapeData
 import com.mojang.blaze3d.pipeline.BlendFunction
 import com.mojang.blaze3d.pipeline.ColorTargetState
 import com.mojang.blaze3d.pipeline.RenderPipeline
@@ -35,6 +37,7 @@ enum class SkyHanniRenderPipeline(
     uniforms: Map<String, UniformType> = emptyMap(),
     depthWrite: Boolean = true,
     val irisProgram: IrisCompat.IrisProgram = IrisCompat.IrisProgram.BASIC,
+    usesShapeData: Boolean = false,
 ) {
     LINES(
         snippet = RenderPipelines.LINES_SNIPPET,
@@ -101,40 +104,47 @@ enum class SkyHanniRenderPipeline(
     ),
     ROUNDED_RECT_DEFERRED(
         snippet = MATRICES_PROJECTION_SNIPPET,
-        vFormat = SkyHanniVertexFormats.POSITION_COLOR_ROUNDED,
         blend = BlendFunction.TRANSLUCENT,
         vertexShaderPath = "rounded_rect_deferred",
+        uniforms = shapeDataUniforms,
         depthWrite = false,
+        usesShapeData = true,
     ),
     ROUNDED_RECT_OUTLINE_DEFERRED(
         snippet = MATRICES_PROJECTION_SNIPPET,
-        vFormat = SkyHanniVertexFormats.POSITION_COLOR_ROUNDED,
         blend = BlendFunction.TRANSLUCENT,
         vertexShaderPath = "rounded_rect_outline_deferred",
+        uniforms = shapeDataUniforms,
         depthWrite = false,
+        usesShapeData = true,
     ),
     CIRCLE_DEFERRED(
         snippet = MATRICES_PROJECTION_SNIPPET,
-        vFormat = SkyHanniVertexFormats.POSITION_COLOR_ROUNDED,
         blend = BlendFunction.TRANSLUCENT,
         vertexShaderPath = "circle_deferred",
+        uniforms = shapeDataUniforms,
         depthWrite = false,
+        usesShapeData = true,
     ),
     ROUNDED_TEXTURED_RECT_DEFERRED(
         snippet = MATRICES_PROJECTION_SNIPPET,
-        vFormat = SkyHanniVertexFormats.POSITION_TEX_ROUNDED,
+        vFormat = DefaultVertexFormat.POSITION_TEX,
         blend = BlendFunction.TRANSLUCENT,
         vertexShaderPath = "rounded_texture_deferred",
         sampler = "Sampler0",
+        uniforms = shapeDataUniforms,
         depthWrite = false,
         irisProgram = IrisCompat.IrisProgram.TEXTURED,
+        usesShapeData = true,
     ),
     RADIAL_GRADIENT_CIRCLE_DEFERRED(
         snippet = MATRICES_PROJECTION_SNIPPET,
-        vFormat = SkyHanniVertexFormats.POSITION_ROUNDED_GRADIENT,
+        vFormat = DefaultVertexFormat.POSITION,
         blend = BlendFunction.TRANSLUCENT,
         vertexShaderPath = "radial_gradient_circle_deferred",
+        uniforms = shapeDataUniforms,
         depthWrite = false,
+        usesShapeData = true,
     ),
     GUI_TEXTURED_TRANSLUCENT(
         snippet = RenderPipelines.GUI_SNIPPET,
@@ -175,6 +185,10 @@ enum class SkyHanniRenderPipeline(
                 uniforms.forEach(this::withUniform)
                 *///?}
 
+                if (usesShapeData) {
+                    withShaderDefine(SkyHanniShapeData.CAPACITY_DEFINE, SkyHanniShapeData.CAPACITY_VEC4S)
+                }
+
                 if (!depthWrite) {
                     withDepthStencilState(Optional.empty())
                 }
@@ -191,5 +205,6 @@ private object SkyHanniRenderPipelineUtils {
     //val MATRICES_PROJECTION_SNIPPET = RenderPipelines.MATRICES_PROJECTION_SNIPPET
 
     val commonChromaUniforms = mapOf("SkyHanniChromaUniforms" to UniformType.UNIFORM_BUFFER)
+    val shapeDataUniforms = mapOf(SkyHanniShapeData.UNIFORM_NAME to UniformType.UNIFORM_BUFFER)
     val PosColorNormal: VertexFormat = DefaultVertexFormat.POSITION_COLOR_NORMAL_LINE_WIDTH
 }

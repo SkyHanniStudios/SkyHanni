@@ -1,8 +1,9 @@
 #version 150
 
+#moj_import <skyhanni:shape_data.glsl>
+
 in vec2 texCoord;
-in vec4 roundedParams0;
-in vec4 roundedParams1;
+flat in int shapeIndex;
 
 uniform sampler2D Sampler0;
 
@@ -13,6 +14,8 @@ float roundedRectSDF(vec2 center, vec2 halfSize, float radius) {
 }
 
 void main() {
+    vec4 roundedParams0 = ShapeData[shapeIndex];
+    vec4 roundedParams1 = ShapeData[shapeIndex + 1];
     float radius = roundedParams0.x;
     float smoothness = roundedParams0.y;
     vec2 halfSize = roundedParams0.zw;
