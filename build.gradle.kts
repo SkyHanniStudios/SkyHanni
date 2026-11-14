@@ -70,11 +70,7 @@ loom.apply {
             if (System.getenv("repo_action") != "true") {
                 systemProperties.put("devauth.configDir", rootProject.file(".devauth").absolutePath)
             }
-            jvmArguments.addAll(
-                "-Xmx4G",
-                "-Dfabric.modsFolder=${mcVersion}Mods",
-                "-Dfabric.configDir=${mcVersion}Config",
-            )
+            jvmArguments.addAll("-Xmx4G", "-Dfabric.modsFolder=${mcVersion}Mods")
         }
         removeIf { it.name == "server" }
     }
