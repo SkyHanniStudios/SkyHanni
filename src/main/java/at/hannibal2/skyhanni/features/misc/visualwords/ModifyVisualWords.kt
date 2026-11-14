@@ -2,6 +2,7 @@ package at.hannibal2.skyhanni.features.misc.visualwords
 
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
+import at.hannibal2.skyhanni.config.commands.CommandCategory
 import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
 import at.hannibal2.skyhanni.config.enums.OutsideSBFeature
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -46,6 +47,7 @@ object ModifyVisualWords {
     private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shwords") {
             description = "Opens the config list for modifying visual words"
+            category = CommandCategory.USERS_ACTIVE
             callback { openScreen() }
         }
     }
