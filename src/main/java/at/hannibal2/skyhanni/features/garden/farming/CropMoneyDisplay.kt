@@ -48,14 +48,14 @@ import at.hannibal2.skyhanni.utils.renderables.primitives.text
 @SkyHanniModule
 object CropMoneyDisplay {
 
-    var multipliers = mapOf<NeuInternalName, Int>()
+    var multipliers = emptyMap<NeuInternalName, Int>()
 
     private var display: Renderable? = null
     private val config get() = GardenApi.config.moneyPerHours
     private var loaded = false
     private var ready = false
     private val cropNames = mutableMapOf<NeuInternalName, CropType>()
-    private var ignoredItems = listOf<NeuInternalName>()
+    private var ignoredItems = emptyList<NeuInternalName>()
     private val toolHasBountiful get() = GardenApi.storage?.toolWithBountiful
 
     private var moneyPerHour: Map<NeuInternalName, CropMoneyData> = mutableMapOf()

@@ -21,8 +21,8 @@ object SeaCreatureManager {
     private var lastDoubleHookTime = SimpleTimeMark.farPast()
 
     private val seaCreatureMap = mutableMapOf<String, SeaCreature>()
-    var allFishingMobs = mapOf<String, SeaCreature>()
-    var allVariants = mapOf<String, List<String>>()
+    var allFishingMobs = emptyMap<String, SeaCreature>()
+    var allVariants = emptyMap<String, List<String>>()
 
     private val patternGroup = RepoPattern.group("fishing.seacreature")
 

@@ -27,7 +27,7 @@ abstract class ScoreboardElement {
     //  Suggestion: https://discord.com/channels/997079228510117908/1226508204762992733
 
 
-    open fun getLines(): List<ScoreboardLine> = if (isVisible()) getElementsFromAny(getDisplay()) else listOf()
+    open fun getLines(): List<ScoreboardLine> = if (isVisible()) getElementsFromAny(getDisplay()) else emptyList()
 
     private fun isVisible(): Boolean {
         if (!informationFilteringConfig.hideIrrelevantLines) return true

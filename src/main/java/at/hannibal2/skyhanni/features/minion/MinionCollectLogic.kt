@@ -11,7 +11,7 @@ import at.hannibal2.skyhanni.utils.NeuItems
 @SkyHanniModule
 object MinionCollectLogic {
 
-    private var oldMap = mapOf<NeuInternalName, Int>()
+    private var oldMap = emptyMap<NeuInternalName, Int>()
 
     @HandleEvent
     fun onMinionOpen() {

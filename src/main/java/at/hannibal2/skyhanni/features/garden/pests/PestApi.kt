@@ -323,7 +323,7 @@ object PestApi {
     private fun onSkyblockMobFirstSeen(event: MobEvent.FirstSeen.SkyblockMob) {
         val type = PestType.getByNameOrNull(event.mob.name) ?: return
         val plot = GardenPlotApi.plots.find { it.box.isInside(event.mob.centerCords) } ?: return
-        if (lastCheckedPlot != plot.id) gardenPestTypes[plot] = listOf()
+        if (lastCheckedPlot != plot.id) gardenPestTypes[plot] = emptyList()
         if (plot.pests >= 1 && !plot.isPestCountInaccurate && (gardenPestTypes[plot]?.size ?: 0) == plot.pests) return
 
         gardenPestTypes.addToPlot(plot, type)

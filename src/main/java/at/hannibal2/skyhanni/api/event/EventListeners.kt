@@ -75,7 +75,7 @@ class EventListeners private constructor(val name: String, private val isGeneric
         val invoker: Consumer<Any>,
         options: HandleEvent,
         private val generic: Class<*>?,
-        extraPredicates: List<EventPredicate> = listOf(),
+        extraPredicates: List<EventPredicate> = emptyList(),
     ) {
         val priority: Int = options.priority
         val receiveCancelled: Boolean = options.receiveCancelled

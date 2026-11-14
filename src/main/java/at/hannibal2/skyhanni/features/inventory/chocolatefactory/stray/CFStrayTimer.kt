@@ -32,7 +32,7 @@ object CFStrayTimer {
     private var timer: Duration = Duration.ZERO
     private var lastTimerSubtraction: SimpleTimeMark? = SimpleTimeMark.farPast()
     private var lastPingTime = SimpleTimeMark.farPast()
-    private var destructiveSlots: Set<Int> = setOf()
+    private var destructiveSlots: Set<Int> = emptySet()
 
     @HandleEvent
     fun onEggFound(event: EggFoundEvent) {

@@ -163,7 +163,7 @@ object HoppityApi {
 
     private var checkNextInvOpen = false
     private var lastHoppityCallAccept: SimpleTimeMark? = null
-    private var allowedHoppityIslands: Set<IslandType> = setOf()
+    private var allowedHoppityIslands: Set<IslandType> = emptySet()
     private var onHoppityIsland: Boolean = false
 
     // If there is a time since lastHoppityCallAccept, we can assume this is an abiphone call

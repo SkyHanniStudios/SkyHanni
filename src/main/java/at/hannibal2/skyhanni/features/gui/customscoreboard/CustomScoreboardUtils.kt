@@ -113,7 +113,7 @@ object CustomScoreboardUtils {
     }
 
     internal fun getElementsFromAny(element: Any?): List<ScoreboardLine> = when (element) {
-        null -> listOf()
+        null -> emptyList()
         is List<*> -> element.mapNotNull { it?.toScoreboardElement() }
         else -> listOfNotNull(element.toScoreboardElement())
     }

@@ -10,7 +10,7 @@ data class EnforcedConfigValuesJson(
 )
 
 data class EnforcedValueData(
-    @Expose @SerializedName(value = "enforced_values", alternate = ["enforcedValues"]) val enforcedValues: List<EnforcedValue> = listOf(),
+    @Expose @SerializedName(value = "enforced_values", alternate = ["enforcedValues"]) val enforcedValues: List<EnforcedValue> = emptyList(),
     @Expose @SerializedName(value = "notification_psa", alternate = ["notificationPSA"]) val notificationPSA: List<String>? = null,
     @Expose @SerializedName(value = "chat_psa", alternate = ["chatPSA"]) val chatPSA: List<String>? = null,
     @Expose

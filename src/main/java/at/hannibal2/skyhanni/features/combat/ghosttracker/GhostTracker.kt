@@ -63,8 +63,8 @@ object GhostTracker {
         }
 
     private val isMaxBestiary get() = currentBestiaryKills >= MAX_BESTIARY_KILLS
-    private var allowedDrops = setOf<NeuInternalName>()
-    private var allowedSackDrops = setOf<NeuInternalName>()
+    private var allowedDrops = emptySet<NeuInternalName>()
+    private var allowedSackDrops = emptySet<NeuInternalName>()
 
     // TODO: in the future get from neu bestiary data
     private const val MAX_BESTIARY_KILLS = 100_000

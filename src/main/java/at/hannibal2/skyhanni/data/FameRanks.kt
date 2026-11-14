@@ -7,7 +7,7 @@ import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 
 @SkyHanniModule
 object FameRanks {
-    var fameRanksMap = mapOf<String, FameRank>()
+    var fameRanksMap = emptyMap<String, FameRank>()
         private set
 
     fun getByName(name: String) = fameRanksMap.values.find { it.name.equals(name, true) }

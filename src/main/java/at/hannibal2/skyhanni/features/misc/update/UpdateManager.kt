@@ -278,7 +278,7 @@ object UpdateManager {
         }
     }
 
-    var discontinuedVersions: Map<String, DiscontinuedMinecraftVersion> = mapOf()
+    var discontinuedVersions: Map<String, DiscontinuedMinecraftVersion> = emptyMap()
         private set
     private var hasWarned = false
 

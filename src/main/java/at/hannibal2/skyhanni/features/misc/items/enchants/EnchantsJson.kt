@@ -6,15 +6,15 @@ import com.google.gson.annotations.SerializedName
 class EnchantsJson {
     @Expose
     @SerializedName("NORMAL")
-    var normal: HashMap<String, Enchant.Normal> = hashMapOf()
+    val normal:HashMap<String, Enchant.Normal> = hashMapOf()
 
     @Expose
     @SerializedName("ULTIMATE")
-    var ultimate: HashMap<String, Enchant.Ultimate> = hashMapOf()
+    val ultimate:HashMap<String, Enchant.Ultimate> = hashMapOf()
 
     @Expose
     @SerializedName("STACKING")
-    var stacking: HashMap<String, Enchant.Stacking> = hashMapOf()
+    val stacking:HashMap<String, Enchant.Stacking> = hashMapOf()
 
     fun getFromLore(passedLoreName: String): Enchant {
         val loreName = passedLoreName.lowercase()

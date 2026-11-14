@@ -60,7 +60,7 @@ object GardenOptimalSpeed {
     private var lastWarnTime = SimpleTimeMark.farPast()
     private var cropInHand: CropType? = null
     private var lastCrop: CropType? = null
-    private var display = listOf<Renderable>()
+    private var display = emptyList<Renderable>()
     private var lastToolSwitch = SimpleTimeMark.farPast()
 
     @HandleEvent(onlyOnSkyblock = true)

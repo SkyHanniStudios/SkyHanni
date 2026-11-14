@@ -57,7 +57,7 @@ object QuiverApi {
             arrowAmount[this.internalName] = value
         }
 
-    private var arrows: List<ArrowType> = listOf()
+    private var arrows: List<ArrowType> = emptyList()
 
     var wearingSkeletonMasterChestplate = false
         private set

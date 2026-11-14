@@ -11,7 +11,7 @@ enum class SlayerType(
     val rngName: String,
     val clazz: Class<*>,
     val miniBossType: SlayerMiniBossType? = null,
-    val otherNames: List<String> = listOf(),
+    val otherNames: List<String> = emptyList(),
 ) {
     REVENANT(
         "Revenant Horror",

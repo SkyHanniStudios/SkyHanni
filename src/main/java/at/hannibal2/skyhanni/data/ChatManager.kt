@@ -105,8 +105,8 @@ object ChatManager {
         var actionReason: String?,
         var modified: Component?,
         var modifiedReason: String?,
-        val hoverInfo: List<String> = listOf(),
-        val hoverExtraInfo: List<String> = listOf(),
+        val hoverInfo: List<String> = emptyList(),
+        val hoverExtraInfo: List<String> = emptyList(),
     )
 
     @HandleEvent

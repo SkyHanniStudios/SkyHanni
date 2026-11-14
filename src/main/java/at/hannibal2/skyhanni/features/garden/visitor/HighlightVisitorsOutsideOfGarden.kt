@@ -28,7 +28,7 @@ import net.minecraft.world.entity.player.Player
 @SkyHanniModule
 object HighlightVisitorsOutsideOfGarden {
 
-    private var visitorJson = mapOf<String?, List<GardenVisitor>>()
+    private var visitorJson = emptyMap<String?, List<GardenVisitor>>()
 
     private val config get() = VisitorApi.config
 

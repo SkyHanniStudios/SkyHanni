@@ -19,7 +19,7 @@ import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLeadingWhiteLessRes
 
 @SkyHanniModule
 object EssenceUtils {
-    var itemPrices = mapOf<NeuInternalName, Map<Int, EssenceUpgradePrice>>()
+    var itemPrices = emptyMap<NeuInternalName, Map<Int, EssenceUpgradePrice>>()
 
     @HandleEvent
     fun onNeuRepoReload(event: NeuRepositoryReloadEvent) {

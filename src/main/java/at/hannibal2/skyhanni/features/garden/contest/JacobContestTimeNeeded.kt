@@ -116,7 +116,7 @@ object JacobContestTimeNeeded {
         sorted: MutableMap<CropType, Duration>,
         map: MutableMap<CropType, Renderable>,
     ) {
-        var lowBPSWarning = listOf<String>()
+        var lowBPSWarning = emptyList<String>()
         val rawSpeed = speed.toDouble()
         val speedForFormula = crop.getBps()?.let {
             if (it < 15) {

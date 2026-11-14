@@ -29,7 +29,7 @@ import net.minecraft.core.particles.ParticleTypes
 object LivingCaveDefenseBlocks {
 
     private val config get() = RiftApi.config.area.livingCave.defenseBlock
-    private var movingBlocks = mapOf<DefenseBlock, Long>()
+    private var movingBlocks = emptyMap<DefenseBlock, Long>()
     private var staticBlocks = emptyList<DefenseBlock>()
 
     class DefenseBlock(val entity: RemotePlayer, val location: LorenzVec, var hidden: Boolean = false)

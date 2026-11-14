@@ -64,7 +64,7 @@ object BingoApi {
     private var bingoEventStart = getStartOfMonth()
     private var bingoEventEnd = bingoEventStart + 7.days
 
-    private var ranks = mapOf<String, Int>()
+    private var ranks = emptyMap<String, Int>()
     private var data: Map<String, BingoData> = emptyMap()
 
     private var bingoNpcHidden = false

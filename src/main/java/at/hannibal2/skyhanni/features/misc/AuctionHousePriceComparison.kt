@@ -26,7 +26,7 @@ object AuctionHousePriceComparison {
 
     private val config get() = SkyHanniMod.feature.inventory.auctions.auctionsPriceComparison
 
-    private var slotPriceMap = mapOf<Int, Long>()
+    private var slotPriceMap = emptyMap<Int, Long>()
     private var bestPrice = 0L
     private var worstPrice = 0L
     private var inInventory = false

@@ -56,7 +56,7 @@ object EssenceShopHelper {
      */
     private val SLOT_RANGE = 10..33
 
-    private var essenceShops = mutableListOf<EssenceShop>()
+    private var essenceShops = emptyList<EssenceShop>()
     private var currentProgress: EssenceShopProgress? = null
     private var currentEssenceType: String = ""
     private var currentEssenceItem: NeuInternalName? = null

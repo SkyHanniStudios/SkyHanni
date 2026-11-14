@@ -46,7 +46,7 @@ object EndermanSlayerFeatures {
     private val endermenWithBeacons = mutableListOf<EnderMan>()
     private val flyingBeacons = mutableSetOf<ArmorStand>()
     private val nukekubiSkulls = mutableSetOf<ArmorStand>()
-    private var sittingBeacon = mapOf<LorenzVec, SimpleTimeMark>()
+    private var sittingBeacon = emptyMap<LorenzVec, SimpleTimeMark>()
     private val logger = SkyHanniLogger("slayer/enderman")
 
     private val NUKEKUBI_SKULL_TEXTURE by SkullTextureHolder.texture("MOB_NUKEKUBI")

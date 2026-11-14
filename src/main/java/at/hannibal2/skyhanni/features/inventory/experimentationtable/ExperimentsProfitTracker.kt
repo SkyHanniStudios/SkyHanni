@@ -76,7 +76,7 @@ object ExperimentsProfitTracker {
         }
 
         override fun getCoinName(item: TrackedItem) = ""
-        override fun getCoinDescription(item: TrackedItem) = listOf<String>()
+        override fun getCoinDescription(item: TrackedItem) = emptyList<String>()
     }
 
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)

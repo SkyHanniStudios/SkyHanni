@@ -44,8 +44,8 @@ object InfernoMinionProfitTracker {
     private val eyedropsItem = "CAPSAICIN_EYEDROPS_NO_CHARGES".toInternalName()
 
     private val infernoMinionInventory = InventoryDetector { InfernoMinionFeatures.infernoMinionTitlePattern }
-    private var fuelDropMap = mapOf<NeuInternalName, Set<NeuInternalName>>()
-    private var minionDropMap = mapOf<String, Set<NeuInternalName>>()
+    private var fuelDropMap = emptyMap<NeuInternalName, Set<NeuInternalName>>()
+    private var minionDropMap = emptyMap<String, Set<NeuInternalName>>()
 
     private var isInfernoMinion = false
     private var lastFuelItem: NeuInternalName? = null

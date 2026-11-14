@@ -54,7 +54,7 @@ object SkillProgress {
     private var etaDisplay = emptyList<Renderable>()
     private var lastGainUpdate = SimpleTimeMark.farPast()
     private var maxWidth = 182
-    var hideInActionBar = listOf<String>()
+    var hideInActionBar = emptyList<String>()
 
     @HandleEvent
     private fun onGuiRenderOverlay() {

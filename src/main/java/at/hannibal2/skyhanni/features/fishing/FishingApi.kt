@@ -141,8 +141,8 @@ object FishingApi {
     var hasTrophyLine = false
         private set
 
-    private var lavaRods = listOf<NeuInternalName>()
-    private var waterRods = listOf<NeuInternalName>()
+    private var lavaRods = emptyList<NeuInternalName>()
+    private var waterRods = emptyList<NeuInternalName>()
     private val TREASURE_HOOK = "TREASURE_HOOK".toInternalName()
     private val TROPHY_LINE = "TROPHY_LINE".toInternalName()
     private val HOT_BAIT = "HOT_BAIT".toInternalName()

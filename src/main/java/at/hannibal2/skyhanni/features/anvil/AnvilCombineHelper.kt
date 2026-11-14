@@ -13,7 +13,7 @@ import at.hannibal2.skyhanni.utils.SafeItemStack
 @SkyHanniModule
 object AnvilCombineHelper {
 
-    private var highlightedSlots = setOf<Int>()
+    private var highlightedSlots = emptySet<Int>()
 
     @HandleEvent(priority = HandleEvent.LOW)
     private fun onAnvilUpdate(event: AnvilUpdateEvent) {

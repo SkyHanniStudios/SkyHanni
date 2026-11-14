@@ -33,7 +33,7 @@ object HalloweenBasketWaypoints {
     private var isActive = false
     private var isNavigating = false
 
-    private var basketList = setOf<EventWaypoint>()
+    private var basketList = emptySet<EventWaypoint>()
     private var closestBasket: EventWaypoint? = null
 
     private val patternGroup = RepoPattern.group("event.lobby-waypoints")

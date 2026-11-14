@@ -90,7 +90,7 @@ object EnchantParser {
     // Used to determine how many enchants are used on each line
     // for this particular item, since consistency is not Hypixel's strong point
     private var maxEnchantsPerLine = 0
-    private var loreLines: MutableList<Component> = mutableListOf()
+    private val loreLines: MutableList<Component> = mutableListOf()
     private var orderedEnchants: TreeSet<FormattedEnchant> = TreeSet()
 
     private val loreCache: EnchantCache = EnchantCache()
@@ -164,7 +164,7 @@ object EnchantParser {
 
         // Since we don't get given an item stack from /show, we pass an empty enchants map and
         // use all enchants from the Enchants class instead
-        parseEnchants(lore, mapOf(), event.get().value())
+        parseEnchants(lore, emptyMap(), event.get().value())
     }
 
     private fun warnAaronMaxEnchant() {
@@ -230,7 +230,7 @@ object EnchantParser {
 
         stackingEnchants.clear()
         shouldBeSingleColumn = false
-        loreLines = mutableListOf()
+        loreLines.clear()
         orderedEnchants = TreeSet()
         maxEnchantsPerLine = 0
 

@@ -26,5 +26,5 @@ import at.hannibal2.skyhanni.utils.KSerializable
 @KSerializable
 data class RepoPatternDump(
     val sourceLabel: String = "anonymous",
-    val regexes: Map<String, String> = mapOf(),
+    val regexes: Map<String, String> = emptyMap(),
 )

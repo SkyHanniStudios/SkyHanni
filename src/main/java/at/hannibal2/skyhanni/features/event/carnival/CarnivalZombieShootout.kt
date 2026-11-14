@@ -49,7 +49,7 @@ object CarnivalZombieShootout {
     private data class ShootoutZombie(val entity: Zombie, val type: ZombieType)
 
     private var content = Renderable.empty()
-    private var drawZombies = listOf<ShootoutZombie>()
+    private var drawZombies = emptyList<ShootoutZombie>()
     private val zombieTimes = mutableMapOf<ShootoutZombie, SimpleTimeMark>()
     private var maxType = ZombieType.LEATHER
     private var lamp: ShootoutLamp? = null

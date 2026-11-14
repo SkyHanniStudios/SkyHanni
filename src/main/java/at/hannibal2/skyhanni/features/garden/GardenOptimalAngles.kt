@@ -23,7 +23,7 @@ object GardenOptimalAngles {
 
     private var cropInHand: CropType? = null
     private var lastCrop: CropType? = null
-    private var display = listOf<Renderable>()
+    private var display = emptyList<Renderable>()
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
     fun onGuiOpen(event: GuiScreenOpenEvent) {

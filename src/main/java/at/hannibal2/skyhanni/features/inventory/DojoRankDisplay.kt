@@ -32,7 +32,7 @@ object DojoRankDisplay {
         "rank",
         "(?:§\\w)+Your Rank: (?<rank>§\\w.) §8\\((?<score>\\d+)\\)",
     )
-    private var belts = mapOf<String, Int>()
+    private var belts = emptyMap<String, Int>()
 
     @HandleEvent
     fun onChestGuiRender() {

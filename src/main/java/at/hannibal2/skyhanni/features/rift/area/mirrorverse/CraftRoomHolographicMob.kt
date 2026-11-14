@@ -43,7 +43,7 @@ object CraftRoomHolographicMob {
         CaveSpider::class,
     )
 
-    private var holograms = mapOf<Int, Pair<HolographicEntities.HolographicEntity<out LivingEntity>, String?>>()
+    private var holograms = emptyMap<Int, Pair<HolographicEntities.HolographicEntity<out LivingEntity>, String?>>()
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
     private fun onTick() {

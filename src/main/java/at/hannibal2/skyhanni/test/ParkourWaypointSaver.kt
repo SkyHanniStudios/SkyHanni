@@ -26,7 +26,7 @@ object ParkourWaypointSaver {
 
     private val config get() = DevApi.config.waypoint
     private var timeLastSaved = SimpleTimeMark.farPast()
-    private var locations = mutableListOf<LorenzVec>()
+    private val locations =mutableListOf<LorenzVec>()
     private var parkourHelper: ParkourHelper? = null
 
     @HandleEvent
@@ -45,7 +45,7 @@ object ParkourWaypointSaver {
                     if (PlayerUtils.isSneaking()) {
                         locations.clear()
                     } else {
-                        locations = locations.dropLast(1).toMutableList()
+                        locations.removeAt(locations.lastIndex)
                     }
 //                     update()
                 }
@@ -70,10 +70,12 @@ object ParkourWaypointSaver {
         SkyHanniMod.launchCoroutine("parkour waypoint load clipboard") {
             val clipboard = OSUtils.readFromClipboard() ?: return@launchCoroutine
             try {
-                locations = clipboard.split("\n").map { line ->
+                val loaded = clipboard.split("\n").map { line ->
                     val raw = line.replace("\"", "").replace(",", "")
                     raw.split(":").map { it.toDouble() }.toLorenzVec()
-                }.toMutableList()
+                }
+                locations.clear()
+                locations.addAll(loaded)
             } catch (e: NumberFormatException) {
                 ErrorManager.logErrorWithData(
                     e,

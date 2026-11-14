@@ -82,7 +82,7 @@ object BingoNextStepHelper {
 
     private fun updateResult(print: Boolean = false) {
         if (print) println()
-        currentSteps = listOf()
+        currentSteps = emptyList()
         for (step in finalSteps) {
             printRequirements(step, print)
             if (print) println()

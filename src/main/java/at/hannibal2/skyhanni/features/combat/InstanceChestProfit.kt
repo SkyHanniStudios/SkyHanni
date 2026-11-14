@@ -206,7 +206,6 @@ object InstanceChestProfit {
                 ChatUtils.chat("Added ${it.repoItemName}§e to Favorites List.")
             }
         }
-        profileStorage?.instanceChestFavoriteItems = favoriteItems
     }
 
     @HandleEvent

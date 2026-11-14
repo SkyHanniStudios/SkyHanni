@@ -217,7 +217,7 @@ object MineshaftDetection {
             }
 
             '2' -> listOf("${type}_C")
-            else -> listOf()
+            else -> emptyList()
         }
     }
 }

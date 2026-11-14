@@ -30,8 +30,8 @@ object CraftMaterialCollector {
 
     private var inRecipeInventory = false
     private var purchasing = false
-    private var display = listOf<Renderable>()
-    private var neededMaterials = listOf<PrimitiveItemStack>()
+    private var display = emptyList<Renderable>()
+    private var neededMaterials = emptyList<PrimitiveItemStack>()
     private var multiplier = 1
 
     @HandleEvent

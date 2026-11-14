@@ -23,7 +23,7 @@ data class Achievement(
     private val description: Component = Component.empty(),
     val userLuckAmount: Float,
     var secret: Boolean = false,
-    var tiers: List<Int> = listOf(),
+    var tiers: List<Int> = emptyList(),
     var hidden: Boolean = false,
     @Expose
     var data: AchievementUserData = AchievementUserData(),

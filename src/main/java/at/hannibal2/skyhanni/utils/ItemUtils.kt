@@ -109,8 +109,8 @@ object ItemUtils {
     private val compactItemNameCache = mutableMapOf<NeuInternalName, String>() // internal name -> compact item name
 
     // This map might not contain all stats the item has, compare with itemBaseStatsRaw if unclear
-    private var itemBaseStats = mapOf<NeuInternalName, Map<SkyblockStat, Int>>()
-    private var itemBaseStatsRaw = mapOf<NeuInternalName, Map<String, Int>>()
+    private var itemBaseStats = emptyMap<NeuInternalName, Map<SkyblockStat, Int>>()
+    private var itemBaseStatsRaw = emptyMap<NeuInternalName, Map<String, Int>>()
 
     private val missingRepoItems = mutableSetOf<String>()
     private var lastRepoWarning = SimpleTimeMark.farPast()
@@ -672,8 +672,8 @@ object ItemUtils {
         return name
     }
 
-    private var compactNameReplace = mapOf<String, String>()
-    var bazaarOverrides = mapOf<String, String>()
+    private var compactNameReplace = emptyMap<String, String>()
+    var bazaarOverrides = emptyMap<String, String>()
         private set
 
     internal data class BazaarOverride(

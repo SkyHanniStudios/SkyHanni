@@ -50,8 +50,8 @@ object RiftWiltedBerberisHelper {
     private var hasFarmingToolInHand = false
 
     // Maps each field's center position to the number of Wilted Berberis in that field.
-    private var fieldCenters = mapOf<LorenzVec, Int>()
-    private var fieldSequences = mapOf<LorenzVec, BerberisSequence>()
+    private var fieldCenters = emptyMap<LorenzVec, Int>()
+    private var fieldSequences = emptyMap<LorenzVec, BerberisSequence>()
 
     data class WiltedBerberis(var currentParticles: LorenzVec) {
         var previous: LorenzVec? = null

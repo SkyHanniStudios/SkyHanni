@@ -35,7 +35,7 @@ import java.awt.Color
 @SkyHanniModule
 object VisitorApi {
 
-    private var visitors = mapOf<String, Visitor>()
+    private var visitors = emptyMap<String, Visitor>()
     var inInventory = false
     var lastClickedNpc = 0
     val config get() = GardenApi.config.visitors
@@ -150,9 +150,9 @@ object VisitorApi {
         var totalPrice: Double? = null
         var totalReward: Double? = null
         var lore: List<String> = emptyList()
-        var allRewards = listOf<NeuInternalName>()
-        var lastLore = listOf<String>()
-        var blockedLore = listOf<Component>()
+        var allRewards = emptyList<NeuInternalName>()
+        var lastLore = emptyList<String>()
+        var blockedLore = emptyList<Component>()
         var blockReason: VisitorBlockReason? = null
 
         var ignoreShoppingList: Boolean

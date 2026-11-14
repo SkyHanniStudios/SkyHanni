@@ -12,7 +12,7 @@ import at.hannibal2.skyhanni.utils.RenderUtils.renderStrings
 object CustomTextBox {
 
     private val config get() = SkyHanniMod.feature.gui.customTextBox
-    private var display = listOf<String>()
+    private var display = emptyList<String>()
 
     @HandleEvent
     fun onConfigLoad() {

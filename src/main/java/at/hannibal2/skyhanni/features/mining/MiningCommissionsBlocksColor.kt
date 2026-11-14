@@ -56,7 +56,7 @@ object MiningCommissionsBlocksColor {
 
     private var oldSneakState = false
     private var dirty = false
-    private var replaceBlocksMapCache = mutableMapOf<BlockState, BlockState>()
+    private val replaceBlocksMapCache =mutableMapOf<BlockState, BlockState>()
 
     // TODO Commission API
     @HandleEvent
@@ -116,7 +116,7 @@ object MiningCommissionsBlocksColor {
         }
 
         if (reload) {
-            replaceBlocksMapCache = mutableMapOf()
+            replaceBlocksMapCache.clear()
             MinecraftCompat.reloadChunks()
             dirty = false
         }
@@ -141,7 +141,7 @@ object MiningCommissionsBlocksColor {
     @HandleEvent
     fun onWorldChange() {
         enabled = false
-        replaceBlocksMapCache = mutableMapOf()
+        replaceBlocksMapCache.clear()
     }
 
     @HandleEvent

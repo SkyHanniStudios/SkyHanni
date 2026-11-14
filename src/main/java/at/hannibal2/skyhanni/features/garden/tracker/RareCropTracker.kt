@@ -173,7 +173,7 @@ object RareCropTracker {
         rareCropDropInfo = data.specialCrops
     }
 
-    private var rareCropDropInfo = mapOf<String, RareCropDropInfo>()
+    private var rareCropDropInfo = emptyMap<String, RareCropDropInfo>()
     private var currentRareCropDropChance = 0.0
     private var lastCalculationTime = SimpleTimeMark.farPast()
 

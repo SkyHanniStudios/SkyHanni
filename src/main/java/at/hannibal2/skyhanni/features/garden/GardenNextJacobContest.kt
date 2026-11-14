@@ -77,7 +77,7 @@ object GardenNextJacobContest {
 
     private var display: Renderable? = null
     private var simpleDisplay: Renderable? = null
-    private var knownContests: List<EliteFarmingContest> = listOf()
+    private var knownContests: List<EliteFarmingContest> = emptyList()
     private var nextContestsAvailableAt = SimpleTimeMark.farPast()
     private var lastFetchAttempted = SimpleTimeMark.farPast()
     private var lastWarningTime = SimpleTimeMark.farPast()
@@ -92,7 +92,7 @@ object GardenNextJacobContest {
     } ?: false
 
     fun resetContestData(force: Boolean = false) {
-        knownContests = listOf()
+        knownContests = emptyList()
         fetchedFromElite = false
         if (force) lastFetchAttempted = SimpleTimeMark.farPast()
         fetchContestsIfAble()
@@ -242,7 +242,7 @@ object GardenNextJacobContest {
         if (knownContests.isNotEmpty() && loadedContestsYear != year) {
             val endTime = knownContests.first().endTime
             val lastYear = endTime.toSkyBlockTime().year
-            if (year != lastYear) knownContests = listOf()
+            if (year != lastYear) knownContests = emptyList()
             if (nextContestsAvailableAt.isInFuture() || nextContestsAvailableAt.isFarPast()) {
                 nextContestsAvailableAt = SimpleTimeMark.now() - 1.milliseconds
                 fetchContestsIfAble()
@@ -323,7 +323,7 @@ object GardenNextJacobContest {
         val savedYear = savedContests.firstOrNull()?.endTime?.toSkyBlockTime()?.year ?: return
         // Clear contests if from previous year
         if (savedYear != SkyBlockTime.now().year) {
-            SkyHanniMod.jacobContestsData.knownContests = listOf()
+            SkyHanniMod.jacobContestsData.knownContests = emptyList()
         } else knownContests = savedContests
     }
 

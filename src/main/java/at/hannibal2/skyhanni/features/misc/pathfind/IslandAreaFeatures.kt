@@ -38,10 +38,10 @@ object IslandAreaFeatures {
     private val areaListConfig get() = config.areasList
 
     var display: Renderable? = null
-    private var smallAreas = setOf<String>()
+    private var smallAreas = emptySet<String>()
     private val textInput = SearchTextInput()
     private val areaNodes get() = IslandAreaBackend.areaNodes
-    private var visibleAreaNodes = listOf<AreaNode>()
+    private var visibleAreaNodes = emptyList<AreaNode>()
     private var currentTitle: TitleContext? = null
     private var lastTitleTime = SimpleTimeMark.farPast()
 

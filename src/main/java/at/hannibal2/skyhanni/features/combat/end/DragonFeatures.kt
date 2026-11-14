@@ -414,7 +414,7 @@ object DragonFeatures {
 
     private val widgetErrorMessage = listOf(Renderable.text("§cDragon Widget is disabled!"))
 
-    private var display = listOf<Renderable>()
+    private var display = emptyList<Renderable>()
 
     @HandleEvent(onlyOnIsland = IslandType.THE_END)
     private fun onGuiRender() {

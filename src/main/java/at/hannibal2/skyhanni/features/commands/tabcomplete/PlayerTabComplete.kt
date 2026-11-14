@@ -20,7 +20,7 @@ import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 object PlayerTabComplete {
 
     private val config get() = SkyHanniMod.feature.misc.commands.tabComplete
-    private var vipVisits = listOf<String>()
+    private var vipVisits = emptyList<String>()
 
     private val vipVisitsEntry = lazyEntry { vipVisits }
     private val allPlayers = getExcluding()

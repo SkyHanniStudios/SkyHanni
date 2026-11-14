@@ -49,12 +49,12 @@ object CFStrayWarning {
     private val chromaColorAlt2 = ChromaColour.fromRGB(255, 85, 85, 2300, 255)
 
     private var flashScreen = false
-    private var activeStraySlots: Set<Int> = setOf()
-    private var destructiveSlots: Set<Int> = setOf()
+    private var activeStraySlots: Set<Int> = emptySet()
+    private var destructiveSlots: Set<Int> = emptySet()
 
     private fun reset() {
         flashScreen = false
-        activeStraySlots = setOf()
+        activeStraySlots = emptySet()
     }
 
     private fun isRarityOrHigher(stack: SafeItemStack, rarity: LorenzRarity) =

@@ -26,7 +26,7 @@ import kotlin.time.Duration.Companion.seconds
 
 @SkyHanniModule
 object LimboPlaytime {
-    private var modifiedList = listOf<Component>()
+    private var modifiedList = emptyList<Component>()
     private var setMinutes = false
     private val patternGroup = RepoPattern.group("misc.limbo.tooltip")
 

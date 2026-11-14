@@ -18,7 +18,7 @@ import net.minecraft.world.entity.item.ItemEntity
 @SkyHanniModule
 object DungeonSecretChime {
     private val config get() = SkyHanniMod.feature.dungeon.secretChime
-    private var dungeonSecretItems = setOf<NeuInternalName>()
+    private var dungeonSecretItems = emptySet<NeuInternalName>()
 
     @HandleEvent
     private fun onDungeonBlockClick(event: DungeonBlockClickEvent) {

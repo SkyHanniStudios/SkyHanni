@@ -46,11 +46,11 @@ object CustomScoreboard {
     private var display: Renderable? = null
     private var cache: Renderable? = null
 
-    private var currentIslandEntries = listOf<ScoreboardElement>()
-    var currentIslandEvents = listOf<ScoreboardEvent>()
+    private var currentIslandEntries = emptyList<ScoreboardElement>()
+    var currentIslandEvents = emptyList<ScoreboardEvent>()
         private set
 
-    var activePatterns = listOf<Pattern>()
+    var activePatterns = emptyList<Pattern>()
         private set
 
     private const val GUI_NAME = "Custom Scoreboard"

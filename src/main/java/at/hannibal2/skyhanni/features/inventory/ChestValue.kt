@@ -44,7 +44,7 @@ object ChestValue {
 
     private val config get() = SkyHanniMod.feature.inventory.chestValueConfig
     private var display = emptyList<Renderable>()
-    private var chestItems = mapOf<String, ChestItem>()
+    private var chestItems = emptyMap<String, ChestItem>()
     private val inInventory get() = isValidStorage()
     private var inOwnInventory = false
     private val scrollValue = ScrollValue()

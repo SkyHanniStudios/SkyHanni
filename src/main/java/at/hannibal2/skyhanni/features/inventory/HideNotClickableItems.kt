@@ -27,7 +27,7 @@ import kotlin.time.Duration.Companion.seconds
 object HideNotClickableItems {
     private val config get() = SkyHanniMod.feature.inventory.hideNotClickable
 
-    var hideReasons = listOf<String>()
+    var hideReasons = emptyList<String>()
     var showGreenLine = false
     var allowBypass = true
 

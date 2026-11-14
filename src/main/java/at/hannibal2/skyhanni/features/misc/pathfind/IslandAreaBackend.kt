@@ -26,7 +26,7 @@ object IslandAreaBackend {
 
     private val areaListConfig get() = config.areasList
 
-    var areaNodes = listOf<AreaNode>()
+    var areaNodes = emptyList<AreaNode>()
     private var nodeUpdateJob: Job? = null
     private val nodeSaveMutex = Mutex()
 

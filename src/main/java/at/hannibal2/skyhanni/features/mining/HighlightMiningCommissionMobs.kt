@@ -27,7 +27,7 @@ object HighlightMiningCommissionMobs {
     private val config get() = SkyHanniMod.feature.mining
 
     // TODO Commission API
-    private var active = listOf<(LivingEntity) -> Boolean>()
+    private var active = emptyList<(LivingEntity) -> Boolean>()
 
     // TODO Commission API
     private val commissionMobs: Map<String, (LivingEntity) -> Boolean> = mapOf(

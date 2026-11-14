@@ -21,7 +21,7 @@ import net.minecraft.world.entity.decoration.ArmorStand
 object DebugEntitySkinCommand {
 
     private var skinToFind: String? = null
-    private var foundEntities = setOf<ArmorStand>()
+    private var foundEntities = emptySet<ArmorStand>()
 
     @HandleEvent
     private fun onCommandRegistration(event: CommandRegistrationEvent) {

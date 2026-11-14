@@ -13,7 +13,6 @@ import at.hannibal2.skyhanni.data.model.waypoints.SkyHanniWaypoint
 import at.hannibal2.skyhanni.data.model.waypoints.WaypointFormats
 import at.hannibal2.skyhanni.data.model.waypoints.Waypoints
 import at.hannibal2.skyhanni.events.IslandChangeEvent
-import at.hannibal2.skyhanni.events.hypixel.HypixelJoinEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.events.mining.GlaciteMineshaftDetectEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -46,14 +45,6 @@ object OrderedWaypoints {
     private var currentOrderedWaypointIndex = 0
     private var lastCloser = 0
     private var loadJob: Job? = null
-
-    @HandleEvent(HypixelJoinEvent::class)
-    private fun onHypixelJoin() {
-        if (SkyHanniMod.orderedWaypointsRoutesData.routes == null) {
-            SkyHanniMod.orderedWaypointsRoutesData.routes = mutableMapOf()
-            saveConfig()
-        }
-    }
 
     fun saveConfig() {
         SkyHanniMod.configManager.saveConfig(ConfigFileType.ROUTES, "Save file")

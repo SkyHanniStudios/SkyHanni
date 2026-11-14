@@ -22,7 +22,7 @@ import at.hannibal2.skyhanni.utils.renderables.primitives.text
 @SkyHanniModule
 object MiningEventDisplay {
     private val config get() = SkyHanniMod.feature.mining.miningEvent
-    private var display = listOf<Renderable>()
+    private var display = emptyList<Renderable>()
 
     private val islandEventData = mutableMapOf<IslandType, MiningIslandEventInfo>()
 

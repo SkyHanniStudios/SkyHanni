@@ -41,7 +41,7 @@ object CarnivalFruitDigging {
 
     private var isPlayingFruitDigging = false
     private var lastSquareDug: GamePos? = null
-    private var remainingFruit = Fruit.entries.associateWith { it.count }.toMutableMap()
+    private val remainingFruit =Fruit.entries.associateWith { it.count }.toMutableMap()
 
     private val solver = FruitDiggingSolver(GRID_LENGTH)
     private var recommendation: FruitDiggingSolver.Recommendation? = null
@@ -442,7 +442,7 @@ object CarnivalFruitDigging {
     fun resetData() {
         isPlayingFruitDigging = false
         gameGrid = GameGrid()
-        remainingFruit = Fruit.entries.associateWith { it.count }.toMutableMap()
+        remainingFruit.putAll(Fruit.entries.associateWith { it.count })
         lastSquareDug = null
         recommendation = null
         solverDirty = false

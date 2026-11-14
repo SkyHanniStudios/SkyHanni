@@ -78,7 +78,7 @@ object DarkMonolithFeatures {
     )
 
     internal data class DarkMonolithData(
-        var knownEggs: Set<LorenzVec> = setOf(),
+        var knownEggs: Set<LorenzVec> = emptySet(),
         var foundEggVec: LorenzVec? = null,
         var lastFoundEggVec: LorenzVec? = null,
         var renderBox: AABB? = null,

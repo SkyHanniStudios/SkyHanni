@@ -17,7 +17,7 @@ import kotlin.time.Duration.Companion.INFINITE
 @SkyHanniModule
 object EnforcedConfigValues {
 
-    private var enforcedConfigValuesData: List<EnforcedValueData> = listOf()
+    private var enforcedConfigValuesData: List<EnforcedValueData> = emptyList()
     private var hasSentPSAsOnce = false
 
     @HandleEvent

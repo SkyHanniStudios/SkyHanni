@@ -56,11 +56,8 @@ object MineshaftPityDisplay {
 
     private val profileStorage get() = ProfileStorageData.profileSpecific?.mining?.mineshaft
 
-    private var minedBlocks: MutableList<PityData>
+    private val minedBlocks: MutableList<PityData>
         get() = profileStorage?.blocksBroken ?: mutableListOf()
-        set(value) {
-            profileStorage?.blocksBroken = value
-        }
 
     private var PityBlock.spreadBlocksBroken: Int
         get() = minedBlocks.firstOrNull { it.pityBlock == this }?.spreadBlocksBroken ?: 0
@@ -94,7 +91,7 @@ object MineshaftPityDisplay {
 
     var lastMineshaftSpawn = SimpleTimeMark.farPast()
 
-    private var display = listOf<Renderable>()
+    private var display = emptyList<Renderable>()
 
     private const val MAX_COUNTER = 2000
 
@@ -315,7 +312,7 @@ object MineshaftPityDisplay {
     }
 
     private fun resetCounter() {
-        minedBlocks = mutableListOf()
+        minedBlocks.clear()
         lastMineshaftSpawn = SimpleTimeMark.now()
         update()
     }

@@ -76,7 +76,7 @@ object ExperimentationSuperpairApi {
 
     private val superpairsSlotMap: MutableMap<Int, SafeItemStack> = mutableMapOf()
     private var lastClickedSlot = -1
-    private var currentFoundData = mapOf<FoundType, List<FoundData>>()
+    private var currentFoundData = emptyMap<FoundType, List<FoundData>>()
 
     // True from the second consecutive "Remaining Clicks: 0" reading onward, skipping the
     // round-end reveal of leftover cards while still processing the genuine final click.

@@ -259,7 +259,7 @@ interface Renderable {
         fun hoverTips(
             content: Any,
             tips: List<Any>,
-            highlightsOnHoverSlots: List<Int> = listOf(),
+            highlightsOnHoverSlots: List<Int> = emptyList(),
             stack: SafeItemStack? = null,
             color: LorenzColor? = null,
             spacedTitle: Boolean = false,

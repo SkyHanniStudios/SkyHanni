@@ -91,7 +91,7 @@ object NeuItems {
     var commonItemAliases: ItemAliases = ItemAliases()
         private set
 
-    var allItemsCache = mapOf<String, NeuInternalName>() // item name -> internal name
+    var allItemsCache = emptyMap<String, NeuInternalName>() // item name -> internal name
         private set
 
     private val fallbackItem by lazy {

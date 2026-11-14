@@ -149,13 +149,13 @@ object SkillApi {
     )
 
     val skillMenuDetector = InventoryDetector { skillMenuNamePattern }
-    var skillXPInfoMap = mutableMapOf<SkillType, SkillXPInfo>()
-    var oldSkillInfoMap = mutableMapOf<SkillType?, SkillInfo?>()
+    val skillXPInfoMap =mutableMapOf<SkillType, SkillXPInfo>()
+    val oldSkillInfoMap =mutableMapOf<SkillType?, SkillInfo?>()
     private val skillStorage get() = ProfileStorageData.profileSpecific?.skills
     val storage get() = skillStorage?.skillData
-    var exactLevelingMap = mapOf<Int, Int>()
-    var levelingMap = mapOf<Int, Int>()
-    var levelArray = listOf<Int>()
+    var exactLevelingMap = emptyMap<Int, Int>()
+    var levelingMap = emptyMap<Int, Int>()
+    var levelArray = emptyList<Int>()
     var activeSkill: SkillType? = null
 
     var showDisplay = false
@@ -752,9 +752,9 @@ object SkillApi {
                     2 -> if (args[0].lowercase() == "goal") StringUtils.getListOfStringsMatchingLastWord(
                         args,
                         SkillType.entries.map { it.displayName },
-                    ) else listOf()
+                    ) else emptyList()
 
-                    else -> listOf()
+                    else -> emptyList()
                 }
             }*/
         }

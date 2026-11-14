@@ -99,7 +99,7 @@ object LoadoutApi {
     private const val SLOTS_PER_ROW = 3
     private const val MAX_PAGES = 3
 
-    var slots = listOf<LoadoutSlot>()
+    var slots = emptyList<LoadoutSlot>()
 
     var currentPage: Int? = null
     private var inLoadouts = false

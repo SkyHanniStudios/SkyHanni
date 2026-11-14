@@ -68,7 +68,7 @@ object VampireSlayerFeatures {
 
     private val entityList = mutableListOf<LivingEntity>()
     private val taggedEntityList = mutableListOf<Int>()
-    private var standList = mapOf<ArmorStand, RemotePlayer>()
+    private var standList = emptyMap<ArmorStand, RemotePlayer>()
 
     // Nicked support
     private val username

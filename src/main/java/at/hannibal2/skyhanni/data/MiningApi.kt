@@ -165,7 +165,7 @@ object MiningApi {
     var inSpidersDen = false
         private set
 
-    var currentAreaOreBlocks = setOf<OreBlock>()
+    var currentAreaOreBlocks = emptySet<OreBlock>()
         private set
 
     val blockStrengths = mutableMapOf<OreBlock, Int>()
@@ -502,7 +502,7 @@ object MiningApi {
         surroundingMinedBlocks.clear()
         lastClickedPos = null
         pickobulusMinedBlocks.clear()
-        currentAreaOreBlocks = setOf()
+        currentAreaOreBlocks = emptySet()
         resetOreEvent()
         resetPickobulusEvent()
         lastOreMinedTime = SimpleTimeMark.farPast()

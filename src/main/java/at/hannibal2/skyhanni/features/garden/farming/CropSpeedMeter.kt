@@ -23,7 +23,7 @@ object CropSpeedMeter {
     private var snapshot = emptyList<String>()
 
     var enabled = false
-    private var startCrops = mapOf<CropType, Long>()
+    private var startCrops = emptyMap<CropType, Long>()
 
     @HandleEvent
     fun onCropClick(event: CropClickEvent) {

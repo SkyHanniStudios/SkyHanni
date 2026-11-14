@@ -20,7 +20,7 @@ object FavoritePowerStone {
     private val config get() = SkyHanniMod.feature.inventory
     private val storage get() = ProfileStorageData.profileSpecific
 
-    private var highlightedSlots = setOf<Int>()
+    private var highlightedSlots = emptySet<Int>()
     private var inInventory = false
 
     @HandleEvent

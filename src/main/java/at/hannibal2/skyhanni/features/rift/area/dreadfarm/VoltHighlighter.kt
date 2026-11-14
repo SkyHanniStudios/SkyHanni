@@ -40,7 +40,7 @@ object VoltHighlighter {
 
     private const val LIGHTNING_DISTANCE = 7F
     private val CHARGE_TIME = 12.seconds
-    private var chargingSince = mapOf<Entity, SimpleTimeMark>()
+    private var chargingSince = emptyMap<Entity, SimpleTimeMark>()
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
     private fun onEntityEquipmentChange(event: EntityEquipmentChangeEvent<Entity>) {

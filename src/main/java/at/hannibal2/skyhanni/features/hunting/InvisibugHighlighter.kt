@@ -29,7 +29,7 @@ object InvisibugHighlighter {
     private const val DISTANCE = 5.0
 
     private val invisibugEntities = mutableSetOf<LivingEntity>()
-    private var locationsToRender = listOf<LorenzVec>()
+    private var locationsToRender = emptyList<LorenzVec>()
 
     @HandleEvent(onlyOnIsland = IslandType.GALATEA, receiveCancelled = true)
     private fun onParticle(event: ParticleEvent) {

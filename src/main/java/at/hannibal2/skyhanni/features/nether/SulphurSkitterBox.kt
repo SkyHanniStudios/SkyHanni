@@ -24,7 +24,7 @@ import net.minecraft.world.phys.AABB
 object SulphurSkitterBox {
 
     private val config get() = SkyHanniMod.feature.fishing.trophyFishing.sulphurSkitterBox
-    private var spongeLocations = listOf<LorenzVec>()
+    private var spongeLocations = emptyList<LorenzVec>()
     private var closestSponge: LorenzVec? = null
     private var renderBox: AABB? = null
     private const val RADIUS = 4

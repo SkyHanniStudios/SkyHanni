@@ -179,7 +179,7 @@ object RemainingSlayerKills {
     }
 
     private fun getMobNames(missing: Double, totalQuestXP: Double): List<String> {
-        val mobs = getMobs() ?: return listOf()
+        val mobs = getMobs() ?: return emptyList()
 
         val combatWisdomMultiplier = getCombatWisdomMultiplier()
         debugMessage("$combatWisdomMultiplier multiplier for Combat Wisdom .")
@@ -200,8 +200,8 @@ object RemainingSlayerKills {
 
     private fun getMobs(): List<Mob>? {
         val data = data ?: return null
-        val areas = data.normalMobs[SlayerApi.currentAreaType] ?: mapOf()
-        val normalMobs = areas[SkyBlockUtils.graphArea] ?: listOf()
+        val areas = data.normalMobs[SlayerApi.currentAreaType] ?: emptyMap()
+        val normalMobs = areas[SkyBlockUtils.graphArea] ?: emptyList()
 
         return buildList {
             addAll(normalMobs)

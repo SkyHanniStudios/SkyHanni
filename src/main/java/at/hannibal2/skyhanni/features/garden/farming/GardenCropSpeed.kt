@@ -22,7 +22,7 @@ object GardenCropSpeed {
 
     var averageBlocksPerSecond = 0.0
 
-    private var blocksSpeedList = listOf<Int>()
+    private var blocksSpeedList = emptyList<Int>()
     private var blocksBroken = 0
     private var secondsStopped = 0
 

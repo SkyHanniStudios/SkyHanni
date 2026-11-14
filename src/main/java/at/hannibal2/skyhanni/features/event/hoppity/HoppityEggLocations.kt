@@ -27,7 +27,7 @@ object HoppityEggLocations {
     private val collectedEggStorage: MutableMap<IslandType, MutableSet<LorenzVec>>
         get() = CFApi.profileStorage?.collectedEggLocations ?: mutableMapOf()
 
-    var apiEggLocations: Map<IslandType, Map<String, LorenzVec>> = mapOf()
+    var apiEggLocations: Map<IslandType, Map<String, LorenzVec>> = emptyMap()
 
     val islandLocations
         get() = apiEggLocations[SkyBlockUtils.currentIsland]?.values?.toSet().orEmpty()

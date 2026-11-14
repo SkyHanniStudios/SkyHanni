@@ -32,7 +32,7 @@ object FarmingLaneFeatures {
     private var currentPosition: Double? = null
     private var currentDistance = 0.0
 
-    private var display = listOf<String>()
+    private var display = emptyList<String>()
     private var titleContext: TitleContext? = null
     private var timeRemaining: Duration? = null
     private var lastSpeed = 0.0

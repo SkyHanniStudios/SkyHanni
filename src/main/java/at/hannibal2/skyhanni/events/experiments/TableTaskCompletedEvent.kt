@@ -11,5 +11,5 @@ class TableTaskCompletedEvent(
     val type: ExperimentationTaskType,
     val tier: ExperimentationTier,
     val enchantingXpGained: Long? = null,
-    val loot: Map<NeuInternalName, Int> = mapOf(),
+    val loot: Map<NeuInternalName, Int> = emptyMap(),
 ) : SkyHanniEvent()

@@ -35,7 +35,7 @@ object CarnivalShopHelper {
      */
     private val SLOT_RANGE = 11..15
 
-    private var repoEventShops = mutableListOf<EventShop>()
+    private var repoEventShops = emptyList<EventShop>()
     private var currentProgress: EventShopProgress? = null
     private var currentEventType: String = ""
     private var tokensOwned: Int = 0

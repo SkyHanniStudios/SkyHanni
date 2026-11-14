@@ -128,7 +128,7 @@ object GardenPlotApi {
         "tablist.spraytime-nocolor",
         "Spray: (?<spray>[\\w\\s]+)(?:\\((?<time>.*)\\))?",
     )
-    var plots = listOf<GardenPlot>()
+    var plots = emptyList<GardenPlot>()
 
     fun getCurrentPlot(): GardenPlot? = getPlot(playerLocation())
 

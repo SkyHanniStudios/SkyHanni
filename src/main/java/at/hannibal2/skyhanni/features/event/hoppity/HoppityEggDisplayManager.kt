@@ -25,7 +25,7 @@ object HoppityEggDisplayManager {
     private val config get() = HoppityEggsManager.config
     private val unclaimedEggsConfig get() = config.unclaimedEggs
 
-    private var display = listOf<Renderable>()
+    private var display = emptyList<Renderable>()
 
     private fun canChangeTransparency(entity: Player): Boolean {
         if (entity.isLocalPlayer) return false

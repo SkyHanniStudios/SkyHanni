@@ -61,14 +61,14 @@ object FossilSolverDisplay {
     private var isNotPossible = false
     private var isCompleted = false
 
-    private var inventoryItemNames = listOf<String>()
+    private var inventoryItemNames = emptyList<String>()
 
     private const val NOT_POSSIBLE_STRING = "§cNo possible fossils on board."
     private const val SOLVED_STRING = "§aFossil found, get all the loot you can."
     private const val FOSSILS_REMAINING_STRING = "§ePossible fossils remaining: "
     private const val CHARGES_REMAINING_STRING = "§eCharges remaining: "
 
-    var possibleFossilTypes = setOf<FossilType>()
+    var possibleFossilTypes = emptySet<FossilType>()
 
     @HandleEvent
     fun onWorldChange() = clearData()

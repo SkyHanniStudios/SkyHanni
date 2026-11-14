@@ -87,7 +87,7 @@ object SlayerProfitTracker {
         }
     }
 
-    private var allowedItems = mapOf<String, List<NeuInternalName>>()
+    private var allowedItems = emptyMap<String, List<NeuInternalName>>()
 
     @HandleEvent
     fun onRepoReload(event: RepositoryReloadEvent) {

@@ -36,7 +36,7 @@ object OutsideSackValue {
     private val textInput = SearchTextInput()
     private val scrollValue = ScrollValue()
 
-    private var display = listOf<Renderable>()
+    private var display = emptyList<Renderable>()
     private var advanced = false
 
     init {

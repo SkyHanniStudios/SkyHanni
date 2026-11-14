@@ -48,11 +48,11 @@ object AttributeShardsData {
     val config get(): AttributeShardsConfig = SkyHanniMod.feature.inventory.attributeShards
     private val storage get() = ProfileStorageData.profileSpecific?.attributeShards
 
-    private var attributeLevelling = mapOf<LorenzRarity, List<Int>>()
-    var unconsumableAttributes = listOf<String>()
-    private var attributeInfo = mapOf<String, NeuAttributeShardData>()
-    private var internalNameToShard = mapOf<NeuInternalName, String>()
-    private var attributeAbilityNameToShard = mapOf<String, String>()
+    private var attributeLevelling = emptyMap<LorenzRarity, List<Int>>()
+    var unconsumableAttributes = emptyList<String>()
+    private var attributeInfo = emptyMap<String, NeuAttributeShardData>()
+    private var internalNameToShard = emptyMap<NeuInternalName, String>()
+    private var attributeAbilityNameToShard = emptyMap<String, String>()
     private val validItemSlots = 9..44
 
     var maxShards = 0

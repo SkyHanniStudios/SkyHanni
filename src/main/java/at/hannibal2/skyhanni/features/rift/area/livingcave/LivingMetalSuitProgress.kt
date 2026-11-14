@@ -20,7 +20,7 @@ object LivingMetalSuitProgress {
 
     private val config get() = RiftApi.config.area.livingCave.livingMetalSuitProgress
     private var display = emptyList<Renderable>()
-    private var progressMap = mapOf<SafeItemStack, Double?>()
+    private var progressMap = emptyMap<SafeItemStack, Double?>()
 
     @HandleEvent
     fun onGuiRenderOverlay() {

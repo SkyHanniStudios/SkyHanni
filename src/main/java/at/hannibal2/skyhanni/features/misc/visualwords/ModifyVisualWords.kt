@@ -22,7 +22,7 @@ object ModifyVisualWords {
     val componentCache = TimeAndSizeLimitedCache<Component, Component>(65565, 5.minutes)
 
     /** Replacements added manually by the user via /shwords. */
-    var userModifiedWords = mutableListOf<VisualWordText>()
+    val userModifiedWords =mutableListOf<VisualWordText>()
 
     /** Replacements added automatically by the mod for features, april fools, etc. */
     private val modModifiedWords = mutableListOf<VisualWordText>()
@@ -32,8 +32,9 @@ object ModifyVisualWords {
         finalWordsList = modModifiedWords + userModifiedWords
         textCache.clear()
         componentCache.clear()
-        SkyHanniMod.visualWordsData.modifiedWords =
-            userModifiedWords.map { it.toVisualWord() }.toMutableList()
+        val saved = userModifiedWords.map { it.toVisualWord() }
+        SkyHanniMod.visualWordsData.modifiedWords.clear()
+        SkyHanniMod.visualWordsData.modifiedWords.addAll(saved)
         MinecraftCompat.hud.chat.refreshTrimmedMessages()
     }
 
@@ -102,7 +103,7 @@ object ModifyVisualWords {
         return componentCache.getOrPut(component) { visitAndReplace(component) }
     }
 
-    private fun doReplacements(characters: MutableList<StyledCharacter>): MutableList<StyledCharacter> {
+    private fun doReplacements(characters: List<StyledCharacter>): List<StyledCharacter> {
         var workingCharacters = characters
 
         for (word in finalWordsList) {

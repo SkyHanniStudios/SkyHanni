@@ -34,7 +34,7 @@ object InfernoMinionFeatures {
         "minion.infernominiontitle",
         "Inferno Minion (?:[IVX]{1,4}|\\d+)$",
     )
-    var fuelItemIds = setOf<NeuInternalName>()
+    var fuelItemIds = emptySet<NeuInternalName>()
         private set
     private var inInventory = false
 

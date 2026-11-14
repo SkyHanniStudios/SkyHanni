@@ -11,7 +11,7 @@ import net.minecraft.world.inventory.Slot
 @Suppress("MissingPrimaryFunction")
 class ToolTipEvent(val slot: Slot, val itemStack: SafeItemStack, private val toolTip0: MutableList<String>) : CancellableSkyHanniEvent() {
 
-    var toolTip: MutableList<String>
+    val toolTip: MutableList<String>
         set(value) {
             toolTip0.clear()
             toolTip0.addAll(value)

@@ -241,7 +241,7 @@ object ExperimentationTableApi {
     private var currentExpOverHash: Int = 0
     private var queuedCompleteEvent: TableTaskCompletedEvent? = null
     private var handleBottlesOnInvClose: Boolean = false
-    private var currentBottlesInInventory: Map<NeuInternalName, Int> = mapOf()
+    private var currentBottlesInInventory: Map<NeuInternalName, Int> = emptyMap()
     var miscRepoRewards: List<NeuInternalName> = emptyList()
         private set
 

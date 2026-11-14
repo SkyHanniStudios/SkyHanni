@@ -43,7 +43,7 @@ object AttributeShardOverlay {
     private var priceToMax = 0.0
 
     private var lastShardsData: Map<String, ProfileSpecificStorage.AttributeShardData> = emptyMap()
-    private var lastItemIdsInInventory: Set<NeuInternalName> = setOf()
+    private var lastItemIdsInInventory: Set<NeuInternalName> = emptySet()
     private var lastTotalShardsCollected = 0
     private var lastTotalInBazaarOrders = 0
 

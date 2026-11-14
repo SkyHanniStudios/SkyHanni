@@ -102,7 +102,7 @@ object ElectionApi {
 
     var rawMayorData: MayorJson? = null
         private set
-    private var candidates = mapOf<Int, MayorCandidate>()
+    private var candidates = emptyMap<Int, MayorCandidate>()
 
     var nextMayorTimestamp = SimpleTimeMark.farPast()
         private set

@@ -105,7 +105,7 @@ object EnchantedClockHelper {
         fun toSimple(): SimpleBoostType? = SimpleBoostType.entries.find { it.name == name }
 
         companion object {
-            private var entries = listOf<BoostType>()
+            private var entries = emptyList<BoostType>()
 
             fun byUsageStringOrNull(usageString: String) = entries.firstOrNull { it.usageString == usageString }
             fun bySimpleBoostType(simple: SimpleBoostType) = entries.firstOrNull { it.name == simple.name }

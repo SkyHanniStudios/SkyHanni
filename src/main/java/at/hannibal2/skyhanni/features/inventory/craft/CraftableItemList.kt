@@ -39,7 +39,7 @@ import kotlin.math.floor
 object CraftableItemList {
     private val config get() = SkyHanniMod.feature.inventory.craftableItemList
 
-    private var display = listOf<Renderable>()
+    private var display = emptyList<Renderable>()
     private var inInventory = false
     private val textInput = SearchTextInput()
     private val craftItemPattern by RepoPattern.pattern(

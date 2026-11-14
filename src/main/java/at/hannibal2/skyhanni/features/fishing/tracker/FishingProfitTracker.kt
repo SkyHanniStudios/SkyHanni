@@ -100,7 +100,7 @@ object FishingProfitTracker {
     private const val NAME_ALL: CategoryName = "All"
     private var currentCategory: CategoryName = NAME_ALL
 
-    private var itemCategories = mapOf<String, List<NeuInternalName>>()
+    private var itemCategories = emptyMap<String, List<NeuInternalName>>()
 
     @HandleEvent
     private fun onRepoReload(event: RepositoryReloadEvent) {

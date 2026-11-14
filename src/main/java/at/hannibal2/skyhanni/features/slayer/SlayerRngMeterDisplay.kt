@@ -75,7 +75,7 @@ object SlayerRngMeterDisplay {
     private var timesUpdatedTotal = 0
     private var timesUpdatedSinceLastDrop = 0
 
-    var rngScore = mapOf<String, Map<NeuInternalName, Long>>()
+    var rngScore = emptyMap<String, Map<NeuInternalName, Long>>()
 
     @HandleEvent
     fun onSecondPassed() {

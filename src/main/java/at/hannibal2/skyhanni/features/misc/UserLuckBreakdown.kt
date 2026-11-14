@@ -88,7 +88,7 @@ object UserLuckBreakdown {
     private val validItemSlots = (10..53).filter { it !in listOf(17, 18, 26, 27, 35, 36) && it !in 44..53 }
     private val invalidItemSlots = (0..53).filter { it !in validItemSlots }
 
-    private var skillOverflowLuck = mapOf<SkillType, Int>()
+    private var skillOverflowLuck = emptyMap<SkillType, Int>()
 
     @HandleEvent
     private fun onReplaceItem(event: ReplaceItemEvent) {
@@ -259,7 +259,7 @@ object UserLuckBreakdown {
     }
 
     private fun createFillerItem(): SafeItemStack {
-        return ItemUtils.createItemStack(fillerID, " ", listOf(), 1)
+        return ItemUtils.createItemStack(fillerID, " ", emptyList(), 1)
     }
 
     private fun createItemLore(type: String, luckInput: Float = 0f): Array<String> {

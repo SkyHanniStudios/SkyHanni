@@ -39,7 +39,7 @@ import com.google.gson.annotations.Expose
 object DianaProfitTracker {
 
     private val config get() = SkyHanniMod.feature.event.diana.dianaProfitTracker
-    private var allowedDrops = listOf<NeuInternalName>()
+    private var allowedDrops = emptyList<NeuInternalName>()
 
     private val patternGroup = RepoPattern.group("diana.chat")
 
