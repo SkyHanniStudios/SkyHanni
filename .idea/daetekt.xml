@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DaetektSettings">
+    <option name="baselinePath" value="$PROJECT_DIR$/detekt/baseline-main.xml" />
+    <option name="configurationFiles">
+      <list>
+        <option value="$PROJECT_DIR$/detekt/detekt.yml" />
+      </list>
+    </option>
+    <option name="enableDetekt" value="true" />
+    <option name="enableForProjectResult" value="Accepted" />
+    <option name="enableFormatting" value="true" />
+    <option name="pluginJarsDirectory" value="$PROJECT_DIR$/detekt/build/libs" />
+    <option name="treatAsErrors" value="true" />
+  </component>
+</project>
