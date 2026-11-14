@@ -13,10 +13,13 @@ import org.jetbrains.kotlin.psi.psiUtil.siblings
  * This rule enforces the default spacing rules for annotations but allows preprocessed comments to be between
  * an annotation and the annotated construct.
  */
-class CustomAnnotationSpacing(config: Config) : SkyHanniRule(config, "Enforces custom spacing rules for annotations.") {
+class CustomAnnotationSpacing(config: Config) : SkyHanniRule(
+    config,
+    "Annotations should directly precede the annotated construct, with only Stonecutter comments in between.",
+) {
 
     override fun visitAnnotationEntry(annotationEntry: KtAnnotationEntry) {
-        val nextNodes = annotationEntry.nextLeaf()?.siblings()?.takeWhile { it is PsiWhiteSpace || it is PsiComment } ?: sequenceOf()
+        val nextNodes = annotationEntry.nextLeaf()?.siblings()?.takeWhile { it is PsiWhiteSpace || it is PsiComment }?.toList().orEmpty()
 
         val hasInvalidSpacing = nextNodes.any { nextNode ->
             when (nextNode) {
@@ -28,6 +31,9 @@ class CustomAnnotationSpacing(config: Config) : SkyHanniRule(config, "Enforces c
 
         if (hasInvalidSpacing) {
             annotationEntry.reportIssue("Annotations should occur immediately before the annotated construct.")
+            nextNodes.filterIsInstance<PsiWhiteSpace>().filter { it.isInvalid() }.forEach {
+                correct(annotationEntry, it.textRange.startOffset, it.textRange.endOffset, "\n" + it.text.substringAfterLast('\n'))
+            }
         }
         super.visitAnnotationEntry(annotationEntry)
     }

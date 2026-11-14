@@ -1,5 +1,6 @@
 package repo
 
+import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
 import org.jetbrains.kotlin.psi.KtEscapeStringTemplateEntry
@@ -10,6 +11,7 @@ import org.jetbrains.kotlin.psi.KtPropertyDelegate
 import org.jetbrains.kotlin.psi.KtStringTemplateEntryWithExpression
 import org.jetbrains.kotlin.psi.KtStringTemplateExpression
 import java.net.URLEncoder
+import java.util.regex.Pattern
 
 class RepoPatternElement private constructor(
     val variableName: String,
@@ -18,9 +20,13 @@ class RepoPatternElement private constructor(
     val regexTests: List<String>,
     val failingRegexTests: List<String>,
     val kDocErrors: List<String>,
+    val keyElement: PsiElement?,
+    val patternElement: PsiElement?,
+    val nameElement: PsiElement?,
+    val docElement: PsiElement?,
 ) {
 
-    val pattern by lazy { rawPattern.toPattern() }
+    val pattern: Pattern? by lazy { runCatching { rawPattern.toPattern() }.getOrNull() }
 
     val regex101Url: String by lazy {
         val encodedPattern = URLEncoder.encode(rawPattern.replace("\"", "\\\""), "UTF-8")
@@ -32,7 +38,18 @@ class RepoPatternElement private constructor(
     companion object {
         // A sentinel value to indicate that a KtPropertyDelegate has been processed but does not correspond to a valid RepoPatternElement.
         // Must be internal so that it can be accessed from RepoPatternContext.
-        internal val SENTINEL_VALUE = RepoPatternElement("SENTINEL", null, "", emptyList(), emptyList(), emptyList())
+        internal val SENTINEL_VALUE = RepoPatternElement(
+            "SENTINEL",
+            null,
+            "",
+            emptyList(),
+            emptyList(),
+            emptyList(),
+            null,
+            null,
+            null,
+            null,
+        )
 
         private val wrappedRegexTestPattern = "WRAPPED-REGEX-TEST: \"(?<test>.*)\"".toPattern()
         private val wrappedRegexFailPattern = "WRAPPED-REGEX-FAIL: \"(?<test>.*)\"".toPattern()
@@ -53,7 +70,18 @@ class RepoPatternElement private constructor(
             val variableName = parent.name ?: "unknownPattern"
 
             val (regexTests, failingRegexTests, kDocErrors) = findRegexTestInKDoc(parent)
-            return RepoPatternElement(variableName, rawKey, rawPattern, regexTests, failingRegexTests, kDocErrors)
+            return RepoPatternElement(
+                variableName,
+                rawKey,
+                rawPattern,
+                regexTests,
+                failingRegexTests,
+                kDocErrors,
+                patternKey,
+                patternArg,
+                parent.nameIdentifier,
+                parent.docComment,
+            )
         }
 
         private fun KtExpression.asPlainStringOrNull(): String? {
