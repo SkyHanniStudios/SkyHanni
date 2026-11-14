@@ -16,7 +16,6 @@ object SkyHanniShapeData {
     private const val BLOCK_BYTES = CAPACITY_FLOATS * Float.SIZE_BYTES
 
     private val values = FloatArray(CAPACITY_FLOATS)
-    private val uploaded = FloatArray(CAPACITY_FLOATS)
     private val buffer by lazy {
         RenderSystem.getDevice().createBuffer(
             { "SkyHanni Shape Data UBO" },
@@ -26,7 +25,7 @@ object SkyHanniShapeData {
     }
     private var size = 0
     private var uploadedSize = 0
-    private var uploadedThisFrame = false
+    private var dirty = false
     private var overflowed = false
 
     fun add(params: FloatArray): Int? {
@@ -35,21 +34,22 @@ object SkyHanniShapeData {
             reportOverflow(params.size / VEC4_FLOATS)
             return null
         }
-        params.copyInto(values, size)
+        if (!Arrays.equals(values, size, size + params.size, params, 0, params.size)) {
+            params.copyInto(values, size)
+            dirty = true
+        }
         return (size / VEC4_FLOATS).also { size += params.size }
     }
 
     fun upload() {
-        if (uploadedThisFrame || size == 0) return
-        uploadedThisFrame = true
-        if (size == uploadedSize && Arrays.equals(values, 0, size, uploaded, 0, size)) return
+        if (!dirty && size <= uploadedSize) return
         MemoryStack.stackPush().use { stack ->
             val bytes = stack.malloc(size * Float.SIZE_BYTES)
             bytes.asFloatBuffer().put(values, 0, size)
             RenderSystem.getDevice().createCommandEncoder().writeToBuffer(buffer.slice(0L, bytes.remaining().toLong()), bytes)
         }
-        values.copyInto(uploaded, 0, 0, size)
-        uploadedSize = size
+        uploadedSize = maxOf(uploadedSize, size)
+        dirty = false
     }
 
     fun bind(renderPass: RenderPass) {
@@ -58,7 +58,6 @@ object SkyHanniShapeData {
 
     fun endFrame() {
         size = 0
-        uploadedThisFrame = false
         overflowed = false
     }
 
