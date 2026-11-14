@@ -463,7 +463,7 @@ object EstimatedItemValueCalculator {
         val tierIndex = internalName.getArmorKuudraTier()?.takeIf { it > 1 } ?: return 0.0
         val armorTier = kuudraArmorTiers.getOrNull(tierIndex - 1) ?: return 0.0
 
-        val allTiersCost = (1 until tierIndex).mapNotNull { index ->
+        val allTiersCost = (1..<tierIndex).mapNotNull { index ->
             kuudraArmorTiers.getOrNull(index)?.let { tierName ->
                 EstimatedItemValue.crimsonPrestigeCosts[tierName] ?: run {
                     ErrorManager.logErrorStateWithData(
@@ -933,7 +933,7 @@ object EstimatedItemValueCalculator {
         val list = NbtCompat.getStringTagList(extraAttributes, "boosters")
         if (list.isEmpty) return emptyList()
         val boosters = mutableListOf<NeuInternalName>()
-        for (i in 0 until list.size) {
+        for (i in list.indices) {
             var internalName = list.getStringOrDefault(i)
             if (internalName.isBlank()) continue
             internalName += "_BOOSTER"

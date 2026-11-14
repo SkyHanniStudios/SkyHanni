@@ -66,9 +66,9 @@ class ListenerCollection(
 
             if (islands.isEmpty()) {
                 return if (options.onlyOnSkyblock) {
-                    (ISLAND_OFFSET until BUCKET_COUNT).toList()
+                    (ISLAND_OFFSET..<BUCKET_COUNT).toList()
                 } else {
-                    (OUTSIDE until BUCKET_COUNT).toList()
+                    (OUTSIDE..<BUCKET_COUNT).toList()
                 }
             }
 

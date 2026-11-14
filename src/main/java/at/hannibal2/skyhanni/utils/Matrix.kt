@@ -33,8 +33,8 @@ class Matrix(private val data: Array<DoubleArray>) {
         val a = data.deepCopy()
         val b = identity(width).data
 
-        for (c in 0 until width) {
-            val rBig = (c until height).maxByOrNull { a[it][c].absoluteValue }
+        for (c in 0..<width) {
+            val rBig = (c..<height).maxByOrNull { a[it][c].absoluteValue }
             requireNotNull(rBig) { "Cannot invert matrix" }
 
             val aBig = a[rBig][c].absoluteValue
@@ -46,14 +46,14 @@ class Matrix(private val data: Array<DoubleArray>) {
             }
 
             val pivot = a[c][c]
-            for (s in c until width) a[c][s] /= pivot
-            for (s in 0 until width) b[c][s] /= pivot
+            for (s in c..<width) a[c][s] /= pivot
+            for (s in 0..<width) b[c][s] /= pivot
 
-            for (r2 in 0 until height) {
+            for (r2 in 0..<height) {
                 if (r2 == c) continue
                 val factor = -a[r2][c]
-                for (s in c until width) a[r2][s] += factor * a[c][s]
-                for (s in 0 until width) b[r2][s] += factor * b[c][s]
+                for (s in c..<width) a[r2][s] += factor * a[c][s]
+                for (s in 0..<width) b[r2][s] += factor * b[c][s]
             }
         }
         return Matrix(b)
@@ -67,7 +67,7 @@ class Matrix(private val data: Array<DoubleArray>) {
     operator fun times(other: Matrix): Matrix {
         require(this.width == other.height) { "Invalid Matrix sizes" }
         val result = createArray(height, other.width) { row, col ->
-            (0 until width).sumOf { k -> this[row][k] * other[k][col] }
+            (0..<width).sumOf { k -> this[row][k] * other[k][col] }
         }
         return Matrix(result)
     }

@@ -109,7 +109,7 @@ object NavigationUtils {
         while (improved && iteration < maxIterations) {
             improved = false
 
-            for (i in 1 until route.size - 2) {
+            for (i in 1..<route.size - 2) {
                 val maxJ = minOf(route.size - 2, i + neighborhoodSize)
 
                 for (j in i + 1..maxJ) {
@@ -146,7 +146,7 @@ object NavigationUtils {
     ): Double {
         var total = 0.0
 
-        for (i in 0 until route.lastIndex) {
+        for (i in 0..<route.lastIndex) {
             val distance = distanceMap[route[i]]?.get(route[i + 1]) ?: Double.POSITIVE_INFINITY
 
             if (!distance.isFinite()) {

@@ -63,6 +63,7 @@ import at.hannibal2.skyhanni.utils.toLorenzVec
 import net.minecraft.client.gui.screens.inventory.ContainerScreen
 import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.level.block.Blocks
+import kotlin.time.Duration.Companion.seconds
 
 @SkyHanniModule
 object MinionFeatures {
@@ -74,9 +75,9 @@ object MinionFeatures {
     private var lastClickedEntity: LorenzVec? = null
     private var newMinion: LorenzVec? = null
     private var newMinionName: String? = null
-    private var lastMinionOpened = 0L
+    private var lastMinionOpened = SimpleTimeMark.farPast()
 
-    private var lastInventoryClosed = 0L
+    private var lastInventoryClosed = SimpleTimeMark.farPast()
     private var display: Renderable? = null
 
     private val patternGroup = RepoPattern.group("minion")
@@ -181,8 +182,8 @@ object MinionFeatures {
 
         val loc = lastMinion
         if (loc != null) {
-            val time = config.lastClickedMinion.time * 1_000
-            if (lastMinionOpened + time > System.currentTimeMillis()) {
+            val time = config.lastClickedMinion.time.seconds
+            if (lastMinionOpened.passedSince() < time) {
                 event.drawWaypointFilled(
                     loc.add(-0.5, 0.0, -0.5),
                     color,
@@ -237,7 +238,7 @@ object MinionFeatures {
         lastMinion = entity
         lastClickedEntity = null
         minionInventoryOpen = true
-        lastMinionOpened = 0
+        lastMinionOpened = SimpleTimeMark.farPast()
     }
 
     @HandleEvent
@@ -284,9 +285,9 @@ object MinionFeatures {
         val minions = minions ?: return
 
         minionInventoryOpen = false
-        lastMinionOpened = System.currentTimeMillis()
+        lastMinionOpened = SimpleTimeMark.now()
         display = null
-        lastInventoryClosed = System.currentTimeMillis()
+        lastInventoryClosed = SimpleTimeMark.now()
 
         MinionCloseEvent().post()
         if (IslandType.PRIVATE_ISLAND.isInIsland()) {
@@ -348,7 +349,7 @@ object MinionFeatures {
     fun onWorldChange() {
         lastClickedEntity = null
         lastMinion = null
-        lastMinionOpened = 0L
+        lastMinionOpened = SimpleTimeMark.farPast()
         minionInventoryOpen = false
         minionStorageInventoryOpen = false
     }
@@ -370,7 +371,7 @@ object MinionFeatures {
     fun onChat(event: SkyHanniChatEvent.Allow) {
         val message = event.cleanMessage
         minionCoinPattern.matchMatcher(message) {
-            if (System.currentTimeMillis() - lastInventoryClosed < 2_000) {
+            if (lastInventoryClosed.passedSince() < 2.seconds) {
                 minions?.get(lastMinion)?.let {
                     it.lastClicked = SimpleTimeMark.now()
                 }
@@ -385,7 +386,7 @@ object MinionFeatures {
             minions?.remove(lastMinion)
             lastClickedEntity = null
             lastMinion = null
-            lastMinionOpened = 0L
+            lastMinionOpened = SimpleTimeMark.farPast()
         }
 
         if (minionPlacePattern.find(message)) newMinion?.let {

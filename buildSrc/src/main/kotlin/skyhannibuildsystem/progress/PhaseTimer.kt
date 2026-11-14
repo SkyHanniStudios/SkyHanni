@@ -1,15 +1,15 @@
 package skyhannibuildsystem.progress
 
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.nanoseconds
 import kotlin.time.DurationUnit
+import kotlin.time.TimeSource
 
 class PhaseTimer {
 
     private val phases = LinkedHashMap<String, Duration>()
     private var phase: String? = null
-    private var phaseStart = 0L
-    private val start = System.nanoTime()
+    private val start = TimeSource.Monotonic.markNow()
+    private var phaseStart = start
 
     fun observe(status: String) {
         val next = status.takeWhile { !it.isDigit() }.trim()
@@ -19,14 +19,14 @@ class PhaseTimer {
     fun stop(): String {
         enter(null)
         return buildList {
-            add("total ${(System.nanoTime() - start).nanoseconds.seconds()}")
+            add("total ${start.elapsedNow().seconds()}")
             phases.mapTo(this) { (name, duration) -> "$name ${duration.seconds()}" }
         }.joinToString(" | ")
     }
 
     private fun enter(next: String?) {
-        val now = System.nanoTime()
-        phase?.let { phases.merge(it, (now - phaseStart).nanoseconds, Duration::plus) }
+        val now = TimeSource.Monotonic.markNow()
+        phase?.let { phases.merge(it, now - phaseStart, Duration::plus) }
         phase = next
         phaseStart = now
     }

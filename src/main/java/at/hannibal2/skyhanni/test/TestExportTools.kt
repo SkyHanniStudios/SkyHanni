@@ -11,6 +11,7 @@ import at.hannibal2.skyhanni.utils.KeyboardManager.isKeyHeld
 import at.hannibal2.skyhanni.utils.KotlinTypeAdapterFactory
 import at.hannibal2.skyhanni.utils.OSUtils
 import at.hannibal2.skyhanni.utils.SafeItemStack
+import at.hannibal2.skyhanni.utils.StringUtils
 import at.hannibal2.skyhanni.utils.json.fromJson
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -28,7 +29,6 @@ import net.minecraft.world.item.component.CustomData
 import java.io.ByteArrayInputStream
 import java.io.InputStreamReader
 import java.io.Reader
-import java.util.Base64
 import kotlin.jvm.optionals.getOrNull
 
 @SkyHanniModule
@@ -49,7 +49,7 @@ object TestExportTools {
 
         override fun read(reader: JsonReader): SafeItemStack {
             val base64 = reader.nextString()
-            val bytes = Base64.getDecoder().decode(base64)
+            val bytes = StringUtils.lenientBase64.decode(base64)
             val tag = NbtIo.readCompressed(ByteArrayInputStream(bytes), NbtAccounter.unlimitedHeap())
             return buildFromLegacyNbt(tag)
         }

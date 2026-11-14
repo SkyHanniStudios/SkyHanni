@@ -8,7 +8,7 @@ object CTMTest {
 
     @Test
     fun testOurCTM() {
-        for (mask in 0 until (1 shl 8)) {
+        for (mask in 0..<(1 shl 8)) {
             val up = (mask shr 7 and 1) == 1
             val right = (mask shr 6 and 1) == 1
             val down = (mask shr 5 and 1) == 1

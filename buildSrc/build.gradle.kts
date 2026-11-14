@@ -38,5 +38,6 @@ tasks.withType<KotlinCompile> {
         jvmTarget.set(JvmTarget.fromTarget("25"))
         languageVersion.set(KotlinVersion.KOTLIN_2_4)
         apiVersion.set(KotlinVersion.KOTLIN_2_4)
+        optIn.add("kotlin.concurrent.atomics.ExperimentalAtomicApi")
     }
 }

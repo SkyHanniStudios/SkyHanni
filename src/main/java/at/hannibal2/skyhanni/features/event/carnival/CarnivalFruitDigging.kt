@@ -241,8 +241,8 @@ object CarnivalFruitDigging {
             solverDirty = false
         }
 
-        for (row in 0 until GRID_LENGTH) {
-            for (col in 0 until GRID_LENGTH) {
+        for (row in 0..<GRID_LENGTH) {
+            for (col in 0..<GRID_LENGTH) {
                 val pos = GamePos(row, col)
                 val cell = gameGrid[pos]
 

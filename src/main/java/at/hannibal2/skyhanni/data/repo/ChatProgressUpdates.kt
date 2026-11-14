@@ -22,7 +22,8 @@ import at.hannibal2.skyhanni.utils.renderables.container.VerticalContainerRender
 import at.hannibal2.skyhanni.utils.renderables.container.table.TableRenderable.Companion.table
 import at.hannibal2.skyhanni.utils.renderables.primitives.emptyText
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
-import java.util.concurrent.atomic.AtomicInteger
+import kotlin.concurrent.atomics.AtomicInt
+import kotlin.concurrent.atomics.incrementAndFetch
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
@@ -40,7 +41,7 @@ class ChatProgressUpdates private constructor(val category: ChatProgressCategory
     private var currentStep: String? = null
     private var innerProgress = ""
     private var innerProgressMax = 0
-    private val innerProgressCount = AtomicInteger(0)
+    private val innerProgressCount = AtomicInt(0)
     var currentText: ProgressText? = null
 
     data class ProgressText(val text: String, val hoverText: String)
@@ -58,11 +59,11 @@ class ChatProgressUpdates private constructor(val category: ChatProgressCategory
             update("inner progress with max=$max!")
         }
         innerProgressMax = max
-        innerProgressCount.set(0)
+        innerProgressCount.store(0)
     }
 
     fun innerProgressStep() {
-        innerProgress(innerProgressCount.incrementAndGet(), innerProgressMax)
+        innerProgress(innerProgressCount.incrementAndFetch(), innerProgressMax)
     }
 
     private fun innerProgress(min: Int, max: Int) {

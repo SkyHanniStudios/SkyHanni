@@ -105,7 +105,7 @@ class ParkourHelper(
     }
 
     private fun SkyHanniRenderWorldEvent.renderShortCuts() {
-        val nextShortcuts = current until current + lookAhead
+        val nextShortcuts = current..<current + lookAhead
         for (shortCut in shortCuts) {
             if (shortCut.from in nextShortcuts && shortCut.to in locations.indices) {
                 val from = locations[shortCut.from].offsetCenter()

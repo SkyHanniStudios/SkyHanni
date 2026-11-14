@@ -33,6 +33,8 @@ import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
 import at.hannibal2.skyhanni.utils.LorenzColor
 import at.hannibal2.skyhanni.utils.PlayerUtils.SNEAKING_EYE_HEIGHT
 import at.hannibal2.skyhanni.utils.ServerTimeMark
+import at.hannibal2.skyhanni.utils.SimpleTimeMark
+import at.hannibal2.skyhanni.utils.SimpleTimeMark.Companion.fromNow
 import at.hannibal2.skyhanni.utils.SkullTextureHolder
 import at.hannibal2.skyhanni.utils.TimeUtils.ticks
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.editCopy
@@ -54,6 +56,7 @@ import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.decoration.ArmorStand
 import java.awt.Color
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 // TODO: optimize this entire class, its so bad
 @OptIn(AllEntitiesGetter::class)
@@ -79,7 +82,7 @@ object VampireSlayerFeatures {
     private val BLOOD_ICHOR_TEXTURE by SkullTextureHolder.texture("BLOOD_ICHOR")
     private val KILLER_SPRING_TEXTURE by SkullTextureHolder.texture("KILLER_SPRING")
 
-    private var nextClawSend = 0L
+    private var nextClawSend = SimpleTimeMark.farPast()
     private var lastWitherSpawnSound = ServerTimeMark.farPast()
 
     @HandleEvent
@@ -149,12 +152,12 @@ object VampireSlayerFeatures {
 
             if (!shouldSendTitle) continue
             DelayedRun.runDelayed(config.twinclawsDelay.milliseconds) {
-                if (nextClawSend < System.currentTimeMillis()) {
+                if (nextClawSend.isInPast()) {
                     TitleManager.sendTitle(
                         "§6§lTWINCLAWS",
                         duration = (1750 - config.twinclawsDelay).milliseconds,
                     )
-                    nextClawSend = System.currentTimeMillis() + 5_000
+                    nextClawSend = 5.seconds.fromNow()
                 }
             }
         }

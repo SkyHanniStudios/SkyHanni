@@ -25,7 +25,7 @@ sealed class InventoryOpenEvent(private val inventory: OtherInventoryData.Invent
     val inventorySize: Int get() = inventory.slotCount
     val inventoryItems: Map<Int, SafeItemStack> = inventory.items.filterValues { it.isNotEmpty() }
     val inventoryItemsWithNull: Map<Int, SafeItemStack?> by lazy {
-        (0 until inventorySize).associateWith { inventoryItems[it] }
+        (0..<inventorySize).associateWith { inventoryItems[it] }
     }
     val inventoryItemsPrimitive: Map<Int, PrimitiveItemStack> by lazy {
         val map = mutableMapOf<Int, PrimitiveItemStack>()

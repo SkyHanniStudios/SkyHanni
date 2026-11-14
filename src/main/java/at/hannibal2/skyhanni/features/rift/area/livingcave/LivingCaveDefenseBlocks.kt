@@ -15,6 +15,8 @@ import at.hannibal2.skyhanni.utils.EntityUtils.getEntitiesNearby
 import at.hannibal2.skyhanni.utils.EntityUtils.isAtFullHealth
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceTo
 import at.hannibal2.skyhanni.utils.LorenzVec
+import at.hannibal2.skyhanni.utils.SimpleTimeMark
+import at.hannibal2.skyhanni.utils.SimpleTimeMark.Companion.fromNow
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.editCopy
 import at.hannibal2.skyhanni.utils.compat.deceased
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLessResets
@@ -25,12 +27,14 @@ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.exactLocation
 import net.minecraft.client.player.RemotePlayer
 import net.minecraft.core.particles.ParticleTypes
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 @SkyHanniModule
 object LivingCaveDefenseBlocks {
 
     private val config get() = RiftApi.config.area.livingCave.defenseBlock
-    private var movingBlocks = mapOf<DefenseBlock, Long>()
+    private var movingBlocks = mapOf<DefenseBlock, SimpleTimeMark>()
     private var staticBlocks = emptyList<DefenseBlock>()
 
     class DefenseBlock(val entity: RemotePlayer, val location: LorenzVec, var hidden: Boolean = false)
@@ -46,7 +50,7 @@ object LivingCaveDefenseBlocks {
         if (!isEnabled()) return
 
         movingBlocks = movingBlocks.editCopy {
-            values.removeIf { System.currentTimeMillis() > it + 2000 }
+            values.removeIf { it.passedSince() > 2.seconds }
             keys.removeIf { staticBlocks.any { others -> others.location.distance(it.location) < 1.5 } }
         }
 
@@ -87,7 +91,7 @@ object LivingCaveDefenseBlocks {
 
             val defenseBlock = entity?.let { DefenseBlock(it, location) } ?: return
 
-            movingBlocks = movingBlocks.editCopy { this[defenseBlock] = System.currentTimeMillis() + 250 }
+            movingBlocks = movingBlocks.editCopy { this[defenseBlock] = 250.milliseconds.fromNow() }
             if (config.hideParticles) {
                 event.cancel()
             }
@@ -145,7 +149,7 @@ object LivingCaveDefenseBlocks {
 
         for ((block, time) in movingBlocks) {
             if (block.hidden) continue
-            if (time > System.currentTimeMillis()) {
+            if (time.isInFuture()) {
                 val location = block.location
                 event.drawWaypointFilled(location, color)
                 event.drawLineToCrosshair(

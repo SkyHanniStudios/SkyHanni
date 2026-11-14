@@ -71,7 +71,7 @@ object SkyHanniVertexFormats {
         // here rather than attempting to recover, because a failed registration would leave a
         // lot of mod features broken, and forcibly extending the array would be potentially
         // unsafe and require mixins into mods such as Sodium that hardcode the size as 32.
-        val id = (startingId++ until VertexFormatElement.MAX_COUNT).firstOrNull { VertexFormatElement.byId(it) == null }
+        val id = (startingId++..<VertexFormatElement.MAX_COUNT).firstOrNull { VertexFormatElement.byId(it) == null }
             ?: error("Too many mods trying to register VertexFormatElements")
         return VertexFormatElement.register(id, index, type, normalized, count)
     }

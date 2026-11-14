@@ -11,11 +11,12 @@ import at.hannibal2.skyhanni.utils.ColorUtils.toColor
 import at.hannibal2.skyhanni.utils.ConditionalUtils
 import at.hannibal2.skyhanni.utils.GuiRenderUtils
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
+import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.SoundUtils
 import at.hannibal2.skyhanni.utils.compat.GuiScreenUtils
-import java.time.Instant
 import kotlin.math.sin
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 @SkyHanniModule
@@ -41,8 +42,8 @@ object HoppityCallWarning {
     private val config get() = HoppityEggsManager.config.hoppityCallWarning
     private var warningSound = SoundUtils.createSound("block.note_block.pling", 1f, isWarning = true)
     private var activeWarning = false
-    private var nextWarningTime: Instant? = null
-    private var finalWarningTime: Instant? = null
+    private var nextWarningTime: SimpleTimeMark? = null
+    private var finalWarningTime: SimpleTimeMark? = null
     private val callLength = 7.seconds
 
     @HandleEvent
@@ -66,20 +67,21 @@ object HoppityCallWarning {
     private fun onSecondPassed(event: SecondPassedEvent) {
         if (!isEnabled()) return
         if (!activeWarning) return
-        if (nextWarningTime == null || finalWarningTime == null) return
-        val currentTime = Instant.now()
-        if (currentTime.isAfter(nextWarningTime)) {
+        val nextWarning = nextWarningTime ?: return
+        val finalWarning = finalWarningTime ?: return
+        val currentTime = SimpleTimeMark.now()
+        if (currentTime > nextWarning) {
             SoundUtils.repeatSound(100, 10, warningSound)
-            nextWarningTime = currentTime.plusMillis(100)
+            nextWarningTime = currentTime + 100.milliseconds
         }
-        if (currentTime >= finalWarningTime) stopWarningUser()
+        if (currentTime >= finalWarning) stopWarningUser()
     }
 
     @HandleEvent
     private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
         if (!isEnabled() || !activeWarning) return
         // Calculate a fluctuating alpha value based on the sine of time, for a smooth oscillation
-        val randomizationAlphaDouble = ((2 + sin(Instant.now().toEpochMilli().toDouble() / 1000)) * 255 / 4)
+        val randomizationAlphaDouble = ((2 + sin(SimpleTimeMark.now().toMillis().toDouble() / 1000)) * 255 / 4)
         // Ensure the alpha value is an integer and within the valid range (0-255)
         val randomizationAlphaInt = randomizationAlphaDouble.toInt().coerceIn(0..255)
         // Shift the alpha value 24 bits to the left to position it in the color's alpha channel.
@@ -103,9 +105,9 @@ object HoppityCallWarning {
         if (activeWarning) return
         activeWarning = true
         SoundUtils.repeatSound(100, 10, warningSound)
-        val currentTime = Instant.now()
-        nextWarningTime = currentTime.plusMillis(100)
-        finalWarningTime = finalWarningTime ?: currentTime.plusMillis(callLength.inWholeMilliseconds)
+        val currentTime = SimpleTimeMark.now()
+        nextWarningTime = currentTime + 100.milliseconds
+        finalWarningTime = finalWarningTime ?: (currentTime + callLength)
     }
 
     private fun stopWarningUser() {

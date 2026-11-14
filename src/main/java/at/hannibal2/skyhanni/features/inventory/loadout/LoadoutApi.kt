@@ -119,7 +119,7 @@ object LoadoutApi {
 
         for (page in 1..MAX_PAGES) {
             for (row in 1..ROWS_PER_PAGE[page - 1]) {
-                for (slot in 0 until SLOTS_PER_ROW) {
+                for (slot in 0..<SLOTS_PER_ROW) {
                     val index = FIRST_ICON_SLOT + ((row - 1) * 9) + slot
                     list.add(LoadoutSlot(id++, page, index))
                 }

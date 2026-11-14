@@ -205,7 +205,7 @@ object ConfigUpdaterMigrator {
             return config
         }
         if (lastVersion == CONFIG_VERSION) return config
-        return (lastVersion until CONFIG_VERSION).fold(config) { accumulator, i ->
+        return (lastVersion..<CONFIG_VERSION).fold(config) { accumulator, i ->
             logger.log("Starting config transformation from $i to ${i + 1}")
             val storage = accumulator["storage"]?.asJsonObject
             val dynamicPrefix: Map<String, List<String>> = mapOf(
