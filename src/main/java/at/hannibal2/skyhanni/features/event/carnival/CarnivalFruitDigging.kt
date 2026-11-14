@@ -41,7 +41,7 @@ object CarnivalFruitDigging {
 
     private var isPlayingFruitDigging = false
     private var lastSquareDug: GamePos? = null
-    private val remainingFruit =Fruit.entries.associateWith { it.count }.toMutableMap()
+    private val remainingFruit = Fruit.entries.associateWith { it.count }.toMutableMap()
 
     private val solver = FruitDiggingSolver(GRID_LENGTH)
     private var recommendation: FruitDiggingSolver.Recommendation? = null

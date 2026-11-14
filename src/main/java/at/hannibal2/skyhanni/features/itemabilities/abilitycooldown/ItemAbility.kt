@@ -78,7 +78,7 @@ enum class ItemAbility(
     ;
 
     var newVariant = false
-    val internalNames =mutableListOf<NeuInternalName>()
+    val internalNames = mutableListOf<NeuInternalName>()
 
     constructor(
         cooldownInSeconds: Int,

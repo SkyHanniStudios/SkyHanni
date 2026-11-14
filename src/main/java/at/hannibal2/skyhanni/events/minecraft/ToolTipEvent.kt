@@ -9,12 +9,4 @@ import net.minecraft.world.inventory.Slot
  */
 @Deprecated("Use ToolTipTextEvent instead", ReplaceWith("ToolTipTextEvent"))
 @Suppress("MissingPrimaryFunction")
-class ToolTipEvent(val slot: Slot, val itemStack: SafeItemStack, private val toolTip0: MutableList<String>) : CancellableSkyHanniEvent() {
-
-    val toolTip: MutableList<String>
-        set(value) {
-            toolTip0.clear()
-            toolTip0.addAll(value)
-        }
-        get() = toolTip0
-}
+class ToolTipEvent(val slot: Slot, val itemStack: SafeItemStack, val toolTip: MutableList<String>) : CancellableSkyHanniEvent()

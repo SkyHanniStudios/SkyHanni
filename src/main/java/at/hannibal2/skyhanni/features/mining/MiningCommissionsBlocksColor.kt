@@ -56,7 +56,7 @@ object MiningCommissionsBlocksColor {
 
     private var oldSneakState = false
     private var dirty = false
-    private val replaceBlocksMapCache =mutableMapOf<BlockState, BlockState>()
+    private val replaceBlocksMapCache = mutableMapOf<BlockState, BlockState>()
 
     // TODO Commission API
     @HandleEvent

@@ -68,9 +68,9 @@ object GardenVisitorCompactChat {
         "^ {2}§a§lREWARDS",
     )
 
-    private val visitorAcceptedChat =mutableListOf<String>()
+    private val visitorAcceptedChat = mutableListOf<String>()
     private var visitorNameFormatted = ""
-    private val rewardsList =mutableListOf<String>()
+    private val rewardsList = mutableListOf<String>()
 
     @HandleEvent
     fun onChat(event: SkyHanniChatEvent.Allow) {
@@ -142,7 +142,7 @@ object GardenVisitorCompactChat {
         if (visitorNameFormatted.isBlank()) return
 
         if (visitorAcceptedChat.isNotEmpty()) {
-            ChatUtils.hoverableChat(createCompactVisitorMessage(), hover = visitorAcceptedChat.toList(),prefix = false)
+            ChatUtils.hoverableChat(createCompactVisitorMessage(), hover = visitorAcceptedChat.toList(), prefix = false)
         }
 
         this.visitorNameFormatted = ""

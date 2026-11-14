@@ -24,8 +24,7 @@ object TabListReader {
     private val patternGroup = RepoPattern.group("misc.compacttablist")
 
     var hypixelAdvertisingString = "HYPIXEL.NET"
-    val renderColumns =mutableListOf<RenderColumn>()
-        private set
+    val renderColumns = mutableListOf<RenderColumn>()
 
     private var lastTab: List<Component>? = null
     private var lastFooter: List<Component>? = null

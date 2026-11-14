@@ -47,7 +47,7 @@ object WoodenButtonsHelper {
     )
 
     private var buttonLocations = emptyMap<String, List<LorenzVec>>()
-    private val hitButtons =mutableSetOf<LorenzVec>()
+    private val hitButtons = mutableSetOf<LorenzVec>()
     private var lastHitButton: LorenzVec? = null
     private var currentSpot: GraphNode? = null
     private var lastBlowgunFire = SimpleTimeMark.farPast()

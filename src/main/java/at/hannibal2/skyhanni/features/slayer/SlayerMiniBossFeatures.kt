@@ -19,8 +19,8 @@ import net.minecraft.world.entity.Entity
 object SlayerMiniBossFeatures {
 
     private val config get() = SlayerApi.config
-    private val miniBosses =mutableSetOf<Mob>()
-    private val cocoons =mutableSetOf<Entity>()
+    private val miniBosses = mutableSetOf<Mob>()
+    private val cocoons = mutableSetOf<Entity>()
 
     @HandleEvent
     private fun onSkyblockMobSpawn(event: MobEvent.Spawn.SkyblockMob) {

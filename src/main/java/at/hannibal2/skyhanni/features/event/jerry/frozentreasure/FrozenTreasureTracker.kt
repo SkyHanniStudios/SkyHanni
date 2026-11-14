@@ -35,7 +35,7 @@ object FrozenTreasureTracker {
 
     private var estimatedIce = 0L
     private var lastEstimatedIce = 0L
-    private val icePerSecond =mutableListOf<Long>()
+    private val icePerSecond = mutableListOf<Long>()
     private var icePerHour = 0
     private var stoppedChecks = 0
     private val tracker = SkyHanniTracker(

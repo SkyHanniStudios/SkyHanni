@@ -71,7 +71,7 @@ object TabWidgetSettings {
     )
 
     var inInventory = false
-    val highlights =mutableMapOf<Int, LorenzColor>()
+    val highlights = mutableMapOf<Int, LorenzColor>()
 
     @HandleEvent
     fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {

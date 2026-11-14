@@ -24,7 +24,7 @@ object CosmeticFollowingLine {
 
     private val config get() = SkyHanniMod.feature.gui.cosmetic.followingLine
 
-    private val locations =LinkedHashMap<LorenzVec, LocationSpot>()
+    private val locations = LinkedHashMap<LorenzVec, LocationSpot>()
     private val latestLocations = LinkedHashMap<LorenzVec, LocationSpot>()
 
     class LocationSpot(val time: SimpleTimeMark, val onGround: Boolean)

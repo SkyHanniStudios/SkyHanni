@@ -22,7 +22,7 @@ object ModifyVisualWords {
     val componentCache = TimeAndSizeLimitedCache<Component, Component>(65565, 5.minutes)
 
     /** Replacements added manually by the user via /shwords. */
-    val userModifiedWords =mutableListOf<VisualWordText>()
+    val userModifiedWords = mutableListOf<VisualWordText>()
 
     /** Replacements added automatically by the mod for features, april fools, etc. */
     private val modModifiedWords = mutableListOf<VisualWordText>()

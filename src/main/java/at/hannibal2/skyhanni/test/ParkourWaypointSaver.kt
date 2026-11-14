@@ -26,7 +26,7 @@ object ParkourWaypointSaver {
 
     private val config get() = DevApi.config.waypoint
     private var timeLastSaved = SimpleTimeMark.farPast()
-    private val locations =mutableListOf<LorenzVec>()
+    private val locations = mutableListOf<LorenzVec>()
     private var parkourHelper: ParkourHelper? = null
 
     @HandleEvent
