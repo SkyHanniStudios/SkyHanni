@@ -22,6 +22,7 @@ import skyhannibuildsystem.DownloadBackupRepo
 import skyhannibuildsystem.PublishToModrinth
 import skyhannibuildsystem.progress.DetektProgressListener
 import skyhannibuildsystem.progress.KspProgressProbe
+import skyhannibuildsystem.progress.TestProgressListener
 import com.google.devtools.ksp.gradle.KspAATask
 import kotlin.jvm.java
 import org.gradle.jvm.tasks.Jar as GradleJar
@@ -236,7 +237,7 @@ dependencies {
     "minecraftTestClientRuntimeLibraries"(libs.keval)
 
     detektPlugins(libs.detektrules.neu)
-    detektPlugins(project(":detekt"))
+    detektPlugins(project(":detekt", "detektRuleClasses"))
     detektPlugins(libs.detektrules.ktlint)
 
     shadowImpl(libs.httpclient)
@@ -283,15 +284,24 @@ tasks.withType<KspAATask> {
     BuildProgress.watch(this, buildProgressDirectory.resolve("$name.txt"), buildProgressService, objects, buildProgressTimings)
 }
 
+val testForkWorkerDivisor = 2
+val maxTestForksPerTarget = 4
+
 tasks.withType<Test> {
     useJUnitPlatform()
+    maxParallelForks = (gradle.startParameter.maxWorkerCount / (ProjectTarget.entries.size * testForkWorkerDivisor))
+        .coerceIn(1, maxTestForksPerTarget)
+    val reportFile = buildProgressDirectory.resolve("$name.txt")
+    addTestListener(TestProgressListener(reportFile))
+    BuildProgress.watch(this, reportFile, buildProgressService, objects, buildProgressTimings)
     testLogging {
         showStackTraces = true
         exceptionFormat = TestExceptionFormat.FULL
     }
     javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
     workingDir(file(runDirectory))
-    systemProperty("junit.jupiter.extensions.autodetection.enabled", "true")
+    dependsOn(includeBackupNeuRepo)
+    systemProperty("skyhanni.test.neuRepo", includeBackupNeuRepo.get().repoFile.absolutePath)
     systemProperty("joml.nounsafe", "true")
     systemProperty("net.bytebuddy.safe", "true")
     jvmArgs(
@@ -326,6 +336,10 @@ kotlin {
             languageVersion = "2.4"
         }
     }
+}
+
+tasks.named<KotlinCompile>("compileTestKotlin") {
+    friendPaths.setFrom(sourceSets.main.get().output.classesDirs)
 }
 
 // Tasks:
@@ -495,13 +509,13 @@ detekt {
     buildUponDefaultConfig = true
     config.setFrom(rootProject.layout.projectDirectory.file("detekt/detekt.yml"))
     baseline = file(rootProject.layout.projectDirectory.file("detekt/baseline-main.xml"))
-    source.setFrom(
-        project.sourceSets.named("main").map {
+    source.setFrom(listOf("main", "test").map { name ->
+        project.sourceSets.named(name).map {
             it.allSource.matching {
                 exclude { elem -> elem.file.absolutePath.replace('\\', '/').contains("/build/generated/") }
             }
         }
-    )
+    })
 }
 
 // Detekt is handled by a dedicated CI workflow; exclude it from the check/build lifecycle

@@ -8,6 +8,7 @@ import at.hannibal2.skyhanni.features.misc.pathfind.IslandAreaBackend
 import at.hannibal2.skyhanni.test.SkyBlockIslandTest
 import at.hannibal2.skyhanni.test.TestBingo
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
+import org.jetbrains.annotations.VisibleForTesting
 
 object SkyBlockUtils {
 
@@ -15,8 +16,11 @@ object SkyBlockUtils {
 
     val isOnAlphaServer get() = onHypixel && HypixelData.hypixelAlpha
 
+    @VisibleForTesting
+    internal var testInSkyBlock: Boolean? = null
+
     @JvmStatic
-    val inSkyBlock get() = onHypixel && HypixelLocationApi.inSkyblock
+    val inSkyBlock get() = testInSkyBlock ?: (onHypixel && HypixelLocationApi.inSkyblock)
 
     val inHypixelLobby get() = onHypixel && HypixelData.inLobby
 

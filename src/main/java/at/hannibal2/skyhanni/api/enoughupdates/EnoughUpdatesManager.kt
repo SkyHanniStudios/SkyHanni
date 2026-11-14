@@ -40,6 +40,7 @@ import com.google.gson.JsonPrimitive
 import net.minecraft.nbt.StringTag
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStackTemplate
+import org.jetbrains.annotations.VisibleForTesting
 import java.util.TreeMap
 import kotlin.math.floor
 import kotlinx.coroutines.coroutineScope
@@ -72,12 +73,7 @@ object EnoughUpdatesManager {
     suspend fun reloadItemsFromRepo(progress: ChatProgressUpdates): Unit = loadingMutex.withLock {
         progress.update("reloadItemsFromRepo")
         progress.update("clearing caches and maps")
-        itemStackCache.clear()
-        displayNameCache.clear()
-        itemMap.clear()
-        internalNameSet.clear()
-        titleWordMap.clear()
-        recipesMap.clear()
+        clearMaps()
 
         val tempItemMap = TreeMap<NeuInternalName, NeuItemJson>()
         loadItemMap(progress, tempItemMap)
@@ -89,6 +85,25 @@ object EnoughUpdatesManager {
     }
 
     fun getRecipesFor(internalName: NeuInternalName): Set<PrimitiveRecipe> = recipesMap.getOrDefault(internalName, emptySet())
+
+    @VisibleForTesting
+    internal fun loadItemsForTest(items: Map<NeuInternalName, JsonObject>) {
+        clearMaps()
+        val tempItemMap = TreeMap<NeuInternalName, NeuItemJson>()
+        registerItems(items.mapNotNull { (internalName, json) -> parseItem(json)?.let { internalName to it } }, tempItemMap)
+        itemMap.putAll(tempItemMap)
+        internalNameSet.addAll(itemMap.keys)
+    }
+
+    @VisibleForTesting
+    internal fun clearMaps() {
+        itemStackCache.clear()
+        displayNameCache.clear()
+        itemMap.clear()
+        internalNameSet.clear()
+        titleWordMap.clear()
+        recipesMap.clear()
+    }
 
     private suspend fun loadItemMap(progress: ChatProgressUpdates, tempItemMap: TreeMap<NeuInternalName, NeuItemJson>) = coroutineScope {
         progress.update("loadItemMap")
@@ -109,6 +124,10 @@ object EnoughUpdatesManager {
                 null
             }
         }
+        registerItems(parsedItems, tempItemMap)
+    }
+
+    private fun registerItems(parsedItems: List<Pair<NeuInternalName, NeuItemJson>>, tempItemMap: TreeMap<NeuInternalName, NeuItemJson>) {
         parsedItems.forEach { (internalName, item) ->
             tempItemMap[internalName] = item
             // Crafting type recipe
