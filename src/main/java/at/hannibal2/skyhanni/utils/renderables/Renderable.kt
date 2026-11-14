@@ -81,6 +81,8 @@ interface Renderable {
         val logger = SkyHanniLogger("debug/renderable")
         var currentRenderPassMousePosition: Pair<Int, Int>? = null
 
+        private const val SCROLLBAR_HIT_WIDTH = 7
+
         private val scrollbarTrackColor: ChromaColour = ChromaColour.fromStaticRGB(40, 40, 60, 200)
         private val scrollbarThumbColor: ChromaColour = ChromaColour.fromStaticRGB(100, 100, 200, 200)
 
@@ -930,6 +932,15 @@ interface Renderable {
                     .toFloat()
                 val thumbRatio = height.toFloat() / virtualHeight
                 val thumbHeight = (thumbRatio * height).toInt().coerceAtLeast(8)
+                val localMouse = currentRenderPassMousePosition?.let { (x, y) -> x - mouseOffsetX to y - mouseOffsetY }
+                val overTrack = localMouse?.let { (x, y) -> x in (width - SCROLLBAR_HIT_WIDTH) until width && y in 0 until height } ?: false
+                scroll.updateThumbDrag(
+                    localMouse?.second,
+                    overTrack,
+                    ((scroll.asDouble() / maxScroll) * (height - thumbHeight)).toInt(),
+                    thumbHeight,
+                    height,
+                )
                 val thumbY = ((scroll.asDouble() / maxScroll) * (height - thumbHeight)).toInt()
                 val trackRgb = scrollbarTrackColor.toColor().rgb
                 val thumbRgb = scrollbarThumbColor.toColor().rgb

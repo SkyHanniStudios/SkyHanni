@@ -59,13 +59,13 @@ class ChatHistoryScreen(
             onLeftClick = {
                 copyCoroutine.launch {
                     val (target, copyType) = if (KeyboardManager.isShiftKeyDown()) {
-                        msg.message.convertToJsonString() to "structured"
+                        msg.message.convertToJsonString() to "structured chat"
                     } else {
-                        msg.message.formattedTextCompat().stripHypixelMessage() to ""
+                        msg.message.formattedTextCompat().stripHypixelMessage() to "chat"
                     }
                     val copied = ClipboardUtils.copyToClipboardAsync(target).await() ?: false
                     if (!copied) ChatUtils.chat("Failed to copy $copyType to clipboard")
-                    else ChatUtils.chat("Copied $copyType chat line to clipboard")
+                    else ChatUtils.chat("Copied $copyType line to clipboard")
                 }
             },
             bypassChecks = true,

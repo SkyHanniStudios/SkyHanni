@@ -1,9 +1,12 @@
 package at.hannibal2.skyhanni.utils.renderables
 
+import at.hannibal2.skyhanni.utils.KeyboardManager.LEFT_MOUSE
+import at.hannibal2.skyhanni.utils.KeyboardManager.isKeyClicked
+import at.hannibal2.skyhanni.utils.KeyboardManager.isKeyHeld
 import at.hannibal2.skyhanni.utils.compat.MouseCompat
 
 abstract class ScrollInput(
-    private val scrollValue: ScrollValue,
+    protected val scrollValue: ScrollValue,
     protected val minValue: Int,
     protected val maxValue: Int,
     protected val velocity: Double,
@@ -66,6 +69,7 @@ abstract class ScrollInput(
                 var changed = false
                 if (
                     dragScrollMouseButton != null &&
+                    scrollValue.thumbGrabOffset == null &&
                     MouseCompat.isButtonDown(dragScrollMouseButton) &&
                     consumeMouseMoveEvent()
                 ) {
@@ -78,6 +82,22 @@ abstract class ScrollInput(
                     changed = true
                 }
                 if (changed) coerceInLimit()
+            }
+
+            fun updateThumbDrag(localMouseY: Int?, overTrack: Boolean, thumbY: Int, thumbHeight: Int, trackHeight: Int) {
+                if (!LEFT_MOUSE.isKeyHeld()) {
+                    scrollValue.thumbGrabOffset = null
+                    return
+                }
+                val mouseY = localMouseY ?: return
+                val grabOffset = scrollValue.thumbGrabOffset ?: run {
+                    if (!overTrack || !LEFT_MOUSE.isKeyClicked()) return
+                    (mouseY - thumbY).takeIf { it in 0 until thumbHeight } ?: (thumbHeight / 2)
+                }
+                scrollValue.thumbGrabOffset = grabOffset
+                val travel = (trackHeight - thumbHeight).coerceAtLeast(1)
+                scroll = minValue + (mouseY - grabOffset).toDouble() / travel * (maxValue - minValue)
+                coerceInLimit()
             }
         }
 
@@ -109,6 +129,7 @@ abstract class ScrollInput(
 
 class ScrollValue {
     private var field: Double? = null
+    internal var thumbGrabOffset: Int? = null
     private var lastMouseMoveEventId = 0L
     private var lastScrollEventId = 0L
     private var lastMouseX = 0

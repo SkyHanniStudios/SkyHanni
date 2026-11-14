@@ -1,5 +1,6 @@
 package at.hannibal2.skyhanni.utils.compat
 
+import at.hannibal2.skyhanni.data.ToolTipData
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.Screen
@@ -80,6 +81,7 @@ abstract class SkyHanniBaseScreen(title: Component = Component.empty()) : Screen
     open fun guiClosed() {}
 
     override fun init() {
+        ToolTipData.lastSlot = null
         super.init()
         guarded("initializing GUI") { onInitGui() }
     }

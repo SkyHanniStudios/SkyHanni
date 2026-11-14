@@ -19,11 +19,7 @@ class RepoPatternScreen(
     override fun buildContent(): Renderable = RepoPatternGui.buildContent(this)
 
     override fun onKeyTyped(typedChar: Char?, keyCode: Int?) {
-        if (isSearchActive) {
-            searchInput.handle()
-            rebuildDisplay()
-            return
-        }
+        if (isSearchActive) return
         if (keyCode == GLFW.GLFW_KEY_ESCAPE) onClose()
     }
 }

@@ -32,7 +32,7 @@ class DefaultConfigScreen(
     override fun buildContent(): Renderable {
         val actionBar = buildActionBar()
         val listHeight = LIST_HEIGHT.coerceAtMost(maxContentHeight - actionBar.height - CONTENT_SPACING)
-        val list = SkyHanniScreenTheme.scrollList(orderedOptions.keys.map(::buildCategoryCard), listHeight, scrollValue, button = 0)
+        val list = SkyHanniScreenTheme.scrollList(orderedOptions.keys.map(::buildCategoryCard), listHeight, scrollValue)
         return Renderable.vertical(listOf(list, actionBar), spacing = CONTENT_SPACING)
     }
 

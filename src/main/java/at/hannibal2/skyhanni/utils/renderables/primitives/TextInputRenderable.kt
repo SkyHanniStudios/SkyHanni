@@ -34,6 +34,7 @@ fun Renderable.Companion.textInput(
             if (active) {
                 GuiRenderUtils.drawFloatingRectLight(0, 0, width, height, false)
                 textInput.makeActive()
+                textInput.handle()
             } else {
                 GuiRenderUtils.drawFloatingRectDark(0, 0, width, height, false)
             }
