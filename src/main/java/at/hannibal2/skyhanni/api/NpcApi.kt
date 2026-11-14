@@ -25,7 +25,7 @@ object NpcApi {
     )
 
     @HandleEvent(onlyOnSkyblock = true)
-    private fun onCustomClickPacketSent(event: PacketSentEvent) {
+    private fun onPacketSent(event: PacketSentEvent) {
         val packet = event.packet as? ServerboundCustomClickActionPacket ?: return
         if (!dialogueResponseIdPattern.matches(packet.id().toString())) return
 

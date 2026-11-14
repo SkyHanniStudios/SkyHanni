@@ -4,10 +4,6 @@ import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.events.ColdUpdateEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
-import at.hannibal2.skyhanni.events.minecraft.WorldChangeEvent
-import at.hannibal2.skyhanni.events.mining.GlaciteMineshaftDetectEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ColorUtils
 import at.hannibal2.skyhanni.utils.LorenzColor
@@ -40,8 +36,8 @@ object MineshaftCaveInTimer {
 
     private var display: List<Renderable> = emptyList()
 
-    @HandleEvent(WorldChangeEvent::class)
-    fun onWorldChange() {
+    @HandleEvent
+    private fun onWorldChange() {
         caveInTimerStart = SimpleTimeMark.farPast()
         firstColdTime = SimpleTimeMark.farPast()
         lastColdValue = null
@@ -50,8 +46,8 @@ object MineshaftCaveInTimer {
         display = emptyList()
     }
 
-    @HandleEvent(GlaciteMineshaftDetectEvent::class)
-    fun onMineshaftDetect() {
+    @HandleEvent
+    private fun onGlaciteMineshaftDetect() {
         caveInTimerStart = SimpleTimeMark.now()
         firstColdTime = SimpleTimeMark.farPast()
         lastColdValue = null
@@ -60,7 +56,7 @@ object MineshaftCaveInTimer {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.MINESHAFT)
-    fun onColdUpdate(event: ColdUpdateEvent) {
+    private fun onColdUpdate(event: ColdUpdateEvent) {
         val prev = lastColdValue
         lastColdValue = event.cold
 
@@ -75,8 +71,8 @@ object MineshaftCaveInTimer {
         estimatedMaxTime = computeEstimatedMaxTime()
     }
 
-    @HandleEvent(SecondPassedEvent::class, onlyOnIsland = IslandType.MINESHAFT)
-    fun onSecondPassed() {
+    @HandleEvent(onlyOnIsland = IslandType.MINESHAFT)
+    private fun onSecondPassed() {
         if (!config.enabled || caveInTimerStart.isFarPast()) {
             display = emptyList()
             return
@@ -127,8 +123,8 @@ object MineshaftCaveInTimer {
         }
     }
 
-    @HandleEvent(GuiRenderEvent.GuiOverlayRenderEvent::class, onlyOnIsland = IslandType.MINESHAFT)
-    fun onGuiRenderOverlay() {
+    @HandleEvent(onlyOnIsland = IslandType.MINESHAFT)
+    private fun onGuiRenderOverlay() {
         if (display.isEmpty()) return
         config.position.renderRenderables(display, posLabel = "Mineshaft Cave-in Timer")
     }

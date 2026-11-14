@@ -4,7 +4,6 @@ import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.features.misc.NpcDayLimitTrackerConfig.NumberFormatEntry
 import at.hannibal2.skyhanni.data.ProfileStorageData
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
@@ -39,7 +38,7 @@ object NpcDayLimitTracker {
     )
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!config.enabled) return
 
         npcSellPattern.matchMatcher(event.cleanMessage) {
@@ -50,8 +49,8 @@ object NpcDayLimitTracker {
         }
     }
 
-    @HandleEvent(GuiRenderEvent.GuiOverlayRenderEvent::class, onlyOnSkyblock = true)
-    fun onGuiRenderOverlay() {
+    @HandleEvent(onlyOnSkyblock = true)
+    private fun onGuiRenderOverlay() {
         if (!config.enabled) return
 
         config.position.renderRenderable(
@@ -85,20 +84,9 @@ object NpcDayLimitTracker {
         return soldCoins
     }
 
-    fun remainingCoinsToday(): Long {
-        rollDayIfNeeded()
-        return (DAILY_LIMIT - soldCoins).coerceAtLeast(0L)
-    }
-
     fun formatCoinsLabel(coins: Long): String = when (config.numberFormat.get()) {
         NumberFormatEntry.SHORT -> coins.shortFormat()
         NumberFormatEntry.LONG -> coins.addSeparators()
-    }
-
-    fun hudPlainText(): String {
-        val sold = formatCoinsLabel(soldCoinsToday())
-        val limit = formatCoinsLabel(DAILY_LIMIT)
-        return "$sold/$limit"
     }
 
     fun hudLine(): String {

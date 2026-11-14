@@ -1,5 +1,6 @@
 import at.skyhanni.sharedvariables.ProjectTarget
 import at.skyhanni.sharedvariables.SHVersionInfo
+import com.google.devtools.ksp.gradle.KspAATask
 import dev.detekt.gradle.Detekt
 import dev.detekt.gradle.DetektCreateBaselineTask
 import net.fabricmc.loom.api.fabricapi.FabricApiExtension
@@ -17,12 +18,11 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import skyhannibuildsystem.BuildProgress
 import skyhannibuildsystem.BuildProgressService
 import skyhannibuildsystem.ChangelogVerification
-import skyhannibuildsystem.JavacProgressArgument
 import skyhannibuildsystem.DownloadBackupRepo
+import skyhannibuildsystem.JavacProgressArgument
 import skyhannibuildsystem.PublishToModrinth
 import skyhannibuildsystem.progress.DetektProgressListener
 import skyhannibuildsystem.progress.KspProgressProbe
-import com.google.devtools.ksp.gradle.KspAATask
 import kotlin.jvm.java
 import org.gradle.jvm.tasks.Jar as GradleJar
 
@@ -38,7 +38,7 @@ plugins {
 }
 
 val target = ProjectTarget.entries.find { it.projectPath == project.path }!!
-val primaryTarget = ProjectTarget.MODERN_26200
+val primaryTarget = ProjectTarget.primary
 
 // Toolchains:
 java {
@@ -343,7 +343,7 @@ tasks.processResources {
         put("minecraft", minecraftVersion)
         put("fapi", fapiVersion)
         put("fabloader", fabLoaderVersion)
-        put ("fablangkotlin", fabLangKotlinVersion)
+        put("fablangkotlin", fabLangKotlinVersion)
         put("hypixelmodapi", hypixelModApiVersion)
         put("renderchest", renderChestVersion)
     }

@@ -21,7 +21,7 @@ object DungeonSecretChime {
     private var dungeonSecretItems = setOf<NeuInternalName>()
 
     @HandleEvent
-    private fun onDungeonClickedBlock(event: DungeonBlockClickEvent) {
+    private fun onDungeonBlockClick(event: DungeonBlockClickEvent) {
         if (!isEnabled()) return
         if (DungeonApi.inWaterRoom && event.blockType == LEVER) return
 
@@ -35,7 +35,7 @@ object DungeonSecretChime {
     }
 
     @HandleEvent
-    private fun onMobDeSpawn(event: MobEvent.DeSpawn.SkyblockMob) {
+    private fun onSkyblockMobDeSpawn(event: MobEvent.DeSpawn.SkyblockMob) {
         if (isEnabled() && event.mob.name == "Dungeon Secret Bat") {
             playSound()
         }

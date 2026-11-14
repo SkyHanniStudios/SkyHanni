@@ -64,7 +64,7 @@ object DungeonSpiritLeapOverlay {
     data class PlayerStackInfo(val playerInfo: DungeonApi.TeamMember?, val stack: SafeItemStack, val slotNumber: Int)
 
     @HandleEvent
-    private fun onGuiContainerPreDraw(event: GuiContainerEvent.PreDraw) {
+    private fun onPreDraw(event: GuiContainerEvent.PreDraw) {
         if (!isEnabled()) return
 
         val gui = event.gui
@@ -137,7 +137,7 @@ object DungeonSpiritLeapOverlay {
     }
 
     @HandleEvent
-    private fun onKeyPress(event: KeyDownEvent) {
+    private fun onKeyDown(event: KeyDownEvent) {
         if (!isEnabled() || !config.spiritLeapKeybindConfig.enableKeybind) return
         if (!inventory.isInside()) return
         val index = getKeybindIndex(event.keyCode)

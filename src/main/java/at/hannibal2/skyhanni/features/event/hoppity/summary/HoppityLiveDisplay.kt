@@ -4,7 +4,6 @@ import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.features.event.hoppity.summary.HoppityEventSummaryConfig.HoppityStat
 import at.hannibal2.skyhanni.config.features.event.hoppity.summary.HoppityLiveDisplayConfig
-import at.hannibal2.skyhanni.config.features.event.hoppity.summary.HoppityLiveDisplayConfig.HoppityDateTimeFormat.RELATIVE
 import at.hannibal2.skyhanni.config.features.event.hoppity.summary.HoppityLiveDisplayConfig.HoppityLiveDisplayInventoryType
 import at.hannibal2.skyhanni.config.storage.ProfileSpecificStorage.HoppityEventStats
 import at.hannibal2.skyhanni.data.ProfileStorageData
@@ -101,8 +100,9 @@ object HoppityLiveDisplay {
     private var displayCardRenderables: List<Renderable> = emptyList()
     private var lastToggleMark: SimpleTimeMark = SimpleTimeMark.farPast()
 
+    @Suppress("MismatchedPrimaryFunction")
     @HandleEvent(onlyOnSkyblock = true, eventTypes = [InventoryCloseEvent::class, InventoryFullyOpenedEvent::class])
-    fun reCheckInventoryState() {
+    private fun reCheckInventoryState() {
         if (isInInventory() != lastKnownInInvState) {
             lastKnownInInvState = !lastKnownInInvState
             lastKnownStatHash = 0

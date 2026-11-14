@@ -11,7 +11,7 @@ object GoblinRaidFeatures {
     val config get() = SkyHanniMod.feature.mining.miningEvent.goblinRaidConfig
 
     @HandleEvent
-    fun onMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
+    private fun onSkyblockMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
         if (!config.superprotectronHighlight) return
 
         if (event.mob.name != "Superprotectron") return

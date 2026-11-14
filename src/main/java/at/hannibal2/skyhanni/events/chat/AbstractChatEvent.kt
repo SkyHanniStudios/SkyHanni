@@ -7,7 +7,7 @@ import net.minecraft.network.chat.Component
 object AbstractChatEvent {
 
     // TODO docs missing
-    open class Allow(
+    abstract class Allow(
         val messageComponent: ComponentSpan,
         chatComponent: Component,
         blockedReason: String? = null,
@@ -20,7 +20,7 @@ object AbstractChatEvent {
     }
 
     // TODO docs missing
-    open class Modify(
+    abstract class Modify(
         val messageComponent: ComponentSpan,
         chatComponent: Component,
     ) : SystemMessageEvent.Modify(messageComponent.getText(), chatComponent) {

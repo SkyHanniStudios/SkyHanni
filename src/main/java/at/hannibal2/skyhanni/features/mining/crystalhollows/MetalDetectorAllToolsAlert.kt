@@ -4,7 +4,6 @@ import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.title.TitleManager
-import at.hannibal2.skyhanni.events.ActionBarUpdateEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.ItemUtils.getInternalName
@@ -26,7 +25,7 @@ object MetalDetectorAllToolsAlert {
     private var playedSound = false
 
     @HandleEvent(onlyOnIsland = IslandType.CRYSTAL_HOLLOWS)
-    fun onActionBarUpdate(event: ActionBarUpdateEvent) {
+    fun onActionBarUpdate() {
         if (!config.metalDetectorAllToolsAlert) return
         if (InventoryUtils.itemInHandId != METAL_DETECTOR) return
 

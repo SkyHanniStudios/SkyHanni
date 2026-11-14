@@ -1,7 +1,6 @@
 package at.hannibal2.skyhanni.data
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.events.DrawScreenAfterEvent
 import at.hannibal2.skyhanni.events.GuiRenderItemEvent
 import at.hannibal2.skyhanni.events.RenderInventoryItemTipEvent
 import at.hannibal2.skyhanni.events.RenderItemTipEvent
@@ -20,7 +19,7 @@ import net.minecraft.client.gui.screens.inventory.ContainerScreen
 object ItemTipHelper {
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onRenderItemOverlayPost(event: GuiRenderItemEvent.RenderOverlayEvent.GuiRenderItemPost) {
+    private fun onRenderItemOverlayPost(event: GuiRenderItemEvent.RenderOverlayEvent.GuiRenderItemPost) {
         val stack = event.stack ?: return
 
         val itemTipEvent = RenderItemTipEvent(stack, mutableListOf())
@@ -38,7 +37,7 @@ object ItemTipHelper {
     }
 
     @HandleEvent(priority = HandleEvent.HIGHEST, onlyOnSkyblock = true)
-    fun onRenderInventoryItemOverlayPost(event: DrawScreenAfterEvent) {
+    private fun onDrawnScreenAfter() {
         if (GlobalRender.renderDisabled) return
 
         val gui = MinecraftCompat.screen

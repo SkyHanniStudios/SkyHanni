@@ -15,7 +15,6 @@ import at.hannibal2.skyhanni.data.ScoreboardData
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
 import at.hannibal2.skyhanni.events.GuiPositionMovedEvent
 import at.hannibal2.skyhanni.events.IslandChangeEvent
-import at.hannibal2.skyhanni.events.ScoreboardUpdateEvent
 import at.hannibal2.skyhanni.events.hypixel.HypixelJoinEvent
 import at.hannibal2.skyhanni.features.gui.customscoreboard.ScoreboardLine.Companion.align
 import at.hannibal2.skyhanni.features.gui.customscoreboard.elements.ScoreboardElement
@@ -133,8 +132,8 @@ object CustomScoreboard {
             UnknownLinesHandler.handleUnknownLines()
     }
 
-    @HandleEvent(ScoreboardUpdateEvent::class)
-    private fun onScoreboardChange() {
+    @HandleEvent
+    private fun onScoreboardUpdate() {
         dirty = true
     }
 

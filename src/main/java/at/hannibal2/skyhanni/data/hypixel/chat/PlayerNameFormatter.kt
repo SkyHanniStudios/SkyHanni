@@ -62,7 +62,7 @@ object PlayerNameFormatter {
     )
 
     @HandleEvent
-    fun onPlayerAllChat(event: PlayerAllChatEvent.Modify) {
+    private fun onPlayerAllChatModify(event: PlayerAllChatEvent.Modify) {
         if (!isEnabled()) return
         val levelColor = event.levelColor
         val levelComponent = event.levelComponent
@@ -94,7 +94,7 @@ object PlayerNameFormatter {
     }
 
     @HandleEvent
-    fun onCoopChat(event: CoopChatEvent.Modify) {
+    private fun onCoopChatModify(event: CoopChatEvent.Modify) {
         if (!isEnabled()) return
         val component = StringUtils.replaceIfNeeded(
             event.chatComponent,
@@ -108,7 +108,7 @@ object PlayerNameFormatter {
     }
 
     @HandleEvent
-    fun onGuildChat(event: GuildChatEvent.Modify) {
+    private fun onGuildChatModify(event: GuildChatEvent.Modify) {
         if (!isEnabled()) return
         val component = StringUtils.replaceIfNeeded(
             event.chatComponent,
@@ -122,7 +122,7 @@ object PlayerNameFormatter {
     }
 
     @HandleEvent
-    fun onPartyChat(event: PartyChatEvent.Modify) {
+    private fun onPartyChatModify(event: PartyChatEvent.Modify) {
         if (!isEnabled()) return
         val component = StringUtils.replaceIfNeeded(
             event.chatComponent,
@@ -136,7 +136,7 @@ object PlayerNameFormatter {
     }
 
     @HandleEvent
-    fun onPrivateChat(event: PrivateMessageChatEvent.Modify) {
+    private fun onPrivateChatModify(event: PrivateMessageChatEvent.Modify) {
         if (!isEnabled()) return
         val component = StringUtils.replaceIfNeeded(
             event.chatComponent,
@@ -154,7 +154,7 @@ object PlayerNameFormatter {
     }
 
     @HandleEvent
-    fun onPlayerShowItemChat(event: PlayerShowItemChatEvent.Modify) {
+    private fun onPlayerShowItemChatModify(event: PlayerShowItemChatEvent.Modify) {
         if (!isEnabled()) return
         val component = StringUtils.replaceIfNeeded(
             event.chatComponent,
@@ -292,7 +292,7 @@ object PlayerNameFormatter {
     fun isEnabled() = SkyBlockUtils.inSkyBlock && config.enable
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.transform(41, "chat.PlayerMessagesConfig.partsOrder") { element ->
             val newList = JsonArray()
             for (entry in element.asJsonArray) {

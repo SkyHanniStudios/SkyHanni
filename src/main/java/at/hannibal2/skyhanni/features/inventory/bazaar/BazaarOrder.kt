@@ -1,7 +1,5 @@
 package at.hannibal2.skyhanni.features.inventory.bazaar
 
-import at.hannibal2.skyhanni.features.inventory.bazaar.BazaarApi.getOpenBuyOrderAmount
-import at.hannibal2.skyhanni.features.inventory.bazaar.BazaarApi.getOpenSellOfferAmount
 import at.hannibal2.skyhanni.utils.NeuInternalName
 
 /**

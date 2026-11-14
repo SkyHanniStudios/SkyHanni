@@ -5,11 +5,7 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.events.CheckRenderEntityEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
-import at.hannibal2.skyhanni.events.dungeon.DungeonBossRoomEnterEvent
-import at.hannibal2.skyhanni.events.dungeon.DungeonEnterEvent
-import at.hannibal2.skyhanni.events.dungeon.DungeonStartEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.PlayerUtils
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
@@ -52,7 +48,7 @@ object DungeonCopilot {
     private var searchForKey = false
 
     @HandleEvent(onlyOnIsland = IslandType.CATACOMBS)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!config.enabled) return
 
         handleChatMessage(event.message)?.let {
@@ -110,7 +106,7 @@ object DungeonCopilot {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CATACOMBS)
-    fun onCheckRender(event: CheckRenderEntityEvent<ArmorStand>) {
+    private fun onCheckRenderEntity(event: CheckRenderEntityEvent<ArmorStand>) {
         val entity = event.entity
 
         if (!searchForKey) return
@@ -126,36 +122,36 @@ object DungeonCopilot {
     }
 
     @HandleEvent
-    fun onDungeonStart(event: DungeonStartEvent) {
+    private fun onDungeonStart() {
         changeNextStep("Clear first room")
         searchForKey = true
     }
 
     @HandleEvent
-    fun onDungeonStart(event: DungeonEnterEvent) {
+    private fun onDungeonEnter() {
         changeNextStep("Talk to Mort")
         searchForKey = true
     }
 
     @HandleEvent
-    fun onDungeonBossRoomEnter(event: DungeonBossRoomEnterEvent) {
+    private fun onDungeonBossRoomEnter() {
         changeNextStep("Defeat the boss! Good luck :)")
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         changeNextStep()
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CATACOMBS)
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay() {
         if (!config.enabled) return
         val nextStep = nextStep ?: return
         config.pos.renderRenderable(nextStep, posLabel = "Dungeon Copilot")
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(3, "dungeon.messageFilterKeysAndDoors", "dungeon.messageFilter.keysAndDoors")
         event.move(3, "dungeon.copilotEnabled", "dungeon.dungeonCopilot.enabled")
         event.move(3, "dungeon.copilotPos", "dungeon.dungeonCopilot.pos")

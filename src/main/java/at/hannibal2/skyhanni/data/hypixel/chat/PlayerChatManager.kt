@@ -41,7 +41,7 @@ object PlayerChatManager {
      */
     private val globalPattern by patternGroup.pattern(
         "global",
-        "^(?:\\[(?<level>\\d+)] )?(?<author>(?:(?:§.)*[^ ] )?(?:(?:§.)*\\[[^\\]]+\\] )?[^ ]+?)(?<chatColor>§f|§7|): (?<message>.*)\$",
+        "^(?:\\[(?<level>\\d+)] )?(?<author>(?:(?:§.)*[^ ] )?(?:(?:§.)*\\[[^\\]]+\\] )?[^ ]+?)(?<chatColor>§f|§7|): (?<message>.*)$",
     )
 
     /**
@@ -124,7 +124,7 @@ object PlayerChatManager {
     )
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         val chatComponent = event.chatComponent.intoSpan().stripHypixelMessage()
         coopPattern.matchStyledMatcher(chatComponent) {
             val author = groupOrThrow("author")
@@ -177,7 +177,7 @@ object PlayerChatManager {
     }
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Modify) {
+    private fun onChatModify(event: SkyHanniChatEvent.Modify) {
         val chatComponent = event.chatComponent.intoSpan().stripHypixelMessage()
         coopPattern.matchStyledMatcher(chatComponent) {
             val author = groupOrThrow("author")

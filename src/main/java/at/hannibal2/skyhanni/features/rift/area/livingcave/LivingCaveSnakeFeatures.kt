@@ -48,7 +48,7 @@ object LivingCaveSnakeFeatures {
     private val removedList = ConcurrentLinkedQueue<LorenzVec>()
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onBlockChange(event: ServerBlockChangeEvent) {
+    private fun onServerBlockChange(event: ServerBlockChangeEvent) {
         if (!isEnabled()) return
         val location = event.location
         val old = event.oldState.block
@@ -79,7 +79,7 @@ object LivingCaveSnakeFeatures {
     }
 
     @HandleEvent
-    fun onItemInHandChange(event: ItemInHandChangeEvent) {
+    private fun onItemInHandChange(event: ItemInHandChangeEvent) {
         currentRole = when (event.newItem) {
             FROZEN_WATER_PUNGI -> Role.CALM
             in pickaxes -> Role.BREAK
@@ -90,7 +90,7 @@ object LivingCaveSnakeFeatures {
     private var lastClickedBlock: LorenzVec? = null
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onBlockClick(event: BlockClickEvent) {
+    private fun onBlockClick(event: BlockClickEvent) {
         if (!isEnabled()) return
 
         lastClickedBlock = event.position
@@ -109,7 +109,7 @@ object LivingCaveSnakeFeatures {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onTick() {
+    private fun onTick() {
         if (!isEnabled()) return
 
         if (SkyBlockUtils.debug && PlayerUtils.isSneaking() && snakes.isNotEmpty()) {
@@ -141,7 +141,7 @@ object LivingCaveSnakeFeatures {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!isEnabled()) return
         if (currentRole == null) return
 

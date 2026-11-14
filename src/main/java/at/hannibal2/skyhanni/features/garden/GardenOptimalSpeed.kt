@@ -4,8 +4,6 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.title.TitleManager
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.garden.GardenToolChangeEvent
 import at.hannibal2.skyhanni.events.render.gui.GuiScreenOpenEvent
 import at.hannibal2.skyhanni.events.render.gui.ScreenDrawnEvent
@@ -66,7 +64,7 @@ object GardenOptimalSpeed {
     private var lastToolSwitch = SimpleTimeMark.farPast()
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onGuiScreenOpen(event: GuiScreenOpenEvent) {
+    private fun onGuiOpen(event: GuiScreenOpenEvent) {
         if (!isRancherOverlayEnabled()) return
         val gui = event.gui as? SignEditScreen ?: return
         if (!gui.isRancherSign()) return
@@ -97,7 +95,7 @@ object GardenOptimalSpeed {
     }
 
     @HandleEvent
-    fun onScreenDrawn(event: ScreenDrawnEvent) {
+    private fun onScreenDrawn(event: ScreenDrawnEvent) {
         if (!isRancherOverlayEnabled()) return
         val gui = event.gui as? SignEditScreen ?: return
         if (!gui.isRancherSign()) return
@@ -108,7 +106,7 @@ object GardenOptimalSpeed {
     }
 
     @HandleEvent
-    fun onGardenToolChange(event: GardenToolChangeEvent) {
+    private fun onGardenToolChange(event: GardenToolChangeEvent) {
         lastToolSwitch = SimpleTimeMark.now()
         cropInHand = event.crop
         event.crop?.let { lastCrop = it }
@@ -116,7 +114,7 @@ object GardenOptimalSpeed {
     }
 
     @HandleEvent
-    fun onConfigLoad(event: ConfigLoadEvent) {
+    private fun onConfigLoad() {
         for (value in CropType.entries) {
             ConditionalUtils.onToggle(value.getConfig()) {
                 if (value == cropInHand) {
@@ -146,7 +144,7 @@ object GardenOptimalSpeed {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay() {
 
         val speed = optimalSpeed ?: return
 
@@ -199,7 +197,7 @@ object GardenOptimalSpeed {
     private fun isRancherOverlayEnabled() = GardenApi.inGarden() && config.signEnabled
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(3, "garden.optimalSpeedEnabled", "garden.optimalSpeeds.enabled")
         event.move(3, "garden.optimalSpeedWarning", "garden.optimalSpeeds.warning")
         event.move(3, "garden.optimalSpeedSignEnabled", "garden.optimalSpeeds.signEnabled")

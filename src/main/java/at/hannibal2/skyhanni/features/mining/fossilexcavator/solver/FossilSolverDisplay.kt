@@ -5,8 +5,6 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.events.GuiContainerEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.RenderInventoryItemTipEvent
 import at.hannibal2.skyhanni.features.mining.fossilexcavator.FossilExcavatorApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -76,7 +74,7 @@ object FossilSolverDisplay {
     fun onWorldChange() = clearData()
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) = clearData()
+    fun onInventoryClose() = clearData()
 
     // TODO reshape to a data class, use Resettable
     private fun clearData() {
@@ -160,7 +158,7 @@ object FossilSolverDisplay {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.DWARVEN_MINES)
-    fun onForegroundDrawn(event: GuiContainerEvent.ForegroundDrawnEvent) {
+    fun onForegroundDrawn() {
         if (!isEnabled()) return
         if (inExcavatorMenu) return
         if (slotToClick == null) return
@@ -186,7 +184,7 @@ object FossilSolverDisplay {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.DWARVEN_MINES)
-    fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
+    fun onChestGuiRender() {
         if (!isEnabled()) return
 
         // Render here so they can move it around. As if you press key while doing the excavator you lose the scrap

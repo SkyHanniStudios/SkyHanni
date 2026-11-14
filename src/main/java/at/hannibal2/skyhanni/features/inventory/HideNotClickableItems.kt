@@ -50,7 +50,7 @@ object HideNotClickableItems {
     }
 
     @HandleEvent(onlyOnSkyblock = true, priority = HandleEvent.LOWEST)
-    private fun onTooltip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (bypassActive()) return
 
         val guiChest = MinecraftCompat.screen

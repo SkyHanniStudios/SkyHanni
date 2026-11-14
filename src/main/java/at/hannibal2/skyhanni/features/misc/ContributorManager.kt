@@ -109,7 +109,7 @@ object ContributorManager {
 
     // <editor-fold desc="Commands">
     @HandleEvent
-    private fun onCommand(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shlistseencontributors") {
             description = "List all contributors you've seen in chat or in nametags"
             category = CommandCategory.USERS_ACTIVE
@@ -263,7 +263,7 @@ object ContributorManager {
     // </editor-fold>
 
     @HandleEvent
-    private fun onChat(event: PlayerAllChatEvent.Allow) {
+    private fun onPlayerAllChat(event: PlayerAllChatEvent.Allow) {
         if (!isSelfContributor()) return
         if (!config.contributorMentionTracker) return
         val msg = event.messageComponent.getText()

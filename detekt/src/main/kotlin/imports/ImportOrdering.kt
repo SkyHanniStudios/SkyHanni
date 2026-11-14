@@ -1,12 +1,87 @@
 package imports
 
+import PreprocessingPattern
+
 object ImportOrdering {
     private val importOrder = Comparator(::compareImports)
 
     private val packageImportOrdering = listOf("java.", "javax.", "kotlin.", "kotlinx.")
 
+    data class ImportLine(
+        val text: String,
+        val lineIndex: Int,
+    )
+
+    data class ImportBlock(
+        val inPreprocessingBlock: Boolean,
+        val importLines: List<ImportLine>,
+    )
+
     fun getOrdering(): Comparator<String> = importOrder
-    
+
+    fun createImportBlocks(lines: List<String>): List<ImportBlock> {
+        val blocks = mutableListOf<ImportBlock>()
+        var currentImports = mutableListOf<ImportLine>()
+        var inPreprocessingBlock = false
+        var inImportSection = false
+
+        fun flush() {
+            if (currentImports.isNotEmpty()) {
+                blocks += ImportBlock(inPreprocessingBlock, currentImports)
+                currentImports = mutableListOf()
+            }
+        }
+
+        fun isImportLine(line: String): Boolean =
+            line.startsWith("import ") ||
+                line.startsWith("/*import ")
+
+        for ((index, rawLine) in lines.withIndex()) {
+            val line = rawLine.trim()
+
+            when {
+                line.startsWith("package ") -> continue
+
+                line.isBlank() -> continue
+
+                PreprocessingPattern.IF.matches(line) -> {
+                    inImportSection = true
+                    flush()
+                    inPreprocessingBlock = true
+                }
+
+                PreprocessingPattern.ELSEIF.matches(line) ||
+                    PreprocessingPattern.ELSE.matches(line) -> {
+                    flush()
+                    inPreprocessingBlock = true
+                }
+
+                PreprocessingPattern.ENDIF.matches(line) -> {
+                    flush()
+                    inPreprocessingBlock = false
+                }
+
+                isImportLine(line) -> {
+                    inImportSection = true
+
+                    currentImports += ImportLine(
+                        line.removePrefix("/*"),
+                        index,
+                    )
+                }
+
+                inImportSection -> {
+                    flush()
+                    break
+                }
+            }
+        }
+
+        flush()
+
+        return blocks
+    }
+
     private fun compareImports(import1: String, import2: String): Int {
         val path1 = import1.removePrefix("import ").substringBefore(" as ")
         val path2 = import2.removePrefix("import ").substringBefore(" as ")

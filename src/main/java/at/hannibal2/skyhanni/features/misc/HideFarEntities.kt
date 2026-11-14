@@ -18,7 +18,6 @@ import at.hannibal2.skyhanni.utils.EntityUtils
 import at.hannibal2.skyhanni.utils.EntityUtils.isNpc
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
 import at.hannibal2.skyhanni.utils.MobUtils.mob
-import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import net.minecraft.client.player.RemotePlayer
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.animal.golem.IronGolem
@@ -36,10 +35,10 @@ object HideFarEntities {
 
     // TODO: use entity events
     @OptIn(AllEntitiesGetter::class)
-    @HandleEvent
+    @HandleEvent(onlyOnSkyblock = true)
     private fun onTick(event: SkyHanniTickEvent) {
         if (GlobalRender.renderDisabled) return
-        if (!isEnabled()) return
+        if (!config.enabled) return
         if (event.isMod(20)) {
             updateNeverHide()
         }
@@ -106,13 +105,11 @@ object HideFarEntities {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    private fun onCheckRender(event: CheckRenderEntityEvent<Entity>) {
-        if (!isEnabled()) return
+    private fun onCheckRenderEntity(event: CheckRenderEntityEvent<Entity>) {
+        if (!config.enabled) return
         val entity = event.entity
         if (entity.id in hidden) {
             event.cancel()
         }
     }
-
-    fun isEnabled() = SkyBlockUtils.inSkyBlock && config.enabled
 }

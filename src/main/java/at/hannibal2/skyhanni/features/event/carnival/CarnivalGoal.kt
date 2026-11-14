@@ -3,9 +3,7 @@ package at.hannibal2.skyhanni.features.event.carnival
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.ProfileStorageData
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
-import at.hannibal2.skyhanni.events.ProfileJoinEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ItemUtils.getLore
@@ -172,7 +170,7 @@ enum class CarnivalGoal(
             entries.filter { it.type.item == item }.firstOrNull { it.lorePattern.matches(lore.firstOrNull()) }
 
         @HandleEvent
-        fun onProfileJoin(event: ProfileJoinEvent) {
+        fun onProfileJoin() {
             dirty = true
         }
 
@@ -197,7 +195,7 @@ enum class CarnivalGoal(
         private var display = emptyList<Renderable>()
 
         @HandleEvent
-        fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+        fun onGuiRenderOverlay() {
             if (!isEnabled()) return
             if (dirty) {
                 display = buildList {

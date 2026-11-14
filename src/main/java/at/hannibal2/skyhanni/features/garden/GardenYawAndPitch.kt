@@ -3,8 +3,6 @@ package at.hannibal2.skyhanni.features.garden
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.config.enums.OutsideSBFeature
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.garden.GardenToolChangeEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.LocationUtils
 import at.hannibal2.skyhanni.utils.NumberUtil.roundTo
@@ -23,7 +21,7 @@ object GardenYawAndPitch {
     private var lastPitch = 0f
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    fun onGuiRenderOverlay() {
         if (!SkyBlockUtils.onHypixel) return
         if (!isEnabled()) return
         if (GardenApi.hideExtraGuis()) return
@@ -55,7 +53,7 @@ object GardenYawAndPitch {
     }
 
     @HandleEvent
-    fun onGardenToolChange(event: GardenToolChangeEvent) {
+    fun onGardenToolChange() {
         lastChange = SimpleTimeMark.farPast()
     }
 

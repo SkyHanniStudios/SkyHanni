@@ -5,7 +5,6 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.mob.Mob
 import at.hannibal2.skyhanni.data.mob.Mob.Companion.belongsToPlayer
 import at.hannibal2.skyhanni.data.mob.MobData
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
 import at.hannibal2.skyhanni.events.MobEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ConditionalUtils.onEnable
@@ -24,7 +23,7 @@ object HighlightJerries {
     private val jerryPattern by RepoPattern.pattern("jerry.highlight", "(?<color>\\w+) Jerry")
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
+    private fun onSkyblockMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
         if (!config.highlightJerries.get() && !config.lineJerries.get()) return
         parseJerry(event.mob)
     }
@@ -43,8 +42,8 @@ object HighlightJerries {
         mob.lineToPlayer(color) { config.lineJerries.get() }
     }
 
-    @HandleEvent(ConfigLoadEvent::class)
-    fun onConfigLoad() {
+    @HandleEvent
+    private fun onConfigLoad() {
         config.highlightJerries.onEnable { MobData.skyblockMobs.forEach { parseJerry(it) } }
         config.lineJerries.onEnable { MobData.skyblockMobs.forEach { parseJerry(it) } }
     }

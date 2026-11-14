@@ -3,8 +3,6 @@ package at.hannibal2.skyhanni.features.event.diana
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.title.TitleManager
-import at.hannibal2.skyhanni.events.IslandChangeEvent
-import at.hannibal2.skyhanni.events.diana.BurrowDugEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
@@ -38,14 +36,14 @@ object GriffinPetWarning {
     }
 
     @HandleEvent
-    fun onBurrowDug(event: BurrowDugEvent) {
+    fun onBurrowDug() {
         DelayedRun.runDelayed(2.seconds) {
             wasCorrectPetAlready = false
         }
     }
 
     @HandleEvent
-    fun onIslandChange(event: IslandChangeEvent) {
+    fun onIslandChange() {
         DelayedRun.runDelayed(5.seconds) {
             wasCorrectPetAlready = false
         }

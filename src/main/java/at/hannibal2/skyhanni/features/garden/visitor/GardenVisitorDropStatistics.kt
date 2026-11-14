@@ -9,12 +9,8 @@ import at.hannibal2.skyhanni.config.features.garden.visitor.DropsStatisticsConfi
 import at.hannibal2.skyhanni.config.storage.ProfileSpecificStorage
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.ProfileStorageData
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.ProfileJoinEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.garden.visitor.VisitorAcceptEvent
-import at.hannibal2.skyhanni.events.garden.visitor.VisitorAcceptedEvent
 import at.hannibal2.skyhanni.features.garden.GardenApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
@@ -122,18 +118,18 @@ object GardenVisitorDropStatistics {
         gemstonePowderPattern to { storage, amount -> storage.gemstonePowder += amount },
     )
 
-    @HandleEvent(VisitorAcceptedEvent::class, onlyOnIsland = IslandType.GARDEN)
-    fun onVisitorAccepted() {
+    @HandleEvent(onlyOnIsland = IslandType.GARDEN)
+    private fun onVisitorAccepted() {
         lastAccept = SimpleTimeMark.now()
     }
 
-    @HandleEvent(ProfileJoinEvent::class)
-    fun onProfileJoin() {
+    @HandleEvent
+    private fun onProfileJoin() {
         display = emptyList()
     }
 
     @HandleEvent
-    fun onVisitorAccept(event: VisitorAcceptEvent) {
+    private fun onVisitorAccept(event: VisitorAcceptEvent) {
         if (!GardenApi.onBarnPlot) return
         if (!ProfileStorageData.loaded) return
         val storage = GardenApi.storage?.visitorDrops ?: return
@@ -146,7 +142,7 @@ object GardenVisitorDropStatistics {
     }
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!GardenApi.onBarnPlot) return
         if (!ProfileStorageData.loaded) return
         if (lastAccept.passedSince() > 1.seconds) return
@@ -276,8 +272,8 @@ object GardenVisitorDropStatistics {
         )
     }
 
-    @HandleEvent(ConfigLoadEvent::class)
-    fun onConfigLoad() {
+    @HandleEvent
+    private fun onConfigLoad() {
         saveAndUpdate()
         ConditionalUtils.onToggle(
             config.enabled,
@@ -290,7 +286,7 @@ object GardenVisitorDropStatistics {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay() {
         if (!config.enabled.get()) return
         if (GardenApi.hideExtraGuis()) return
         if (config.onlyOnBarn.get() && !GardenApi.onBarnPlot) return
@@ -298,7 +294,7 @@ object GardenVisitorDropStatistics {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         val originalPrefix = "garden.visitorDropsStatistics."
         val newPrefix = "garden.visitors.dropsStatistics."
         event.move(3, "${originalPrefix}enabled", "${newPrefix}enabled")
@@ -340,7 +336,7 @@ object GardenVisitorDropStatistics {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shresetvisitordrops") {
             description = "Resets the Visitors Drop Statistics"
             category = CommandCategory.USERS_RESET

@@ -33,7 +33,7 @@ public abstract class MixinKeyMapping {
                 return;
             }
         }
-        TextInput.Companion.onMinecraftInput(keyBinding, cir);
+        TextInput.Companion.onMinecraftInput(cir);
         GraphEditor.INSTANCE.onMinecraftInput(keyBinding, cir);
     }
 
@@ -50,7 +50,7 @@ public abstract class MixinKeyMapping {
                 return;
             }
         }
-        TextInput.Companion.onMinecraftInput(keyBinding, cir);
+        TextInput.Companion.onMinecraftInput(cir);
         GraphEditor.INSTANCE.onMinecraftInput(keyBinding, cir);
     }
 }

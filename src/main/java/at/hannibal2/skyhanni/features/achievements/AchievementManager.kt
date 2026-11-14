@@ -246,7 +246,7 @@ object AchievementManager {
     }
 
     @HandleEvent
-    private fun onUserLuck(event: UserLuckCalculateEvent) {
+    private fun onUserLuckCalculate(event: UserLuckCalculateEvent) {
         var luck = 0f
         var hasDoneAllAchievements = true
         for ((_, achievement) in config) {

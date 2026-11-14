@@ -2,8 +2,6 @@ package at.hannibal2.skyhanni.features.anvil
 
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.events.GuiContainerEvent
-import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
 import at.hannibal2.skyhanni.events.inventory.AnvilUpdateEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.InventoryUtils
@@ -18,12 +16,12 @@ object AnvilCombineHelper {
     private var highlightedSlots = setOf<Int>()
 
     @HandleEvent(priority = HandleEvent.LOW)
-    fun onInventoryUpdated(event: AnvilUpdateEvent) {
+    private fun onAnvilUpdate(event: AnvilUpdateEvent) {
         highlightedSlots = updateSlots(event.left, event.right)
     }
 
     @HandleEvent
-    fun onInventoryUpdated(event: InventoryUpdatedEvent) {
+    private fun onInventoryUpdated() {
         highlightedSlots = updateSlots(AnvilApi.left, AnvilApi.right)
     }
 
@@ -47,7 +45,7 @@ object AnvilCombineHelper {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
+    private fun onBackgroundDrawn() {
         if (!isEnabled()) return
 
         for (slot in InventoryUtils.getSlotsInOwnInventory()) {

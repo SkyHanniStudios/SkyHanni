@@ -23,7 +23,7 @@ object FixChimeraDescription {
     )
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onTooltipEvent(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         // We don't need to always fix this
         if (!TimeUtils.isAprilFoolsDay) return
 

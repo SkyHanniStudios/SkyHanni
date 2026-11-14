@@ -7,7 +7,6 @@ import at.hannibal2.skyhanni.data.ElectionApi
 import at.hannibal2.skyhanni.data.SlayerApi
 import at.hannibal2.skyhanni.data.hypixel.chat.event.SystemMessageEvent
 import at.hannibal2.skyhanni.data.model.SkyblockStat
-import at.hannibal2.skyhanni.events.ProfileJoinEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.events.slayer.SlayerProgressChangeEvent
 import at.hannibal2.skyhanni.features.inventory.CurrentEquipmentApi
@@ -121,7 +120,7 @@ object RemainingSlayerKills {
         data = event.getConstant<SlayerData>("Slayer")
     }
 
-    @HandleEvent(ProfileJoinEvent::class)
+    @HandleEvent
     private fun onProfileJoin() {
         lastMissing = null
         lastMax = null

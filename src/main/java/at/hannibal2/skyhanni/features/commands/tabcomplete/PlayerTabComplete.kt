@@ -9,8 +9,6 @@ import at.hannibal2.skyhanni.data.jsonobjects.repo.VipVisitsJson
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.features.commands.suggestions.LazySuggestionEntry
 import at.hannibal2.skyhanni.features.commands.suggestions.SuggestionProvider
-import at.hannibal2.skyhanni.features.commands.tabcomplete.PlayerNameSource.BEST_FRIENDS
-import at.hannibal2.skyhanni.features.commands.tabcomplete.PlayerNameSource.CARRY_CUSTOMER
 import at.hannibal2.skyhanni.features.commands.tabcomplete.PlayerNameSource.FRIENDS
 import at.hannibal2.skyhanni.features.commands.tabcomplete.PlayerNameSource.GUILD
 import at.hannibal2.skyhanni.features.commands.tabcomplete.PlayerNameSource.ISLAND_PLAYERS

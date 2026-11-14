@@ -1,9 +1,7 @@
 package at.hannibal2.skyhanni.features.event.hoppity
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.config.features.event.hoppity.HoppityUnclaimedEggsConfig.UnclaimedEggsOrder.SOONEST_FIRST
 import at.hannibal2.skyhanni.data.mob.MobFilter.isRealPlayer
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.entity.EntityTransparencyActiveEvent
 import at.hannibal2.skyhanni.events.entity.EntityTransparencyTickEvent
 import at.hannibal2.skyhanni.features.fame.ReminderUtils
@@ -40,19 +38,19 @@ object HoppityEggDisplayManager {
     }
 
     @HandleEvent
-    fun onEntityTransparencyActive(event: EntityTransparencyActiveEvent) {
+    private fun onEntityTransparencyActive(event: EntityTransparencyActiveEvent) {
         event.setActive(HoppityEggLocator.isEnabled() && config.playerTransparency < 100)
     }
 
     @HandleEvent
-    fun onEntityTransparencyTick(event: EntityTransparencyTickEvent<Player>) {
+    private fun onEntityTransparencyTick(event: EntityTransparencyTickEvent<Player>) {
         if (canChangeTransparency(event.entity)) {
             event.newTransparency = config.playerTransparency
         }
     }
 
-    @HandleEvent(SecondPassedEvent::class)
-    fun onSecondPassed() {
+    @HandleEvent
+    private fun onSecondPassed() {
         display = updateDisplay()
     }
 

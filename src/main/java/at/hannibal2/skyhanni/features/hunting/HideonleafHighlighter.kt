@@ -15,18 +15,15 @@ object HideonleafHighlighter {
     private val config get() = SkyHanniMod.feature.hunting.mobHighlight.hideonleaf
 
     @HandleEvent(onlyOnIsland = IslandType.GALATEA)
-    fun onMob(event: MobEvent.Spawn.SkyblockMob) {
-        val mob = event.mob
-        if (mob.name != "Hideonleaf") return
+    private fun onSkyblockMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
+        val mob = event.mob.takeIf { it.name == "HideonLeaf " } ?: return
         RenderLivingEntityHelper.setEntityColor(mob.baseEntity, config.color.toColor()) {
-            isEnabled() && mob.distanceToPlayer() < 20
+            config.enabled && mob.distanceToPlayer() < 20
         }
     }
 
-    private fun isEnabled() = config.enabled
-
     @HandleEvent
-    fun onConfigFixEvent(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(91, "foraging.hideonleafHighlight", "foraging.mobHighlight.hideonleaf")
         event.move(100, "foraging.mobHighlight.hideonleaf", "hunting.mobHighlight.hideonleaf")
     }

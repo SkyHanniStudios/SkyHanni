@@ -84,12 +84,12 @@ object RiftBloodEffigies {
         locations.minByOrNull { it.distanceSq(entity.getLorenzVec()) }?.let { locations.indexOf(it) }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         effigies.values.forEach { it.reset() }
     }
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Rift Blood Effigies")
 
         if (!isEnabled()) {
@@ -105,7 +105,7 @@ object RiftBloodEffigies {
     }
 
     @HandleEvent
-    fun onRepoReload(event: RepositoryReloadEvent) {
+    private fun onRepoReload(event: RepositoryReloadEvent) {
         val newLocations = event.getConstant<RiftEffigiesJson>("RiftEffigies").locations
         if (newLocations.size != 6) {
             error("Invalid Rift effigies size: ${newLocations.size} (expected 6)")
@@ -114,7 +114,7 @@ object RiftBloodEffigies {
     }
 
     @HandleEvent
-    fun onRawScoreboardChange(event: RawScoreboardUpdateEvent) {
+    private fun onRawScoreboardUpdate(event: RawScoreboardUpdateEvent) {
         if (!isEnabled()) return
 
         val line = event.rawScoreboard.firstOrNull { it.startsWith("Effigies:") } ?: return
@@ -144,7 +144,7 @@ object RiftBloodEffigies {
     }
 
     @HandleEvent
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         if (!isEnabled()) return
 
         eLoop@for (entity in LocationUtils.playerLocation().getEntitiesNearby<ArmorStand>(15.0)) {
@@ -167,7 +167,7 @@ object RiftBloodEffigies {
     }
 
     @HandleEvent
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!isEnabled()) return
 
         for ((index, location) in locations.withIndex()) {
@@ -214,7 +214,7 @@ object RiftBloodEffigies {
     fun isEnabled() = RiftApi.inRift() && config.enabled && RiftApi.inStillgoreChateau()
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(9, "rift.area.stillgoreChateauConfig", "rift.area.stillgoreChateau")
 
         val basePath = "rift.area.stillgoreChateau.bloodEffigies"

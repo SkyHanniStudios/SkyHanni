@@ -87,7 +87,7 @@ object CFBlockOpen {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    private fun onCommandSend(event: MessageSendToServerEvent) {
+    private fun onMessageSendToServer(event: MessageSendToServerEvent) {
         if (!commandPattern.matches(event.message)) return
         if (commandSentTimer.passedSince() < 5.seconds) return
         if (SkyBlockUtils.isBingoProfile) return

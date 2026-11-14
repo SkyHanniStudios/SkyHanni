@@ -17,7 +17,6 @@ import at.hannibal2.skyhanni.utils.collection.CollectionUtils.addOrPut
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.enumMapOf
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.takeIfNotEmpty
 import at.hannibal2.skyhanni.utils.collection.TimeLimitedCache
-import com.google.common.cache.RemovalCause.EXPIRED
 import net.minecraft.network.chat.Component
 import java.util.regex.Matcher
 import kotlin.time.Duration.Companion.seconds

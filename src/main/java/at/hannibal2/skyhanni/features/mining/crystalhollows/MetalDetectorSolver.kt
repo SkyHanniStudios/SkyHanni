@@ -9,7 +9,6 @@ import at.hannibal2.skyhanni.events.ActionBarUpdateEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
-import at.hannibal2.skyhanni.events.minecraft.WorldChangeEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.BlockUtils.getBlockAt
 import at.hannibal2.skyhanni.utils.ChatUtils
@@ -79,13 +78,13 @@ object MetalDetectorSolver {
     private val DWARVEN_DIAMOND_AXE = "DWARVEN_DIAMOND_AXE".toInternalName()
 
     @HandleEvent
-    fun onRepoReload(event: RepositoryReloadEvent) {
+    private fun onRepoReload(event: RepositoryReloadEvent) {
         chestLocations = event.getConstant<MetalDetectorChestsJson>("MetalDetectorChests").locations
     }
     // TODO make this less complex instead of ignoring the problem
     @HandleEvent(onlyOnIsland = IslandType.CRYSTAL_HOLLOWS)
     @Suppress("CyclomaticComplexMethod")
-    fun onActionBarUpdate(event: ActionBarUpdateEvent) {
+    private fun onActionBarUpdate(event: ActionBarUpdateEvent) {
         if (!isEnabled()) return
         if (predictedChestLocations.size == 1) return
         if (config.metalDetectorStopWhenAllTools) {
@@ -160,7 +159,7 @@ object MetalDetectorSolver {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CRYSTAL_HOLLOWS)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!isEnabled()) return
         if (!treasureFoundPattern.matches(event.message)) return
 
@@ -185,7 +184,7 @@ object MetalDetectorSolver {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CRYSTAL_HOLLOWS)
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!isEnabled()) return
         predictedChestLocations.forEach {
             // TODO add chroma color support via config
@@ -197,7 +196,7 @@ object MetalDetectorSolver {
     }
 
     @HandleEvent
-    fun onWorldSwap(event: WorldChangeEvent) {
+    private fun onWorldChange() {
         baseCoordinates = null
         lastSearchedForBase = SimpleTimeMark.farPast()
         predictedChestLocations.clear()
@@ -208,7 +207,7 @@ object MetalDetectorSolver {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CRYSTAL_HOLLOWS)
-    fun onTick() {
+    private fun onTick() {
         if (!isEnabled()) return
         if (predictedChestLocations.size == 1) {
             val distanceSq = predictedChestLocations[0].distanceSqToPlayer()

@@ -46,7 +46,7 @@ object CraftRoomHolographicMob {
     private var holograms = mapOf<Int, Pair<HolographicEntities.HolographicEntity<out LivingEntity>, String?>>()
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onTick() {
+    private fun onTick() {
         if (!enabled) {
             holograms = emptyMap()
             return
@@ -88,7 +88,7 @@ object CraftRoomHolographicMob {
     }.trim().takeIf { it.isNotEmpty() }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!enabled) return
         holograms.values.forEach { (mob, string) ->
             event.renderHolographicEntity(mob)
@@ -97,7 +97,7 @@ object CraftRoomHolographicMob {
     }
 
     @HandleEvent(receiveCancelled = true, onlyOnIsland = IslandType.THE_RIFT)
-    fun onPlayerRender(event: CheckRenderEntityEvent<RemotePlayer>) {
+    private fun onCheckRenderEntity(event: CheckRenderEntityEvent<RemotePlayer>) {
         if (!enabled || !config.hidePlayers) return
         event.cancel()
     }

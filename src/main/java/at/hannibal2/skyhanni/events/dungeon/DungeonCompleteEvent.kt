@@ -1,7 +1,12 @@
 package at.hannibal2.skyhanni.events.dungeon
 
 import at.hannibal2.skyhanni.api.event.SkyHanniEvent
+import at.hannibal2.skyhanni.skyhannimodule.PrimaryFunction
 
+// TODO refactor to DungeonEvents.kt with others
+//  also while I'm here I figured I'd note that using a string for floor,
+//  while we have an enum for it [at.hannibal2.skyhanni.features.dungeon.DungeonFloor],
+//  is pretty peak
 /**
  * Fired when a dungeon run is completed.
  *
@@ -10,4 +15,5 @@ import at.hannibal2.skyhanni.api.event.SkyHanniEvent
  *
  * [floor] holds the current dungeon floor identifier (e.g., "F7", "M7", "E").
  */
+@PrimaryFunction("onDungeonComplete")
 class DungeonCompleteEvent(val floor: String) : SkyHanniEvent()

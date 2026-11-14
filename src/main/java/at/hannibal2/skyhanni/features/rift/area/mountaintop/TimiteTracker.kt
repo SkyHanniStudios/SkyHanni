@@ -6,7 +6,6 @@ import at.hannibal2.skyhanni.config.commands.CommandCategory
 import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.ItemAddManager
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.ItemAddEvent
 import at.hannibal2.skyhanni.features.rift.RiftApi
 import at.hannibal2.skyhanni.features.rift.RiftApi.motesNpcPrice
@@ -60,14 +59,12 @@ object TimiteTracker {
             var craftableAmountByTimite = 0
             var craftableAmountByObsolite = 0
 
-            for (neededItem in ItemUtils.neededItems(highliteRecipe)) {
-                if (neededItem.key in validItems) {
-                    data.items[neededItem.key]?.let {
-                        when (neededItem.key) {
-                            "YOUNGITE".toInternalName() -> craftableAmountByYoungite = it.totalAmount.toInt() / neededItem.value
-                            TIMITE -> craftableAmountByTimite = it.totalAmount.toInt() / neededItem.value
-                            "OBSOLITE".toInternalName() -> craftableAmountByObsolite = it.totalAmount.toInt() / neededItem.value
-                        }
+            for ((neededItem, count) in ItemUtils.neededItems(highliteRecipe).filterKeys { it in validItems }) {
+                data.items[neededItem]?.let {
+                    when (neededItem) {
+                        "YOUNGITE".toInternalName() -> craftableAmountByYoungite = it.totalAmount.toInt() / count
+                        TIMITE -> craftableAmountByTimite = it.totalAmount.toInt() / count
+                        "OBSOLITE".toInternalName() -> craftableAmountByObsolite = it.totalAmount.toInt() / count
                     }
                 }
             }
@@ -99,7 +96,7 @@ object TimiteTracker {
     )
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onItem(event: ItemAddEvent) {
+    private fun onItemAdd(event: ItemAddEvent) {
         if (event.internalName in validItems) {
             tracker.addItem(event.internalName, event.amount, event.source == ItemAddManager.Source.COMMAND)
         }
@@ -107,14 +104,14 @@ object TimiteTracker {
 
     // TODO use RenderDisplayHelper
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onRender(event: GuiRenderEvent) {
+    private fun onGuiRender() {
         if (!isEnabled()) return
 
         tracker.renderDisplay(config.trackerPosition)
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shresettimitetracker") {
             description = "Resets the Timite Tracker."
             category = CommandCategory.USERS_RESET

@@ -24,17 +24,15 @@ object GoldenGoblinHighlight {
      */
     private val goblinPattern by RepoPattern.pattern("mining.mob.golden.goblin", "Golden Goblin|Diamond Goblin")
 
-    private fun isEnabled() = IslandTypeTag.MINING.isInIsland() && config.highlightYourGoldenGoblin
-
     private val timeOut = 10.seconds
 
     private var lastChatMessage = SimpleTimeMark.farPast()
     private var lastGoblinSpawn = SimpleTimeMark.farPast()
     private var lastGoblin: Mob? = null
 
-    @HandleEvent
-    fun onEvent(event: SkyHanniChatEvent.Allow) {
-        if (!isEnabled()) return
+    @HandleEvent(onlyOnIslandTypeTag = [IslandTypeTag.MINING])
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
+        if (!config.highlightYourGoldenGoblin) return
         if (!MiningNotifications.goldenGoblinSpawn.matches(event.message) &&
             !MiningNotifications.diamondGoblinSpawn.matches(event.message)
         ) return
@@ -42,9 +40,9 @@ object GoldenGoblinHighlight {
         handle()
     }
 
-    @HandleEvent
-    fun onMobEvent(event: MobEvent.Spawn.SkyblockMob) {
-        if (!isEnabled()) return
+    @HandleEvent(onlyOnIslandTypeTag = [IslandTypeTag.MINING])
+    private fun onSkyblockMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
+        if (!config.highlightYourGoldenGoblin) return
         if (!goblinPattern.matches(event.mob.name)) return
         lastGoblin = event.mob
         lastGoblinSpawn = SimpleTimeMark.now()

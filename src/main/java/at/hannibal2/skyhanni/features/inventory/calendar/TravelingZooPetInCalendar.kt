@@ -22,15 +22,15 @@ object TravelingZooPetInCalendar {
     )
 
     @HandleEvent
-    private fun onTooltip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!isEnabled()) return
 
         if (CalendarApi.inCalendar) {
             val skyblockEvents = CalendarApi.parseCalendarItem(event.itemStack) ?: return
-            for (sbEvent in skyblockEvents) {
-                if (sbEvent.name == "Traveling Zoo") {
+            for ((name, startTime) in skyblockEvents) {
+                if (name == "Traveling Zoo") {
                     event.toolTip.add("")
-                    event.toolTip.add(getZooPet(sbEvent.startTime))
+                    event.toolTip.add(getZooPet(startTime))
                 }
             }
         }

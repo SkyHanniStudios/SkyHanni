@@ -3,7 +3,6 @@ package at.hannibal2.skyhanni.features.achievements
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.SackApi
 import at.hannibal2.skyhanni.data.achievements.Achievement
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.achievements.AchievementRegistrationEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.InventoryUtils
@@ -29,7 +28,7 @@ object FlowerAchievement {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed(event: SecondPassedEvent) {
+    fun onSecondPassed() {
         if (AchievementManager.isCompleted(ROMERO_ACHIEVEMENT)) return
         val flowerSack = SackApi.sacks["Flower"] ?: return
         var counter = 0

@@ -7,8 +7,6 @@ import at.hannibal2.skyhanni.config.commands.CommandCategory
 import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.ProfileStorageData
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.experiments.TableRareUncoverEvent
 import at.hannibal2.skyhanni.events.experiments.TableTaskCompletedEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
@@ -40,7 +38,7 @@ object ExperimentsDryStreakDisplay {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shresetdrystreak") {
             description = "Resets the Experimentation Table dry-streak counter."
             category = CommandCategory.USERS_RESET
@@ -49,7 +47,7 @@ object ExperimentsDryStreakDisplay {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
+    private fun onChestGuiRender() {
         if (!isEnabled() || !ExperimentationTableApi.inTable) return
 
         display = display.takeIfNotEmpty() ?: drawDisplay()
@@ -60,7 +58,7 @@ object ExperimentsDryStreakDisplay {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onTableRareUncover(event: TableRareUncoverEvent) {
+    private fun onTableRareUncover() {
         if (!isEnabled()) return
         val storage = storage ?: return
         val attemptsFormat = "attempt".pluralize(storage.attemptsSince)
@@ -88,7 +86,7 @@ object ExperimentsDryStreakDisplay {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onTableTaskCompleted(event: TableTaskCompletedEvent) {
+    private fun onTableTaskComplete(event: TableTaskCompletedEvent) {
         if (ignoreNextFinish) {
             ignoreNextFinish = false
             return

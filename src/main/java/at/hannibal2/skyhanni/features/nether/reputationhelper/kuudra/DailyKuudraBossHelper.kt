@@ -33,7 +33,7 @@ object DailyKuudraBossHelper {
     private val config get() = SkyHanniMod.feature.crimsonIsle.reputationHelper
 
     @HandleEvent(onlyOnIsland = IslandType.CRIMSON_ISLE)
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!config.enabled.get()) return
         if (!CrimsonIsleReputationHelper.showLocations()) return
         if (allKuudraDone) return
@@ -45,7 +45,7 @@ object DailyKuudraBossHelper {
     }
 
     @HandleEvent
-    fun onKuudraDone(event: KuudraCompleteEvent) {
+    private fun onKuudraComplete(event: KuudraCompleteEvent) {
         val tier = event.kuudraTier
         val kuudraTier = getByTier(tier) ?: return
         ChatUtils.debug("Detected kuudra tier done: ${kuudraTier.getTieredDisplayName()}")

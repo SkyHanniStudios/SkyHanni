@@ -11,6 +11,8 @@ import net.minecraft.world.entity.LivingEntity
  * @param newLocation Entity's current location as the event is being fired.
  * @param distance Amount of distance the entity moved between oldLocation and newLocation.
  */
+// TODO, I'm redoing all of these already. -Dae
+@Suppress("MissingPrimaryFunction")
 class EntityMoveEvent<T : LivingEntity>(
     val entity: T,
     val oldLocation: LorenzVec,

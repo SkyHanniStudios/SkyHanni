@@ -49,7 +49,7 @@ object CorpseSharing {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.MINESHAFT)
-    private fun onAllChat(event: PlayerAllChatEvent.Allow) {
+    private fun onPlayerAllChat(event: PlayerAllChatEvent.Allow) {
         handleChatEvent(event.author, event.message)
     }
 

@@ -5,8 +5,6 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.PartyApi
 import at.hannibal2.skyhanni.data.ProfileStorageData
 import at.hannibal2.skyhanni.data.hypixel.chat.event.PrivateMessageChatEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.EnumUtils.toFormattedName
@@ -75,7 +73,7 @@ object CurrentChatDisplay {
     )
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         val message = event.message
         changedChatPattern.matchMatcher(message) {
             return updateChat(ChatType.fromName(group("chat")))
@@ -90,7 +88,7 @@ object CurrentChatDisplay {
     }
 
     @HandleEvent
-    fun onPrivateMessageChat(event: PrivateMessageChatEvent.Allow) {
+    private fun onPrivateChat(event: PrivateMessageChatEvent.Allow) {
         if (currentChat == ChatType.PRIVATE && privateMessagePlayer == event.author.cleanPlayerName()) {
             privateMessageEnd = maxPrivateMessageTime.fromNow()
             update()
@@ -114,8 +112,8 @@ object CurrentChatDisplay {
         )
     }
 
-    @HandleEvent(SecondPassedEvent::class)
-    fun onSecondPassed() {
+    @HandleEvent
+    private fun onSecondPassed() {
         if (!isEnabled()) return
         update()
     }
@@ -130,8 +128,8 @@ object CurrentChatDisplay {
         update()
     }
 
-    @HandleEvent(GuiRenderEvent.GuiOverlayRenderEvent::class)
-    fun onGuiRenderOverlay() {
+    @HandleEvent
+    private fun onGuiRenderOverlay() {
         if (!isEnabled()) return
         if (MinecraftCompat.screen !is ChatScreen && lastClosedChatTime.passedSince() > 2.seconds) return
         val display = display ?: return

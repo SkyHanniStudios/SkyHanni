@@ -9,9 +9,10 @@ import org.jetbrains.kotlin.psi.KtStringTemplateExpression
  */
 class SkullTexturesUseRepo(config: Config) : SkyHanniRule(
     config,
-    "Avoid hard-coding skull textures in strings. Use the SkullTextureHolder instead, and add the texture to Skulls.json in the repository.",
+    "Skull textures should come from SkullTextureHolder and Skulls.json in the repo instead of being hard-coded.",
 ) {
 
+    @Suppress("SkullTexturesUseRepo")
     private val scannedTextureStarts = listOf(
         "ewogICJ0aW1l",
         "eyJ0ZXh0dXJl",

@@ -18,7 +18,7 @@ import at.hannibal2.skyhanni.utils.StringUtils.removeColor
 object CopyPlaytime {
 
     @HandleEvent(priority = HandleEvent.LOWEST)
-    fun onTooltip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         event.slot ?: return
         if (InventoryUtils.openInventoryName() != "Detailed /playtime") return
         if (event.slot.index != 4) return
@@ -28,7 +28,7 @@ object CopyPlaytime {
     }
 
     @HandleEvent
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         if (InventoryUtils.openInventoryName() != "Detailed /playtime") return
         if (event.slotId != 4) return
         if (!event.mouseType.isLeftClick()) return

@@ -1,7 +1,9 @@
 package at.hannibal2.skyhanni.events.bazaar
 
 import at.hannibal2.skyhanni.api.event.SkyHanniEvent
+import at.hannibal2.skyhanni.skyhannimodule.PrimaryFunction
 
+@PrimaryFunction("onBazaarTransaction")
 class BazaarTransactionEvent(
     val transactionType: TransactionType,
     val coinAmount: Double,

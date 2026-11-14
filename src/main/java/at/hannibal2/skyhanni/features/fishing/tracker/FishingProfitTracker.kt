@@ -10,9 +10,6 @@ import at.hannibal2.skyhanni.data.model.SkyblockStat
 import at.hannibal2.skyhanni.events.ItemAddEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
-import at.hannibal2.skyhanni.events.fishing.FishingBobberCastEvent
-import at.hannibal2.skyhanni.events.fishing.FishingCatchEvent
-import at.hannibal2.skyhanni.events.fishing.SeaCreatureFishEvent
 import at.hannibal2.skyhanni.features.fishing.FishingApi
 import at.hannibal2.skyhanni.features.nether.kuudra.KuudraApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -106,7 +103,7 @@ object FishingProfitTracker {
     private var itemCategories = mapOf<String, List<NeuInternalName>>()
 
     @HandleEvent
-    fun onRepoReload(event: RepositoryReloadEvent) {
+    private fun onRepoReload(event: RepositoryReloadEvent) {
         itemCategories = event.getConstant<FishingProfitItemsJson>("FishingProfitItems").categories
     }
 
@@ -193,7 +190,7 @@ object FishingProfitTracker {
     }
 
     @HandleEvent
-    fun onItemAdd(event: ItemAddEvent) {
+    private fun onItemAdd(event: ItemAddEvent) {
         if (!isEnabled()) return
 
         if (event.source == ItemAddManager.Source.COMMAND) {
@@ -208,7 +205,7 @@ object FishingProfitTracker {
     }
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         coinsChatPattern.matchMatcher(event.cleanMessage) {
             tryAddItem(NeuInternalName.SKYBLOCK_COIN, group("coins").formatInt(), command = false)
             // Don't need to addCatch() here since FishingCatchEvent will be posted and increment it there
@@ -240,7 +237,7 @@ object FishingProfitTracker {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         lastCatchTime = SimpleTimeMark.farPast()
     }
 
@@ -257,24 +254,24 @@ object FishingProfitTracker {
     private fun isAllowedItem(internalName: NeuInternalName) = itemCategories.any { internalName in it.value }
 
     @HandleEvent
-    fun onBobberThrow(event: FishingBobberCastEvent) {
+    private fun onBobberCast() {
         tracker.firstUpdate()
     }
 
     @HandleEvent
-    fun onCatch(event: FishingCatchEvent) {
+    private fun onFishingCatch() {
         addCatch()
     }
 
     @HandleEvent
-    fun onSeaCreatureFish(event: SeaCreatureFishEvent) {
+    private fun onSeaCreatureFish() {
         addCatch()
     }
 
     private fun isEnabled() = SkyBlockUtils.inSkyBlock && !KuudraApi.inKuudra
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shresetfishingtracker") {
             description = "Resets the Fishing Profit Tracker"
             category = CommandCategory.USERS_RESET
