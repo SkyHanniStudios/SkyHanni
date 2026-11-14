@@ -37,7 +37,7 @@ annotation class NeedsStorage
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 @Fixture(ClockFixture::class)
-annotation class NeedsClock
+annotation class NeedsClock(val startMillis: Long = ClockFixture.DEFAULT_START_MILLIS)
 
 @Inherited
 @Target(AnnotationTarget.CLASS)

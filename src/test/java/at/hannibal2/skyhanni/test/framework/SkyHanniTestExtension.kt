@@ -1,7 +1,6 @@
 package at.hannibal2.skyhanni.test.framework
 
 import io.mockk.unmockkAll
-import org.junit.jupiter.api.extension.AfterEachCallback
 import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
@@ -9,7 +8,7 @@ import org.junit.jupiter.api.extension.ParameterContext
 import org.junit.jupiter.api.extension.ParameterResolver
 import kotlin.reflect.KClass
 
-class SkyHanniTestExtension : BeforeAllCallback, BeforeEachCallback, AfterEachCallback, ParameterResolver {
+class SkyHanniTestExtension : BeforeAllCallback, BeforeEachCallback, ParameterResolver {
 
     override fun beforeAll(context: ExtensionContext) {
         if (context.requiredTestClass.hasFixture(MinecraftFixture::class)) MinecraftBootstrap.ensure()
@@ -17,18 +16,8 @@ class SkyHanniTestExtension : BeforeAllCallback, BeforeEachCallback, AfterEachCa
 
     override fun beforeEach(context: ExtensionContext) {
         val fixtures = context.requiredTestClass.fixtureTypes().map { it.java.getDeclaredConstructor().newInstance() }
-        context.store().put(FIXTURES_KEY, fixtures)
+        context.store().put(FIXTURES_KEY, FixtureSession(fixtures, context))
         fixtures.forEach { it.setUp(context) }
-    }
-
-    override fun afterEach(context: ExtensionContext) {
-        val fixtures = context.fixtures()
-        try {
-            fixtures.asReversed().forEach { it.tearDown(context) }
-        } finally {
-            unmockkAll()
-            StaticReset.resetAll()
-        }
     }
 
     override fun supportsParameter(parameterContext: ParameterContext, extensionContext: ExtensionContext): Boolean =
@@ -37,6 +26,17 @@ class SkyHanniTestExtension : BeforeAllCallback, BeforeEachCallback, AfterEachCa
     override fun resolveParameter(parameterContext: ParameterContext, extensionContext: ExtensionContext): Any =
         extensionContext.fixtures().first { parameterContext.parameter.type.isInstance(it) }
 
+    private class FixtureSession(val fixtures: List<TestFixture>, private val context: ExtensionContext) : AutoCloseable {
+        override fun close() {
+            try {
+                fixtures.asReversed().forEach { it.tearDown(context) }
+            } finally {
+                unmockkAll()
+                StaticReset.resetAll()
+            }
+        }
+    }
+
     companion object {
         private val NAMESPACE = ExtensionContext.Namespace.create(SkyHanniTestExtension::class.java)
         private const val FIXTURES_KEY = "fixtures"
@@ -44,7 +44,7 @@ class SkyHanniTestExtension : BeforeAllCallback, BeforeEachCallback, AfterEachCa
         private fun ExtensionContext.store() = getStore(NAMESPACE)
 
         private fun ExtensionContext.fixtures(): List<TestFixture> =
-            (store().get(FIXTURES_KEY) as? List<*>).orEmpty().filterIsInstance<TestFixture>()
+            store().get(FIXTURES_KEY, FixtureSession::class.java)?.fixtures.orEmpty()
 
         private fun Class<*>.hasFixture(type: KClass<out TestFixture>) = type in fixtureTypes()
 
