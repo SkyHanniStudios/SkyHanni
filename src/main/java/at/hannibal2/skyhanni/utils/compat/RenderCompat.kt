@@ -1,21 +1,18 @@
 package at.hannibal2.skyhanni.utils.compat
 
-import com.mojang.blaze3d.pipeline.RenderPipeline
-import com.mojang.blaze3d.pipeline.RenderTarget
-import com.mojang.blaze3d.systems.GpuDevice
-import com.mojang.blaze3d.systems.RenderPass
-import com.mojang.blaze3d.systems.RenderSystem
+import com.mojang.renderpearl.api.pipeline.RenderPipeline
 import net.minecraft.client.renderer.RenderPipelines
-import java.util.OptionalDouble
 
-//? if >= 26.2 {
-import java.util.Optional
-//?} else {
-/*import java.util.OptionalInt
+//? if < 26.2 {
+/*import com.mojang.blaze3d.pipeline.RenderTarget
+import com.mojang.blaze3d.systems.RenderSystem
+import com.mojang.renderpearl.api.commands.RenderPass
+import com.mojang.renderpearl.api.device.GpuDevice
+import java.util.OptionalDouble
+import java.util.OptionalInt
 *///?}
 
 object RenderCompat {
-
     /**
      * The depth of an empty render target. 26.2 renders with a reversed depth range,
      * so "nothing drawn" is 0 rather than 1.
@@ -25,7 +22,8 @@ object RenderCompat {
 
     fun getMinecraftGuiTextured(): RenderPipeline = RenderPipelines.GUI_TEXTURED
 
-    fun RenderPass.enableRenderPassScissorStateIfAble() {
+    //? if < 26.2 {
+    /*fun RenderPass.enableRenderPassScissorStateIfAble() {
         val scissorState = RenderSystem.getScissorStateForRenderTypeDraws()
         if (scissorState.enabled()) {
             this.enableScissor(scissorState.x(), scissorState.y(), scissorState.width(), scissorState.height())
@@ -38,8 +36,6 @@ object RenderCompat {
             0,
             indices,
             1,
-            //? if >= 26.2
-            0,
         )
     }
 
@@ -52,11 +48,10 @@ object RenderCompat {
         return this.createCommandEncoder().createRenderPass(
             { name },
             colorAttachment,
-            //~ if < 26.2 'Optional' -> 'OptionalInt'
-            Optional.empty(),
+            OptionalInt.empty(),
             framebuffer.findDepthAttachment(),
             OptionalDouble.empty(),
         )
     }
-
+    *///?}
 }

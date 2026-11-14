@@ -25,7 +25,7 @@ object SplatterHearts {
     fun onParticle(event: ParticleEvent) {
         if (!isEnabled()) return
         if (event.type != ParticleTypes.HEART) return
-        if (event.count != 3 || event.speed != 0f) return
+        if (event.count != 3 || !event.isSpeed(0f)) return
 
         if (lastHearts.passedSince() > 50.milliseconds) {
             shownHearts = currentHearts.toSet()

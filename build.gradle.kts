@@ -6,7 +6,6 @@ import net.fabricmc.loom.api.fabricapi.FabricApiExtension
 import net.fabricmc.loom.task.RemapSourcesJarTask
 import net.fabricmc.loom.task.ValidateAccessWidenerTask
 import net.fabricmc.loom.task.prod.ClientProductionRunTask
-import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.build.event.BuildEventsListenerRegistry
 import org.gradle.kotlin.dsl.support.serviceOf
@@ -38,7 +37,7 @@ plugins {
 }
 
 val target = ProjectTarget.entries.find { it.projectPath == project.path }!!
-val primaryTarget = ProjectTarget.MODERN_26200
+val primaryTarget = ProjectTarget.MODERN_26300
 
 // Toolchains:
 java {
@@ -213,17 +212,16 @@ dependencies {
     runtimeOnly(target.hypixelModApiFabricVersion)
     "productionRuntimeMods"(target.hypixelModApiFabricVersion)
 
-    val reiVersion = when (target) {
-        ProjectTarget.MODERN_26200 -> "26.2.820"
-        ProjectTarget.MODERN_26100 -> "26.1.819"
+    val reiVersion = target.reiVersion
+    if (reiVersion != null) {
+        val reiApi = "me.shedaniel:RoughlyEnoughItems-api:$reiVersion"
+        compileOnly(reiApi) { isTransitive = false }
+        "minecraftTestClientRuntimeLibraries"(reiApi) {
+            isTransitive = false
+        }
+        compileOnly(libs.basicMath)
+        "minecraftTestClientRuntimeLibraries"(libs.basicMath)
     }
-    val reiApi = "me.shedaniel:RoughlyEnoughItems-api:$reiVersion"
-    compileOnly(reiApi) { isTransitive = false }
-    "minecraftTestClientRuntimeLibraries"(reiApi) {
-        isTransitive = false
-    }
-    compileOnly(libs.basicMath)
-    "minecraftTestClientRuntimeLibraries"(libs.basicMath)
 
     // getting clock offset
     shadowImpl(libs.commons.net)
@@ -343,7 +341,7 @@ tasks.processResources {
         put("minecraft", minecraftVersion)
         put("fapi", fapiVersion)
         put("fabloader", fabLoaderVersion)
-        put ("fablangkotlin", fabLangKotlinVersion)
+        put("fablangkotlin", fabLangKotlinVersion)
         put("hypixelmodapi", hypixelModApiVersion)
         put("renderchest", renderChestVersion)
     }
@@ -558,7 +556,16 @@ tasks.matching { it.name == "kspTestKotlin" || it.name == "kspTestJava" }.config
 }
 
 tasks.withType<ValidateAccessWidenerTask>().configureEach {
-    dependsOn("stonecutterPrepare")
+    dependsOn("stonecutterGenerate")
+}
+
+tasks.withType<ProcessResources>().configureEach {
+    // Taken From SkyOcean, this is a workaround since stonecutter does not work in shaders
+    if (stonecutter.current.parsed eq "<= 26.2") {
+        filesMatching(listOf("**/*.fsh", "**/*.vsh")) {
+            filter { if (it.startsWith("#include")) "#moj_import ${it.substringAfter(' ')}" else it }
+        }
+    }
 }
 
 repositories {

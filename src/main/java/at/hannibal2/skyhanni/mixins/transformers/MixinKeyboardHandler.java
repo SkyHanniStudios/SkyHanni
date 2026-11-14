@@ -1,15 +1,16 @@
 package at.hannibal2.skyhanni.mixins.transformers;
 
 import at.hannibal2.skyhanni.compat.ReiCompat;
-import at.hannibal2.skyhanni.events.minecraft.CharEvent;
+import at.hannibal2.skyhanni.data.model.TextInput;
 import at.hannibal2.skyhanni.events.minecraft.KeyDownEvent;
 import at.hannibal2.skyhanni.events.minecraft.KeyPressEvent;
 import at.hannibal2.skyhanni.events.minecraft.KeyUpEvent;
+import at.hannibal2.skyhanni.utils.InputKeys;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
-import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -17,12 +18,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(KeyboardHandler.class)
 public abstract class MixinKeyboardHandler {
-
     @Inject(method = "keyPress", at = @At("HEAD"))
     private void onKey(long window, int action, KeyEvent input, CallbackInfo ci) {
-        int key = input.key();
         if (Minecraft.getInstance().player == null) return;
-        if (key == GLFW.GLFW_KEY_UNKNOWN) return;
+        var key = InputKeys.keyEvent(input);
+        if (key == InputConstants.UNKNOWN) return;
         //System.out.println("Key: " + key + " Scancode: " + scancode + " Action: " + action + " Modifiers: " + modifiers);
 
         // Don't send key events if REI search bar is selected
@@ -56,6 +56,6 @@ public abstract class MixinKeyboardHandler {
     @Inject(method = "charTyped", at = @At("HEAD"))
     private void onChar(long window, CharacterEvent input, CallbackInfo ci) {
         if (Minecraft.getInstance().player == null) return;
-        new CharEvent(input.codepoint()).post();
+        TextInput.charTyped(input.codepoint());
     }
 }

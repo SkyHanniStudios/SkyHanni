@@ -36,6 +36,6 @@ abstract class BaseProcessor(environment: SymbolProcessorEnvironment) : SymbolPr
         const val BUILD_PATHS_OPTION = "skyhanni.buildpaths"
         const val CACHE_DIR_OPTION = "skyhanni.cachedir"
         private const val UNVERSIONED = "0.0.0"
-        private const val DEFAULT_MC_VERSION = "26.2"
+        private const val DEFAULT_MC_VERSION = "26.3"
     }
 }

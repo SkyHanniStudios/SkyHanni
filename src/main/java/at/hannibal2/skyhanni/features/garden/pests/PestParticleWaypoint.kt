@@ -29,7 +29,6 @@ import kotlin.time.Duration.Companion.seconds
 
 @SkyHanniModule
 object PestParticleWaypoint {
-
     private val config get() = SkyHanniMod.feature.garden.pests.pestWaypoint
 
     private val bezierFitter = ParticlePathBezierFitter(3)
@@ -76,12 +75,11 @@ object PestParticleWaypoint {
         isGuessPlotMiddle = GardenPlotApi.getPlot(solved)?.middle?.equalsIgnoreY(solved.ceil()) ?: false
     }
 
-
     private fun ParticleEvent.isEnchantmentTable(): Boolean =
-        type == ParticleTypes.ENCHANT && count == 10 && speed == -2f && offset.isZero()
+        type == ParticleTypes.ENCHANT && count == 10 && isSpeed(-2f) && offset.isZero()
 
     private fun ParticleEvent.isVillagerAngry(): Boolean =
-        type == ParticleTypes.ANGRY_VILLAGER && count == 1 && speed == 0f && offset.isZero()
+        type == ParticleTypes.ANGRY_VILLAGER && count == 1 && isSpeed(0f) && offset.isZero()
 
     @HandleEvent
     fun onWorldChange() = reset()
@@ -146,5 +144,4 @@ object PestParticleWaypoint {
     }
 
     private fun isEnabled() = config.enabled
-
 }

@@ -46,7 +46,7 @@ object ArrowGuessBurrow {
         if (event.distanceToPlayer > 6) return
         if (event.type != ParticleTypes.DUST) return
         if (event.count != 0) return
-        if (event.speed != 1.0f) return
+        if (!event.isSpeed(1.0f)) return
 
         // offset is color for some reason
         val range = getArrowRange(event.offset) ?: return
