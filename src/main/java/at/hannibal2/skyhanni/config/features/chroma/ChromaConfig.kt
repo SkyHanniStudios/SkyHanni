@@ -13,7 +13,7 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 import io.github.notenoughupdates.moulconfig.observer.Property
 
 class ChromaConfig {
-    @ConfigOption(name = "Chroma Preview", desc = "§" + ChromaFontManager.CHROMA_PREVIEW_COLOR_CODE + "Please star SkyHanni on GitHub!")
+    @ConfigOption(name = "Chroma Preview", desc = "§${ChromaFontManager.CHROMA_PREVIEW_COLOR_CODE}Please star SkyHanni on GitHub!")
     @ConfigEditorInfoText(infoTitle = "Only in SkyBlock")
     val chromaPreview: Boolean = false
 

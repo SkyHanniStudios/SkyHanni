@@ -1,5 +1,6 @@
 package at.hannibal2.skyhanni.utils.chat
 
+import at.hannibal2.skyhanni.features.chroma.ChromaFontManager
 import at.hannibal2.skyhanni.utils.ColorUtils
 import at.hannibal2.skyhanni.utils.ComponentSpan
 import at.hannibal2.skyhanni.utils.LorenzColor
@@ -34,7 +35,7 @@ object TextHelper {
     val HYPHEN = "-".asComponent()
     val SPACE = " ".asComponent()
     val EMPTY = "".asComponent()
-    val chromaStyle by lazy { TextColor(0xFFFFFE, "chroma") }
+    inline val chromaStyle get() = ChromaFontManager.chromaTextColor
 
     fun text(text: String, init: MutableComponent.() -> Unit = {}) = text.asComponent(init)
     fun String.asComponent(init: MutableComponent.() -> Unit = {}): MutableComponent =
