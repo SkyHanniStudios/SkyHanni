@@ -10,7 +10,9 @@ plugins {
     id("io.github.davidarthurcole.daetekt")
 }
 
-val moulconfigTarget = ProjectTarget.MODERN_26200.minecraftVersion
+val target = ProjectTarget.primary
+val moulconfigVersion = target.minecraftVersion.moulconfigMinecraftVersionOverride ?: target.minecraftVersion.versionName
+val javaVersion = target.minecraftVersion.javaLanguageVersion
 
 dependencies {
     compileOnly(libs.detekt.api)
@@ -18,7 +20,7 @@ dependencies {
     implementation(libs.autoservice.annotations)
     implementation(libs.detektrules.ktlint)
     implementation(libs.gson)
-    implementation("org.notenoughupdates.moulconfig:modern-${moulconfigTarget.versionName}:${libs.versions.moulconfig.get()}") {
+    implementation("org.notenoughupdates.moulconfig:modern-$moulconfigVersion:${libs.versions.moulconfig.get()}") {
         isTransitive = false
     }
     testImplementation(libs.detekt.test)
@@ -41,11 +43,11 @@ val detektIdeJars = tasks.register<Sync>("detektIdeJars") {
 }
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(25))
+    toolchain.languageVersion.set(javaVersion)
 }
 
 tasks.withType<KotlinCompile>().configureEach {
-    compilerOptions.jvmTarget.set(JvmTarget.fromTarget("25"))
+    compilerOptions.jvmTarget.set(JvmTarget.fromTarget(javaVersion.asInt().toString()))
 }
 
 tasks.withType<Detekt>().configureEach {

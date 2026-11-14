@@ -37,7 +37,6 @@ enum class ProjectTarget(
         renderChestVersion = "1.0.3+26.2",
         modrinthInfo = ModrinthInfo.FABRIC_26_2,
     ),
-
     ;
 
     val projectPath get() = ":$projectName"
