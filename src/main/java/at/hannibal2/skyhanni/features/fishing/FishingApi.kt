@@ -115,7 +115,7 @@ object FishingApi {
         "OBFUSCATED_FISH_2_DIAMOND",
     ).toInternalNames()
 
-    const val babySlugName = "Baby Magma Slug"
+    const val BABY_SLUG_NAME = "Baby Magma Slug"
 
     val lavaBlocks = buildList { addLavas() }
     private val waterBlocks = buildList { addWaters() }

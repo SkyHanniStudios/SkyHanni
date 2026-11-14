@@ -284,11 +284,9 @@ object ForagingTracker : SkyHanniBucketedItemTracker<ForagingTrackerLegacy.TreeT
             NeuInternalName.fromItemNameOrNull("$book $tier")
         } ?: NeuInternalName.fromItemNameOrNull(item) ?: return
 
-        /**
-         * this is a failsafe in the event of runes lacking sufficient NEU repo data to automagically
-         * fetch their correct internal names, and thus translating their in-game names into internal
-         * names literally
-         */
+        // this is a failsafe in the event of runes lacking sufficient NEU repo data to automagically
+        // fetch their correct internal names, and thus translating their in-game names into internal
+        // names literally
         if (itemInternalName.startsWith(("◆_")))
             itemInternalName = itemInternalName.replace("◆_", "AXE_")
 

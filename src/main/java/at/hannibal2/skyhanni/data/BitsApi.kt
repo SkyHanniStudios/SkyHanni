@@ -312,10 +312,8 @@ object BitsApi {
             if (bitsAvailable != amount) {
                 bitsAvailable = amount
                 sendBitsAvailableGainedEvent()
-                /**
-                 * We can't increase [BitsApi.bits] here since that difference is alr accounted for,
-                 * if we do, it will be counted twice
-                 */
+                // We can't increase [BitsApi.bits] here since that difference is alr accounted for,
+                // if we do, it will be counted twice
             }
         }
         cookieDurationPattern.firstMatcher(lore) {

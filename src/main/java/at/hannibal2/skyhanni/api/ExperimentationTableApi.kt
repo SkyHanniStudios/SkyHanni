@@ -277,7 +277,7 @@ object ExperimentationTableApi {
     enum class ExperimentationTier(
         private val displayName: String,
         overInclusiveSlotRange: IntRange, // Filtered 'later' to remove side spaces
-        private val sideSpace: Int = 1,
+        sideSpace: Int = 1,
     ) {
         NONE("", 0..0, sideSpace = 0),
         BEGINNER("Beginner", 18..35),

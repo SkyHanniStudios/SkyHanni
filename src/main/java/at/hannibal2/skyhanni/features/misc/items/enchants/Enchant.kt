@@ -105,9 +105,7 @@ open class Enchant : Comparable<Enchant> {
                 // If the item is a Stonk, or a non-mining tool with Efficiency 5
                 // (whilst not being a Promising Shovel), color the enchant as max
                 if (internalName == STONK_PICKAXE ||
-                    (level == 5 &&
-                        itemCategory !in ItemCategory.miningTools &&
-                        internalName != PROMISING_SHOVEL)
+                    (level == 5 && itemCategory !in ItemCategory.miningTools && internalName != PROMISING_SHOVEL)
                 ) {
                     with(Style.EMPTY) {
                         if (advanced.useAdvancedPerfectColor.get()) {

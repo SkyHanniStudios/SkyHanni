@@ -992,12 +992,10 @@ object ScoreboardPattern {
         "Captured Mobs: §e(?<capturedMobs>\\d+)",
     )
 
-    /**
-     * Sometimes when the scoreboard updates, it only updates half way,
-     * causing some lines to become mixed with other lines -> broken.
-     * This should already get handled fine but sometimes these errors still occur with some lines way too often.
-     * This pattern is to catch those lines.
-     */
+    // Sometimes when the scoreboard updates, it only updates half way,
+    // causing some lines to become mixed with other lines -> broken.
+    // This should already get handled fine but sometimes these errors still occur with some lines way too often.
+    // This pattern is to catch those lines.
     /**
      * WRAPPED-REGEX-TEST: " §e§l⚡ §cRedston"
      * WRAPPED-REGEX-TEST: "      §ce: §e§b0%"

@@ -1,10 +1,3 @@
-/**
- * TODO LIST
- *  - countdown events like fishing festival + fiesta when its not on tablist
- *  - choose the amount of decimal places in shorten nums
- *  - heavily optimize elements and events by only updating them when absolutely needed
- */
-
 package at.hannibal2.skyhanni.features.gui.customscoreboard
 
 import at.hannibal2.skyhanni.SkyHanniMod
@@ -41,6 +34,12 @@ import java.util.regex.Pattern
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
+/**
+ * TODO LIST
+ *  - countdown events like fishing festival + fiesta when its not on tablist
+ *  - choose the amount of decimal places in shorten nums
+ *  - heavily optimize elements and events by only updating them when absolutely needed
+ */
 @SkyHanniModule
 object CustomScoreboard {
 

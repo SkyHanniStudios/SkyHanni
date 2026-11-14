@@ -394,8 +394,6 @@ interface Renderable {
             }
         }
 
-        /** Bottom Layer must be bigger then the top layer */
-
         /**
          * Render two renderables, one on top of the other.
          * The {bottomLayer} must be bigger then the {topLayer}.

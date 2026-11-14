@@ -5,7 +5,7 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.features.combat.QuiverDisplayConfig.ShowWhen
 import at.hannibal2.skyhanni.data.ArrowType
 import at.hannibal2.skyhanni.data.QuiverApi
-import at.hannibal2.skyhanni.data.QuiverApi.NONE_ARROW_TYPE
+import at.hannibal2.skyhanni.data.QuiverApi.noneArrowType
 import at.hannibal2.skyhanni.events.QuiverUpdateEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ConditionalUtils
@@ -51,7 +51,7 @@ object QuiverDisplay {
 
         val rarity = itemStack.getItemRarityOrNull()?.chatColorCode ?: "§f"
         val arrowDisplayName =
-            if (hideAmount || arrow == NONE_ARROW_TYPE) arrow.arrow else StringUtils.pluralize(amount, arrow.arrow)
+            if (hideAmount || arrow == noneArrowType) arrow.arrow else StringUtils.pluralize(amount, arrow.arrow)
 
         if (config.showIcon.get()) {
             addItemStack(itemStack, scale = 1.0)

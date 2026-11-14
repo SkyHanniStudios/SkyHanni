@@ -4,6 +4,7 @@ import at.hannibal2.skyhanni.config.features.combat.damageindicator.DamageIndica
 
 typealias Type = BossCategory
 
+@Suppress("Kdoc")
 enum class BossType(
     val fullName: String,
     val bossTypeToggle: Type,

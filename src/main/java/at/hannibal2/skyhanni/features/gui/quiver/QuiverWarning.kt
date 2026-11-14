@@ -65,7 +65,7 @@ object QuiverWarning {
     private fun onQuiverUpdate(event: QuiverUpdateEvent) {
         val amount = event.currentAmount
         val arrow = event.currentArrow ?: return
-        if (arrow == QuiverApi.NONE_ARROW_TYPE) return
+        if (arrow == QuiverApi.noneArrowType) return
 
         if (inInstance()) arrowsInInstance.add(arrow)
 

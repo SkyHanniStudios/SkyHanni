@@ -26,6 +26,7 @@ private val patternGroup by RepoPattern.exclusiveGroup("tab.widgetcomponent.enum
  * The general info widget is broken up into multiple smaller ones.
  * The class facilitates access to the lines associated with each widget and triggers events when a widget undergoes changes or becomes invisible.
  */
+@Suppress("Kdoc")
 enum class TabWidget(
     pattern0: String,
 ) {
@@ -386,7 +387,7 @@ enum class TabWidget(
     ;
 
     /** The pattern for the first line of the widget*/
-    val pattern by patternGroup.pattern(name.replace("_", ".").lowercase(), "\\s*(?:$pattern0)")
+    val pattern by patternGroup.pattern(name.replace("_", ".").lowercase(), "\\s*$pattern0")
 
     /** The current active information from tab list.
      *
@@ -539,14 +540,16 @@ enum class TabWidget(
 
             val removeIndexes = mutableListOf<Int>()
 
-            for ((index, header) in headers) when {
-                PLAYER_LIST.pattern.matches(header) ->
-                    if (playerListFound) removeIndexes.add(index - removeIndexes.size)
-                    else playerListFound = true
+            for ((index, header) in headers) {
+                when {
+                    PLAYER_LIST.pattern.matches(header) ->
+                        if (playerListFound) removeIndexes.add(index - removeIndexes.size)
+                        else playerListFound = true
 
-                INFO.pattern.matches(header) ->
-                    if (infoFound) removeIndexes.add(index - removeIndexes.size)
-                    else infoFound = true
+                    INFO.pattern.matches(header) ->
+                        if (infoFound) removeIndexes.add(index - removeIndexes.size)
+                        else infoFound = true
+                }
             }
 
             return tabList.transformIf({ size > 81 }, { dropLast(size - 80) }).editCopy {

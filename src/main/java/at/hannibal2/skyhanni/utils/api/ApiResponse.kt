@@ -10,8 +10,11 @@ import com.google.gson.JsonElement
  * @param data The data of type [T] returned by the API request, can be null if the request was unsuccessful or if no data was returned.
  * This class is used as a base class for more specific API responses like [BinaryApiResponse] and [JsonApiResponse].
  */
-open class ApiResponse<T> (open val success: Boolean, open val message: String?, open var data: T? = null) {
-
+open class ApiResponse<T>(
+    open val success: Boolean,
+    open val message: String?,
+    open var data: T? = null,
+) {
     /**
      * Asserts that the API request was successful.
      */

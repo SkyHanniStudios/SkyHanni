@@ -1,6 +1,3 @@
-/**
- * @author Linnea Gräf
- */
 package at.hannibal2.skyhanni.utils
 
 import at.hannibal2.skyhanni.utils.ComponentMatcherUtils.intoSpan
@@ -16,6 +13,9 @@ import java.util.Stack
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
+/**
+ * @author Linnea Gräf
+ */
 object ComponentMatcherUtils {
 
     /**

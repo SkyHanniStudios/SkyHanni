@@ -197,9 +197,7 @@ object TimeUtils {
         }
         val timePart = if (hoursAndMinutesElement) "$hour:$minute$timeOfDay" else ""
 
-        /**
-         * We replace the line here, because the user might want color month names
-         */
+        // We replace the line here, because the user might want color month names
         return ScoreboardData.tryToReplaceScoreboardLine(
             if (datePart.isNotEmpty() && timePart.isNotEmpty()) {
                 Component.literal("$datePart, $timePart")

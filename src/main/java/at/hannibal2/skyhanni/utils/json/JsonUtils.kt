@@ -57,21 +57,20 @@ fun File.writeJson(json: JsonElement, gson: Gson = ConfigManager.gson): Boolean 
  * Straight forward deep copy. This is included in gson as well, but different versions have it exposed privately instead of publicly,
  * so this reimplementation is here as an always public alternative.
  */
-fun JsonElement.shDeepCopy(): JsonElement {
-    return when (this) {
-        is JsonObject -> JsonObject().also {
-            for (entry in this.entrySet())
-                it.add(entry.key, entry.value.shDeepCopy())
+fun JsonElement.shDeepCopy(): JsonElement = when (this) {
+    is JsonObject -> JsonObject().also { copy ->
+        entrySet().forEach { (key, value) ->
+            copy.add(key, value.shDeepCopy())
         }
-
-        is JsonArray -> JsonArray().also {
-            for (entry in this) {
-                it.add(entry.shDeepCopy())
-            }
-        }
-
-        else -> this
     }
+
+    is JsonArray -> JsonArray().also { copy ->
+        forEach {
+            copy.add(it.shDeepCopy())
+        }
+    }
+
+    else -> this
 }
 
 fun JsonElement.addElementsAfter(elements: Array<out Enum<*>>, after: Enum<*>? = null): JsonArray {

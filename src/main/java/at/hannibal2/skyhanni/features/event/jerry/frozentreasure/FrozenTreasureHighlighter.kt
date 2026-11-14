@@ -32,7 +32,7 @@ object FrozenTreasureHighlighter {
         return IslandType.WINTER.isInIsland() && WinterApi.inGlacialCave() && config.enabled
     }
 
-    private const val yOffset = 2
+    private const val TREASURE_Y_OFFSET = 2
 
     @HandleEvent(onlyOnIsland = IslandType.WINTER)
     fun onTick() {
@@ -44,7 +44,7 @@ object FrozenTreasureHighlighter {
             val standHelmet = armorStand.getStandHelmet().orNull() ?: continue
             if (standHelmet.isSkull() && standHelmet.hoverName.string.endsWith("Head")) continue
 
-            val treasureLocation = armorStand.blockPosition().toLorenzVec().up(yOffset)
+            val treasureLocation = armorStand.blockPosition().toLorenzVec().up(TREASURE_Y_OFFSET)
             blockHighlighter.addBlock(TimedHighlightBlock(treasureLocation))
         }
     }

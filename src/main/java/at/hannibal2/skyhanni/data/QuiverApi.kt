@@ -40,7 +40,7 @@ import java.util.regex.Matcher
 object QuiverApi {
     private val storage get() = ProfileStorageData.profileSpecific
     var currentArrow: ArrowType?
-        get() = storage?.arrows?.currentArrow?.toInternalName()?.let { getArrowByNameOrNull(it) } ?: NONE_ARROW_TYPE
+        get() = storage?.arrows?.currentArrow?.toInternalName()?.let { getArrowByNameOrNull(it) } ?: noneArrowType
         set(value) {
             storage?.arrows?.currentArrow = value?.toString() ?: return
         }
@@ -66,8 +66,10 @@ object QuiverApi {
     const val MAX_ARROW_AMOUNT = 2880
     private val SKELETON_MASTER_CHESTPLATE = "SKELETON_MASTER_CHESTPLATE".toInternalName()
 
-    var NONE_ARROW_TYPE: ArrowType? = null
-    private var FLINT_ARROW_TYPE: ArrowType? = null
+    var noneArrowType: ArrowType? = null
+        private set
+
+    private var flintArrowType: ArrowType? = null
 
     private val patternGroup = RepoPattern.group("data.quiver")
     private val chatGroup = patternGroup.group("chat")
@@ -180,8 +182,8 @@ object QuiverApi {
         fillUpPattern.matchMatcher(message) {
             val flintAmount = group("flintAmount").formatInt()
 
-            FLINT_ARROW_TYPE?.let { it.amount += flintAmount }
-            if (currentArrow == FLINT_ARROW_TYPE) {
+            flintArrowType?.let { it.amount += flintAmount }
+            if (currentArrow == flintArrowType) {
                 postUpdateEvent()
             }
             return
@@ -200,7 +202,7 @@ object QuiverApi {
         }
 
         arrowResetPattern.matchMatcher(message) {
-            currentArrow = NONE_ARROW_TYPE
+            currentArrow = noneArrowType
             currentAmount = 0
 
             postUpdateEvent()
@@ -351,8 +353,6 @@ object QuiverApi {
         return arrows.firstOrNull { it.internalName == internalName }
     }
 
-    private fun NeuInternalName.asArrowTypeOrNull() = getArrowByNameOrNull(this)
-
     fun isEnabled() = SkyBlockUtils.inSkyBlock && storage != null
 
     private fun checkBowInventory() {
@@ -389,8 +389,8 @@ object QuiverApi {
         val arrowData = event.getConstant<ArrowTypeJson>("ArrowTypes")
         arrows = arrowData.arrows.map { ArrowType(it.value.arrow, it.key.toInternalName()) }
 
-        NONE_ARROW_TYPE = getArrowByNameOrNull("NONE".toInternalName())
-        FLINT_ARROW_TYPE = getArrowByNameOrNull("ARROW".toInternalName())
+        noneArrowType = getArrowByNameOrNull("NONE".toInternalName())
+        flintArrowType = getArrowByNameOrNull("ARROW".toInternalName())
     }
 
     class UnknownArrowType(message: String) : Exception(message)

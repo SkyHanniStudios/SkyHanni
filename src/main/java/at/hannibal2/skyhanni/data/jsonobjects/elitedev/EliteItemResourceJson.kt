@@ -25,6 +25,8 @@ data class EliteItemResponse(
 )
 
 // <editor-fold desc="Helpers to parse to SH formats">
+// Known "unused," this is skeleton struct
+@Suppress("unused")
 enum class SoulboundType { NONE, SOLO, COOP }
 
 data class EliteSkin(
@@ -44,7 +46,9 @@ data class EliteGemstoneSlotCost(
     val costType: SlotCostType = SlotCostType.valueOf(type.uppercase())
 }
 
+// Known "unused," this is skeleton struct
 @KSerializable
+@Suppress("unused")
 data class EliteGemstoneSlot(
     @Expose @SerializedName("slot_type") private val slotTypeStr: String,
     @Expose @SerializedName("costs") private val eliteCosts: List<EliteGemstoneSlotCost> = emptyList(),
@@ -61,15 +65,25 @@ data class EliteGemstoneSlot(
     }.associate { it }
 }
 
+// Known "unused," this is skeleton struct
+@Suppress("unused")
 enum class EliteRequirementType {
-    CHOCOLATE_FACTORY, COLLECTION,
-    CRIMSON_ISLE_REPUTATION, DUNGEON_SKILL,
-    DUNGEON_TIER, EASTER_RABBIT,
-    GARDEN_LEVEL, HEART_OF_THE_MOUNTAIN,
-    KUUDRA_COMPLETION, MELODY_HAIR,
-    ONE_OF, PROFILE_AGE,
-    SKILL, SLAYER,
-    TARGET_PRACTICE, TROPHY_FISHING,
+    CHOCOLATE_FACTORY,
+    COLLECTION,
+    CRIMSON_ISLE_REPUTATION,
+    DUNGEON_SKILL,
+    DUNGEON_TIER,
+    EASTER_RABBIT,
+    GARDEN_LEVEL,
+    HEART_OF_THE_MOUNTAIN,
+    KUUDRA_COMPLETION,
+    MELODY_HAIR,
+    ONE_OF,
+    PROFILE_AGE,
+    SKILL,
+    SLAYER,
+    TARGET_PRACTICE,
+    TROPHY_FISHING,
 }
 
 @KSerializable
@@ -145,7 +159,16 @@ data class EliteItemUpgradeCost(
     private val item: NeuInternalName? = itemId ?: essenceType
 }
 
-enum class EliteMuseumType { ARMOR_SETS, WEAPONS, RARITIES }
+// Known "unused," this is skeleton struct
+@Suppress("unused")
+enum class EliteMuseumType {
+    ARMOR_SETS,
+    WEAPONS,
+    RARITIES,
+}
+
+// Known "unused," this is skeleton struct
+@Suppress("unused")
 enum class EliteMuseumGameStage {
     STARTER,
     AMATEUR,
@@ -156,8 +179,9 @@ enum class EliteMuseumGameStage {
     MASTER,
 }
 
+// Known "unused," this is skeleton struct
 @KSerializable
-@Suppress("PrivatePropertyName")
+@Suppress("PrivatePropertyName", "unused")
 data class EliteMuseumData(
     @Expose private val donation_xp: Int,
     @Expose private val parent: Map<String, String>? = null,
@@ -171,7 +195,12 @@ data class EliteMuseumData(
     val parentIdentifier: String? = parent?.entries?.first()?.value
 }
 
-enum class EliteItemOrigin { RIFT, BINGO }
+// Known "unused," this is skeleton struct
+@Suppress("unused")
+enum class EliteItemOrigin {
+    RIFT,
+    BINGO,
+}
 // </editor-fold>
 
 @KSerializable

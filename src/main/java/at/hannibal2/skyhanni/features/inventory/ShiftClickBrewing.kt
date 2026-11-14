@@ -9,7 +9,7 @@ import net.minecraft.client.gui.screens.inventory.ContainerScreen
 
 @SkyHanniModule
 object ShiftClickBrewing {
-    private const val closeButtonIndex = 49
+    private const val CLOSE_BUTTON_INDEX = 49
 
     @HandleEvent(onlyOnSkyblock = true)
     private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
@@ -17,7 +17,7 @@ object ShiftClickBrewing {
 
         if (event.gui !is ContainerScreen) return
 
-        if (event.slot == null || event.slotId == closeButtonIndex) return
+        if (event.slot == null || event.slotId == CLOSE_BUTTON_INDEX) return
 
         val chestName = InventoryUtils.openInventoryName()
         if (!chestName.startsWith("Brewing Stand")) return
