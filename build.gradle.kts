@@ -59,16 +59,18 @@ loom.apply {
         println("No classTweaker file for ${target.minecraftVersion}")
     }
 
+    val mcVersion = target.projectName.replace(".", "")
+    val rootRunDirectory = runDirectory
     runs {
         named("client") {
             generateRunConfig = true
             preferGradleTask = true
-            appendProjectPathToDisplayName.set(true)
-            this.runDirectory = rootProject.file("versions/${target.projectName}/run").relativeTo(projectDir)
+            appendProjectPathToDisplayName = true
+            runDirectory = rootRunDirectory
             if (System.getenv("repo_action") != "true") {
                 systemProperties.put("devauth.configDir", rootProject.file(".devauth").absolutePath)
             }
-            jvmArguments.add("-Xmx4G")
+            jvmArguments.addAll("-Xmx4G", "-Dfabric.modsFolder=${mcVersion}Mods")
         }
         removeIf { it.name == "server" }
     }
