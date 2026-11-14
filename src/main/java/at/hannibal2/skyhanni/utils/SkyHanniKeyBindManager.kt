@@ -1,12 +1,12 @@
 package at.hannibal2.skyhanni.utils
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ConditionalUtils.afterChange
 import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.KeyMapping
 import net.minecraft.resources.Identifier
+import kotlinx.coroutines.sync.Mutex
 
 @SkyHanniModule
 object SkyHanniKeyBindManager {
@@ -15,9 +15,13 @@ object SkyHanniKeyBindManager {
     private val keyMappingToKeybind = mutableMapOf<KeyMapping, SkyHanniKeyBind>()
     private val createdCategories = mutableMapOf<String, KeyMapping.Category>()
 
-    private var isSyncingFromMC = false
-    private var isSyncingFromProperty = false
+    private val syncMutex = Mutex()
     private var initialized = false
+
+    private inline fun syncExclusively(block: () -> Unit) = runCatching {
+        if (!syncMutex.tryLock()) return@runCatching
+        block()
+    }.also { syncMutex.unlock() }
 
     fun register(keybind: SkyHanniKeyBind) {
         allKeybinds.add(keybind)
@@ -49,10 +53,7 @@ object SkyHanniKeyBindManager {
                     keybind.keyMapping = keyMapping
                     keyMappingToKeybind[keyMapping] = keybind
 
-                    property.afterChange {
-                        if (isSyncingFromMC) return@afterChange
-                        syncPropertyToKeyMapping(keyMapping, this)
-                    }
+                    property.afterChange { syncPropertyToKeyMapping(keyMapping, this) }
                 }
             }
         }
@@ -76,11 +77,9 @@ object SkyHanniKeyBindManager {
         }
     }
 
-    private fun syncPropertyToKeyMapping(keyMapping: KeyMapping, keyCode: Int) {
-        isSyncingFromProperty = true
+    private fun syncPropertyToKeyMapping(keyMapping: KeyMapping, keyCode: Int) = syncExclusively {
         keyMapping.setKey(keyCode.toInputConstantsKey())
         KeyMapping.resetMapping()
-        isSyncingFromProperty = false
     }
 
     /**
@@ -92,15 +91,9 @@ object SkyHanniKeyBindManager {
      */
     @JvmStatic
     fun onKeyMappingSet(keyMapping: KeyMapping, key: InputConstants.Key) {
-        if (isSyncingFromProperty) return
-        val keybind = keyMappingToKeybind[keyMapping] ?: return
-        val property = keybind.keyProvider()
-        val newValue = key.value
-        if (property.get() != newValue) {
-            isSyncingFromMC = true
-            property.set(newValue)
-            isSyncingFromMC = false
-        }
+        val property = keyMappingToKeybind[keyMapping]?.keyProvider() ?: return
+        if (property.get() == key.value) return
+        syncExclusively { property.set(key.value) }
     }
 
     fun getActiveKeyMappings(): Array<KeyMapping> = keyMappingToKeybind.filterValues { keybind ->
