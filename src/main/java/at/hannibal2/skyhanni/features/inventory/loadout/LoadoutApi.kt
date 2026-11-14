@@ -20,6 +20,7 @@ import at.hannibal2.skyhanni.utils.RegexUtils.groupOrNull
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.SafeItemStack
+import at.hannibal2.skyhanni.utils.StringUtils.removeColor
 import at.hannibal2.skyhanni.utils.compat.ColoredBlockCompat.Companion.isStainedGlassPane
 import at.hannibal2.skyhanni.utils.compat.DyeCompat
 import at.hannibal2.skyhanni.utils.compat.DyeCompat.Companion.isDye
@@ -48,30 +49,6 @@ object LoadoutApi {
     )
 
     /**
-     * REGEX-TEST: Left-click to equip!
-     */
-    private val unequippedSlotPattern by patternGroup.pattern(
-        "unequippedslot",
-        "Left-click to equip!",
-    )
-
-    /**
-     * REGEX-TEST: You must customize this loadout
-     */
-    private val unusedSlotPattern by patternGroup.pattern(
-        "unusedslot",
-        "You must customize this loadout",
-    )
-
-    /**
-     * REGEX-TEST: Loadout 19 Locked
-     */
-    private val lockedSlotPattern by patternGroup.pattern(
-        "lockedslot",
-        "Loadout \\d+ Locked",
-    )
-
-    /**
      * REGEX-TEST: §7Current: §aHeart of the Forest 1
      * REGEX-TEST: §7Current: §aHeart of the Mountain 1
      * REGEX-TEST: §7Current: §aHurtful
@@ -90,16 +67,14 @@ object LoadoutApi {
     )
 
     /**
-     * REGEX-TEST: Helmet: None
+     * REGEX-TEST: Helmet: Empty
+     * REGEX-TEST: Chestplate: Ancient Infernal Crimson Chestplate
      * REGEX-TEST: Gloves/Bracelet: None
-     * REGEX-TEST: Pet: None
-     * REGEX-TEST: HOTM: None
-     * REGEX-TEST: Tuning Template Slot: None
-     * REGEX-FAIL: Power Stone: Silky
+     * REGEX-TEST: Power Stone: Hurtful
      */
-    private val unsetComponentPattern by patternGroup.pattern(
-        "component",
-        "(?<component>[^:]+): None",
+    private val componentSelectionPattern by patternGroup.pattern(
+        "component.selection",
+        "(?<component>[^:]+): (?<selection>.+)",
     )
 
     private val ARMOR_SLOTS = listOf(11, 20, 29, 38)
@@ -196,10 +171,9 @@ object LoadoutApi {
         slots.filter { it.isInCurrentPage() }.forEach { it.removeUnsetComponents() }
     }
 
-    // Loadouts are supposed to change stuff on the Player.
-    // If a loadout doesn't change anything, it doesn't have the "Left-click to equip!" so it's considered as equipped here
     private fun processIcons(itemsList: Map<Int, SafeItemStack>) {
-        var anyLoadoutEquipped = false
+        val currentComponents = getCurrentComponents(itemsList)
+        val matchingSlots = mutableListOf<LoadoutSlot>()
         for (slot in slots.filter { it.isInCurrentPage() }) {
             val icon = itemsList[slot.inventorySlot]
             slot.icon = icon
@@ -211,24 +185,40 @@ object LoadoutApi {
                 slot.getData()?.clear()
                 slot.locked = true
             } else slot.locked = false
-            if (icon.isCurrentSelectedLoadout()) {
-                currentSlot = slot.id
-                anyLoadoutEquipped = true
-            }
+            if (!slot.locked && icon.matchesCurrentLoadout(currentComponents)) matchingSlots.add(slot)
             slot.getData()?.name = icon?.hoverName?.formattedTextCompatLeadingWhiteLessResets()
         }
-        if (!anyLoadoutEquipped) currentSlot = null
+        val match = matchingSlots.firstOrNull { it.id == currentSlot } ?: matchingSlots.firstOrNull()
+        if (match != null) currentSlot = match.id
+        else if (getLoadoutSlotFromId(currentSlot)?.isInCurrentPage() == true) currentSlot = null
     }
 
-    private fun SafeItemStack?.isCurrentSelectedLoadout(): Boolean {
-        if (this == null) return false
-        if (lockedSlotPattern.matches(hoverName)) return false
-        val lore = this.getLoreComponent()
-        return lore.none { unequippedSlotPattern.find(it) } && lore.none { unusedSlotPattern.find(it) }
+    private fun getCurrentComponents(itemsList: Map<Int, SafeItemStack>): Map<String, String?> = buildMap {
+        ARMOR_SLOTS.forEachIndexed { index, slot -> put(ARMOR_LABELS[index], getLoadoutItem(itemsList[slot])?.hoverName?.string) }
+        EQUIPMENT_SLOTS.forEachIndexed { index, slot -> put(EQUIPMENT_LABELS[index], getLoadoutItem(itemsList[slot])?.hoverName?.string) }
+        put(PET_LABEL, getLoadoutItem(itemsList[PET_SLOT])?.hoverName?.string)
+        put(POWERSTONE_LABEL, itemsList[POWERSTONE_SLOT].parseCurrentSelection()?.removeColor())
+        put(HOTM_LABEL, itemsList[HOTM_SLOT].parseCurrentSelection()?.removeColor())
+        put(HOTF_LABEL, itemsList[HOTF_SLOT].parseCurrentSelection()?.removeColor())
+    }
+
+    internal fun SafeItemStack?.matchesCurrentLoadout(currentComponents: Map<String, String?>): Boolean {
+        val configured = getComponents().filter { (component, selection) -> component in currentComponents && selection != "None" }
+        if (configured.isEmpty()) return false
+        return configured.all { (component, selection) ->
+            if (selection == "Empty") currentComponents[component] == null else selection == currentComponents[component]
+        }
+    }
+
+    private fun SafeItemStack?.getComponents(): Map<String, String> {
+        if (this == null) return emptyMap()
+        return getLoreComponent().mapNotNull { line ->
+            componentSelectionPattern.matchMatcher(line) { group("component") to group("selection") }
+        }.toMap()
     }
 
     private fun processSelectedLoadout(itemsList: Map<Int, SafeItemStack>) {
-        val data = getLoadoutSlotFromId(currentSlot)?.getData() ?: return
+        val data = getLoadoutSlotFromId(currentSlot)?.takeIf { it.isInCurrentPage() }?.getData() ?: return
 
         data.armor = ARMOR_SLOTS.map { getLoadoutItem(itemsList[it]) }
         data.equipment = EQUIPMENT_SLOTS.map { getLoadoutItem(itemsList[it]) }
@@ -247,7 +237,7 @@ object LoadoutApi {
     }
 
     private fun LoadoutSlot.removeUnsetComponents() {
-        val unset = icon.getUnsetComponents()
+        val unset = icon.getComponents().filterValues { it == "None" || it == "Empty" }.keys
         if (unset.isEmpty()) return
         val data = getData() ?: return
 
@@ -258,13 +248,6 @@ object LoadoutApi {
         if (TUNINGS_LABEL in unset) data.tunings = null
         if (HOTM_LABEL in unset) data.hotm = null
         if (HOTF_LABEL in unset) data.hotf = null
-    }
-
-    private fun SafeItemStack?.getUnsetComponents(): Set<String> {
-        if (this == null) return emptySet()
-        return getLoreComponent().mapNotNull { line ->
-            unsetComponentPattern.matchMatcher(line) { group("component") }
-        }.toSet()
     }
 
     // This is for Hotm, Hotf and Powerstone

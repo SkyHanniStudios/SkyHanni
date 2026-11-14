@@ -7,7 +7,6 @@ import at.hannibal2.skyhanni.config.core.config.Position
 import at.hannibal2.skyhanni.config.features.inventory.customloadout.CustomLoadoutConfig
 import at.hannibal2.skyhanni.events.MouseClickType
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
-import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.AbstractCustomMenu
 import at.hannibal2.skyhanni.utils.ColorUtils
 import at.hannibal2.skyhanni.utils.ColorUtils.addAlpha
@@ -24,7 +23,6 @@ import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderable
 import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLeadingWhiteLessResets
-import at.hannibal2.skyhanni.utils.compat.getTooltip
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.container.HorizontalContainerRenderable.Companion.horizontal
 import at.hannibal2.skyhanni.utils.renderables.container.VerticalContainerRenderable.Companion.vertical
@@ -34,7 +32,6 @@ import at.hannibal2.skyhanni.utils.renderables.primitives.placeholder
 import com.google.gson.JsonPrimitive
 import net.minecraft.client.Minecraft
 import net.minecraft.core.component.DataComponents
-import net.minecraft.network.chat.Component
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.player.Inventory
 import java.awt.Color
@@ -195,25 +192,8 @@ object CustomLoadout : AbstractCustomMenu("Custom Loadout") {
         return addTooltip(slot, layered)
     }
 
-    private fun addTooltip(slot: LoadoutSlot, content: Renderable): Renderable {
-        val iconTooltip = slot.getUncachedIcon()?.let { getIconTooltip(it, slot) }
-            ?: return Renderable.hoverTips(content, tips = buildLoadoutTooltip(slot))
-        return Renderable.hoverTips(content, tips = iconTooltip)
-    }
-
-    private fun getIconTooltip(icon: SafeItemStack, slot: LoadoutSlot): List<Component>? {
-        try {
-            return icon.getTooltip(Minecraft.getInstance().options.advancedItemTooltips)
-        } catch (e: Exception) {
-            ErrorManager.logErrorWithData(
-                e,
-                "Failed to get tooltip for loadout icon in CustomLoadout",
-                "Icon" to icon,
-                "Slot" to slot.id,
-            )
-            return null
-        }
-    }
+    private fun addTooltip(slot: LoadoutSlot, content: Renderable): Renderable =
+        Renderable.hoverTips(content, tips = buildLoadoutTooltip(slot))
 
     private fun addSlotName(slot: LoadoutSlot, containerWidth: Int): Renderable? {
         if (slot.locked) return null
@@ -306,6 +286,8 @@ object CustomLoadout : AbstractCustomMenu("Custom Loadout") {
     }
 
     private fun LoadoutSlot.getDisplayedArmor(): List<SafeItemStack?> {
+        val armor = getData()?.armor
+        if (armor != null && armor.any { it != null }) return armor
         val armorPiece = getUncachedArmorPiece() ?: return LoadoutApi.emptyArmor()
         val armorIndex = when (armorPiece.get(DataComponents.EQUIPPABLE)?.slot()) {
             EquipmentSlot.CHEST -> 1
