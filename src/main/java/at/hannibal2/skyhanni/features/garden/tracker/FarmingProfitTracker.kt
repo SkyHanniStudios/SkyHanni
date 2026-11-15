@@ -10,7 +10,6 @@ import at.hannibal2.skyhanni.data.BitsApi
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.effect.EffectApi
 import at.hannibal2.skyhanni.data.effect.NonGodPotEffect
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
 import at.hannibal2.skyhanni.events.PurseChangeCause
 import at.hannibal2.skyhanni.events.PurseChangeEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
@@ -24,7 +23,6 @@ import at.hannibal2.skyhanni.features.garden.pests.PestType
 import at.hannibal2.skyhanni.features.garden.pests.SprayType
 import at.hannibal2.skyhanni.features.garden.tracker.FarmingProfitTracker.drawDisplay
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
-import at.hannibal2.skyhanni.utils.ConditionalUtils
 import at.hannibal2.skyhanni.utils.ItemUtils.itemNameWithoutColor
 import at.hannibal2.skyhanni.utils.NeuInternalName
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.SKYBLOCK_COIN
@@ -84,20 +82,6 @@ object FarmingProfitTracker : SkyHanniBucketedItemTracker<TrackedSource, Farming
 
     init {
         initRenderer({ config.position }, onlyOnIsland = IslandType.GARDEN) { shouldShowDisplay() }
-    }
-
-    @HandleEvent
-    private fun onConfigLoad(event: ConfigLoadEvent) {
-        ConditionalUtils.onToggle(
-            config.perTrackerConfig.trackerConfig.defaultDisplayMode,
-            SkyHanniMod.feature.misc.tracker.defaultDisplayMode,
-        ) {
-            trackerDisplayConfig.defaultDisplayMode.get().mode?.let {
-                SkyHanniTracker.storedTrackers[name] = it
-            }
-            displayMode = null
-            update()
-        }
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
