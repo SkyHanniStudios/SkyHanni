@@ -71,7 +71,7 @@ data class FarmingProfitTrackerData(
     }
 
     override fun getCustomPricePer(internalName: NeuInternalName, tracker: SkyHanniTracker<*, *>): Double =
-        if (internalName == PestApi.BITS) getBitsPrice() else super.getCustomPricePer(internalName, tracker)
+        if (internalName == PestProfitTracker.BITS) getBitsPrice() else super.getCustomPricePer(internalName, tracker)
 
     private fun getBitsPrice(): Double =
         if (SkyHanniMod.feature.misc.tracker.priceSource == ItemPriceSource.NPC_SELL) 0.0

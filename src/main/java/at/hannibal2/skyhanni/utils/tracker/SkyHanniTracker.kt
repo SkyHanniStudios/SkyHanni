@@ -80,7 +80,7 @@ open class SkyHanniTracker<Data : TrackerData<*>, Config : GenericIndividualTrac
         private val unpausedTrackers: MutableSet<SkyHanniTracker<*, *>> = mutableSetOf()
 
         @HandleEvent
-        private fun onTick(event: SkyHanniTickEvent) {
+        fun onTick(event: SkyHanniTickEvent) {
             if (!event.isMod(10)) return
 
             unpausedTrackers.toList().forEach { tracker ->

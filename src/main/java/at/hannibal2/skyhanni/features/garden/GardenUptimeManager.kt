@@ -34,19 +34,19 @@ object GardenUptimeManager {
     private val afkTracker = Stopwatch()
 
     @HandleEvent
-    private fun onConfigLoad(event: ConfigLoadEvent) {
+    fun onConfigLoad(event: ConfigLoadEvent) {
         ConditionalUtils.onToggle(config.types) {
             modify { it.update() }
         }
     }
 
     @HandleEvent
-    private fun onWorldChange(event: WorldChangeEvent) {
+    fun onWorldChange(event: WorldChangeEvent) {
         modify { it.pauseSessionUptime() }
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    private fun onTick(event: SkyHanniTickEvent) {
+    fun onTick(event: SkyHanniTickEvent) {
         if (!event.isMod(5)) return
         if (!afkTracker.isPaused()) {
             modify { it.update() }
@@ -58,20 +58,20 @@ object GardenUptimeManager {
     }
 
     @HandleEvent
-    private fun onCropBreak(event: CropClickEvent) {
+    fun onCropBreak(event: CropClickEvent) {
         // we do not want this tracker to be greedy, and exclude visitor/pest downtime whenever possible
         modify { it.swapActiveSession(SessionUptime.Garden(GardenSession.CROP), false) }
         afkTracker.start(true)
     }
 
     @HandleEvent
-    private fun onPestKill(event: PestKillEvent) {
+    fun onPestKill(event: PestKillEvent) {
         modify { it.swapActiveSession(SessionUptime.Garden(GardenSession.PEST)) }
         afkTracker.start(true)
     }
 
     @HandleEvent
-    private fun onVisitorOpen(event: VisitorOpenEvent) {
+    fun onVisitorOpen(event: VisitorOpenEvent) {
         modify { it.swapActiveSession(SessionUptime.Garden(GardenSession.VISITOR)) }
         afkTracker.start(true)
     }

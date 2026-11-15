@@ -132,7 +132,7 @@ object FarmingProfitTrackerCrops {
     }
 
     private fun checkRareCropDrop(message: String) {
-        for (dropType in RareCropDropType.entries.filter { it.hasRareCropMessage }) {
+        for (dropType in RareCropDropType.entries) {
             if (!dropType.chatPattern.matches(message)) continue
             val internalName = dropType.takeIf { it.isItemDrop }?.let {
                 NeuInternalName.fromItemNameOrNull(it.dropName.removeColor())

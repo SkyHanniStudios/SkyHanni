@@ -144,8 +144,8 @@ object FarmingProfitTracker : SkyHanniBucketedItemTracker<TrackedSource, Farming
             it.pestKills.addOrPut(event.pestType, 1)
         }
         if (BitsApi.bitsAvailable > 0 && PestApi.config.pestProfitTracker.includeBits.get()) {
-            val bitsAmount = PestApi.KILL_BITS * BitsApi.bitsMultiplier()
-            addTrackedItem(TrackedSource.PESTS, PestApi.BITS, bitsAmount.toLong(), message = false)
+            val bitsAmount = PestProfitTracker.KILL_BITS * BitsApi.bitsMultiplier()
+            addTrackedItem(TrackedSource.PESTS, PestProfitTracker.BITS, bitsAmount.toLong(), message = false)
         }
         markActivity()
     }

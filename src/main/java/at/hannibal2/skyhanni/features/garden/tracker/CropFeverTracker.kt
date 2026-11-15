@@ -126,7 +126,7 @@ object CropFeverTracker : SkyHanniBucketedItemTracker<CropType, CropFeverTracker
     private var cropFeverCurrentCrop: CropType? = null
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    private fun onChat(event: SkyHanniChatEvent.Allow) {
+    fun onChat(event: SkyHanniChatEvent.Allow) {
         val message = event.cleanMessage
         cropFeverStart.matchMatcher(message) {
             startCropFever()
@@ -155,7 +155,7 @@ object CropFeverTracker : SkyHanniBucketedItemTracker<CropType, CropFeverTracker
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    private fun onCropBreak(event: CropClickEvent) {
+    fun onCropBreak(event: CropClickEvent) {
         blocksBrokenCache.addOrPut(event.crop, 1)
         // multi crop support if people farm multiple crops during 1 crop fever
         if (isCropFever) {
@@ -171,7 +171,7 @@ object CropFeverTracker : SkyHanniBucketedItemTracker<CropType, CropFeverTracker
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    private fun onTick(event: SkyHanniTickEvent) {
+    fun onTick(event: SkyHanniTickEvent) {
         if (!event.isMod(5) || blocksBrokenCache.isEmpty()) return
 
         val iterator = blocksBrokenCache.entries.iterator()
@@ -190,14 +190,14 @@ object CropFeverTracker : SkyHanniBucketedItemTracker<CropType, CropFeverTracker
     }
 
     @HandleEvent
-    private fun onWorldChange(event: WorldChangeEvent) {
+    fun onWorldChange(event: WorldChangeEvent) {
         update()
         if (!isCropFever) return
         stopCropFever()
     }
 
     @HandleEvent
-    private fun onConfigLoad(event: ConfigLoadEvent) {
+    fun onConfigLoad(event: ConfigLoadEvent) {
         ConditionalUtils.onToggle(config.text) {
             update()
         }
@@ -351,7 +351,7 @@ object CropFeverTracker : SkyHanniBucketedItemTracker<CropType, CropFeverTracker
     }
 
     @HandleEvent
-    private fun onCommandRegistration(event: CommandRegistrationEvent) {
+    fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shresetcropfevertracker") {
             aliases = listOf("shresetcft")
             description = "Resets the Crop Fever Tracker"
