@@ -47,10 +47,11 @@ object DrawContextUtils {
         }
     }
 
-    inline fun withContext(context: GuiGraphicsExtractor, block: () -> Unit) = pushPop {
+    inline fun withContext(context: GuiGraphicsExtractor, block: () -> Unit) {
         setContext(context)
-        block()
-        clearContext()
+        runCatching {
+            pushPop(block)
+        }.also { clearContext() }.getOrThrow()
     }
 
     fun translate(x: Double, y: Double) {
