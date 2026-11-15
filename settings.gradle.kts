@@ -48,8 +48,6 @@ plugins {
     id("dev.kikugie.stonecutter") version "0.9.7"
 }
 
-include("annotations")
-include("annotation-processors")
 include("detekt")
 rootProject.name = "SkyHanni"
 rootProject.buildFileName = "root.gradle.kts"

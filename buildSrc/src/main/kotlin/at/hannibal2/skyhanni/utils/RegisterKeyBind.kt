@@ -1,7 +1,7 @@
 package at.hannibal2.skyhanni.utils
 
-@Retention(AnnotationRetention.RUNTIME)
-@Target(AnnotationTarget.FIELD)
+@Retention(AnnotationRetention.SOURCE)
+@Target(AnnotationTarget.PROPERTY)
 annotation class RegisterKeyBind(
     val name: String,
     val category: KeyBindCategory = KeyBindCategory.GENERAL,

@@ -13,41 +13,36 @@ import com.mojang.blaze3d.platform.InputConstants
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper
 import net.minecraft.client.KeyMapping
 import net.minecraft.client.Minecraft
-import java.lang.reflect.Field
 import kotlinx.coroutines.sync.Mutex
 
 @SkyHanniModule
 object SkyHanniKeyBindManager {
 
     private val mappings = mutableListOf<SkyHanniKeyMapping>()
-    private val categoryCounts = mutableMapOf<KeyBindCategory, Int>()
     private val categories = mutableMapOf<String, KeyMapping.Category>()
     private val syncMutex = Mutex()
 
-    fun init(modules: List<Any>) = modules.forEach { module ->
-        module.javaClass.declaredFields.forEach { field ->
-            field.getAnnotation(RegisterKeyBind::class.java)?.let { register(it, field.readKeyBind(module)) }
-        }
+    fun init(modules: List<Any>) {
+        val loaded = modules.mapTo(mutableSetOf()) { it.javaClass }
+        LoadedKeyBinds.registrations.filter { it.owner in loaded }.forEach(::register)
     }
 
     fun visibleOnly(keyMappings: Array<KeyMapping>): Array<KeyMapping> =
         keyMappings.filterNot { it is SkyHanniKeyMapping && !it.keyBind.condition() }.toTypedArray()
 
-    private fun Field.readKeyBind(module: Any): SkyHanniKeyBind {
-        trySetAccessible()
-        return get(module) as? SkyHanniKeyBind ?: ErrorManager.skyHanniError("@RegisterKeyBind on $this, which is not a SkyHanniKeyBind")
-    }
-
-    private fun register(options: RegisterKeyBind, keyBind: SkyHanniKeyBind) {
-        val mapping = SkyHanniKeyMapping(options, keyBind, categoryFor(options.category))
+    private fun register(registration: KeyBindRegistration) {
+        val category = categories.getOrPut(registration.categoryPath) {
+            KeyMapping.Category.register(SkyHanniMod.id(registration.categoryPath))
+        }
+        val mapping = SkyHanniKeyMapping(registration, registration.readKeyBind(), category)
         KeyMappingHelper.registerKeyMapping(mapping)
         mappings += mapping
     }
 
-    private fun categoryFor(category: KeyBindCategory): KeyMapping.Category {
-        val index = categoryCounts.getOrDefault(category, 0).also { categoryCounts[category] = it + 1 }
-        val path = KeyBindIds.categoryPath(category, index / KeyBindIds.PAGE_SIZE)
-        return categories.getOrPut(path) { KeyMapping.Category.register(SkyHanniMod.id(path)) }
+    private fun KeyBindRegistration.readKeyBind(): SkyHanniKeyBind {
+        val field = owner.getDeclaredField(fieldName).apply { trySetAccessible() }
+        return field.get(null) as? SkyHanniKeyBind
+            ?: ErrorManager.skyHanniError("Registered key bind ${owner.name}.$fieldName is not a SkyHanniKeyBind")
     }
 
     @HandleEvent
@@ -60,13 +55,13 @@ object SkyHanniKeyBindManager {
     }
 
     @HandleEvent
-    private fun onKeyDown(event: KeyDownEvent) = dispatch(event.keyCode, KeyBindTrigger.PRESS)
+    private fun onKeyDown(event: KeyDownEvent) = dispatch(event.keyCode, hold = false)
 
     @HandleEvent
-    private fun onKeyPress(event: KeyPressEvent) = dispatch(event.keyCode, KeyBindTrigger.HOLD)
+    private fun onKeyPress(event: KeyPressEvent) = dispatch(event.keyCode, hold = true)
 
-    private fun dispatch(keyCode: Int, trigger: KeyBindTrigger) = mappings.forEach { mapping ->
-        if (mapping.options.trigger == trigger && mapping.boundKeyCode == keyCode && mapping.isActive()) mapping.keyBind.onTrigger()
+    private fun dispatch(keyCode: Int, hold: Boolean) = mappings.forEach { mapping ->
+        if (mapping.registration.hold == hold && mapping.boundKeyCode == keyCode && mapping.isActive()) mapping.keyBind.onTrigger()
     }
 
     internal fun SkyHanniKeyMapping.pushKeyToConfig(key: InputConstants.Key) {

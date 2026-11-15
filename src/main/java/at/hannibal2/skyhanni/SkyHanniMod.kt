@@ -109,7 +109,8 @@ object SkyHanniMod : CompatCoroutineManager by SkyHanniCoroutineManager(
 
     @HandleEvent
     private fun onClientShutdown() {
-        configManager.saveConfig(ConfigFileType.FEATURES, "shutdown-hook")
+        configManager.saveConfig(ConfigFileType.FEATURES, "shutdown-hook", now = true)
+        configManager.savePendingConfigs()
         SkyHanniItemRenderCoordinator.closeAtlas()
     }
 
@@ -185,7 +186,7 @@ object SkyHanniMod : CompatCoroutineManager by SkyHanniCoroutineManager(
             category = CommandCategory.DEVELOPER_TEST
             simpleCallback {
                 ChatUtils.chat("Manually saved the config!")
-                configManager.saveConfig(ConfigFileType.FEATURES, "manual-command")
+                configManager.saveConfig(ConfigFileType.FEATURES, "manual-command", now = true)
             }
         }
     }

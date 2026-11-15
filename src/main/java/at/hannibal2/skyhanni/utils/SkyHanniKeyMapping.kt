@@ -8,22 +8,19 @@ import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper
 import net.minecraft.client.KeyMapping
 
 class SkyHanniKeyMapping(
-    val options: RegisterKeyBind,
+    val registration: KeyBindRegistration,
     val keyBind: SkyHanniKeyBind,
     category: KeyMapping.Category,
 ) : KeyMapping(
-    KeyBindIds.mappingKey(options.category, options.name),
+    registration.mappingKey,
     keyBind.option().get().toInputType(),
     keyBind.option().get(),
     category,
 ) {
     val boundKeyCode: Int get() = KeyMappingHelper.getBoundKeyOf(this).value
 
-    fun isActive(): Boolean = keyBind.condition() && when (options.context) {
-        KeyBindContext.IN_GAME -> MinecraftCompat.screen == null
-        KeyBindContext.IN_SCREEN -> MinecraftCompat.screen != null
-        KeyBindContext.ALL -> true
-    }
+    fun isActive(): Boolean =
+        keyBind.condition() && if (MinecraftCompat.screen == null) registration.inGame else registration.inScreen
 
     override fun setKey(key: InputConstants.Key) {
         super.setKey(key)

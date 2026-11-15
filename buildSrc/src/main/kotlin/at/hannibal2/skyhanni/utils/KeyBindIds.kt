@@ -11,8 +11,6 @@ object KeyBindIds {
 
     fun categoryPath(category: KeyBindCategory, page: Int): String = if (page == 0) category.id else "${category.id}_${page + 1}"
 
-    fun categoryKey(category: KeyBindCategory, page: Int): String = "key.category.skyhanni.${categoryPath(category, page)}"
-
     fun categoryLabel(category: KeyBindCategory, page: Int): String {
         val label = "SkyHanni - ${category.id.replaceFirstChar(Char::uppercase)}"
         return if (page == 0) label else "$label ${page + 1}"
