@@ -39,7 +39,6 @@ import at.hannibal2.skyhanni.utils.renderables.Searchable
 import at.hannibal2.skyhanni.utils.renderables.toSearchable
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import at.hannibal2.skyhanni.utils.tracker.SkyHanniBucketedItemTracker
-import at.hannibal2.skyhanni.utils.tracker.SkyHanniTracker
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.seconds
@@ -64,12 +63,6 @@ object FarmingProfitTracker : SkyHanniBucketedItemTracker<TrackedSource, Farming
     override fun shouldShowExactItemAmount(amount: Long): Boolean = amount.absoluteValue >= 1_000_000L
 
     internal val config: FarmingProfitTrackerConfig get() = SkyHanniMod.feature.garden.farmingProfitTracker
-    internal val trackerDisplayConfig
-        get() = if (config.perTrackerConfig.useUniversalConfig) {
-            SkyHanniMod.feature.misc.tracker
-        } else {
-            config.perTrackerConfig.trackerConfig
-        }
 
     internal var lastFarmingActivity = SimpleTimeMark.farPast()
         private set
@@ -85,7 +78,7 @@ object FarmingProfitTracker : SkyHanniBucketedItemTracker<TrackedSource, Farming
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    private fun onToolChange(event: GardenToolChangeEvent) {
+    private fun onGardenToolChange(event: GardenToolChangeEvent) {
         currentToolHasBountiful = event.toolItem?.getReforgeModifier() == "bountiful"
         firstUpdate()
     }
@@ -187,7 +180,7 @@ object FarmingProfitTracker : SkyHanniBucketedItemTracker<TrackedSource, Farming
     }
 
     internal fun sessionDataHasNoFarmingData(): Boolean =
-        getSharedTracker()?.get(SkyHanniTracker.DisplayMode.SESSION)?.hasNoFarmingData() == true
+        getSharedTracker()?.get(DisplayMode.SESSION)?.hasNoFarmingData() == true
 
     internal fun shouldTrack(source: TrackedSource): Boolean =
         GardenApi.inGarden() && source in config.trackedSources

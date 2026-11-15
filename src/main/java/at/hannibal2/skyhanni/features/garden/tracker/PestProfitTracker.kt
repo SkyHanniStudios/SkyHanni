@@ -101,6 +101,11 @@ object PestProfitTracker : SkyHanniBucketedItemTracker<PestType, PestProfitTrack
     val BITS = "SKYBLOCK_BIT".toInternalName()
     const val KILL_BITS = 5
 
+    fun getBitsPrice(): Double {
+        return if (SkyHanniMod.feature.misc.tracker.priceSource == ItemPriceSource.NPC_SELL) 0.0 else config.coinsPerBit.get()
+            .toDouble()
+    }
+
     private val noMessageDrops = setOf(
         "PESTERMINATOR;1",
         "ULTIMATE_SUNSET;1",
@@ -126,11 +131,6 @@ object PestProfitTracker : SkyHanniBucketedItemTracker<PestType, PestProfitTrack
             } else {
                 super.getCustomPricePer(internalName, tracker)
             }
-        }
-
-        private fun getBitsPrice(): Double {
-            return if (SkyHanniMod.feature.misc.tracker.priceSource == ItemPriceSource.NPC_SELL) 0.0 else config.coinsPerBit.get()
-                .toDouble()
         }
 
         override val selectedBucketItems
@@ -179,8 +179,7 @@ object PestProfitTracker : SkyHanniBucketedItemTracker<PestType, PestProfitTrack
             PestApi.hasVacuumOrLassoInHand()
         ) {
             val pest = PestType.getByItemInternalNameOrNull(event.internalName) ?: return
-            addItem(pest, event.internalName, event.amount, false)
-            FarmingProfitTracker.addPestItem(event.internalName, event.amount, message = false)
+            addPestItem(pest, event.internalName, event.amount)
         }
     }
 
@@ -220,8 +219,7 @@ object PestProfitTracker : SkyHanniBucketedItemTracker<PestType, PestProfitTrack
 
             if (config.hideChat) blockedReason = "pest_drop"
 
-            addItem(pest, internalName, amount, command = false)
-            FarmingProfitTracker.addPestItem(internalName, amount, message = false)
+            addPestItem(pest, internalName, amount)
 
             val shouldAddKill = when (pest) {
                 // Field Mice drop 6 separate items, but we only want to count the kill once
@@ -240,8 +238,7 @@ object PestProfitTracker : SkyHanniBucketedItemTracker<PestType, PestProfitTrack
             val pest = PestType.getByItemInternalNameOrNull(internalName) ?: return@matchMatcher
             val amount = groupOrNull("amount")?.formatInt() ?: 1
 
-            addItem(pest, internalName, amount, command = false)
-            FarmingProfitTracker.addPestItem(internalName, amount, message = false)
+            addPestItem(pest, internalName, amount)
 
             val primitiveStack = NeuItems.getPrimitiveMultiplier(internalName)
             val rawName = primitiveStack.internalName.itemNameWithoutColor
@@ -257,6 +254,11 @@ object PestProfitTracker : SkyHanniBucketedItemTracker<PestType, PestProfitTrack
         if (!event.source.isAnyOf(CHARM, HUNT)) return
         val pestType = PestType.getByItemInternalNameOrNull(event.shardInternalName) ?: return
         addItem(pestType, event.shardInternalName, event.amount, command = false)
+    }
+
+    private fun addPestItem(pest: PestType, internalName: NeuInternalName, amount: Int) {
+        addItem(pest, internalName, amount, command = false)
+        FarmingProfitTracker.addPestItem(internalName, amount, message = false)
     }
 
     private fun SkyHanniChatEvent.Allow.checkSprayChats() {

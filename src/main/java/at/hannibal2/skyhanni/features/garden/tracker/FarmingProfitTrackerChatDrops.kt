@@ -6,13 +6,10 @@ import at.hannibal2.skyhanni.data.model.SkyblockStat.FARMING_FORTUNE
 import at.hannibal2.skyhanni.data.model.SkyblockStat.OVERBLOOM
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
-import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
 
 @SkyHanniModule
 object FarmingProfitTrackerChatDrops {
-
-    private val overclocker = "OVERCLOCKER_3000".toInternalName()
 
     /**
      * REGEX-TEST: ABOUT TIME! You find an Overclocker 3000 (+137)!
@@ -27,7 +24,7 @@ object FarmingProfitTrackerChatDrops {
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
     private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (overclockerPityPattern.matches(event.cleanMessage)) {
-            FarmingProfitTracker.addPestItem(overclocker, 1)
+            FarmingProfitTracker.addPestItem(PestProfitTracker.OVERCLOCKER, 1)
         }
     }
 }

@@ -15,7 +15,10 @@ import at.hannibal2.skyhanni.utils.ItemUtils.getLoreComponent
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.SKYBLOCK_COIN
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.NumberUtil.formatInt
+import at.hannibal2.skyhanni.utils.RegexUtils.anyMatchesComponent
+import at.hannibal2.skyhanni.utils.RegexUtils.find
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
+import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import kotlin.math.roundToLong
@@ -37,7 +40,47 @@ object FarmingProfitTrackerVisitors {
      */
     private val visitorCopperPattern by FarmingProfitTracker.patternGroup.pattern(
         "visitor.copper",
-        "[+](?<amount>.*) Copper",
+        "[+](?<amount>[\\d,]+) Copper",
+    )
+
+    /**
+     * REGEX-TEST: Gift Vinyl Set
+     */
+    private val giftVinylSetNamePattern by FarmingProfitTracker.patternGroup.pattern(
+        "visitor.vinyl.gift.name",
+        "Gift Vinyl Set",
+    )
+
+    /**
+     * REGEX-TEST: Gifts a Full Carrot-Colored Vinyl Set
+     */
+    private val giftCarrotVinylSetLorePattern by FarmingProfitTracker.patternGroup.pattern(
+        "visitor.vinyl.gift.lore",
+        "Gifts a Full Carrot-Colored Vinyl Set",
+    )
+
+    /**
+     * REGEX-TEST: Click to gift!
+     */
+    private val clickToGiftPattern by FarmingProfitTracker.patternGroup.pattern(
+        "visitor.vinyl.gift.click",
+        "Click to gift!",
+    )
+
+    /**
+     * REGEX-TEST: This Visitor has been Charmed
+     */
+    private val charmedVisitorNamePattern by FarmingProfitTracker.patternGroup.pattern(
+        "visitor.charmed.name",
+        "This Visitor has been Charmed",
+    )
+
+    /**
+     * REGEX-TEST: They will bring more rewards
+     */
+    private val charmedVisitorLorePattern by FarmingProfitTracker.patternGroup.pattern(
+        "visitor.charmed.lore",
+        "They will bring more rewards",
     )
 
     private var lastVisitorAccept = SimpleTimeMark.farPast()
@@ -106,20 +149,18 @@ object FarmingProfitTrackerVisitors {
     }
 
     private fun SafeItemStack.isCarrotColoredVinylSetGiveButton(): Boolean {
-        if (hoverName.string != "Gift Vinyl Set") return false
-        val lore = getLoreComponent().map { it.string }
-        return "Gifts a Full Carrot-Colored Vinyl Set" in lore && "Click to gift!" in lore
+        if (!giftVinylSetNamePattern.matches(hoverName)) return false
+        val lore = getLoreComponent()
+        return giftCarrotVinylSetLorePattern.anyMatchesComponent(lore) && clickToGiftPattern.anyMatchesComponent(lore)
     }
 
     private fun SafeItemStack.isCharmedVisitorButton(): Boolean {
-        if (!hoverName.string.contains("This Visitor has been Charmed")) return false
-        return getLoreComponent().any { it.string.contains("They will bring more rewards") }
+        if (!charmedVisitorNamePattern.find(hoverName)) return false
+        return getLoreComponent().any { charmedVisitorLorePattern.find(it) }
     }
 
     private fun refreshVisitorOfferFromInventory(visitor: VisitorApi.Visitor, event: InventoryUpdatedEvent): Boolean {
-        val offerItem = event.inventoryItems[VisitorApi.ACCEPT_SLOT] ?: return false
-        if (offerItem.hoverName.string != "Accept Offer") return false
-        visitor.offer = VisitorApi.VisitorOffer(offerItem)
+        visitor.offer = VisitorApi.getVisitorOffer(event.inventoryItems) ?: return false
         GardenVisitorTooltip.readVisitorOffer(visitor)
         return true
     }

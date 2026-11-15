@@ -35,7 +35,7 @@ object FarmingProfitTrackerStats {
     }
 
     private fun MutableList<Searchable>.addCropAmountLine(data: FarmingProfitTrackerData) {
-        val total = data.getTotalCropAmount()
+        val total = data.totalCropAmount
         if (total == 0L) return
         add(
             Renderable.hoverTips(
@@ -56,7 +56,7 @@ object FarmingProfitTrackerStats {
     }
 
     private fun MutableList<Searchable>.addBlocksBrokenLine(data: FarmingProfitTrackerData) {
-        val total = data.getTotalBlocksBroken()
+        val total = data.totalBlocksBroken
         if (total == 0L) return
         add(
             Renderable.hoverTips(
@@ -85,7 +85,7 @@ object FarmingProfitTrackerStats {
     }
 
     private fun MutableList<Searchable>.addSeasoningLine(data: FarmingProfitTrackerData) {
-        val total = data.getTotalSeasoningDrops()
+        val total = data.totalSeasoningDrops
         if (total == 0L) return
         add(
             Renderable.hoverTips(
@@ -96,7 +96,7 @@ object FarmingProfitTrackerStats {
     }
 
     private fun MutableList<Searchable>.addBlessedLine(data: FarmingProfitTrackerData) {
-        val total = data.getTotalBlessedDrops()
+        val total = data.totalBlessedDrops
         if (total == 0L) return
         add(
             Renderable.hoverTips(
@@ -109,7 +109,7 @@ object FarmingProfitTrackerStats {
     }
 
     private fun MutableList<Searchable>.addCropFeversLine(data: FarmingProfitTrackerData) {
-        val total = data.getTotalCropFevers()
+        val total = data.totalCropFevers
         if (total == 0L) return
         add(
             Renderable.hoverTips(
@@ -122,7 +122,7 @@ object FarmingProfitTrackerStats {
     }
 
     private fun MutableList<Searchable>.addCropFeverLine(data: FarmingProfitTrackerData) {
-        val total = data.getTotalCropFeverDrops()
+        val total = data.totalCropFeverDrops
         if (total == 0L) return
         add(
             Renderable.hoverTips(
@@ -135,7 +135,7 @@ object FarmingProfitTrackerStats {
     }
 
     private fun MutableList<Searchable>.addPestLine(data: FarmingProfitTrackerData) {
-        val total = data.getTotalPestKills()
+        val total = data.totalPestKills
         if (total == 0L) return
         add(
             Renderable.hoverTips(
@@ -169,7 +169,7 @@ object FarmingProfitTrackerStats {
                 val amount = item.totalAmount
                 if (amount == 0L) return@forEach
                 val countedInProfit =
-                    !item.hidden || !FarmingProfitTracker.trackerDisplayConfig.itemTracker.excludeHiddenItemsInPrice
+                    !item.hidden || !FarmingProfitTracker.itemTrackerConfig.excludeHiddenItemsInPrice
                 val displayAmount = if (internalName == SKYBLOCK_COIN && data.visitorCopper > 0) {
                     data.visitorCopper
                 } else {

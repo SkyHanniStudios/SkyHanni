@@ -23,6 +23,7 @@ import at.hannibal2.skyhanni.utils.NeuItems
 import at.hannibal2.skyhanni.utils.NumberUtil.formatInt
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
+import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.SkyBlockItemModifierUtils.getHypixelEnchantments
 import at.hannibal2.skyhanni.utils.StringUtils.removeColor
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.addOrPut
@@ -67,7 +68,7 @@ object FarmingProfitTrackerCrops {
     private fun onCropClick(event: CropClickEvent) {
         clearSessionStateIfSessionWasReset()
         blocksBrokenCache.addOrPut(event.crop, 1)
-        queueReplenishCost(event)
+        queueReplenishCost(event.crop, event.itemInHand)
         FarmingProfitTracker.markActivity()
         FarmingProfitTracker.firstUpdate()
     }
@@ -75,7 +76,7 @@ object FarmingProfitTrackerCrops {
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
     private fun onTick(event: SkyHanniTickEvent) {
         if (!event.isMod(5) || blocksBrokenCache.isEmpty()) return
-        val pending = EnumMap<CropType, Long>(blocksBrokenCache)
+        val pending = EnumMap(blocksBrokenCache)
         blocksBrokenCache.clear()
         FarmingProfitTracker.modify { data ->
             pending.forEach { (crop, amount) ->
@@ -102,7 +103,7 @@ object FarmingProfitTrackerCrops {
 
             ItemAddManager.Source.ITEM_ADD,
             ItemAddManager.Source.SACKS,
-            -> trackCropItemFromItemAdd(event)
+            -> trackCropItemFromItemAdd(event.internalName, event.amount)
 
             else -> Unit
         }
@@ -215,11 +216,10 @@ object FarmingProfitTrackerCrops {
         FarmingProfitTracker.markActivity()
     }
 
-    private fun queueReplenishCost(event: CropClickEvent) {
+    private fun queueReplenishCost(crop: CropType, itemInHand: SafeItemStack?) {
         if (!FarmingProfitTracker.shouldTrack(TrackedSource.CROPS)) return
-        val crop = event.crop
         if (!crop.replenish) return
-        if (event.itemInHand?.getHypixelEnchantments()?.containsKeys("replenish") != true) return
+        if (itemInHand?.getHypixelEnchantments()?.containsKeys("replenish") != true) return
         pendingReplenishCosts.addOrPut(crop, crop.multiplier.toLong())
     }
 
@@ -228,24 +228,24 @@ object FarmingProfitTrackerCrops {
         removeTrackedRawCrop(crop.getCropInternalName(), amount)
     }
 
-    private fun trackCropItemFromItemAdd(event: ItemAddEvent) {
-        if (!FarmingProfitTracker.shouldTrack(TrackedSource.CROPS) || event.amount <= 0) return
+    private fun trackCropItemFromItemAdd(internalName: NeuInternalName, amount: Int) {
+        if (!FarmingProfitTracker.shouldTrack(TrackedSource.CROPS) || amount <= 0) return
         if (FarmingProfitTracker.lastFarmingActivity.passedSince() > sackCompactionTimeout) return
         clearSessionStateIfSessionWasReset()
 
-        val cropItem = event.internalName.getCropPrimitiveItemOrNull() ?: return
+        val cropItem = internalName.getCropPrimitiveItemOrNull() ?: return
         val currentCrop = GardenApi.getCurrentlyFarmedCrop() ?: GardenApi.lastBrokenCropType ?: return
         if (cropItem.crop != currentCrop || cropItem.rawAmount <= 1) return
-        if (cropItem.rawInternalName == event.internalName) {
+        if (cropItem.rawInternalName == internalName) {
             FarmingProfitTracker.markActivity()
             return
         }
 
-        val consumedSpecial = consumeRecentSpecialCropItem(event.internalName, event.amount.toLong())
-        val amount = event.amount.toLong() - consumedSpecial
-        if (amount > 0) {
-            removeTrackedRawCrop(cropItem.rawInternalName, amount * cropItem.rawAmount)
-            FarmingProfitTracker.addTrackedItem(TrackedSource.CROPS, event.internalName, amount, message = false)
+        val consumedSpecial = consumeRecentSpecialCropItem(internalName, amount.toLong())
+        val compactedAmount = amount.toLong() - consumedSpecial
+        if (compactedAmount > 0) {
+            removeTrackedRawCrop(cropItem.rawInternalName, compactedAmount * cropItem.rawAmount)
+            FarmingProfitTracker.addTrackedItem(TrackedSource.CROPS, internalName, compactedAmount, message = false)
             FarmingProfitTracker.markActivity()
         }
     }
