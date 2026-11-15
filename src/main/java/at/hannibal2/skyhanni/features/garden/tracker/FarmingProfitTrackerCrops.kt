@@ -44,11 +44,11 @@ object FarmingProfitTrackerCrops {
 
     /**
      * REGEX-TEST: BLESSED! You found an Enchanted Nether Wart!
-     * REGEX-TEST: BLESSED! You found a Cropie!
+     * REGEX-TEST: MOSQUITO! You found an Enchanted Wheat!
      */
     private val blessedDropPattern by FarmingProfitTracker.patternGroup.pattern(
         "blessed.drop",
-        "^BLESSED! You found an? (?<item>.+)!$",
+        "^(?:BLESSED|MOSQUITO)! You found an? (?<item>.+)!$",
     )
 
     private val blocksBrokenCache: MutableMap<CropType, Long> = EnumMap(CropType::class.java)
