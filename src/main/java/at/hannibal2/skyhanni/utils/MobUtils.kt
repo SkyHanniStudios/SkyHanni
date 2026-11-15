@@ -35,7 +35,7 @@ object MobUtils {
     fun getClosestArmorStandWithName(entity: Entity, range: Double, name: String) =
         getArmorStandByRangeAll(entity, range).filter { it.cleanName.startsWith(name) }.minByOrNull { it.distanceTo(entity) }
 
-    fun ArmorStand.isDefaultValue() = this.name.formattedTextCompatLessResets() == defaultArmorStandName
+    fun ArmorStand.isDefaultValue() = this.name.string == defaultArmorStandName
 
     fun ArmorStand?.takeNonDefault() = this?.takeIf { !it.isDefaultValue() }
 
