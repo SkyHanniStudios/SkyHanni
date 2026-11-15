@@ -114,6 +114,10 @@ object FarmingProfitTracker : SkyHanniBucketedItemTracker<TrackedSource, Farming
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
     private fun onPurseChange(event: PurseChangeEvent) {
+        if (PestProfitTracker.getPestFromCoinGain(event) != null) {
+            addPestCoins(event.coins.roundToInt())
+            return
+        }
         if (!shouldTrack(TrackedSource.BOUNTIFUL)) return
         if (!currentToolHasBountiful) return
         if (lastFarmingActivity.passedSince() > 2.seconds) return
@@ -169,7 +173,7 @@ object FarmingProfitTracker : SkyHanniBucketedItemTracker<TrackedSource, Farming
         markActivity()
     }
 
-    internal fun addPestCoins(coins: Int) {
+    private fun addPestCoins(coins: Int) {
         if (!shouldTrack(TrackedSource.PESTS)) return
         addTrackedItem(TrackedSource.PESTS, SKYBLOCK_COIN, coins.toLong(), message = false)
         markActivity()

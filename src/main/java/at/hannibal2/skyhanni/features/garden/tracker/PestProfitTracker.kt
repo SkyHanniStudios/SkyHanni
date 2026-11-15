@@ -362,15 +362,17 @@ object PestProfitTracker : SkyHanniBucketedItemTracker<PestType, PestProfitTrack
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
     private fun onPurseChange(event: PurseChangeEvent) {
-        if (event.reason != PurseChangeCause.GAIN_MOB_KILL || lastPestKillTimes.isEmpty()) return
-        val coins = event.coins.takeIf { it in 1000.0..10000.0 } ?: return
+        val pest = getPestFromCoinGain(event) ?: return
+        addCoins(pest, event.coins.roundToInt(), command = false)
+    }
+
+    fun getPestFromCoinGain(event: PurseChangeEvent): PestType? {
+        if (event.reason != PurseChangeCause.GAIN_MOB_KILL || lastPestKillTimes.isEmpty()) return null
+        if (event.coins !in 1000.0..10000.0) return null
 
         // Get a list of all that have been killed in the last 2 seconds, it will
         // want to be the most recent one that was killed.
-        val pest = lastPestKillTimes.minByOrNull { it.value }?.key ?: return
-        val roundedCoins = coins.roundToInt()
-        addCoins(pest, roundedCoins, command = false)
-        FarmingProfitTracker.addPestCoins(roundedCoins)
+        return lastPestKillTimes.minByOrNull { it.value }?.key
     }
 
     @HandleEvent
