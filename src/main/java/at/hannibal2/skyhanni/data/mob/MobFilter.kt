@@ -14,7 +14,7 @@ import at.hannibal2.skyhanni.utils.EntityUtils.isNpc
 import at.hannibal2.skyhanni.utils.EntityUtils.wearingSkullTexture
 import at.hannibal2.skyhanni.utils.ItemUtils.getSkullTexture
 import at.hannibal2.skyhanni.utils.MobUtils
-import at.hannibal2.skyhanni.utils.MobUtils.isDefaultValue
+import at.hannibal2.skyhanni.utils.MobUtils.isDefaultName
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.SkullTextureHolder
@@ -261,7 +261,7 @@ object MobFilter {
         val extraEntityList = generateSequence(nextEntity) {
             MobUtils.getNextEntity(it, 1) as? LivingEntity
         }.takeWhileInclusive { entity ->
-            !(entity is ArmorStand && !entity.isDefaultValue()) && MobData.entityToMob[entity]?.also {
+            !(entity is ArmorStand && !entity.isDefaultName()) && MobData.entityToMob[entity]?.also {
                 caughtSkyblockMob = it
             }?.run { false } ?: true
         }.toList()
@@ -272,7 +272,7 @@ object MobFilter {
 
         val armorStand = extraEntityList.lastOrNull() as? ArmorStand ?: return MobResult.notYetFound
 
-        if (armorStand.isDefaultValue()) return MobResult.notYetFound
+        if (armorStand.isDefaultName()) return MobResult.notYetFound
         return createSkyblockMob(baseEntity, armorStand, extraEntityList.dropLast(1))?.let { MobResult.found(it) }
             ?: MobResult.notYetFound
     }
