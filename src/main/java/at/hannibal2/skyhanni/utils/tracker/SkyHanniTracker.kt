@@ -108,7 +108,7 @@ open class SkyHanniTracker<Data : TrackerData<*>, Config : GenericIndividualTrac
     fun modify(modifyFunction: (Data) -> Unit) {
         val sharedTracker = getSharedTracker() ?: return
         sharedTracker.modify(modifyFunction)
-        if (!customUptimeControl) startSessionUptime()
+        startSessionUptime()
         lastUpdate = SimpleTimeMark.now()
         update()
     }

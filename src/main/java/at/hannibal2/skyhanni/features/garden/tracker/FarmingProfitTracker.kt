@@ -19,7 +19,6 @@ import at.hannibal2.skyhanni.events.garden.pests.PestKillEvent
 import at.hannibal2.skyhanni.events.item.ShardGainEvent
 import at.hannibal2.skyhanni.features.garden.CropType
 import at.hannibal2.skyhanni.features.garden.GardenApi
-import at.hannibal2.skyhanni.features.garden.GardenUptimeManager
 import at.hannibal2.skyhanni.features.garden.pests.PestApi
 import at.hannibal2.skyhanni.features.garden.pests.PestType
 import at.hannibal2.skyhanni.features.garden.pests.SprayType
@@ -85,11 +84,6 @@ object FarmingProfitTracker : SkyHanniBucketedItemTracker<TrackedSource, Farming
 
     init {
         initRenderer({ config.position }, onlyOnIsland = IslandType.GARDEN) { shouldShowDisplay() }
-    }
-
-    override fun startSessionUptime() {
-        super.startSessionUptime()
-        GardenUptimeManager.resumeAfkTracking()
     }
 
     @HandleEvent

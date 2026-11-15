@@ -76,10 +76,6 @@ object GardenUptimeManager {
         afkTracker.start(true)
     }
 
-    internal fun resumeAfkTracking() {
-        afkTracker.start(true)
-    }
-
     fun modify(modifyFunction: (SkyHanniTracker<*, *>) -> Unit) {
         trackerSet.forEach(modifyFunction)
     }
