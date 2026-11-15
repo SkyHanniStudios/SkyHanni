@@ -18,24 +18,23 @@ import kotlinx.coroutines.sync.Mutex
 object SkyHanniKeyBindManager {
 
     private val mappings = mutableListOf<SkyHanniKeyMapping>()
+    private val categoryCounts = mutableMapOf<KeyBindCategory, Int>()
     private val categories = mutableMapOf<String, KeyMapping.Category>()
     private val syncMutex = Mutex()
 
-    fun init(modules: List<Any>) {
-        val loaded = modules.mapTo(mutableSetOf()) { it.javaClass }
-        LoadedKeyBinds.registrations.filter { it.owner in loaded }.forEach(::register)
+    fun init() = LoadedKeyBinds.keyBinds.forEach { (options, keyBind) ->
+        val mapping = SkyHanniKeyMapping(options, keyBind, categoryFor(options.category))
+        KeyMappingHelper.registerKeyMapping(mapping)
+        mappings += mapping
     }
 
     fun visibleOnly(keyMappings: Array<KeyMapping>): Array<KeyMapping> =
         keyMappings.filterNot { it is SkyHanniKeyMapping && !it.keyBind.condition() }.toTypedArray()
 
-    private fun register(registration: KeyBindRegistration) {
-        val category = categories.getOrPut(registration.categoryPath) {
-            KeyMapping.Category.register(SkyHanniMod.id(registration.categoryPath))
-        }
-        val mapping = SkyHanniKeyMapping(registration, registration.keyBind(), category)
-        KeyMappingHelper.registerKeyMapping(mapping)
-        mappings += mapping
+    private fun categoryFor(category: KeyBindCategory): KeyMapping.Category {
+        val index = categoryCounts.getOrDefault(category, 0).also { categoryCounts[category] = it + 1 }
+        val path = KeyBindIds.categoryPath(category, index / KeyBindIds.PAGE_SIZE)
+        return categories.getOrPut(path) { KeyMapping.Category.register(SkyHanniMod.id(path)) }
     }
 
     @HandleEvent
@@ -48,13 +47,13 @@ object SkyHanniKeyBindManager {
     }
 
     @HandleEvent
-    private fun onKeyDown(event: KeyDownEvent) = dispatch(event.keyCode, hold = false)
+    private fun onKeyDown(event: KeyDownEvent) = dispatch(event.keyCode, KeyBindTrigger.PRESS)
 
     @HandleEvent
-    private fun onKeyPress(event: KeyPressEvent) = dispatch(event.keyCode, hold = true)
+    private fun onKeyPress(event: KeyPressEvent) = dispatch(event.keyCode, KeyBindTrigger.HOLD)
 
-    private fun dispatch(keyCode: Int, hold: Boolean) = mappings.forEach { mapping ->
-        if (mapping.registration.hold == hold && mapping.boundKeyCode == keyCode && mapping.isActive()) mapping.keyBind.onTrigger()
+    private fun dispatch(keyCode: Int, trigger: KeyBindTrigger) = mappings.forEach { mapping ->
+        if (mapping.options.trigger == trigger && mapping.boundKeyCode == keyCode && mapping.isActive()) mapping.keyBind.onTrigger()
     }
 
     internal fun SkyHanniKeyMapping.pushKeyToConfig(key: InputConstants.Key) {

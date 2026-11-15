@@ -1,6 +1,7 @@
 package at.hannibal2.skyhanni.skyhannimodule
 
 import at.hannibal2.skyhanni.utils.KeyBindCategory
+import at.hannibal2.skyhanni.utils.KeyBindContext
 import at.hannibal2.skyhanni.utils.KeyBindIds
 import at.hannibal2.skyhanni.utils.KeyBindTrigger
 import at.hannibal2.skyhanni.utils.RegisterKeyBind
@@ -33,12 +34,9 @@ class KeyBindProcessor(environment: SymbolProcessorEnvironment) : BaseProcessor(
             logger.error("Key bind id ${duplicates.first().mappingKey} is registered more than once", duplicates.last().property)
         }
 
-        val sources = entries.mapNotNull { it.property.containingFile }.toTypedArray()
-        val pages = entries.groupBy { it.options.category }.flatMap { (category, group) ->
-            group.mapIndexed { index, entry -> entry to index / KeyBindIds.PAGE_SIZE }.map { (entry, page) -> Triple(entry, category, page) }
-        }
-        generateRegistry(pages, Dependencies(true, *sources))
-        if (entries.isNotEmpty()) generateLang(pages, Dependencies(true, *sources))
+        val dependencies = Dependencies(true, *entries.mapNotNull { it.property.containingFile }.toTypedArray())
+        generateRegistry(entries, dependencies)
+        if (entries.isNotEmpty()) generateLang(entries, dependencies)
         return emptyList()
     }
 
@@ -58,42 +56,48 @@ class KeyBindProcessor(environment: SymbolProcessorEnvironment) : BaseProcessor(
     private fun KSClassDeclaration.isModule(): Boolean =
         annotations.any { it.annotationType.resolve().declaration.qualifiedName?.asString() == SKYHANNI_MODULE }
 
-    private fun generateRegistry(pages: List<Triple<Entry, KeyBindCategory, Int>>, dependencies: Dependencies) {
-        val file = codeGenerator.createNewFile(dependencies, "at.hannibal2.skyhanni.utils", "LoadedKeyBinds")
+    private fun generateRegistry(entries: List<Entry>, dependencies: Dependencies) {
+        val annotation = RegisterKeyBind::class.java.simpleName
+        val file = codeGenerator.createNewFile(dependencies, RegisterKeyBind::class.java.packageName, "LoadedKeyBinds")
         OutputStreamWriter(file).use { writer ->
-            writer.appendLine("package at.hannibal2.skyhanni.utils")
+            writer.appendLine("package ${RegisterKeyBind::class.java.packageName}")
             writer.appendLine()
             writer.appendLine("object LoadedKeyBinds {")
-            writer.appendLine("    val registrations: List<KeyBindRegistration> = listOf(")
-            for ((entry, category, page) in pages) {
-                val context = entry.options.context
+            writer.appendLine("    val keyBinds: List<Pair<$annotation, SkyHanniKeyBind>> = listOf(")
+            for (entry in entries) {
+                val options = entry.options
                 writer.appendLine(
-                    "        KeyBindRegistration(${entry.owner}::class.java, { ${entry.owner}.${entry.property.simpleName.asString()} }, " +
-                        "\"${entry.mappingKey}\", \"${KeyBindIds.categoryPath(category, page)}\", " +
-                        "inGame = ${context.inGame}, inScreen = ${context.inScreen}, hold = ${entry.options.trigger == KeyBindTrigger.HOLD}),",
+                    "        $annotation(name = \"${options.name.escape().replace("$", "\\$")}\", " +
+                        "category = ${KeyBindCategory::class.java.simpleName}.${options.category.name}, " +
+                        "context = ${KeyBindContext::class.java.simpleName}.${options.context.name}, " +
+                        "trigger = ${KeyBindTrigger::class.java.simpleName}.${options.trigger.name}) " +
+                        "to ${entry.owner}.${entry.property.simpleName.asString()},",
                 )
             }
             writer.appendLine("    )")
             writer.appendLine("}")
         }
-        println("Generated LoadedKeyBinds file with ${pages.size} key binds")
+        println("Generated LoadedKeyBinds file with ${entries.size} key binds")
     }
 
-    private fun generateLang(pages: List<Triple<Entry, KeyBindCategory, Int>>, dependencies: Dependencies) {
+    private fun generateLang(entries: List<Entry>, dependencies: Dependencies) {
         val translations = sortedMapOf<String, String>()
-        for ((entry, category, page) in pages) {
-            translations["key.category.skyhanni.${KeyBindIds.categoryPath(category, page)}"] = KeyBindIds.categoryLabel(category, page)
-            translations[entry.mappingKey] = entry.options.name
+        for ((category, group) in entries.groupBy { it.options.category }) {
+            group.forEachIndexed { index, entry ->
+                val page = index / KeyBindIds.PAGE_SIZE
+                translations["key.category.skyhanni.${KeyBindIds.categoryPath(category, page)}"] = KeyBindIds.categoryLabel(category, page)
+                translations[entry.mappingKey] = entry.options.name
+            }
         }
         val file = codeGenerator.createNewFile(dependencies, "assets.skyhanni.lang", "en_us", "json")
         OutputStreamWriter(file).use { writer ->
             writer.appendLine("{")
-            writer.appendLine(translations.entries.joinToString(",\n") { (key, value) -> "    \"$key\": \"${value.escapeJson()}\"" })
+            writer.appendLine(translations.entries.joinToString(",\n") { (key, value) -> "    \"$key\": \"${value.escape()}\"" })
             writer.appendLine("}")
         }
     }
 
-    private fun String.escapeJson(): String = replace("\\", "\\\\").replace("\"", "\\\"")
+    private fun String.escape(): String = replace("\\", "\\\\").replace("\"", "\\\"")
 
     companion object {
         private const val SKYHANNI_MODULE = "at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule"

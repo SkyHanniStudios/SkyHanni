@@ -166,7 +166,7 @@ dependencies {
 
     compileOnly(libs.jbAnnotations)
     ksp(buildSrcJar)
-    compileOnly(buildSrcJar)
+    implementation(buildSrcJar)
     buildProgressPlugin(buildSrcJar)
     buildProgressJavacPlugin(libs.kotlin.stdlib)
     detektPlugins(buildSrcJar)
@@ -441,6 +441,9 @@ tasks.withType<GradleJar> {
 tasks.shadowJar {
     destinationDirectory.set(rootProject.layout.buildDirectory.dir("libs"))
     archiveClassifier.set("")
+    from(zipTree(buildSrcJar.singleFile)) {
+        include("at/hannibal2/skyhanni/utils/**")
+    }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     filesMatching("META-INF/services/**") {
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
