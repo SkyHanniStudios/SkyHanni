@@ -547,6 +547,14 @@ class MiscConfig {
 
     @Expose
     @ConfigOption(
+        name = "Muted Narrator Warning",
+        desc = "Send a warning reminder in chat when the narrator is enabled, but in a muted state",
+    )
+    @ConfigEditorBoolean
+    val mutedNarratorWarning: Property<Boolean> = Property.of(true)
+
+    @Expose
+    @ConfigOption(
         name = "Mute Stereo Pants",
         desc = "Mutes music played by Stereo Pants.",
     )
