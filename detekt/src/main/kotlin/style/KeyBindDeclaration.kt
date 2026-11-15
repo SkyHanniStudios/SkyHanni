@@ -13,7 +13,7 @@ import org.jetbrains.kotlin.psi.psiUtil.collectDescendantsOfType
 
 class KeyBindDeclaration(config: Config) : SkyHanniRule(
     config,
-    "SkyHanniKeyBind declarations must be registered, private, and backed directly by a config Property<Int>.",
+    "SkyHanniKeyBind declarations must be registered, internal, and backed directly by a config Property<Int>.",
 ) {
     override fun visitProperty(property: KtProperty) {
         val call = property.initializer as? KtCallExpression
@@ -24,7 +24,7 @@ class KeyBindDeclaration(config: Config) : SkyHanniRule(
             annotated && !declaresKeyBind -> "@$ANNOTATION is only valid on a property initialized with $KEY_BIND_CLASS(...)."
             !declaresKeyBind -> null
             !annotated -> "$KEY_BIND_CLASS `${property.name}` needs @$ANNOTATION, otherwise it is never registered."
-            property.isVar || !property.hasModifier(KtTokens.PRIVATE_KEYWORD) -> "$KEY_BIND_CLASS `${property.name}` should be a private val."
+            property.isVar || !property.hasModifier(KtTokens.INTERNAL_KEYWORD) -> "$KEY_BIND_CLASS `${property.name}` should be an internal val."
             !call.hasDirectOption() ->
                 "$KEY_BIND_CLASS `${property.name}` must reference its config Property<Int> directly, wrapping a plain Int breaks syncing."
 
@@ -50,6 +50,6 @@ class KeyBindDeclaration(config: Config) : SkyHanniRule(
     companion object {
         private const val KEY_BIND_CLASS = "SkyHanniKeyBind"
         private const val ANNOTATION = "RegisterKeyBind"
-        private const val OPTION_PARAMETER = "option"
+        private const val OPTION_PARAMETER = "configOption"
     }
 }

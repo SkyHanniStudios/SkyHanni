@@ -13,8 +13,8 @@ class SkyHanniKeyMapping(
     category: KeyMapping.Category,
 ) : KeyMapping(
     registration.mappingKey,
-    keyBind.option().get().toInputType(),
-    keyBind.option().get(),
+    keyBind.keyCode.toInputType(),
+    keyBind.keyCode,
     category,
 ) {
     val boundKeyCode: Int get() = KeyMappingHelper.getBoundKeyOf(this).value

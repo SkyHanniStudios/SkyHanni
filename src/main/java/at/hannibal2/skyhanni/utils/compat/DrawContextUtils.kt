@@ -47,6 +47,12 @@ object DrawContextUtils {
         }
     }
 
+    inline fun withContext(context: GuiGraphicsExtractor, block: () -> Unit) = pushPop {
+        setContext(context)
+        block()
+        clearContext()
+    }
+
     fun translate(x: Double, y: Double) {
         drawContext.pose().translate(x.toFloat(), y.toFloat())
     }
@@ -133,10 +139,6 @@ object DrawContextUtils {
         scale(x.toFloat(), y.toFloat())
         action()
         scale(1 / x.toFloat(), 1 / y.toFloat())
-    }
-
-    fun loadIdentity() {
-        drawContext.pose().identity()
     }
 
     fun addGuiElement(state: GuiElementRenderState) {

@@ -6,6 +6,7 @@ import at.hannibal2.skyhanni.utils.KeyBindTrigger
 import at.hannibal2.skyhanni.utils.RegisterKeyBind
 import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.getAnnotationsByType
+import com.google.devtools.ksp.isPrivate
 import com.google.devtools.ksp.processing.Dependencies
 import com.google.devtools.ksp.processing.Resolver
 import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
@@ -46,6 +47,7 @@ class KeyBindProcessor(environment: SymbolProcessorEnvironment) : BaseProcessor(
         val owner = (property.parentDeclaration as? KSClassDeclaration)?.takeIf { it.isModule() }?.qualifiedName?.asString()
         val error = when {
             owner == null -> "must be declared directly inside a class annotated with @SkyHanniModule, otherwise it is never registered"
+            property.isPrivate() -> "must be internal, the generated LoadedKeyBinds references it directly"
             options.name.isBlank() -> "must have a non-blank name"
             else -> return Entry(property, owner, options)
         }
@@ -66,7 +68,7 @@ class KeyBindProcessor(environment: SymbolProcessorEnvironment) : BaseProcessor(
             for ((entry, category, page) in pages) {
                 val context = entry.options.context
                 writer.appendLine(
-                    "        KeyBindRegistration(${entry.owner}::class.java, \"${entry.property.simpleName.asString()}\", " +
+                    "        KeyBindRegistration(${entry.owner}::class.java, { ${entry.owner}.${entry.property.simpleName.asString()} }, " +
                         "\"${entry.mappingKey}\", \"${KeyBindIds.categoryPath(category, page)}\", " +
                         "inGame = ${context.inGame}, inScreen = ${context.inScreen}, hold = ${entry.options.trigger == KeyBindTrigger.HOLD}),",
                 )

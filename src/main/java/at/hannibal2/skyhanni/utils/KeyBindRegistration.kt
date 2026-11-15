@@ -2,7 +2,7 @@ package at.hannibal2.skyhanni.utils
 
 class KeyBindRegistration(
     val owner: Class<*>,
-    val fieldName: String,
+    val keyBind: () -> SkyHanniKeyBind,
     val mappingKey: String,
     val categoryPath: String,
     val inGame: Boolean,

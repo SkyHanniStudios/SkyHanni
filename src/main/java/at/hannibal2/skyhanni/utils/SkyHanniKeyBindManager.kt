@@ -5,7 +5,6 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.events.minecraft.KeyDownEvent
 import at.hannibal2.skyhanni.events.minecraft.KeyPressEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
-import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.ConditionalUtils.afterChange
 import at.hannibal2.skyhanni.utils.KeyboardManager.toInputKey
 import at.hannibal2.skyhanni.utils.coroutines.MutexUtils.tryWithLock
@@ -34,20 +33,14 @@ object SkyHanniKeyBindManager {
         val category = categories.getOrPut(registration.categoryPath) {
             KeyMapping.Category.register(SkyHanniMod.id(registration.categoryPath))
         }
-        val mapping = SkyHanniKeyMapping(registration, registration.readKeyBind(), category)
+        val mapping = SkyHanniKeyMapping(registration, registration.keyBind(), category)
         KeyMappingHelper.registerKeyMapping(mapping)
         mappings += mapping
     }
 
-    private fun KeyBindRegistration.readKeyBind(): SkyHanniKeyBind {
-        val field = owner.getDeclaredField(fieldName).apply { trySetAccessible() }
-        return field.get(null) as? SkyHanniKeyBind
-            ?: ErrorManager.skyHanniError("Registered key bind ${owner.name}.$fieldName is not a SkyHanniKeyBind")
-    }
-
     @HandleEvent
     private fun onInitFinished() = mappings.forEach { mapping ->
-        val property = mapping.keyBind.option()
+        val property = mapping.keyBind.property
         mapping.applyConfigKey(property.get())
         property.afterChange {
             if (mapping.applyConfigKey(this)) Minecraft.getInstance().options.save()
@@ -65,7 +58,7 @@ object SkyHanniKeyBindManager {
     }
 
     internal fun SkyHanniKeyMapping.pushKeyToConfig(key: InputConstants.Key) {
-        val property = keyBind.option()
+        val property = keyBind.property
         if (property.get() != key.value) syncMutex.tryWithLock { property.set(key.value) }
     }
 

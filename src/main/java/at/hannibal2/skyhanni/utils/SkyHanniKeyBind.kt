@@ -1,22 +1,26 @@
 package at.hannibal2.skyhanni.utils
 
+import at.hannibal2.skyhanni.SkyHanniMod
+import at.hannibal2.skyhanni.config.SkyHanniConfig
 import io.github.notenoughupdates.moulconfig.observer.Property
+import org.lwjgl.glfw.GLFW
 
 /**
- * Registers a SkyHanni config keybind with Minecraft's vanilla keybind system,
- * allowing it to appear in the controls screen and stay in sync with MoulConfig.
+ * A SkyHanni config keybind that is exposed in Minecraft's controls screen and kept in sync with MoulConfig.
  *
- * Create instances in `init` blocks of `@SkyHanniModule` objects. For abstract or open
- * classes that define keybinds, create instances in a companion object instead to avoid
- * registering duplicate binds per subclass instance.
+ * Declare it as an `internal val` annotated with [RegisterKeyBind] inside a `@SkyHanniModule` object.
+ * The annotation carries the display name, category, context and trigger.
  *
- * @param displayName The human-readable name shown in the controls screen.
- * @param keyProvider Lambda returning the config `Property<Int>` backing this keybind.
- * @param category The controls screen grouping label (e.g. "Inventory", "Garden").
- * @param condition Returns true when this keybind should appear in the controls screen.
+ * @param configOption Selects the config `Property<Int>` backing this keybind.
+ * @param condition Returns true when this keybind should be active and shown in the controls screen.
+ * @param onTrigger Runs when the bound key fires in an active context.
  */
 class SkyHanniKeyBind(
-    val option: () -> Property<Int>,
+    val configOption: (SkyHanniConfig) -> Property<Int>,
     val condition: () -> Boolean = { true },
     val onTrigger: () -> Unit,
-)
+) {
+    val property: Property<Int> get() = configOption(SkyHanniMod.feature)
+    val keyCode: Int get() = property.get()
+    val isBound: Boolean get() = keyCode != GLFW.GLFW_KEY_UNKNOWN
+}

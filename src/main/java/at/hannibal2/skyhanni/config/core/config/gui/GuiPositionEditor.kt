@@ -97,7 +97,7 @@ class GuiPositionEditor(
 
         // When the mouse isn't currently hovering over a gui element
         val text = if (displayPos == -1) {
-            val extraInfo = SkyHanniMod.feature.gui.keyBindOpen == GLFW.GLFW_KEY_UNKNOWN
+            val extraInfo = !GuiEditManager.openKeyBind.isBound
 
             buildList {
                 add("§cSkyHanni Position Editor")

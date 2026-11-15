@@ -53,7 +53,7 @@ class GuiConfig {
     @Expose
     @ConfigOption(name = "Open Hotkey", desc = "Press this key to open the GUI Editor.")
     @ConfigEditorKeybind(defaultKey = GLFW.GLFW_KEY_UNKNOWN)
-    var keyBindOpen: Int = GLFW.GLFW_KEY_UNKNOWN
+    val keyBindOpen: Property<Int> = Property.of(GLFW.GLFW_KEY_UNKNOWN)
 
     @Expose
     @ConfigOption(name = "Reset Hotkey", desc = "Key to press hovering a gui element to reset it's position and scale in the GUI Editor.")
