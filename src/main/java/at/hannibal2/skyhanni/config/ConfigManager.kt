@@ -41,6 +41,7 @@ import java.io.IOException
 import java.lang.reflect.Field
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.concurrent.fixedRateTimer
 import kotlin.reflect.KMutableProperty0
 import kotlin.time.Duration.Companion.days
@@ -56,6 +57,7 @@ class ConfigManager {
 
     lateinit var processor: BlockingMoulConfigProcessor
     private var disableSaving = false
+    private val pendingSaves = ConcurrentHashMap<ConfigFileType, String>()
 
     private fun setConfigHolder(type: ConfigFileType, value: Any) {
         require(value.javaClass == type.clazz)
@@ -79,6 +81,9 @@ class ConfigManager {
         // TODO use SecondPassedEvent
         fixedRateTimer(name = "skyhanni-config-auto-save", daemon = true, period = 60_000L, initialDelay = 60_000L) {
             saveConfig(ConfigFileType.FEATURES, "auto-save-60s")
+        }
+        fixedRateTimer(name = "skyhanni-config-pending-save", daemon = true, period = 10_000L, initialDelay = 10_000L) {
+            savePendingConfigs()
         }
 
         recreateConfig()
@@ -198,7 +203,22 @@ class ConfigManager {
         return output
     }
 
-    fun saveConfig(fileType: ConfigFileType, reason: String) {
+    fun saveConfig(fileType: ConfigFileType, reason: String, now: Boolean = false) {
+        if (now) {
+            pendingSaves.remove(fileType)
+            writeConfig(fileType, reason)
+        } else {
+            pendingSaves[fileType] = reason
+        }
+    }
+
+    fun savePendingConfigs() {
+        for (fileType in ConfigFileType.entries) {
+            pendingSaves.remove(fileType)?.let { writeConfig(fileType, it) }
+        }
+    }
+
+    private fun writeConfig(fileType: ConfigFileType, reason: String) = DelayedRun.runOrNextTick {
         val json = jsonHolder[fileType] ?: error("Could not find json object for $fileType")
         saveFile(fileType.file, fileType.fileName, json, reason)
         saveFile(fileType.backupFile, fileType.fileName, json, reason)
