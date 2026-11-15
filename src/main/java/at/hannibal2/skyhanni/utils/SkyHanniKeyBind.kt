@@ -1,5 +1,8 @@
 package at.hannibal2.skyhanni.utils
 
+import at.hannibal2.skyhanni.utils.KeyboardManager.toInputType
+import at.hannibal2.skyhanni.utils.SkyHanniKeyBindManager.pushKeyToConfig
+import com.mojang.blaze3d.platform.InputConstants
 import io.github.notenoughupdates.moulconfig.observer.Property
 import net.minecraft.client.KeyMapping
 
@@ -17,14 +20,22 @@ import net.minecraft.client.KeyMapping
  * @param condition Returns true when this keybind should appear in the controls screen.
  */
 class SkyHanniKeyBind(
-    val displayName: String,
+    displayName: String,
     val keyProvider: () -> Property<Int>,
-    val category: String,
+    category: String,
     val condition: () -> Boolean,
+) : KeyMapping(
+    SkyHanniKeyBindManager.mappingName(category, displayName),
+    keyProvider().get().toInputType(),
+    keyProvider().get(),
+    SkyHanniKeyBindManager.categoryFor(category),
 ) {
     init {
         SkyHanniKeyBindManager.register(this)
     }
 
-    internal var keyMapping: KeyMapping? = null
+    override fun setKey(key: InputConstants.Key) {
+        super.setKey(key)
+        pushKeyToConfig(key)
+    }
 }
