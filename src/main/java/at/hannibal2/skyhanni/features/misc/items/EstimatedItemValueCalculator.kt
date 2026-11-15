@@ -12,6 +12,7 @@ import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.EssenceUtils
 import at.hannibal2.skyhanni.utils.EssenceUtils.getEssencePrices
 import at.hannibal2.skyhanni.utils.InventoryUtils
+import at.hannibal2.skyhanni.utils.ItemNameResolver
 import at.hannibal2.skyhanni.utils.ItemPriceUtils.formatCoin
 import at.hannibal2.skyhanni.utils.ItemPriceUtils.formatCoinWithBrackets
 import at.hannibal2.skyhanni.utils.ItemPriceUtils.getNpcPriceOrNull
@@ -727,7 +728,7 @@ object EstimatedItemValueCalculator {
                 }
             }
 
-            val enchantmentName = "$rawName;$level".toInternalName()
+            val enchantmentName = ItemNameResolver.fixEnchantmentName("$rawName;$level")
 
             if (isBazaarItem(enchantmentName)) {
                 items[enchantmentName] = multiplier
@@ -932,7 +933,7 @@ object EstimatedItemValueCalculator {
         val list = NbtCompat.getStringTagList(extraAttributes, "boosters")
         if (list.isEmpty) return emptyList()
         val boosters = mutableListOf<NeuInternalName>()
-        for (i in 0..list.size) {
+        for (i in 0 until list.size) {
             var internalName = list.getStringOrDefault(i)
             if (internalName.isBlank()) continue
             internalName += "_BOOSTER"

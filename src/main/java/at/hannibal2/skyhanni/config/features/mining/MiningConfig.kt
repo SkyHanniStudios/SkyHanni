@@ -3,6 +3,7 @@ package at.hannibal2.skyhanni.config.features.mining
 import at.hannibal2.skyhanni.config.FeatureToggle
 import at.hannibal2.skyhanni.config.features.mining.caverns.DeepCavernsGuideConfig
 import at.hannibal2.skyhanni.config.features.mining.dwarves.DarkMonolithConfig
+import at.hannibal2.skyhanni.config.features.mining.dwarves.FallenStarCultConfig
 import at.hannibal2.skyhanni.config.features.mining.dwarves.KingTalismanConfig
 import at.hannibal2.skyhanni.config.features.mining.glacite.ColdOverlayConfig
 import at.hannibal2.skyhanni.config.features.mining.glacite.FossilExcavatorConfig
@@ -48,6 +49,11 @@ class MiningConfig {
     val kingTalisman: KingTalismanConfig = KingTalismanConfig()
 
     @Expose
+    @ConfigOption(name = "Fallen Star Cult Timer", desc = "")
+    @Accordion
+    val fallenStarCult: FallenStarCultConfig = FallenStarCultConfig()
+
+    @Expose
     @ConfigOption(name = "Dark Monolith", desc = "")
     @Accordion
     val darkMonolith: DarkMonolithConfig = DarkMonolithConfig()
@@ -87,7 +93,7 @@ class MiningConfig {
     val fossilExcavator: FossilExcavatorConfig = FossilExcavatorConfig()
 
     @Expose
-    @Category(name = "Glacite Mineshaft", desc = "Settings for the Glacite Mineshaft.")
+    @Category(name = "Glacite Mineshaft", desc = "Settings for the Glacite Mineshaft Features.")
     val glaciteMineshaft: GlaciteMineshaftConfig = GlaciteMineshaftConfig()
 
     @Expose

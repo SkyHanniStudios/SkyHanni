@@ -127,13 +127,6 @@ object CroesusChestTracker {
 
     private var display: List<Renderable>? = null
 
-    private val chestSlots = listOf(
-        10..16,
-        19..25,
-        28..34,
-        37..43,
-    )
-
     private val croesusChests get() = ProfileStorageData.profileSpecific?.dungeons?.runs
 
     @HandleEvent(priority = HandleEvent.LOW, onlyOnSkyblock = true)
@@ -142,7 +135,7 @@ object CroesusChestTracker {
 
         if (!inCroesusInventory || croesusEmpty) return
         InventoryUtils.getItemsInOpenChest().forEach { slot ->
-            if (chestSlots.none { it.contains(slot.containerSlot) }) return@forEach
+            if (slot.containerSlot !in InventoryUtils.innerInventorySlots) return@forEach
 
             val lore = slot.item.getCleanLore()
             if (lore.isEmpty()) return@forEach
@@ -338,7 +331,7 @@ object CroesusChestTracker {
         countUnopenedChestsAndRemoveOld()
         currentRunIndex = 0
         if ((croesusChests?.size ?: 0) > MAX_CHESTS) {
-            croesusChests?.dropLast(1)
+            croesusChests?.removeLast()
         }
         display = null
 

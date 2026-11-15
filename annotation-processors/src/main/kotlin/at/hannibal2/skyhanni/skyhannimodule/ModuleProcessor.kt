@@ -3,10 +3,9 @@ package at.hannibal2.skyhanni.skyhannimodule
 import com.google.devtools.ksp.containingFile
 import com.google.devtools.ksp.getClassDeclarationByName
 import com.google.devtools.ksp.getDeclaredFunctions
-import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Dependencies
-import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
+import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.FileLocation
 import com.google.devtools.ksp.symbol.KSAnnotated
@@ -23,18 +22,12 @@ private const val HANDLE_EVENT = "at.hannibal2.skyhanni.api.event.HandleEvent"
 private const val PRIMARY_FUNCTION = "at.hannibal2.skyhanni.skyhannimodule.PrimaryFunction"
 private const val SKYHANNI_MODULE = "at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule"
 
-class ModuleProcessor(
-    codeGenerator: CodeGenerator,
-    logger: KSPLogger,
-    modVersion: String,
-    private val mcVersion: String,
-    private val buildPaths: String?,
-    cacheDir: String?,
-) : BaseProcessor(codeGenerator, logger, modVersion) {
+class ModuleProcessor(environment: SymbolProcessorEnvironment) : BaseProcessor(environment) {
 
+    private val buildPaths = options[BUILD_PATHS_OPTION]
     private var skyHanniEvent: KSType? = null
 
-    private val cache = KspIncrementalCache(cacheDir, mcVersion, "ksp-module-state")
+    private val cache = KspIncrementalCache(options[CACHE_DIR_OPTION], mcVersion, "ksp-module-state")
 
     private fun Int.withPlural(string: String) = "$this $string${if (this == 1) "" else "s"}"
 
@@ -136,7 +129,7 @@ class ModuleProcessor(
         isDirty: Boolean,
         primaryFunctionNames: Set<String>,
     ): KSClassDeclaration? {
-        if (!symbol.validate()) {
+        if (!symbol.validate(enableNewFeatures = false)) {
             logger.warn("Symbol is not valid: $symbol")
             return null
         }
