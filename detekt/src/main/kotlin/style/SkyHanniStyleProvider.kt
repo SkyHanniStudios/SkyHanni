@@ -16,6 +16,7 @@ class SkyHanniStyleProvider : RuleSetProvider {
             mapOf(
                 RuleName("InSkyBlockEarlyReturn") to ::InSkyBlockEarlyReturn,
                 RuleName("IsInIslandEarlyReturn") to ::IsInIslandEarlyReturn,
+                RuleName("KeyBindDeclaration") to ::KeyBindDeclaration,
                 RuleName("OnlyOnIslandSpecificity") to ::OnlyOnIslandSpecificity,
                 RuleName("PrivateEventListener") to ::PrivateEventListener,
             ),

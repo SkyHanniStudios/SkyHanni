@@ -418,11 +418,6 @@ object StringUtils {
     fun String.splitCamelCase() = replace("([a-z])([A-Z])".toRegex(), "$1 $2")
 
     fun String.isValidUuid(): Boolean = runCatching(UUID::fromString).isSuccess
-
-    private val nonIdentifierCharsRegex = Regex("[^a-z0-9]+")
-
-    fun String.toIdentifierPath(): String = lowercase().replace(nonIdentifierCharsRegex, "_").trim('_')
-
     fun optionalAn(string: String): String = when {
         string.isEmpty() -> ""
         string.first().isVowel() -> "an"

@@ -15,7 +15,7 @@ public class MixinKeyBindsList {
         at = @At(value = "INVOKE", target = "Ljava/util/Arrays;sort([Ljava/lang/Object;)V", shift = At.Shift.AFTER),
         name = "keyMappings"
     )
-    private KeyMapping[] hideInactiveSkyHanniKeybinds(KeyMapping[] keyMappings) {
+    private KeyMapping[] hideInactiveSkyHanniKeyBinds(KeyMapping[] keyMappings) {
         return SkyHanniKeyBindManager.INSTANCE.visibleOnly(keyMappings);
     }
 }

@@ -13,6 +13,7 @@ repositories {
 
 dependencies {
     implementation(libs.ksp.api)
+    implementation(project(":annotations"))
     implementation(files(rootProject.layout.projectDirectory.file("buildSrc/build/libs/buildSrc.jar")))
 }
 

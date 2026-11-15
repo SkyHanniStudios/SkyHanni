@@ -1,10 +1,6 @@
 package at.hannibal2.skyhanni.utils
 
-import at.hannibal2.skyhanni.utils.KeyboardManager.toInputType
-import at.hannibal2.skyhanni.utils.SkyHanniKeyBindManager.pushKeyToConfig
-import com.mojang.blaze3d.platform.InputConstants
 import io.github.notenoughupdates.moulconfig.observer.Property
-import net.minecraft.client.KeyMapping
 
 /**
  * Registers a SkyHanni config keybind with Minecraft's vanilla keybind system,
@@ -20,22 +16,7 @@ import net.minecraft.client.KeyMapping
  * @param condition Returns true when this keybind should appear in the controls screen.
  */
 class SkyHanniKeyBind(
-    displayName: String,
-    val keyProvider: () -> Property<Int>,
-    category: String,
-    val condition: () -> Boolean,
-) : KeyMapping(
-    SkyHanniKeyBindManager.mappingName(category, displayName),
-    keyProvider().get().toInputType(),
-    keyProvider().get(),
-    SkyHanniKeyBindManager.categoryFor(category),
-) {
-    init {
-        SkyHanniKeyBindManager.register(this)
-    }
-
-    override fun setKey(key: InputConstants.Key) {
-        super.setKey(key)
-        pushKeyToConfig(key)
-    }
-}
+    val option: () -> Property<Int>,
+    val condition: () -> Boolean = { true },
+    val onTrigger: () -> Unit,
+)

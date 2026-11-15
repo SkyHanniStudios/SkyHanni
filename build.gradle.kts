@@ -166,6 +166,7 @@ dependencies {
 
     compileOnly(libs.jbAnnotations)
     ksp(project(":annotation-processors"))?.let { compileOnly(it) }
+    shadowImpl(project(":annotations"))
     buildProgressPlugin(buildSrcJar)
     buildProgressJavacPlugin(libs.kotlin.stdlib)
     detektPlugins(buildSrcJar)
