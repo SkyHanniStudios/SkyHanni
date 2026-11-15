@@ -14,20 +14,19 @@ import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.entity.ItemAddInInventoryEvent
 import at.hannibal2.skyhanni.events.item.ShardGainEvent
 import at.hannibal2.skyhanni.features.achievements.AchievementManager
-import at.hannibal2.skyhanni.features.inventory.SuperCraftFeatures.craftedPattern
+import at.hannibal2.skyhanni.features.inventory.SuperCraftFeatures.parseCraftedItem
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.ItemUtils.repoItemName
 import at.hannibal2.skyhanni.utils.NeuInternalName
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
-import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.StringUtils.removeColor
 import at.hannibal2.skyhanni.utils.TimeUtils.format
 import at.hannibal2.skyhanni.utils.chat.TextHelper.asComponent
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.evictOldestEntry
-import at.hannibal2.skyhanni.utils.collection.TimeLimitedSet
+import at.hannibal2.skyhanni.utils.collection.TimeLimitedCache
 import at.hannibal2.skyhanni.utils.compat.append
 import at.hannibal2.skyhanni.utils.compat.componentBuilder
 import at.hannibal2.skyhanni.utils.compat.withColor
@@ -80,11 +79,11 @@ object ItemAddManager {
         for (sackChange in event.sackChanges) {
             val change = sackChange.delta
             val internalName = sackChange.internalName
-            if (change > 0 && internalName !in superCraftedItems) {
-                Source.SACKS.addItem(internalName, change)
+            if (change > 0) {
+                val amount = Source.SACKS.consumeSuperCraftedAmount(internalName, change)
+                if (amount > 0) Source.SACKS.addItem(internalName, amount)
             }
         }
-        superCraftedItems.clear()
     }
 
     @HandleEvent(onlyOnSkyblock = true)
@@ -97,7 +96,8 @@ object ItemAddManager {
             }
         }
 
-        Source.ITEM_ADD.addItem(internalName, event.amount)
+        val amount = Source.ITEM_ADD.consumeSuperCraftedAmount(internalName, event.amount)
+        if (amount > 0) Source.ITEM_ADD.addItem(internalName, amount)
     }
 
     @HandleEvent
@@ -151,7 +151,19 @@ object ItemAddManager {
     }
 
     private var lastDiceRoll = SimpleTimeMark.farPast()
-    private val superCraftedItems = TimeLimitedSet<NeuInternalName>(30.seconds)
+    private val superCraftedItemAmounts = TimeLimitedCache<Pair<NeuInternalName, Source>, Int>(30.seconds)
+
+    private fun Source.consumeSuperCraftedAmount(internalName: NeuInternalName, amount: Int): Int {
+        val key = internalName to this
+        val superCraftedAmount = superCraftedItemAmounts[key] ?: return amount
+        val remainingSuperCraftedAmount = superCraftedAmount - amount
+        if (remainingSuperCraftedAmount > 0) {
+            superCraftedItemAmounts[key] = remainingSuperCraftedAmount
+            return 0
+        }
+        superCraftedItemAmounts.remove(key)
+        return -remainingSuperCraftedAmount
+    }
 
     private const val DICE_ACHIEVEMENT = "100 dice rolls"
 
@@ -179,10 +191,11 @@ object ItemAddManager {
             val achievement = AchievementManager.getAchievement(DICE_ACHIEVEMENT)
             AchievementManager.updateTieredAchievement(DICE_ACHIEVEMENT, achievement.data.progress + 1)
         }
-        craftedPattern.matchMatcher(event.message) {
-            val internalName = NeuInternalName.fromItemName(group("item"))
-            if (!SackApi.sackListInternalNames.contains(internalName.asString())) return@matchMatcher
-            superCraftedItems.add(internalName)
+        val (internalName, amount) = parseCraftedItem(event.message) ?: return
+        if (!SackApi.sackListInternalNames.contains(internalName.asString())) return
+        for (source in listOf(Source.ITEM_ADD, Source.SACKS)) {
+            val key = internalName to source
+            superCraftedItemAmounts[key] = (superCraftedItemAmounts[key] ?: 0) + amount
         }
     }
 }
