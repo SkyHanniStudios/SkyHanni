@@ -10,6 +10,7 @@ import at.hannibal2.skyhanni.events.GuiContainerEvent
 import at.hannibal2.skyhanni.events.SackOpenEvent
 import at.hannibal2.skyhanni.features.inventory.bazaar.BazaarApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
+import at.hannibal2.skyhanni.utils.ComponentMatcherUtils.matchAllStyledComponents
 import at.hannibal2.skyhanni.utils.DelayedRun
 import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.ItemPriceSource
@@ -19,7 +20,6 @@ import at.hannibal2.skyhanni.utils.LorenzColor
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 import at.hannibal2.skyhanni.utils.NumberUtil.shortFormat
-import at.hannibal2.skyhanni.utils.RegexUtils.matchAllComponents
 import at.hannibal2.skyhanni.utils.RenderDisplayHelper
 import at.hannibal2.skyhanni.utils.RenderUtils.highlight
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderables
@@ -34,6 +34,8 @@ import at.hannibal2.skyhanni.utils.renderables.SearchTextInput
 import at.hannibal2.skyhanni.utils.renderables.buildSearchableTable
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import net.minecraft.ChatFormatting
+import net.minecraft.network.chat.TextColor
 
 private typealias GemstoneQuality = SkyBlockItemModifierUtils.GemstoneQuality
 
@@ -44,8 +46,17 @@ object SackDisplay {
     private var display = emptyList<Renderable>()
     private val config get() = SkyHanniMod.feature.inventory.sackDisplay
     private val patternGroup = RepoPattern.group("inventory.sack.display")
-    private val storedPattern by patternGroup.pattern("stored.start", "Stored: ")
 
+    /**
+     * REGEX-TEST: Stored: 60.5k/60.5k
+     * REGEX-TEST: Stored: 28,183/60.5k
+     */
+    private val storedPattern by patternGroup.pattern(
+        "stored",
+        "Stored: (?<stored>[\\d.,]+[kKmMbB]?)/(?<total>[\\d.,]+[kKmMbB]?)",
+    )
+
+    private val fullColor = TextColor.fromLegacyFormat(ChatFormatting.GREEN)
     private val MAGMA_FISH = "MAGMA_FISH".toInternalName()
     private val textInputs = mutableMapOf<String, SearchTextInput>()
 
@@ -65,14 +76,8 @@ object SackDisplay {
         if (!config.highlightFull) return
         // TODO calculate slots on inventory update, use here instead of iterating in render event
         for (slot in InventoryUtils.getItemsInOpenChest()) {
-            val lore = slot.item.getLoreComponent()
-            storedPattern.matchAllComponents(lore) { component ->
-                // The amount (which is the component after "stored: ") is green when full.
-                // Because numbers in sacks are compacted, we cannot match the numbers directly.
-                if (component.siblings.elementAtOrNull(1)?.style?.color?.name == "green") {
-                    slot.highlight(LorenzColor.RED)
-                    return@matchAllComponents
-                }
+            storedPattern.matchAllStyledComponents(slot.item.getLoreComponent()) {
+                if (groupOrThrow("stored").sampleStyleAtStart().color == fullColor) slot.highlight(LorenzColor.RED)
             }
         }
     }

@@ -83,7 +83,6 @@ interface Renderable {
 
         private val scrollbarTrackColor: ChromaColour = ChromaColour.fromStaticRGB(40, 40, 60, 200)
         private val scrollbarThumbColor: ChromaColour = ChromaColour.fromStaticRGB(100, 100, 200, 200)
-        private val noHover: () -> Unit = {}
 
         fun <T> withMousePosition(mousePositionX: Int, mousePositionY: Int, block: () -> T): T {
             val last = currentRenderPassMousePosition
@@ -145,7 +144,7 @@ interface Renderable {
             bypassChecks: Boolean = false,
             condition: () -> Boolean = { true },
             tips: List<Any>? = null,
-            onHover: () -> Unit = noHover,
+            onHover: (() -> Unit)? = null,
         ) = clickable(text(text), onLeftClick, bypassChecks, condition, tips, onHover)
 
         fun clickable(
@@ -154,7 +153,7 @@ interface Renderable {
             bypassChecks: Boolean = false,
             condition: () -> Boolean = { true },
             tips: List<Any>? = null,
-            onHover: () -> Unit = noHover,
+            onHover: (() -> Unit)? = null,
         ) = clickable(render, mapOf(LEFT_MOUSE to onLeftClick), bypassChecks, condition, tips, onHover)
 
         fun clickable(
@@ -168,7 +167,7 @@ interface Renderable {
             bypassChecks: Boolean = false,
             condition: () -> Boolean = { true },
             tips: List<Any>? = null,
-            onHover: () -> Unit = noHover,
+            onHover: (() -> Unit)? = null,
         ) = clickable(text(text), onAnyClick, bypassChecks, condition, tips, onHover)
 
         fun clickable(
@@ -182,15 +181,13 @@ interface Renderable {
             bypassChecks: Boolean = false,
             condition: () -> Boolean = { true },
             tips: List<Any>? = null,
-            onHover: () -> Unit = noHover,
+            onHover: (() -> Unit)? = null,
         ) = multiClickable(
             tips?.let {
-                hoverTips(render, it, bypassChecks = bypassChecks, onHover = onHover)
-            } ?: if (onHover !== noHover) {
-                hoverable(render, render, bypassChecks = bypassChecks, onHover = onHover)
-            } else {
-                render
-            },
+                hoverTips(render, it, bypassChecks = bypassChecks, onHover = onHover ?: {})
+            } ?: onHover?.let {
+                hoverable(render, render, bypassChecks = bypassChecks, onHover = it)
+            } ?: render,
             onAnyClick,
             bypassChecks,
             condition,
