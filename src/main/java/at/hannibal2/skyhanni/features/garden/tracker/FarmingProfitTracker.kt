@@ -15,11 +15,9 @@ import at.hannibal2.skyhanni.events.PurseChangeEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.garden.GardenToolChangeEvent
 import at.hannibal2.skyhanni.events.garden.pests.PestKillEvent
-import at.hannibal2.skyhanni.events.item.ShardGainEvent
 import at.hannibal2.skyhanni.features.garden.CropType
 import at.hannibal2.skyhanni.features.garden.GardenApi
 import at.hannibal2.skyhanni.features.garden.pests.PestApi
-import at.hannibal2.skyhanni.features.garden.pests.PestType
 import at.hannibal2.skyhanni.features.garden.pests.SprayType
 import at.hannibal2.skyhanni.features.garden.tracker.FarmingProfitTracker.drawDisplay
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -123,12 +121,6 @@ object FarmingProfitTracker : SkyHanniBucketedItemTracker<TrackedSource, Farming
             addTrackedItem(TrackedSource.PESTS, PestProfitTracker.BITS, bitsAmount.toLong(), message = false)
         }
         markActivity()
-    }
-
-    @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    private fun onShardGain(event: ShardGainEvent) {
-        if (PestType.getByItemInternalNameOrNull(event.shardInternalName) == null) return
-        addPestItem(event.shardInternalName, event.amount)
     }
 
     internal fun addPestItem(internalName: NeuInternalName, amount: Int, message: Boolean = true) {

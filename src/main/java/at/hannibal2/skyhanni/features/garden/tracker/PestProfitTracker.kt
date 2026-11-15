@@ -253,7 +253,7 @@ object PestProfitTracker : SkyHanniBucketedItemTracker<PestType, PestProfitTrack
     private fun onShardGain(event: ShardGainEvent) {
         if (!event.source.isAnyOf(CHARM, HUNT)) return
         val pestType = PestType.getByItemInternalNameOrNull(event.shardInternalName) ?: return
-        addItem(pestType, event.shardInternalName, event.amount, command = false)
+        addPestItem(pestType, event.shardInternalName, event.amount)
     }
 
     private fun addPestItem(pest: PestType, internalName: NeuInternalName, amount: Int) {
