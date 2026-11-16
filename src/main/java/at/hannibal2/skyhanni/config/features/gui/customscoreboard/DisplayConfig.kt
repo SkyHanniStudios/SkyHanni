@@ -105,7 +105,8 @@ class DisplayConfig {
 
     enum class NumberFormat(private val displayName: String) {
         LONG("1,234,567"),
-        SHORT("1.2M");
+        SHORT("1.2M"),
+        ;
 
         override fun toString(): String {
             return displayName
@@ -139,7 +140,7 @@ class DisplayConfig {
     @Expose
     @ConfigOption(
         name = "Date in Lobby Code",
-        desc = "Show the current date infront of the server name, like Hypixel does.",
+        desc = "Show the current date in front of the server name, like Hypixel does.",
     )
     @ConfigEditorBoolean
     var dateInLobbyCode: Boolean = true

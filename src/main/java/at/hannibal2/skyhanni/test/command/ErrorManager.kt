@@ -1,28 +1,36 @@
 package at.hannibal2.skyhanni.test.command
 
 import at.hannibal2.skyhanni.SkyHanniMod
+import at.hannibal2.skyhanni.SkyHanniMod.launch
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.config.commands.CommandCategory
 import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
 import at.hannibal2.skyhanni.data.MinecraftData
+import at.hannibal2.skyhanni.data.achievements.Achievement
 import at.hannibal2.skyhanni.data.jsonobjects.repo.ChangedChatErrorsJson
+import at.hannibal2.skyhanni.data.jsonobjects.repo.ErrorManagerJson
 import at.hannibal2.skyhanni.data.jsonobjects.repo.RepoErrorData
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
-import at.hannibal2.skyhanni.events.minecraft.ClientConnectEvent
+import at.hannibal2.skyhanni.events.achievements.AchievementRegistrationEvent
+import at.hannibal2.skyhanni.features.achievements.AchievementManager
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
+import at.hannibal2.skyhanni.utils.ClipboardUtils
 import at.hannibal2.skyhanni.utils.KeyboardManager
-import at.hannibal2.skyhanni.utils.OSUtils
 import at.hannibal2.skyhanni.utils.StringUtils
 import at.hannibal2.skyhanni.utils.StringUtils.removeColor
+import at.hannibal2.skyhanni.utils.chat.TextHelper.asComponent
 import at.hannibal2.skyhanni.utils.collection.TimeLimitedSet
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
+import at.hannibal2.skyhanni.utils.coroutines.CoroutineSettings
 import at.hannibal2.skyhanni.utils.system.PlatformUtils
 import net.minecraft.CrashReport
 import net.minecraft.client.Minecraft
+import java.util.Collections
+import java.util.IdentityHashMap
 import kotlin.time.Duration.Companion.minutes
 
 /** Crashes if [value] is false and in developer environment */
+@Suppress("unused")
 fun requireDevEnv(value: Boolean) = requireDevEnv(value, null)
 
 /** Crashes if [value] is false and in developer environment */
@@ -37,22 +45,20 @@ fun requireDevEnv(value: Boolean, lazyMessage: (() -> Any)?) {
 @SkyHanniModule
 object ErrorManager {
 
-    // random id -> error message
-    private val errorMessages = mutableMapOf<String, String>()
-    private val fullErrorMessages = mutableMapOf<String, String>()
-    private val cache = TimeLimitedSet<CachedError>(10.minutes)
-    private var repoErrors: List<RepoErrorData> = emptyList()
-
-    private val breakAfter = listOf(
+    // These are left as mutable properties so that they can be updated by the repo
+    // however we still want to leave some defaults in here in case a repo reload fails
+    // and tries to call ErrorManager methods.
+    // <editor-fold defaultstate="collapsed" desc="Error Manager Data (semi-REPO controlled)">
+    private var breakAfter: List<String> = listOf(
         "at at.hannibal2.skyhanni.config.commands.Commands\$createCommand",
         "at net.minecraftforge.fml.common.eventhandler.EventBus.post",
         "at at.hannibal2.skyhanni.mixins.hooks.NetHandlerPlayClientHookKt.onSendPacket",
         "at net.minecraft.client.main.Main.main",
         "at.hannibal2.skyhanni.api.event.EventListeners.createZeroParameterConsumer",
         "at.hannibal2.skyhanni.api.event.EventListeners.createSingleParameterConsumer",
+        "at.hannibal2.skyhanni.api.event.SkyHanniEvent.post",
     )
-
-    private val replace = mapOf(
+    private var replacements: Map<String, String> = mapOf(
         "at.hannibal2.skyhanni." to "SH.",
         "io.moulberry.notenoughupdates." to "NEU.",
         "net.minecraft." to "MC.",
@@ -60,13 +66,11 @@ object ErrorManager {
         "knot//" to "",
         "java.base/" to "",
     )
-
-    private val replaceEntirely = mapOf(
+    private var entireReplacements: Map<String, String> = mapOf(
         "at.hannibal2.skyhanni.api.event.EventListeners.createZeroParameterConsumer" to "<Skyhanni event post>",
         "at.hannibal2.skyhanni.api.event.EventListeners.createSingleParameterConsumer" to "<Skyhanni event post>",
     )
-
-    private val ignored = listOf(
+    private var ignored: List<String> = listOf(
         "at java.lang.Thread.run",
         "at java.util.concurrent.",
         "at java.lang.reflect.",
@@ -87,21 +91,26 @@ object ErrorManager {
         "at at.hannibal2.skyhanni.api.event.EventHandler.post",
         "at net.minecraft.launchwrapper.",
     )
+    // </editor-fold>
+
+    // random id -> error message
+    private val errorMessages = mutableMapOf<String, String>()
+    private val fullErrorMessages = mutableMapOf<String, String>()
+    private val cache = TimeLimitedSet<CachedError>(10.minutes)
+    private var repoErrors: List<RepoErrorData> = emptyList()
 
     // this hides the whole stack trace of one error of the list of all errors in the error message
     // where the error class name is the key and the first line contains one of the entries in the list of values
     private val skipErrorEntry = emptyMap<String, List<String>>()
-//         "java.lang.reflect.InvocationTargetException" to listOf(
-//             "EventListeners.createZeroParameterConsumer",
-//             "EventListeners.createSingleParameterConsumer",
-//         ),
-//     )
+
+    private val copyErrorCoroutine = CoroutineSettings("error manager copy error")
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
-        event.registerBrigadier("shtestreseterrorcache") {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
+        event.registerBrigadier("shreseterrorcache") {
+            aliases = listOf("shtestreseterrorcache")
             description = "Resets the cache of errors."
-            category = CommandCategory.DEVELOPER_TEST
+            category = DEVELOPER_TEST
             simpleCallback {
                 cache.clear()
                 ChatUtils.chat("Error cache reset.")
@@ -109,13 +118,24 @@ object ErrorManager {
         }
         event.registerBrigadier("shthrowerror") {
             description = "Throws an error to test error manager."
-            category = CommandCategory.DEVELOPER_DEBUG
+            category = DEVELOPER_DEBUG
             simpleCallback {
                 logErrorWithData(NullPointerException(), "Manually triggered error!")
             }
         }
     }
 
+    private const val COPY_ERROR_ACHIEVEMENT = "Copy Error"
+
+    @HandleEvent
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+        val achievement = Achievement(
+            "I'm Helping!!!".asComponent(),
+            "Copy an error message to the clipboard to help the developers fix it.".asComponent(),
+            100f,
+        )
+        event.register(achievement, COPY_ERROR_ACHIEVEMENT)
+    }
 
     // Extra data from last thrown error
     private var cachedExtraData: String? = null
@@ -129,7 +149,7 @@ object ErrorManager {
         throw IllegalStateException(message.removeColor())
     }
 
-    private fun copyError(errorId: String) {
+    private fun copyError(errorId: String) = copyErrorCoroutine.launch {
         val fullErrorMessage = KeyboardManager.isModifierKeyDown()
         val errorMessage = if (fullErrorMessage) {
             fullErrorMessages[errorId]
@@ -139,13 +159,21 @@ object ErrorManager {
         val name = if (fullErrorMessage) "Full error" else "Error"
         ChatUtils.chat(
             errorMessage?.let {
-                OSUtils.copyToClipboard(it)
-                "$name copied into the clipboard, please report it on the SkyHanni discord!"
+                val copied = ClipboardUtils.copyToClipboardAsync(it).await() ?: false
+                if (copied) {
+                    AchievementManager.completeAchievement(COPY_ERROR_ACHIEVEMENT)
+                    "$name copied into the clipboard, please report it on the SkyHanni discord!"
+                } else {
+                    "$name could not be copied to clipboard!"
+                }
             } ?: "Error id not found!",
         )
     }
 
-    inline fun crashInDevEnv(reason: String, t: (String) -> Throwable = { RuntimeException(it) }) {
+    inline fun crashInDevEnv(
+        reason: String,
+        t: (String) -> Throwable = { IllegalStateException(it) },
+    ) {
         if (!PlatformUtils.isDevEnvironment) return
         Minecraft.getInstance().delayCrash(CrashReport("SkyHanni - $reason", t(reason)))
     }
@@ -186,10 +214,13 @@ object ErrorManager {
 
     data class CachedError(val className: String, val lineNumber: Int, val errorMessage: String)
 
-    enum class ErrorState {
-        LOGGED,
-        BLOCKED_NOT_NEEDED,
-        BLOCKED_CAN_NOT_SHOW,
+    // This is intentionally not an enum, because unnecessary object allocation can be problematic
+    // if we're dealing with a stack overflow.
+    private typealias ErrorStateT = Int
+    private object ErrorState {
+        const val LOGGED = 0
+        const val BLOCKED_NOT_NEEDED = 1
+        const val BLOCKED_CAN_NOT_SHOW = 2
     }
 
     @Suppress("ReturnCount")
@@ -201,7 +232,7 @@ object ErrorManager {
         vararg extraData: Pair<String, Any?>,
         betaOnly: Boolean = false,
         condition: () -> Boolean = { true },
-    ): ErrorState {
+    ): ErrorStateT {
         if (!condition()) return ErrorState.BLOCKED_NOT_NEEDED
 
         // TODO add missing debug enabled check
@@ -262,7 +293,7 @@ object ErrorManager {
     // random id -> final message
     private val errorsToShowOnJoin = mutableMapOf<String, String>()
 
-    private fun ErrorState.crashIfNotYetOnAServer(): Boolean {
+    private fun ErrorStateT.crashIfNotYetOnAServer(): Boolean {
         if (this == ErrorState.BLOCKED_NOT_NEEDED) return false
 
         // TODO find way to properly do this before the config loads
@@ -280,8 +311,8 @@ object ErrorManager {
         return this == ErrorState.LOGGED
     }
 
-    @HandleEvent(ClientConnectEvent::class)
-    fun onClientConnect() {
+    @HandleEvent
+    private fun onConnect() {
         if (errorsToShowOnJoin.isEmpty()) return
         val label = getLabel()
         val state = if (MinecraftData.hasLeftMainScreen) "During startup" else "While not on a server"
@@ -313,28 +344,42 @@ object ErrorManager {
         val rawMessage = message.removeColor()
 
         var hideError = false
-        for (repoError in repoErrors) {
-            for (string in repoError.messageStartsWith) {
-                if (rawMessage.startsWith(string)) {
-                    hideError = true
+        try {
+            for (repoError in repoErrors) {
+                for (string in repoError.messageStartsWith) {
+                    if (rawMessage.startsWith(string)) {
+                        hideError = true
+                    }
+                }
+                for (string in repoError.messageContains) {
+                    if (rawMessage.contains(string)) {
+                        hideError = true
+                    }
+                }
+                for (string in repoError.messageExact) {
+                    if (rawMessage == string) {
+                        hideError = true
+                    }
+                }
+                if (hideError) {
+                    repoError.replaceMessage?.let {
+                        finalMessage = it
+                        hideError = false
+                    }
+                    repoError.customMessage?.let {
+                        ChatUtils.userError(it)
+                        return null
+                    }
+                    break
                 }
             }
-            for (string in repoError.messageExact) {
-                if (rawMessage == string) {
-                    hideError = true
-                }
-            }
-            if (hideError) {
-                repoError.replaceMessage?.let {
-                    finalMessage = it
-                    hideError = false
-                }
-                repoError.customMessage?.let {
-                    ChatUtils.userError(it)
-                    return null
-                }
-                break
-            }
+        } catch (e: NullPointerException) {
+            ChatUtils.chat(
+                "§cFailed to format error message! " +
+                    "Probably a JSON error in ChangedChatErrorsJson. Please report this on the discord.",
+            )
+            // can not use error manager inside error manager
+            Error("Failed to format error message", e).printStackTrace()
         }
 
         if (finalMessage.last() !in ".?!") {
@@ -344,7 +389,13 @@ object ErrorManager {
     }
 
     @HandleEvent
-    fun onRepoReload(event: RepositoryReloadEvent) {
+    private fun onRepoReload(event: RepositoryReloadEvent) {
+        val repoData = event.getConstant<ErrorManagerJson>("ErrorManager")
+        breakAfter = repoData.breakAfter
+        replacements = repoData.replacements
+        entireReplacements = repoData.entireReplacements
+        ignored = repoData.ignored
+
         val data = event.getConstant<ChangedChatErrorsJson>("ChangedChatErrors")
         val version = SkyHanniMod.modVersion
 
@@ -376,7 +427,13 @@ object ErrorManager {
     private fun Throwable.getCustomStackTrace(
         fullStackTrace: Boolean,
         parent: List<String> = emptyList(),
+        seenThrowables: MutableSet<Throwable> = Collections.newSetFromMap(IdentityHashMap()),
     ): List<String> = buildList {
+        if (!seenThrowables.add(this@getCustomStackTrace)) {
+            add("<Infinite recurring causes>")
+            return@buildList
+        }
+
         add("Caused by ${this@getCustomStackTrace.javaClass.name}: $message")
 
         for (traceElement in stackTrace) {
@@ -386,13 +443,13 @@ object ErrorManager {
             }
             var visualText = text
             if (!fullStackTrace) {
-                for ((from, to) in replaceEntirely) {
+                for ((from, to) in entireReplacements) {
                     if (visualText.contains(from)) {
                         visualText = to
                         break
                     }
                 }
-                for ((from, to) in replace) {
+                for ((from, to) in replacements) {
                     visualText = visualText.replace(from, to)
                 }
             }
@@ -404,17 +461,12 @@ object ErrorManager {
             add(visualText)
         }
 
-        if (this === cause) {
-            add("<Infinite recurring causes>")
-            return@buildList
-        }
-
         cause?.let {
-            addAll(it.getCustomStackTrace(fullStackTrace, this))
+            addAll(it.getCustomStackTrace(fullStackTrace, this, seenThrowables))
         }
     }
 
-    // tries to use the cause instead of the actual error. Returns itself if doesnt work.
+    // tries to use the cause instead of the actual error. Returns itself if it doesn't work.
     fun Throwable.maybeSkipError(): Throwable {
         val cause = cause ?: return this
         val causeClassName = this@maybeSkipError.javaClass.name

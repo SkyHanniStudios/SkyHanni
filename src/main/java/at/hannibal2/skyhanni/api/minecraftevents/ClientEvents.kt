@@ -1,98 +1,91 @@
 package at.hannibal2.skyhanni.api.minecraftevents
 
 import at.hannibal2.skyhanni.SkyHanniMod
+import at.hannibal2.skyhanni.api.event.SkyHanniEvents
+import at.hannibal2.skyhanni.api.event.SkyHanniEvents.DirtyReason
 import at.hannibal2.skyhanni.data.ActionBarData
 import at.hannibal2.skyhanni.data.ChatManager
 import at.hannibal2.skyhanni.events.minecraft.ClientConnectEvent
 import at.hannibal2.skyhanni.events.minecraft.ClientDisconnectEvent
 import at.hannibal2.skyhanni.events.minecraft.ClientShutdownEvent
 import at.hannibal2.skyhanni.events.minecraft.ResourcePackReloadEvent
+import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
 import at.hannibal2.skyhanni.events.minecraft.WorldChangeEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils.skyhanniCreated
 import at.hannibal2.skyhanni.utils.ColorUtils
-import at.hannibal2.skyhanni.utils.DelayedRun
 import at.hannibal2.skyhanni.utils.StringUtils.removeColor
 import at.hannibal2.skyhanni.utils.chat.TextHelper
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLevelEvents
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientWorldEvents
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
-import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener
-import net.fabricmc.fabric.api.resource.ResourceManagerHelper
-import net.minecraft.client.GuiMessage
-import net.minecraft.client.GuiMessageTag
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents
+import net.fabricmc.fabric.api.resource.v1.ResourceLoader
 import net.minecraft.client.Minecraft
+import net.minecraft.client.multiplayer.chat.GuiMessage
+import net.minecraft.client.multiplayer.chat.GuiMessageSource
+import net.minecraft.client.multiplayer.chat.GuiMessageTag
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.Identifier
 import net.minecraft.server.packs.PackType
-import net.minecraft.server.packs.resources.PreparableReloadListener
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.Executor
+
+//? if < 26.2 {
+/*import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEventLegacy
+*///?}
 
 @SkyHanniModule
 object ClientEvents {
-
     var totalTicks = 0
 
     init {
+        ClientTickEvents.END_CLIENT_TICK.register {
+            if (!MinecraftCompat.localPlayerExists) return@register
+            if (!MinecraftCompat.localWorldExists) return@register
 
-        // Tick event
-        ClientTickEvents.START_WORLD_TICK.register(
-            ClientTickEvents.StartWorldTick {
-                if (!MinecraftCompat.localPlayerExists) return@StartWorldTick
-                if (!MinecraftCompat.localWorldExists) return@StartWorldTick
+            SkyHanniTickEvent(++totalTicks).post()
+        }
 
-                DelayedRun.checkRuns()
-                totalTicks++
-                SkyHanniTickEvent(totalTicks).post()
-            },
-        )
+        ClientPlayConnectionEvents.DISCONNECT.register { _, _ ->
+            SkyHanniEvents.markEventCacheDirty(DirtyReason.SERVER_DISCONNECTED)
+            ClientDisconnectEvent.post()
+        }
 
-        // Disconnect event
-        ClientPlayConnectionEvents.DISCONNECT.register(
-            ClientPlayConnectionEvents.Disconnect { _, _ ->
-                ClientDisconnectEvent.post()
-            },
-        )
+        ClientPlayConnectionEvents.JOIN.register { _, _, _ ->
+            ClientConnectEvent.post()
+        }
 
-        // Connect event
-        ClientPlayConnectionEvents.JOIN.register(
-            ClientPlayConnectionEvents.Join { _, _, _ ->
-                ClientConnectEvent.post()
-            },
-        )
+        ClientLevelEvents.AFTER_CLIENT_LEVEL_CHANGE.register { _, _ ->
+            WorldChangeEvent.post()
+        }
 
-        // World change event
-        ClientWorldEvents.AFTER_CLIENT_WORLD_CHANGE.register(
-            ClientWorldEvents.AfterClientWorldChange { client, world ->
-                WorldChangeEvent().post()
-            },
-        )
+        LevelRenderEvents.COLLECT_SUBMITS.register { ctx ->
+            SkyHanniRenderWorldEvent(
+                ctx.poseStack(),
+                ctx.levelState().cameraRenderState,
+                ctx.submitNodeCollector(),
+                Minecraft.getInstance().deltaTracker.getGameTimeDeltaPartialTick(true),
+            ).post()
+        }
 
-        ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(
-            object : IdentifiableResourceReloadListener {
+        //? if < 26.2 {
+        /*LevelRenderEvents.AFTER_TRANSLUCENT_TERRAIN.register { ctx ->
+            SkyHanniRenderWorldEventLegacy(ctx.bufferSource()).post()
+        }
+        *///?}
 
-                override fun getFabricId(): Identifier =
-                    Identifier.fromNamespaceAndPath("skyhanni", "resources")
-
-                @Suppress("ForbiddenVoid")
-                override fun reload(
-                    store: PreparableReloadListener.SharedState,
-                    prepareExecutor: Executor,
-                    reloadSynchronizer: PreparableReloadListener.PreparationBarrier,
-                    applyExecutor: Executor,
-                ): CompletableFuture<Void> {
-                    return CompletableFuture.runAsync(
-                        { ResourcePackReloadEvent(store.resourceManager()).post() },
-                        applyExecutor,
-                    ).thenCompose(reloadSynchronizer::wait)
-                }
-            },
-        )
+        ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(
+            Identifier.fromNamespaceAndPath("skyhanni", "resources"),
+        ) { currentReload, _, preparationBarrier, reloadExecutor ->
+            CompletableFuture.runAsync(
+                { ResourcePackReloadEvent(currentReload.resourceManager()).post() },
+                reloadExecutor,
+            ).thenCompose(preparationBarrier::wait)
+        }
 
         ClientReceiveMessageEvents.ALLOW_GAME.register(::onAllow)
         ClientReceiveMessageEvents.MODIFY_GAME.register(::onModify)
@@ -104,11 +97,11 @@ object ClientEvents {
     var currentMessage: Component? = null
 
     private fun onAllow(message: Component, actionBar: Boolean): Boolean {
-        // if we created the message we don't want to pipe it back into our events
+        // If we created the message we don't want to pipe it back into our events
         if (message.skyhanniCreated) return true
 
         if (actionBar) {
-            // we never cancel the action bar
+            // We never cancel the action bar
             return true
         }
 
@@ -117,13 +110,18 @@ object ClientEvents {
         val cancel = ChatManager.onChatAllow(message)
 
         if (cancel) {
-            // the message doesn't get logged if we cancel it, so we do that ourselves
-            val inGameHud = Minecraft.getInstance().gui
-            val chatHudLine = GuiMessage(inGameHud.guiTicks, message, null, GuiMessageTag.system())
-            inGameHud.chat.logChatMessage(chatHudLine)
+            // The message doesn't get logged if we cancel it, so we do that ourselves
+            val chatHudLine = GuiMessage(
+                MinecraftCompat.hud.guiTicks,
+                message,
+                null,
+                GuiMessageSource.SYSTEM_CLIENT,
+                GuiMessageTag.system(),
+            )
+            MinecraftCompat.hud.chat.logChatMessage(chatHudLine)
         }
 
-        // if we cancel then we don't allow the message
+        // If we cancel then we don't allow the message
         return !cancel
     }
 
@@ -131,9 +129,9 @@ object ClientEvents {
         if (message.skyhanniCreated) return message
 
         if (actionBar) {
-            // we don't have to worry about cancelling the action bar
-            // this is more compatible with other mods changing the action bar as well
-            // ie to remove hp/mana
+            // We don't have to worry about cancelling the action bar
+            // This is more compatible with other mods changing the action bar as well
+            // e.g. to remove HP/Mana
             val result = ActionBarData.onChatReceive(message)
             if (result == null) {
                 return if (rainbowConfig()) {
@@ -159,7 +157,7 @@ object ClientEvents {
         }
 
         val new = ChatManager.onChatModify(message)
-        // if new is null then we didn't want to change the message
+        // If new is null then we didn't want to change the message
         new?.let { return it }
 
         currentMessage?.let {
@@ -179,5 +177,4 @@ object ClientEvents {
     }
 
     fun rainbowConfig() = SkyHanniMod.feature.misc.rainbowActionBar
-
 }

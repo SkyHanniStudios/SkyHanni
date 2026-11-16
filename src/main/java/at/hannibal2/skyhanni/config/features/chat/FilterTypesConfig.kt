@@ -36,7 +36,7 @@ class FilterTypesConfig {
     @ConfigOption(
         name = "Hypixel Lobbies",
         desc = "Hide announcements in Hypixel lobbies " +
-            "(player joins, loot boxes, prototype lobby messages, radiating generosity, Hypixel tournaments)"
+            "(player joins, loot boxes, prototype lobby messages, radiating generosity, Hypixel tournaments)",
     )
     @ConfigEditorBoolean
     @FeatureToggle
@@ -143,7 +143,7 @@ class FilterTypesConfig {
     var hoppityBegun: Boolean = false
 
     @Expose
-    @ConfigOption(name = "Hoppity's Hunt Eggs", desc = "Hide \"An egg has appeared!\" messages during hoppity's hunt.")
+    @ConfigOption(name = "Hoppity's Hunt Eggs", desc = "Hide \"An egg has appeared!\" messages during Hoppity's hunt.")
     @ConfigEditorBoolean
     @FeatureToggle
     var hoppityEggs: Boolean = false
@@ -186,6 +186,12 @@ class FilterTypesConfig {
     @ConfigEditorBoolean
     @FeatureToggle
     var teleportPads: Boolean = false
+
+    @Expose
+    @ConfigOption(name = "Feast Chef Ted", desc = "Hide annoying messages about Kernels getting added to your purse while farming.")
+    @ConfigEditorBoolean
+    @FeatureToggle
+    var masterChef: Boolean = false
 
     // TODO remove
     @Expose

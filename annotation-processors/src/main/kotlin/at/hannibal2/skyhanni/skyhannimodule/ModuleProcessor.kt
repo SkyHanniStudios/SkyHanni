@@ -3,216 +3,239 @@ package at.hannibal2.skyhanni.skyhannimodule
 import com.google.devtools.ksp.containingFile
 import com.google.devtools.ksp.getClassDeclarationByName
 import com.google.devtools.ksp.getDeclaredFunctions
-import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.Dependencies
-import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.processing.Resolver
-import com.google.devtools.ksp.processing.SymbolProcessor
+import com.google.devtools.ksp.processing.SymbolProcessorEnvironment
 import com.google.devtools.ksp.symbol.ClassKind
+import com.google.devtools.ksp.symbol.FileLocation
 import com.google.devtools.ksp.symbol.KSAnnotated
+import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
+import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSType
 import com.google.devtools.ksp.validate
 import java.io.File
 import java.io.OutputStreamWriter
 
-class ModuleProcessor(
-    private val codeGenerator: CodeGenerator,
-    private val logger: KSPLogger,
-    private val modVersion: String,
-    private val mcVersion: String,
-    private val buildPaths: String?,
-) : SymbolProcessor {
+// These annotations live in the main source set rather than here, so they can only be matched by name.
+private const val HANDLE_EVENT = "at.hannibal2.skyhanni.api.event.HandleEvent"
+private const val PRIMARY_FUNCTION = "at.hannibal2.skyhanni.skyhannimodule.PrimaryFunction"
+private const val SKYHANNI_MODULE = "at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule"
 
-    companion object {
-        private val processedVersions = mutableSetOf<String>()
-    }
+class ModuleProcessor(environment: SymbolProcessorEnvironment) : BaseProcessor(environment) {
 
+    private val buildPaths = options[BUILD_PATHS_OPTION]
     private var skyHanniEvent: KSType? = null
-    private var minecraftForgeEvent: KSType? = null
-    private val warnings = mutableListOf<String>()
 
-    override fun process(resolver: Resolver): List<KSAnnotated> {
-        if (!processedVersions.add(mcVersion) || modVersion == "0.0.0") {
-            return emptyList()
+    private val cache = KspIncrementalCache(options[CACHE_DIR_OPTION], mcVersion, "ksp-module-state")
+    private val failedFilePaths = mutableSetOf<String>()
+
+    private fun Int.withPlural(string: String) = "$this $string${if (this == 1) "" else "s"}"
+
+    override fun processSymbols(resolver: Resolver): List<KSAnnotated> {
+        skyHanniEvent = resolver.getClassDeclarationByName(
+            "at.hannibal2.skyhanni.api.event.SkyHanniEvent",
+        )?.asStarProjectedType()
+
+        val symbols = processBuildPaths(
+            resolver.getSymbolsWithAnnotation(SKYHANNI_MODULE).toList(),
+        )
+        val primaryFunctionNames = resolver.getSymbolsWithAnnotation(PrimaryFunction::class.qualifiedName!!)
+            .filterIsInstance<KSClassDeclaration>()
+            .mapNotNull { symbol ->
+                val annotation = symbol.annotations.firstOrNull { it.getQualifiedName() == PRIMARY_FUNCTION }
+                annotation?.arguments?.firstOrNull()?.value as? String
+            }
+            .toSet()
+
+        validateModuleMembership(resolver)
+
+        val filePaths = symbols.mapNotNull { it.containingFile?.filePath }.toSet()
+        val dirtyFilePaths = cache.evaluate(filePaths)
+
+        val dirtyCount = symbols.count { it.containingFile?.filePath in dirtyFilePaths }
+        println(
+            "Found ${symbols.size.withPlural("symbol")} with @SkyHanniModule for Minecraft $mcVersion " +
+                "($dirtyCount revalidated, ${symbols.size - dirtyCount} validation skipped)",
+        )
+
+        val validSymbols = symbols.mapNotNull {
+            validateSymbol(it, it.containingFile?.filePath in dirtyFilePaths, primaryFunctionNames)
         }
-        generateVersionConstants()
-
-        skyHanniEvent =
-            resolver.getClassDeclarationByName("at.hannibal2.skyhanni.api.event.SkyHanniEvent")?.asStarProjectedType()
-
-        generatePrimaryFunctionNames(resolver)
-
-        if (mcVersion == "1.8.9") {
-            minecraftForgeEvent = resolver.getClassDeclarationByName("net.minecraftforge.fml.common.eventhandler.Event")
-                ?.asStarProjectedType()
-                ?: return emptyList()
-        }
-
-        val symbols = processBuildPaths(resolver.getSymbolsWithAnnotation(SkyHanniModule::class.qualifiedName!!).toList())
-        logger.warn("Found ${symbols.size} symbols with @SkyHanniModule for mc $mcVersion")
-        val validSymbols = symbols.mapNotNull { validateSymbol(it) }
-
-        if (validSymbols.isNotEmpty()) {
-            generateFile(validSymbols)
-        }
-
+        generateFile(validSymbols)
+        cache.commit(failedFilePaths)
         return emptyList()
     }
 
-    private fun processBuildPaths(symbols: List<KSAnnotated>): List<KSAnnotated> {
-        val buildPathsFile = buildPaths?.let { File(it) } ?: return symbols
-        if (!buildPathsFile.exists()) {
-            return symbols
-        }
-
+    private fun <T : KSAnnotated> processBuildPaths(symbols: List<T>): List<T> {
+        val buildPathsFile = buildPaths?.let { File(it) }?.takeIf { it.exists() } ?: return symbols
         val validPaths = buildPathsFile.readText().lineSequence()
             .map { it.substringBefore("#").replace(Regex("\\.(?!kt|java|\\()"), "/").trim() }
             .filter { it.isNotBlank() }
             .toSet()
-
         return symbols.filter {
             val path = it.containingFile?.filePath ?: return@filter false
-            val properPath = path.substringAfter("/main/java/")
-            properPath !in validPaths
+            path.substringAfter("/main/java/") !in validPaths
         }
     }
 
-    private fun validateSymbol(symbol: KSAnnotated): KSClassDeclaration? {
-        if (!symbol.validate()) {
+    /**
+     * Validates that every `@HandleEvent` function is declared directly inside a `@SkyHanniModule` class.
+     *
+     * Handlers declared anywhere else are never registered, because `SkyHanniEvents.register` only reads
+     * `declaredMethods` of the objects listed in the generated `LoadedModules`, making them dead code.
+     *
+     * This runs on every build and ignores [KspIncrementalCache], because files that contain `@HandleEvent`
+     * but no `@SkyHanniModule` are never tracked by the cache and could therefore never be reported.
+     */
+    private fun validateModuleMembership(resolver: Resolver) {
+        val functions = processBuildPaths(
+            resolver.getSymbolsWithAnnotation(HANDLE_EVENT)
+                .filterIsInstance<KSFunctionDeclaration>()
+                .toList(),
+        )
+        for (function in functions) {
+            val parent = function.parentDeclaration as? KSClassDeclaration
+            if (parent?.annotations.orEmpty().any { it.getQualifiedName() == SKYHANNI_MODULE }) continue
+            val name = (function.qualifiedName ?: function.simpleName).asString()
+            logger.error(
+                "Function $name must be declared directly inside a class annotated with @SkyHanniModule " +
+                    "because it is annotated with @HandleEvent, otherwise it is never registered",
+                function,
+            )
+        }
+    }
+
+    /**
+     * Validates that a symbol is a valid `@SkyHanniModule` target.
+     *
+     * @param symbol The annotated symbol to validate.
+     * @param isDirty Whether the symbol's source file is new or modified since the last build.
+     *                If false, expensive type resolution is skipped as the symbol was already validated.
+     */
+    private fun validateSymbol(
+        symbol: KSAnnotated,
+        isDirty: Boolean,
+        primaryFunctionNames: Set<String>,
+    ): KSClassDeclaration? {
+        if (!symbol.validate(enableNewFeatures = false)) {
             logger.warn("Symbol is not valid: $symbol")
+            symbol.containingFile?.filePath?.let(failedFilePaths::add)
             return null
         }
-
         if (symbol !is KSClassDeclaration) {
             logger.error("@SkyHanniModule is only valid on class declarations", symbol)
             return null
         }
-
         if (symbol.classKind != ClassKind.OBJECT) {
-            logger.error("@SkyHanniModule is only valid on kotlin objects", symbol)
+            logger.error("@SkyHanniModule is only valid on Kotlin objects", symbol)
             return null
         }
 
-        // TODO remove once all events are migrated to SkyHanniEvent
-        val className = symbol.qualifiedName?.asString() ?: "unknown"
-
-        for (function in symbol.getDeclaredFunctions()) {
-            if (function.annotations.any { it.shortName.asString() == "SubscribeEvent" } && mcVersion == "1.8.9") {
-                val firstParameter = function.parameters.firstOrNull()?.type?.resolve()!!
-                if (!minecraftForgeEvent!!.isAssignableFrom(firstParameter)) {
-                    warnings.add("Function in $className must have an event assignable from $minecraftForgeEvent because it is annotated with @SubscribeEvent")
-                }
-            }
-
-            if (function.annotations.any { it.shortName.asString() == "HandleEvent" }) {
-                val firstParameter = function.parameters.firstOrNull()?.type?.resolve()
-                val handleEventAnnotation = function.annotations.find { it.shortName.asString() == "HandleEvent" }
-                val eventType = handleEventAnnotation?.arguments?.find { it.name?.asString() == "eventType" }?.value
-                val isFirstParameterProblem = firstParameter == null && eventType == null
-                val notAssignable = firstParameter != null && !skyHanniEvent!!.isAssignableFrom(firstParameter)
-
-                if (isFirstParameterProblem || notAssignable) {
-                    warnings.add("Function in $className must have an event assignable from $skyHanniEvent because it is annotated with @HandleEvent")
-                }
+        if (isDirty) {
+            val event = skyHanniEvent ?: return symbol
+            for (function in symbol.getDeclaredFunctions()) {
+                val handleEvent = function.annotations.find { it.getQualifiedName() == HANDLE_EVENT } ?: continue
+                validateHandleEvent(function, primaryFunctionNames, handleEvent, event)
             }
         }
-
         return symbol
     }
 
-    private fun isDevAnnotation(klass: KSClassDeclaration): Boolean {
-        val annotation = klass.annotations.find { it.shortName.asString() == "SkyHanniModule" } ?: return false
-        return annotation.arguments.find { it.name?.asString() == "devOnly" }?.value as? Boolean ?: false
+    private fun validateHandleEvent(
+        function: KSFunctionDeclaration,
+        primaryFunctionNames: Set<String>,
+        handleEvent: KSAnnotation,
+        event: KSType,
+    ) {
+        val eventParameterType = function.extensionReceiver?.resolve()
+            ?: function.parameters.firstOrNull()?.type?.resolve()
+        val parameterCount = function.parameters.size + if (function.extensionReceiver != null) 1 else 0
+        val hasPrimaryFunction = function.simpleName.asString() in primaryFunctionNames
+        val hasExplicitEventSpec = handleEvent.hasExplicitEventSpec()
+        val name = (function.qualifiedName ?: function.simpleName).asString()
+
+        when (parameterCount) {
+            0 -> if (!hasPrimaryFunction && !hasExplicitEventSpec) {
+                reportInvalidHandler(
+                    "Function $name must have an event parameter, a primary function " +
+                        "name, or an explicit event specification because it is " +
+                        "annotated with @HandleEvent",
+                    function,
+                )
+            }
+
+            1 -> if (eventParameterType == null || !event.isAssignableFrom(eventParameterType)) {
+                reportInvalidHandler(
+                    "Function $name must have an event assignable from SkyHanniEvent " +
+                        "because it is annotated with @HandleEvent",
+                    function,
+                )
+            }
+
+            else -> reportInvalidHandler(
+                "Function $name has too many parameters. It must have exactly one " +
+                    "event parameter, or be parameterless with a primary function " +
+                    "name or an explicit event specification because it is annotated " +
+                    "with @HandleEvent",
+                function,
+            )
+        }
     }
+
+    private fun reportInvalidHandler(message: String, function: KSFunctionDeclaration) {
+        function.containingFile?.filePath?.let(failedFilePaths::add)
+        logger.error(message, function)
+    }
+
+    private fun KSAnnotation.getQualifiedName(): String? =
+        annotationType.resolve().declaration.qualifiedName?.asString()
+
+    private fun KSAnnotation.hasExplicitEventSpec(): Boolean {
+        val annotationFilePath = (location as? FileLocation)?.filePath ?: return false
+        return arguments.any { argument ->
+            val value = argument.value
+            (argument.location as? FileLocation)?.filePath == annotationFilePath &&
+                when (value) {
+                    is KSType -> true
+                    is List<*> -> value.isNotEmpty() && value.all { it is KSType }
+                    else -> false
+                }
+        }
+    }
+
+    private fun isDevOnly(klass: KSClassDeclaration): Boolean =
+        klass.annotations.find { it.getQualifiedName() == SKYHANNI_MODULE }
+            ?.arguments?.find { it.name?.asString() == "devOnly" }?.value as? Boolean ?: false
 
     private fun generateFile(symbols: List<KSClassDeclaration>) {
-
-        if (warnings.isNotEmpty()) {
-            warnings.forEach { logger.warn(it) }
-            error("${warnings.size} errors related to event annotations found, please fix them before continuing. Click on the kspKotlin build log for more information.")
-        }
-
         val sources = symbols.mapNotNull { it.containingFile }.toTypedArray()
-        val dependencies = Dependencies(true, *sources)
-
-        val file = codeGenerator.createNewFile(dependencies, "at.hannibal2.skyhanni.skyhannimodule", "LoadedModules")
-
+        val file = codeGenerator.createNewFile(
+            Dependencies(true, *sources),
+            "at.hannibal2.skyhanni.skyhannimodule",
+            "LoadedModules",
+        )
         OutputStreamWriter(file).use {
-            it.write("package at.hannibal2.skyhanni.skyhannimodule\n\n")
-            it.write("@Suppress(\"LargeClass\")\n")
-            it.write("object LoadedModules {\n")
-            it.write("    val isDev: Boolean = at.hannibal2.skyhanni.utils.system.PlatformUtils.isDevEnvironment\n")
-            it.write("    val modules: List<Any> = buildList {\n")
-
+            it.appendLine(
+                """
+                |package at.hannibal2.skyhanni.skyhannimodule
+                |
+                |object LoadedModules {
+                |    val isDev: Boolean = at.hannibal2.skyhanni.utils.system.PlatformUtils.isDevEnvironment
+                |    val modules: List<Any> = buildList {
+                """.trimMargin(),
+            )
             symbols.forEach { symbol ->
-                if (isDevAnnotation(symbol)) {
-                    it.write("        if (isDev) add(${symbol.qualifiedName!!.asString()})\n")
-                } else {
-                    it.write("        add(${symbol.qualifiedName!!.asString()})\n")
-                }
+                val prefix = if (isDevOnly(symbol)) "if (isDev) " else ""
+                it.appendLine("        ${prefix}add(${symbol.qualifiedName!!.asString()})")
             }
-
-            it.write("    }\n")
-            it.write("}\n")
+            it.appendLine(
+                """
+                |    }
+                |}
+                """.trimMargin(),
+            )
         }
-
-        logger.warn("Generated LoadedModules file with ${symbols.size} modules")
-    }
-
-    private fun generateVersionConstants() {
-
-        val file = codeGenerator.createNewFile(
-            Dependencies(false),
-            "at.hannibal2.skyhanni.utils",
-            "VersionConstants",
-        )
-
-        OutputStreamWriter(file).use {
-            it.write("package at.hannibal2.skyhanni.utils\n\n")
-            it.write("object VersionConstants {\n")
-            it.write("    const val MOD_VERSION = \"$modVersion\"\n")
-            it.write("    // Do not use this mc version as its reflective of the compile time version\n")
-            it.write("    // And might not be correct at run time\n")
-            it.write("    // We use it for the auto updater only\n")
-            it.write("    var MC_VERSION = \"$mcVersion\"\n")
-            it.write("        private set\n")
-            it.write("}\n")
-        }
-        logger.warn("Generated VersionConstants file with mod version $modVersion and mc version $mcVersion")
-    }
-
-    private fun generatePrimaryFunctionNames(resolver: Resolver) {
-        val skyHanniEvent = skyHanniEvent ?: return
-        // Get all class declarations annotated with @PrimaryFunction.
-        val primaryFunctionSymbols = resolver.getSymbolsWithAnnotation(PrimaryFunction::class.qualifiedName!!)
-            .filterIsInstance<KSClassDeclaration>()
-            .filter { skyHanniEvent.isAssignableFrom(it.asStarProjectedType()) }
-            .toList()
-
-        val entries = primaryFunctionSymbols.mapNotNull { symbol ->
-            val primaryFunctionAnnotation = symbol.annotations.firstOrNull {
-                it.shortName.asString() == "PrimaryFunction"
-            }
-            val value = primaryFunctionAnnotation?.arguments?.firstOrNull()?.value as? String ?: return@mapNotNull null
-            val fqName = symbol.qualifiedName?.asString() ?: return@mapNotNull null
-            "\"$value\" to $fqName::class.java"
-        }.joinToString(",\n        ")
-
-        val dependencies = Dependencies(true, *primaryFunctionSymbols.mapNotNull { it.containingFile }.toTypedArray())
-        val file = codeGenerator.createNewFile(
-            dependencies,
-            "at.hannibal2.skyhanni.api.event",
-            "GeneratedEventPrimaryFunctionNames"
-        )
-        OutputStreamWriter(file).use { writer ->
-            writer.write("package at.hannibal2.skyhanni.api.event\n\n")
-            writer.write("object GeneratedEventPrimaryFunctionNames {\n")
-            writer.write("    val map: Map<String, Class<out SkyHanniEvent>> = mapOf(\n")
-            writer.write("        $entries\n")
-            writer.write("    )\n")
-            writer.write("}\n")
-        }
-        logger.warn("Generated GeneratedEventPrimaryFunctionNames with ${primaryFunctionSymbols.size} entries")
+        println("Generated LoadedModules file with ${symbols.size.withPlural("module")}")
     }
 }

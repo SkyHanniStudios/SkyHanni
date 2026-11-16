@@ -48,9 +48,9 @@ object RegexUtils {
         }
     }
 
-    inline fun <T> Pattern.matchAllComponents(list: List<Component>, consumer: Matcher.() -> T) {
+    inline fun <T> Pattern.matchAllComponents(list: List<Component>, consumer: Matcher.(Component) -> T) {
         for (line in list) {
-            matcher(line.string).let { if (it.find()) consumer(it) }
+            matcher(line.string).let { if (it.find()) consumer(it, line) }
         }
     }
 
@@ -135,6 +135,13 @@ object RegexUtils {
             while (matcher.find()) {
                 add(matcher.group())
             }
+        }
+    }
+
+    inline fun <T> Pattern.findAll(input: String, consumer: Matcher.() -> T) {
+        val matcher = matcher(input)
+        while (matcher.find()) {
+            consumer(matcher)
         }
     }
 

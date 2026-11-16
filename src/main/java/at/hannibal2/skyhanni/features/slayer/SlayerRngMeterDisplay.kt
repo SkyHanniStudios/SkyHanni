@@ -10,7 +10,6 @@ import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
 import at.hannibal2.skyhanni.events.NeuRepositoryReloadEvent
 import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
-import at.hannibal2.skyhanni.events.slayer.SlayerChangeEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.ChatUtils
@@ -90,7 +89,7 @@ object SlayerRngMeterDisplay {
     }
 
     @HandleEvent
-    fun onSlayerChange(event: SlayerChangeEvent) {
+    fun onSlayerChange() {
         update()
     }
 
@@ -137,7 +136,7 @@ object SlayerRngMeterDisplay {
                 if (storage.goalNeeded == -1L) {
                     ErrorManager.logErrorStateWithData(
                         "Error Calculating Slayer RNG Meter",
-                        "gaol needed is -1, this should never be the case!",
+                        "goal needed is -1, this should never be the case!",
                         "goalNeeded" to storage.goalNeeded,
                         "currentMeter" to storage.currentMeter,
                         "gainPerBoss" to storage.gainPerBoss,
@@ -224,8 +223,9 @@ object SlayerRngMeterDisplay {
             val currentSlayer = getCurrentSlayer()
             storage.goalNeeded = rngScore[currentSlayer]?.get(internalName) ?: run {
                 ErrorManager.logErrorStateWithData(
-                    "Failed reading RNG Meter goal needed amount",
-                    "rngScore does not contain current slayer and current item data",
+                    "RNG Meter data for item $internalName on $currentSlayer not found in NEU repo. " +
+                        "Please report this on Discord.",
+                    "rngScore does not contain data for current slayer and item combination",
                     "internalName" to internalName,
                     "currentSlayer" to currentSlayer,
                     "rngScore" to rngScore,

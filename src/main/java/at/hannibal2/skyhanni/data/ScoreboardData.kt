@@ -154,7 +154,7 @@ object ScoreboardData {
     private fun fetchScoreboardLines(): List<String> {
         val scoreboard = MinecraftCompat.localWorldOrNull?.scoreboard ?: return emptyList()
         val objective = scoreboard.getSidebarObjective() ?: return emptyList()
-        var scores = scoreboard.listPlayerScores(objective)
+        val scores = scoreboard.listPlayerScores(objective)
         val list = scores.getPlayerNames(scoreboard)
         return list.map { it.formattedTextCompatLessResets() }
     }
@@ -164,6 +164,7 @@ object ScoreboardData {
      * @param text The line to check and possibly replace
      * @return The replaced line, or null if it should be hidden
      */
+    @JvmStatic
     fun tryToReplaceScoreboardLine(text: Component): Component {
         try {
             return tryToReplaceScoreboardLineHarder(text)
@@ -211,7 +212,7 @@ object ScoreboardData {
         LATE_AUTUMN("Late Autumn", ChatFormatting.YELLOW),
         EARLY_WINTER("Early Winter", ChatFormatting.BLUE),
         WINTER("Winter", ChatFormatting.BLUE),
-        LATE_WINTER("Late Winter", ChatFormatting.BLUE)
+        LATE_WINTER("Late Winter", ChatFormatting.BLUE),
     }
 
     // TODO USE SH-REPO

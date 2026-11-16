@@ -15,8 +15,8 @@ import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.LorenzColor
 import at.hannibal2.skyhanni.utils.RenderUtils.highlight
+import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLeadingWhiteLessResets
-import net.minecraft.world.item.ItemStack
 
 @SkyHanniModule
 object DnaAnalyzerSolver {
@@ -263,10 +263,11 @@ object DnaAnalyzerSolver {
         RED,
         GREEN,
         BLUE,
-        YELLOW;
+        YELLOW,
+        ;
 
         companion object {
-            fun ItemStack.toColor(): Colors? {
+            fun SafeItemStack.toColor(): Colors? {
                 val name = this.hoverName.formattedTextCompatLeadingWhiteLessResets()
                 return when {
                     name.startsWith("§cDNA") -> RED

@@ -9,6 +9,7 @@ import at.hannibal2.skyhanni.utils.NeuItems
 import at.hannibal2.skyhanni.utils.NeuItems.getItemStackOrNull
 import at.hannibal2.skyhanni.utils.RenderUtils.HorizontalAlignment
 import at.hannibal2.skyhanni.utils.RenderUtils.VerticalAlignment
+import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.SoundUtils
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.putAt
 import at.hannibal2.skyhanni.utils.collection.RenderableCollectionUtils.addString
@@ -30,12 +31,15 @@ import kotlin.reflect.KMutableProperty0
 @Suppress("TooManyFunctions", "unused", "MemberVisibilityCanBePrivate")
 internal object RenderableUtils {
 
+    fun deferredItemRenderable(stackFactory: () -> SafeItemStack): Renderable =
+        Renderable.item(stackFactory) { xSpacing = 0 }
+
     /** Calculates the relative x position of the columns in a table*/
     fun calculateTableX(content: Collection<List<Renderable?>>, xPadding: Int): List<Int> {
         var index = 0
         return buildList {
             while (true) {
-                val x = content.map { it.getOrNull(index) }.takeIf { it.any { it != null } }?.maxOfOrNull {
+                val x = content.map { it.getOrNull(index) }.takeIf { list -> list.any { it != null } }?.maxOfOrNull {
                     it?.width ?: 0
                 }?.let { it + xPadding } ?: break
                 add(x)
@@ -59,7 +63,7 @@ internal object RenderableUtils {
         buildList {
             add(0)
             while (true) {
-                buffer += rows.map { it.getOrNull(index) }.takeIf { it.any { it != null } }?.maxOfOrNull {
+                buffer += rows.map { it.getOrNull(index) }.takeIf { list -> list.any { it != null } }?.maxOfOrNull {
                     it?.width ?: 0
                 }?.let { it + xPadding } ?: break
                 add(buffer)
@@ -169,7 +173,7 @@ internal object RenderableUtils {
         return yOffset
     }
 
-    fun renderString(
+    internal fun renderString(
         text: String,
         scale: Double = 1.0,
         color: Color = Color.WHITE,
@@ -182,7 +186,7 @@ internal object RenderableUtils {
         DrawContextUtils.translate(-1.0, -1.0)
     }
 
-    fun renderString(
+    internal fun renderString(
         text: Component,
         scale: Double = 1.0,
         color: Color = Color.WHITE,
@@ -462,3 +466,9 @@ fun MutableList<Renderable>.addLine(builderAction: MutableList<Renderable>.() ->
 fun MutableList<Renderable>.addLine(tips: List<String>, builderAction: MutableList<Renderable>.() -> Unit) {
     add(hoverTips(Renderable.horizontal(buildList { builderAction() }, 0), tips = tips))
 }
+
+@JvmName("stringListToRenderables")
+fun List<String>.toRenderables(): List<Renderable> = map { Renderable.text(it) }
+
+@JvmName("componentListToRenderables")
+fun List<Component>.toRenderables(): List<Renderable> = map { Renderable.text(it) }

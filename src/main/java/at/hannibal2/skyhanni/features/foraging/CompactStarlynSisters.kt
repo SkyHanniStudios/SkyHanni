@@ -3,10 +3,11 @@ package at.hannibal2.skyhanni.features.foraging
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.storage.Resettable
-import at.hannibal2.skyhanni.data.IslandType
-import at.hannibal2.skyhanni.data.IslandTypeTags
-import at.hannibal2.skyhanni.events.IslandChangeEvent
+import at.hannibal2.skyhanni.data.IslandTypeTag
+import at.hannibal2.skyhanni.data.achievements.Achievement
+import at.hannibal2.skyhanni.events.achievements.AchievementRegistrationEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
+import at.hannibal2.skyhanni.features.achievements.AchievementManager
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.HypixelCommands
@@ -16,13 +17,16 @@ import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.chat.TextHelper.asComponent
 import at.hannibal2.skyhanni.utils.chat.TextHelper.onClick
 import at.hannibal2.skyhanni.utils.compat.hover
+import at.hannibal2.skyhanni.utils.compat.withColor
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import net.minecraft.ChatFormatting
+import net.minecraft.network.chat.Component
 
 @SkyHanniModule
 object CompactStarlynSisters {
 
     private val config get() = SkyHanniMod.feature.foraging.starlynContest
-    private val patternGroup = RepoPattern.group("foraging.agatha")
+    private val patternGroup = RepoPattern.group("foraging.starlyn-contest")
 
     /**
      * @regexTest §e[NPC] §bAgatha§f: §rYou reached the §r§lCOMMON §fBracket in my contest!
@@ -145,11 +149,11 @@ object CompactStarlynSisters {
     fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!isInIsland()) return
         event.blockAndCompact()
+        event.achievements()
     }
 
     @HandleEvent
-    fun onIslandChange(event: IslandChangeEvent) {
-        if (event.oldIsland != IslandType.GALATEA) return
+    fun onIslandLeave() {
         resetContestResultVariables()
         resetPersonalBestVariables()
     }
@@ -160,6 +164,26 @@ object CompactStarlynSisters {
             compactCollectionPB(message)
         if (config.compactResults)
             compactContestResults(message)
+    }
+
+    private const val STARLYN_CONTEST_ACHIEVEMENT = "Very Special Bracket"
+
+    @HandleEvent
+    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+        val achievement = Achievement(
+            name = "Very Special Contest".asComponent(),
+            description = Component.literal("Get 20,000 Starlyn Sister points in a contest").withColor(ChatFormatting.RED),
+            userLuckAmount = 20f,
+        )
+        event.register(achievement, STARLYN_CONTEST_ACHIEVEMENT)
+    }
+
+    private fun SkyHanniChatEvent.Allow.achievements() {
+        pointsEarnedPattern.matchMatcher(message) {
+            if (group("pointsInteger").formatInt() >= 20_000) {
+                AchievementManager.completeAchievement(STARLYN_CONTEST_ACHIEVEMENT)
+            }
+        }
     }
 
     private fun SkyHanniChatEvent.Allow.compactCollectionPB(message: String) {
@@ -290,5 +314,5 @@ object CompactStarlynSisters {
         personalBestVariablesAreDirty = false
     }
 
-    private fun isInIsland() = IslandTypeTags.FORAGING_CUSTOM_TREES.inAny()
+    private fun isInIsland() = IslandTypeTag.FORAGING_CUSTOM_TREES.isInIsland()
 }

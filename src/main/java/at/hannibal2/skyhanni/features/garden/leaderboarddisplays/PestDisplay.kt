@@ -21,11 +21,15 @@ class PestDisplay : EliteLeaderboardDisplayBase<PestType, EliteLeaderboardType.P
 
     override var currentMode: EliteLeaderboardMode
         get() = pestStorage?.mode ?: EliteLeaderboardMode.ALL_TIME
-        set(value) { pestStorage?.mode = value }
+        set(value) {
+            pestStorage?.mode = value
+        }
 
     override var currentEnum: PestType?
         get() = pestStorage?.enum
-        set(value) { pestStorage?.enum = value }
+        set(value) {
+            pestStorage?.enum = value
+        }
 
     override fun getDefaultEnum(): PestType? {
         return null
@@ -67,5 +71,5 @@ class PestDisplay : EliteLeaderboardDisplayBase<PestType, EliteLeaderboardType.P
 
 data class PestLeaderboardStorage(
     @Expose var enum: PestType?,
-    @Expose var mode: EliteLeaderboardMode
+    @Expose var mode: EliteLeaderboardMode,
 )

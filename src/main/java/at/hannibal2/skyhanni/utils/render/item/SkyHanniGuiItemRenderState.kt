@@ -2,6 +2,7 @@ package at.hannibal2.skyhanni.utils.render.item
 
 import at.hannibal2.skyhanni.utils.ItemUtils.getSkullOwner
 import at.hannibal2.skyhanni.utils.ItemUtils.getSkullTexture
+import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.render.PoseStackUtils.mulPose
 import at.hannibal2.skyhanni.utils.render.item.atlas.SkyHanniAnimatedAtlasKey
 import at.hannibal2.skyhanni.utils.render.item.atlas.SkyHanniAtlasKey
@@ -9,17 +10,22 @@ import com.mojang.blaze3d.platform.Lighting
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.navigation.ScreenRectangle
-import net.minecraft.client.gui.render.state.GuiItemRenderState
-import net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState
-import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.feature.FeatureRenderDispatcher
+import net.minecraft.client.renderer.state.gui.GuiItemRenderState
+import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState
 import net.minecraft.client.renderer.texture.OverlayTexture
-import net.minecraft.world.item.ItemStack
+import net.minecraft.util.LightCoordsUtil.FULL_BRIGHT
 import net.minecraft.world.phys.Vec3
 import org.joml.Matrix3x2f
 
+//? if >= 26.2 {
+import net.minecraft.client.renderer.SubmitNodeStorage
+//?} else {
+/*import net.minecraft.client.renderer.MultiBufferSource
+*///?}
+
 data class SkyHanniGuiItemRenderState(
-    val itemStack: ItemStack,
+    val itemStack: SafeItemStack,
     val guiItemRenderState: GuiItemRenderState,
     val x: Float,
     val y: Float,
@@ -30,6 +36,7 @@ data class SkyHanniGuiItemRenderState(
     val adjustedScale: Float = 1f,
     private val passedStableId: Int? = null,
     private val frameNumber: Int? = null,
+    val alpha: Float = 1f,
 ) : PictureInPictureRenderState {
     companion object {
         private var counter = 0
@@ -49,7 +56,7 @@ data class SkyHanniGuiItemRenderState(
     }
     val atlasKey by lazy {
         val baseKey = SkyHanniAtlasKey(
-            item = itemStack.item.toString(),
+            item = itemStack.getItem().toString(),
             modelIdentity = trackingState.modelIdentity,
             rotationVector = rotationVector,
         )
@@ -88,7 +95,8 @@ data class SkyHanniGuiItemRenderState(
     private fun setAnimated() = trackingState.setAnimated()
 
     internal fun renderItemToTexture(
-        bufferSource: MultiBufferSource.BufferSource,
+        //~ if < 26.2 'submitNodeStorage: SubmitNodeStorage' -> 'bufferSource: MultiBufferSource.BufferSource'
+        submitNodeStorage: SubmitNodeStorage,
         featureRenderDispatcher: FeatureRenderDispatcher,
         centerX: Float,
         centerY: Float,
@@ -100,19 +108,22 @@ data class SkyHanniGuiItemRenderState(
         val f = pixelSize.toFloat()
         ps.scale(f, -f, f)
 
-        val rotationPadding = if (rotationVector != Vec3.ZERO) 1.0f / 1.42f else 1.0f
-        ps.scale(rotationPadding, rotationPadding, rotationPadding)
-
         val rotated = ps.mulPose(rotationVector)
         ps.translate(0.0f, 0.03f, 0.125f)
 
-        Minecraft.getInstance().gameRenderer.lighting.setupFor(
+        //~ if < 26.2 'lighting()' -> 'lighting'
+        Minecraft.getInstance().gameRenderer.lighting().setupFor(
             if (trackingState.usesBlockLight()) Lighting.Entry.ITEMS_3D else Lighting.Entry.ITEMS_FLAT,
         )
         if (rotated) setAnimated()
 
-        trackingState.submit(ps, featureRenderDispatcher.submitNodeStorage, 15728880, OverlayTexture.NO_OVERLAY, 0)
-        featureRenderDispatcher.renderAllFeatures()
+        //~ if < 26.2 'submitNodeStorage' -> 'featureRenderDispatcher.submitNodeStorage'
+        trackingState.submit(ps, submitNodeStorage, FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 0)
+        //? if >= 26.2 {
+        featureRenderDispatcher.renderAllFeatures(submitNodeStorage)
+        //?} else {
+        /*featureRenderDispatcher.renderAllFeatures()
         bufferSource.endBatch()
+        *///?}
     }
 }

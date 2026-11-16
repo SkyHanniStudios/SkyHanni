@@ -1,22 +1,26 @@
-package at.hannibal2.skyhanni.detektrules.repo
+package repo
 
 import com.google.auto.service.AutoService
-import io.gitlab.arturbosch.detekt.api.Config
-import io.gitlab.arturbosch.detekt.api.RuleSet
-import io.gitlab.arturbosch.detekt.api.RuleSetProvider
+import dev.detekt.api.RuleName
+import dev.detekt.api.RuleSet
+import dev.detekt.api.RuleSetId
+import dev.detekt.api.RuleSetProvider
 
 @AutoService(RuleSetProvider::class)
 class RepoRuleSetProvider : RuleSetProvider {
-    override val ruleSetId: String = "RepoRules"
+    override val ruleSetId: RuleSetId = RuleSetId("RepoRules")
 
-    override fun instance(config: Config): RuleSet {
+    override fun instance(): RuleSet {
+        val context = RepoPatternContext()
+
         return RuleSet(
             ruleSetId,
-            listOf(
-                SkullTexturesUseRepo(config),
-                RepoPatternRegexTestFailed(config),
-                RepoPatternRegexTestMissing(config),
-                RepoPatternUnnamedGroup(config),
+            mapOf(
+                RuleName("SkullTexturesUseRepo") to ::SkullTexturesUseRepo,
+                RuleName("RepoPatternRegexTestFailed") to { config -> RepoPatternRegexTestFailed(config, context) },
+                RuleName("RepoPatternRegexTestMissing") to { config -> RepoPatternRegexTestMissing(config, context) },
+                RuleName("RepoPatternUnnamedGroup") to { config -> RepoPatternUnnamedGroup(config, context) },
+                RuleName("RepoPatternPassesShapeRequirement") to { config -> RepoPatternPassesShapeRequirement(config, context) },
             ),
         )
     }

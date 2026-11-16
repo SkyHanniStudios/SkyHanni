@@ -9,23 +9,39 @@ object UtilsPatterns {
 
     private val patternGroup = RepoPattern.group("utils")
 
+    // COMMON|UNCOMMON|RARE|EPIC|LEGENDARY|MYTHIC|DIVINE|SPECIAL|VERY SPECIAL|ULTIMATE
+    private val rarities = enumJoinToPattern<LorenzRarity> { it.name.replace("_", " ") }
+
     /**
-     * @regexTest §d§l§ka§r §d§lMYTHIC ACCESSORY §d§l§ka
-     * @regexTest §d§l§ka§r §d§lSHINY MYTHIC DUNGEON CHESTPLATE §d§l§ka
-     * @regexTest §c§l§ka§r §c§lVERY SPECIAL HATCESSORY §c§l§ka
-     * @regexTest §6§lSHINY LEGENDARY DUNGEON BOOTS
-     * @regexTest §6§lLEGENDARY DUNGEON BOOTS
-     * @regexTest §5§lEPIC BOOTS
-     * @regexTest §f§lCOMMON
-     * @regexTest §f§lCOMMON COMBAT SHARD §8(ID C9)
-     * @regexTest §7Rarity: §6§lLEGENDARY
-     * @regexTest §7Rarity: §9§lRARE
+     * REGEX-TEST: a MYTHIC ACCESSORY a
+     * REGEX-TEST: a SHINY MYTHIC DUNGEON CHESTPLATE a
+     * REGEX-TEST: a VERY SPECIAL HATCESSORY a
+     * REGEX-TEST: SHINY LEGENDARY DUNGEON BOOTS
+     * REGEX-TEST: LEGENDARY DUNGEON BOOTS
+     * REGEX-TEST: EPIC BOOTS
+     * REGEX-TEST: COMMON
+     * REGEX-TEST: COMMON COMBAT SHARD (ID C9)
+     * REGEX-TEST: EPIC WATER SHARD (ID E5)
+     * REGEX-TEST: Rarity: LEGENDARY
+     * REGEX-TEST: Rarity: RARE
+     * REGEX-TEST: a DIVINE a
+     * REGEX-TEST: LEGENDARY DUNGEON ITEM
+     * REGEX-TEST: a MYTHIC DUNGEON ITEM a
+     * REGEX-TEST: LEGENDARY SLAYER SWORD
      */
+    @Suppress("MaxLineLength")
     val rarityLoreLinePattern by patternGroup.pattern(
-        "item.lore.rarity.line",
-        "^(?:§7Rarity: )?(?:§.){2,3}(?:.§. (?:§.){2})?(?:SHINY )?(?<rarity>" +
-            enumJoinToPattern<LorenzRarity> { it.name.replace("_", " ") } +
-            ") ?(?:DUNGEON )?(?<itemCategory>[^§]*)(?: (?:§.){3}.)?(?: §8\\(ID \\w\\d+\\))?$",
+        "item.lore.rarity.line.colorless",
+        "^(?:Rarity: )?(?:a )?(?:SHINY )?(?<rarity>$rarities)(?: (?:DUNGEON|SLAYER))? ?(?<itemCategory>[A-Z].*?|)(?: a)?(?: \\(ID \\w\\d+\\))?$",
+    )
+
+    /**
+     * REGEX-TEST: RARE CROP
+     * REGEX-TEST: RARE CROPS
+     */
+    val notRarityLoreLinePattern by patternGroup.pattern(
+        "item.lore.not-rarity.line",
+        "^RARE CROPS?$",
     )
 
     /**
@@ -85,14 +101,6 @@ object UtilsPatterns {
     val readAmountAfterPattern by patternGroup.pattern(
         "item.amount.behind",
         "(?<name>(?:§.)*(?:[^§] ?)+)(?:§8x(?<amount>[\\d,]+))?",
-    )
-
-    /**
-     * @regexTest §7Cost
-     */
-    val costLinePattern by patternGroup.pattern(
-        "item.cost.line",
-        "(?:§5§o)?§7Cost.*",
     )
 
     @Suppress("MaxLineLength")
@@ -179,6 +187,8 @@ object UtilsPatterns {
         "inventory.skyblockmenu",
         "SkyBlock Menu",
     )
+
+    val skyblockMenuInventory = InventoryDetector { skyblockMenuGuiPattern }
 
     /**
      * @regexTest §7Source: §fVerdant Shard §8(C11)

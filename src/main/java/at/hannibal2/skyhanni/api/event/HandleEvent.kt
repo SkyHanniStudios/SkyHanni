@@ -1,6 +1,8 @@
 package at.hannibal2.skyhanni.api.event
 
+import at.hannibal2.skyhanni.config.enums.OutsideSBFeature
 import at.hannibal2.skyhanni.data.IslandType
+import at.hannibal2.skyhanni.data.IslandTypeTag
 import kotlin.reflect.KClass
 
 @Retention(AnnotationRetention.RUNTIME)
@@ -26,10 +28,22 @@ annotation class HandleEvent(
     val onlyOnSkyblock: Boolean = false,
 
     /**
+     * If the event should only be handled while on SkyBlock, or while
+     * outside SkyBlock with one or more certain OutsideSBFeature being enabled.
+     */
+    val onlyOnSkyblockOrFeatures: Array<OutsideSBFeature> = [],
+
+    /**
      * If the event should only be received while on a specific skyblock island.
      * To specify multiple islands, use [onlyOnIslands] instead.
      */
     val onlyOnIsland: IslandType = IslandType.ANY,
+
+    /**
+     * If the event should only be received while on an island within specified
+     * [IslandTypeTag]s
+     */
+    val onlyOnIslandTypeTag: Array<IslandTypeTag> = [],
 
     /**
      * If the event should only be received while being on specific skyblock islands.
@@ -38,7 +52,8 @@ annotation class HandleEvent(
     vararg val onlyOnIslands: IslandType = [],
 
     /**
-     * The priority of when the event will be called, lower priority will be called first, see the companion object.
+     * The order the event handler will be called in relative to the other handlers of the same event.
+     * Lower number means it will be called earlier. See the companion object for predefined priorities.
      */
     val priority: Int = 0,
 

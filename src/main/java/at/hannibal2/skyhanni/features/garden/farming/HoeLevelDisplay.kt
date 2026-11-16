@@ -6,25 +6,32 @@ import at.hannibal2.skyhanni.config.commands.CommandCategory
 import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
 import at.hannibal2.skyhanni.config.commands.brigadier.BrigadierArguments
 import at.hannibal2.skyhanni.data.IslandType
+import at.hannibal2.skyhanni.data.achievements.Achievement
 import at.hannibal2.skyhanni.data.jsonobjects.repo.GardenJson
 import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.events.UserLuckCalculateEvent
+import at.hannibal2.skyhanni.events.achievements.AchievementRegistrationEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
+import at.hannibal2.skyhanni.features.achievements.AchievementManager
 import at.hannibal2.skyhanni.features.garden.GardenApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.ItemUtils
+import at.hannibal2.skyhanni.utils.ItemUtils.cleanName
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderables
+import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.SkyBlockItemModifierUtils.getHoeExp
 import at.hannibal2.skyhanni.utils.SkyBlockItemModifierUtils.getHoeLevel
 import at.hannibal2.skyhanni.utils.SkyBlockItemModifierUtils.getItemUuid
-import at.hannibal2.skyhanni.utils.StringUtils.removeColor
+import at.hannibal2.skyhanni.utils.chat.TextHelper.asComponent
+import at.hannibal2.skyhanni.utils.compat.append
 import at.hannibal2.skyhanni.utils.compat.appendWithColor
+import at.hannibal2.skyhanni.utils.compat.bold
 import at.hannibal2.skyhanni.utils.compat.componentBuilder
 import at.hannibal2.skyhanni.utils.compat.withColor
 import at.hannibal2.skyhanni.utils.renderables.Renderable
@@ -32,7 +39,6 @@ import at.hannibal2.skyhanni.utils.renderables.primitives.text
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import net.minecraft.ChatFormatting
 import net.minecraft.network.chat.Component
-import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 
 @SkyHanniModule
@@ -60,18 +66,16 @@ object HoeLevelDisplay {
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
     fun onTick() {
         if (!isEnabled()) return
-        display = null
-        val list = mutableListOf<Renderable>()
-        list.add(Renderable.text("§6Hoe Levels"))
-        val heldItem = InventoryUtils.getItemInHand()
-        val hoeExp = heldItem?.getHoeExp() ?: return
-        var hoeLevel = heldItem.getHoeLevel() ?: return
-        var next = hoeOverflow
-        val hoeLevels = hoeLevels ?: return
+        display = getDisplay()?.map(Renderable::text)
+    }
 
-        if (hoeLevel <= hoeLevels.size) {
-            next = hoeLevels.let { it[hoeLevel - 1] }
-        }
+    private fun getDisplay(): List<String>? = buildList {
+        add("§6Hoe Levels")
+        val heldItem = InventoryUtils.getItemInHand()
+        val hoeExp = heldItem?.getHoeExp() ?: return null
+        var hoeLevel = heldItem.getHoeLevel() ?: return null
+        val hoeLevels = hoeLevels ?: return null
+        val next = if (hoeLevel <= hoeLevels.size) hoeLevels[hoeLevel - 1] else hoeOverflow
 
         if (hoeLevel > hoeLevels.size && config.overflow) {
             val uuid = heldItem.getItemUuid()
@@ -80,19 +84,21 @@ object HoeLevelDisplay {
                 hoeLevel += overflowLevel
             }
         }
-        list.add(Renderable.text("§7Level §8$hoeLevel➜§3${hoeLevel + 1}"))
+        add("§7Level §8$hoeLevel➜§3${hoeLevel + 1}")
 
         var colorPrefix = "§e"
         if (hoeExp > next) {
             colorPrefix = "§c§l"
-            if (hoeLevel >= OVERCLOCK_THRESHOLD) list.add(Renderable.text("§3§lOVERCLOCK REQUIRED!"))
-            else list.add(Renderable.text("§c§lUPGRADE REQUIRED!"))
+            if (hoeLevel >= OVERCLOCK_THRESHOLD) add("§3§lOVERCLOCK REQUIRED!")
+            else add("§c§lUPGRADE REQUIRED!")
         }
         val formattedXp = hoeExp.addSeparators()
         val formattedXpToNext = next.addSeparators()
-        list.add(Renderable.text("$colorPrefix$formattedXp§8/§e$formattedXpToNext"))
+        add("$colorPrefix$formattedXp§8/§e$formattedXpToNext")
 
-        display = list
+        GardenApi.lastBrokenCropType?.takeIf { it != GardenApi.cropInHand }?.let {
+            add("§cNot gaining XP! (Wrong crop)")
+        }
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
@@ -101,7 +107,7 @@ object HoeLevelDisplay {
         val leveledUpTool = levelUpPattern.matchMatcher(event.cleanMessage) {
             group("tool")
         } ?: return
-        val heldItemName = heldItem.hoverName.string.removeColor()
+        val heldItemName = heldItem.cleanName
         if (!heldItemName.contains(leveledUpTool)) return
         val overflowLevel = addOverflowHoeLevel(heldItem.getItemUuid())
         if (isEnabled() && config.overflow && overflowLevel != null) {
@@ -126,8 +132,10 @@ object HoeLevelDisplay {
         uuid ?: return null
         val storage = gardenStorage?.overflowHoeLevels ?: return null
         val currentLevel = getOverflowHoeLevel(uuid) ?: return null
-        storage[uuid] = currentLevel + 1
-        return currentLevel + 1
+        val newLevel = currentLevel + 1
+        storage[uuid] = newLevel
+        if (newLevel >= 1000) AchievementManager.completeAchievement(HOE_ACHIEVEMENT)
+        return newLevel
     }
 
     @HandleEvent(GuiRenderEvent.GuiOverlayRenderEvent::class, onlyOnIsland = IslandType.GARDEN)
@@ -151,7 +159,7 @@ object HoeLevelDisplay {
                 Component.empty(),
                 componentBuilder {
                     appendWithColor("Value: ", ChatFormatting.GRAY)
-                    appendWithColor("$luck✴", ChatFormatting.GREEN)
+                    appendWithColor("${luck.addSeparators()}✴", ChatFormatting.GREEN)
                 },
                 Component.empty(),
                 Component.literal("Gain more by leveling up your farming tools!").withColor(ChatFormatting.DARK_GRAY),
@@ -173,11 +181,37 @@ object HoeLevelDisplay {
         ChatUtils.userError("You must hold a specialized farming tool to use this command!")
     }
 
-    private fun errorStorage(item: ItemStack): Nothing {
+    private fun errorStorage(item: SafeItemStack): Nothing {
         ErrorManager.skyHanniError(
             "Error getting overflow hoe level storage",
             "item" to item,
         )
+    }
+
+    private const val HOE_ACHIEVEMENT = "Hoe Level 1000"
+
+    @HandleEvent
+    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+        val achievement = Achievement(
+            name = "Hoe Expert".asComponent(),
+            description = componentBuilder {
+                append("Get a hoe to level 1000. ") {
+                    withColor(ChatFormatting.YELLOW)
+                }
+                append("This requires you to get ") {
+                    withColor(ChatFormatting.GREEN)
+                }
+                append("524,322,000 ") {
+                    withColor(ChatFormatting.AQUA)
+                    bold = true
+                }
+                append("XP!") {
+                    withColor(ChatFormatting.GREEN)
+                }
+            },
+            userLuckAmount = 30f,
+        )
+        event.register(achievement, HOE_ACHIEVEMENT)
     }
 
     @HandleEvent

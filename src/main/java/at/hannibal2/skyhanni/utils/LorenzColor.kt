@@ -24,7 +24,7 @@ enum class LorenzColor(val chatColorCode: Char, private val color: Color, privat
     LIGHT_PURPLE('d', Color(255, 85, 255), "§dLight Purple"),
     YELLOW('e', Color(255, 255, 85), "§eYellow"),
     WHITE('f', Color(255, 255, 255), "§fWhite"),
-    CHROMA('Z', Color(0, 0, 0, 0), "§ZChroma") // If chroma, go transparent instead of color code.
+    CHROMA('Z', Color(0, 0, 0, 0), "§ZChroma"), // If chroma, go transparent instead of color code.
     ;
 
     val next by lazy {
@@ -40,10 +40,10 @@ enum class LorenzColor(val chatColorCode: Char, private val color: Color, privat
 
     fun getChatColor(): String = "§$chatColorCode"
 
-    // TODO make this public fun unnecesary, replace with chroma color
+    // TODO make this public function unnecessary, replace with chroma color
     fun toColor(): Color = color
 
-    // TODO make this functin return moulconfig.ChromaColour, and eventually remove awt.Color support
+    // TODO make this function return moulconfig.ChromaColour, and eventually remove awt.Color support
     fun addOpacity(opacity: Int): Color {
         val color = toColor()
         val red = color.red

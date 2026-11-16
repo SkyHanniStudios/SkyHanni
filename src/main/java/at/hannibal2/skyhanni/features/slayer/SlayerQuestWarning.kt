@@ -1,8 +1,9 @@
 package at.hannibal2.skyhanni.features.slayer
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.data.ClickType
+import at.hannibal2.skyhanni.data.InteractClickType
 import at.hannibal2.skyhanni.data.SlayerApi
+import at.hannibal2.skyhanni.data.SlayerApi.ActiveQuestState
 import at.hannibal2.skyhanni.data.title.TitleManager
 import at.hannibal2.skyhanni.events.ItemClickEvent
 import at.hannibal2.skyhanni.events.entity.EntityHealthUpdateEvent
@@ -31,18 +32,21 @@ object SlayerQuestWarning {
 
     @HandleEvent(onlyOnSkyblock = true)
     fun onSlayerStateChange(event: SlayerStateChangeEvent) {
-        if (event.state == SlayerApi.ActiveQuestState.GRINDING) {
-            needSlayerQuest = false
-        }
-        if (event.state == SlayerApi.ActiveQuestState.FAILED) {
-            needNewQuest("The old slayer quest has failed!")
-        }
-        if (event.state == SlayerApi.ActiveQuestState.SLAIN) {
-            DelayedRun.runDelayed(5.seconds) {
-                if (SlayerApi.state == SlayerApi.ActiveQuestState.SLAIN) {
-                    needNewQuest("You have no Auto-Slayer active!")
+        when (event.state) {
+            ActiveQuestState.GRINDING -> {
+                needSlayerQuest = false
+            }
+            ActiveQuestState.FAILED -> {
+                needNewQuest("The old slayer quest has failed!")
+            }
+            ActiveQuestState.SLAIN -> {
+                DelayedRun.runDelayed(5.seconds) {
+                    if (SlayerApi.state == ActiveQuestState.SLAIN) {
+                        needNewQuest("You have no Auto-Slayer active!")
+                    }
                 }
             }
+            else -> {}
         }
     }
 
@@ -99,7 +103,7 @@ object SlayerQuestWarning {
             if (slayerType != it) {
                 val activeSlayerName = it.displayName
                 val slayerName = slayerType.displayName
-                SlayerApi.latestWrongAreaWarning = SimpleTimeMark.now()
+                SlayerApi.latestWrongAreaWarningTime = SimpleTimeMark.now()
                 warn(
                     "Wrong Slayer!",
                     "Wrong slayer selected! You have $activeSlayerName selected and you are in an $slayerName area!",
@@ -114,7 +118,7 @@ object SlayerQuestWarning {
     fun onItemClick(event: ItemClickEvent) {
         val internalName = event.itemInHand?.getInternalNameOrNull()
 
-        if (event.clickType == ClickType.RIGHT_CLICK) {
+        if (event.clickType == InteractClickType.RIGHT_CLICK) {
             if (internalName in teleportItems) {
                 // ignore harmless teleportation
                 return

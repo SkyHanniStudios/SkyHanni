@@ -1,0 +1,34 @@
+package at.hannibal2.skyhanni.features.achievements
+
+import at.hannibal2.skyhanni.api.event.HandleEvent
+import at.hannibal2.skyhanni.data.ProfileStorageData
+import at.hannibal2.skyhanni.data.achievements.Achievement
+import at.hannibal2.skyhanni.events.achievements.AchievementRegistrationEvent
+import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
+import at.hannibal2.skyhanni.utils.chat.TextHelper.asComponent
+
+@SkyHanniModule
+object MagicalPowerAchievement {
+
+    private const val MP_ACHIEVEMENT = "Magic Sigma"
+
+    @HandleEvent
+    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+        val achievement = Achievement(
+            name = "Magical Sigma".asComponent(),
+            description = "Pro tip: Magical Power gives you good stats".asComponent(),
+            userLuckAmount = 200f,
+            tiers = listOf(500, 1000, 1500, 1800, 2000),
+        )
+        event.register(achievement, MP_ACHIEVEMENT)
+    }
+
+    @HandleEvent(onlyOnSkyblock = true, priority = HandleEvent.LOW)
+    fun onAccessoryBagUpdate() {
+        val mp = ProfileStorageData.profileSpecific?.maxwell?.magicalPower ?: return
+        val achievement = AchievementManager.getAchievement(MP_ACHIEVEMENT)
+        if (mp > achievement.data.progress) {
+            AchievementManager.updateTieredAchievement(MP_ACHIEVEMENT, mp)
+        }
+    }
+}

@@ -12,7 +12,6 @@ import at.hannibal2.skyhanni.utils.AutoUpdatingItemStack
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.InventoryDetector
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
-import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderable
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SimpleTimeMark.Companion.fromNow
@@ -65,7 +64,7 @@ object UbikReminder {
                 if (!config.ubikReminder) return@InventoryDetector
                 storage?.ubikRemindTime = 2.hours.fromNow()
             },
-        ) { name -> inventoryPattern.matches(name) }
+        ) { inventoryPattern }
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
@@ -96,16 +95,15 @@ object UbikReminder {
         if (!config.ubikReminder || !config.ubikGui) return
         val storage = storage ?: return
         val remindTime = storage.ubikRemindTime
-        val renderable: Renderable
-        if (remindTime.isFarFuture()) {
-            renderable = Renderable.horizontal {
+        val renderable = if (remindTime.isFarFuture()) {
+            Renderable.horizontal {
                 addItemStack(cube)
                 addString("§aReady!")
             }
         } else if (config.ubikOnlyWhenReady) {
             return
         } else {
-            renderable = Renderable.horizontal {
+            Renderable.horizontal {
                 addItemStack(cube)
                 addString("§e${remindTime.timeUntil().format()}")
             }

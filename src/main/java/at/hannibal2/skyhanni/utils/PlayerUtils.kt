@@ -4,10 +4,15 @@ import at.hannibal2.skyhanni.utils.NumberUtil.roundTo
 import at.hannibal2.skyhanni.utils.StringUtils.toUnDashedUUID
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import net.minecraft.client.Minecraft
+import net.minecraft.world.entity.Avatar
+import net.minecraft.world.entity.Pose
 import net.minecraft.world.entity.ai.attributes.Attributes
 import java.util.UUID
 
 object PlayerUtils {
+
+    val STANDING_EYE_HEIGHT = Avatar.POSES.getValue(Pose.STANDING).eyeHeight
+    val SNEAKING_EYE_HEIGHT = Avatar.POSES.getValue(Pose.CROUCHING).eyeHeight
 
     // thirdPersonView on 1.8.9
     // 0 == normal
@@ -19,7 +24,7 @@ object PlayerUtils {
 
     fun isThirdPersonView(): Boolean {
         val perspective = Minecraft.getInstance().options.cameraType
-        // for some reason they make you check the other 2 bools instead of giving you a third one
+        // for some reason they make you check the other 2 booleans instead of giving you a third one
         return !perspective.isMirrored && !perspective.isFirstPerson
     }
 
@@ -28,7 +33,7 @@ object PlayerUtils {
     }
 
     fun getWalkSpeed(): Float {
-        val speed = MinecraftCompat.localPlayer.getAttributeBaseValue(Attributes.MOVEMENT_SPEED)
+        val speed = MinecraftCompat.localPlayerOrThrow.getAttributeBaseValue(Attributes.MOVEMENT_SPEED)
 
         // Round to avoid floating point inaccuracies (in-game precision is at most 2 decimals anyway)
         return (speed * 1000).roundTo(2).toFloat()
@@ -36,16 +41,20 @@ object PlayerUtils {
 
     fun getUuid() = getRawUuid().toUnDashedUUID()
 
-    fun getRawUuid(): UUID = MinecraftCompat.localPlayer.uuid
+    fun getRawUuid(): UUID = MinecraftCompat.localUser.profileId
 
-    fun getName(): String = MinecraftCompat.localPlayer.plainTextName
+    fun getName(): String = MinecraftCompat.localUser.name
 
-    fun onGround(): Boolean = MinecraftCompat.localPlayer.onGround()
+    fun onGround(): Boolean = MinecraftCompat.localPlayerOrThrow.onGround()
     fun inAir(): Boolean = !onGround()
 
-    fun blockPosition() = MinecraftCompat.localPlayer.blockPosition().toLorenzVec()
+    /** the player is not flying, not riding a vehicle, and not using an elytra */
+    fun hasNormalMovement(): Boolean =
+        !MinecraftCompat.localPlayerOrThrow.abilities.flying &&
+            !MinecraftCompat.localPlayerOrThrow.isPassenger &&
+            !MinecraftCompat.localPlayerOrThrow.isFallFlying
 
-    fun getLocation() = MinecraftCompat.localPlayer.getLorenzVec()
+    fun blockPosition() = MinecraftCompat.localPlayerOrThrow.blockPosition().toLorenzVec()
 
-    fun isSneaking(): Boolean = MinecraftCompat.localPlayer.isShiftKeyDown
+    fun isSneaking(): Boolean = MinecraftCompat.localPlayerOrThrow.isShiftKeyDown
 }

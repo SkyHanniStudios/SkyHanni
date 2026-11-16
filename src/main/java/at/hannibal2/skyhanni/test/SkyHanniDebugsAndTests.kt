@@ -1,6 +1,7 @@
 package at.hannibal2.skyhanni.test
 
 import at.hannibal2.skyhanni.SkyHanniMod
+import at.hannibal2.skyhanni.SkyHanniMod.launchCoroutine
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.api.event.SkyHanniEvents
 import at.hannibal2.skyhanni.config.ConfigFileType
@@ -15,7 +16,6 @@ import at.hannibal2.skyhanni.data.HypixelData
 import at.hannibal2.skyhanni.data.IslandGraphs
 import at.hannibal2.skyhanni.data.repo.ChatProgressUpdates
 import at.hannibal2.skyhanni.events.GuiKeyPressEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.events.minecraft.ToolTipTextEvent
 import at.hannibal2.skyhanni.events.minecraft.add
@@ -33,11 +33,15 @@ import at.hannibal2.skyhanni.utils.ItemPriceUtils.getNpcPriceOrNull
 import at.hannibal2.skyhanni.utils.ItemPriceUtils.getPrice
 import at.hannibal2.skyhanni.utils.ItemPriceUtils.getRawCraftCostOrNull
 import at.hannibal2.skyhanni.utils.ItemPriceUtils.isAuctionHouseItem
+import at.hannibal2.skyhanni.utils.ItemUtils.cleanName
+import at.hannibal2.skyhanni.utils.ItemUtils.getCleanLore
 import at.hannibal2.skyhanni.utils.ItemUtils.getInternalName
 import at.hannibal2.skyhanni.utils.ItemUtils.getInternalNameOrNull
 import at.hannibal2.skyhanni.utils.ItemUtils.getItemCategoryOrNull
 import at.hannibal2.skyhanni.utils.ItemUtils.getItemRarityOrNull
 import at.hannibal2.skyhanni.utils.ItemUtils.getRawBaseStats
+import at.hannibal2.skyhanni.utils.ItemUtils.getSkullOwner
+import at.hannibal2.skyhanni.utils.ItemUtils.getSkullTexture
 import at.hannibal2.skyhanni.utils.ItemUtils.repoItemName
 import at.hannibal2.skyhanni.utils.KeyboardManager.isKeyHeld
 import at.hannibal2.skyhanni.utils.LocationUtils
@@ -47,18 +51,19 @@ import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NeuInternalName
 import at.hannibal2.skyhanni.utils.NeuItems.getItemStack
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
-import at.hannibal2.skyhanni.utils.NumberUtil.roundTo
 import at.hannibal2.skyhanni.utils.OSUtils
 import at.hannibal2.skyhanni.utils.ReflectionUtils.makeAccessible
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderables
+import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.SoundUtils
 import at.hannibal2.skyhanni.utils.collection.RenderableCollectionUtils.addItemStack
 import at.hannibal2.skyhanni.utils.collection.RenderableCollectionUtils.addString
+import at.hannibal2.skyhanni.utils.compat.InventoryCompat
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.compat.getCompoundOrDefault
-import at.hannibal2.skyhanni.utils.compat.stackUnderCursor
+import at.hannibal2.skyhanni.utils.coroutines.CoroutineSettings
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.renderables.Renderable
@@ -69,9 +74,17 @@ import net.minecraft.client.gui.components.debug.DebugScreenEntries
 import net.minecraft.client.gui.components.debug.DebugScreenEntry
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.resources.Identifier
+import net.minecraft.world.item.Items
 import net.minecraft.world.level.Level
 import net.minecraft.world.level.chunk.LevelChunk
-import java.io.File
+import org.lwjgl.glfw.GLFW
+import org.objectweb.asm.ClassReader
+import org.objectweb.asm.Type
+import org.objectweb.asm.tree.AnnotationNode
+import org.objectweb.asm.tree.ClassNode
+import org.spongepowered.asm.mixin.Mixin
+import java.util.Locale
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 @SkyHanniModule
@@ -89,8 +102,9 @@ object SkyHanniDebugsAndTests {
             add("[SkyHanni] Graph Area: ${SkyBlockUtils.graphArea}")
         }
 
-        registerDebugScreenEntry("ray_traced_ore_block", SkyBlockUtils::inSkyBlock) {
-            BlockUtils.getTargetedBlockAtDistance(50.0)?.let { pos ->
+        // TODO can we rename this to ore_block?
+        registerDebugScreenEntry("targeted_oreblock", SkyBlockUtils::inSkyBlock) {
+            BlockUtils.getTargetedBlockAtDistance(50.0).let { pos ->
                 OreBlock.getByStateOrNull(pos.getBlockStateAt())?.let { ore ->
                     add("[SkyHanni] Looking at: ${ore.name} (${pos.toCleanString()})")
                 }
@@ -114,10 +128,36 @@ object SkyHanniDebugsAndTests {
         LorenzDebug.log(text)
     }
 
+    private fun readMixinTargets(mixinClass: String): List<String> {
+        val resource = "${mixinClass.replace(".", "/")}.class"
+        val classNode = ClassNode()
+        javaClass.classLoader.getResourceAsStream(resource).use { input ->
+            requireNotNull(input) { "Could not load mixin class resource $resource" }
+            ClassReader(input).accept(classNode, 0)
+        }
+        val mixinDescriptor = Type.getDescriptor(Mixin::class.java)
+        return (classNode.visibleAnnotations.orEmpty() + classNode.invisibleAnnotations.orEmpty())
+            .filter { it.desc == mixinDescriptor }
+            .flatMap { it.mixinTargets() }
+    }
+
+    private fun AnnotationNode.mixinTargets(): List<String> = buildList {
+        values.orEmpty()
+            .chunked(2)
+            .forEach { (name, value) ->
+                when (name) {
+                    "targets" -> addAll(value.asListOf<String>())
+                    "value" -> addAll(value.asListOf<Type>().map { it.className })
+                }
+            }
+    }
+
+    private inline fun <reified T> Any?.asListOf(): List<T> = (this as? List<*>).orEmpty().filterIsInstance<T>()
+
     private var testLocation: LorenzVec? = null
 
     @HandleEvent
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         testLocation?.let {
             event.drawWaypointFilled(it, LorenzColor.WHITE.toColor())
             event.drawDynamicText(it, "Debug Test", 1.5)
@@ -142,7 +182,7 @@ object SkyHanniDebugsAndTests {
     }
 
     private fun testCommand(args: Array<String>) {
-        SkyHanniMod.launchCoroutine("shtest command") {
+        CoroutineSettings("shtest command").launchCoroutine {
             asyncTest(args)
         }
     }
@@ -158,46 +198,28 @@ object SkyHanniDebugsAndTests {
         progress.end("c")
     }
 
+    private val FIND_NULL_BLOCKED_NAMES = setOf(
+        "TRUE", "FALSE", "SIZE", "MIN_VALUE", "MAX_VALUE", "BYTES",
+        "POSITIVE_INFINITY", "NEGATIVE_INFINITY", "NaN", "MIN_NORMAL",
+    )
+
     private fun findNull(obj: Any, path: String) {
-        val blockedNames = listOf(
-            "TRUE",
-            "FALSE",
-            "SIZE",
-            "MIN_VALUE",
-            "MAX_VALUE",
-            "BYTES",
-            "POSITIVE_INFINITY",
-            "NEGATIVE_INFINITY",
-            "NaN",
-            "MIN_NORMAL",
-        )
-
-        val javaClass = obj.javaClass
-        if (javaClass.isEnum) return
-        for (field in javaClass.fields) {
-            val name = field.name
-            if (name in blockedNames) continue
-
-            // funny thing
-            if (obj is Position) {
-                if (name == "internalName") continue
-            }
-
-            val other = field.makeAccessible().get(obj)
-            val newName = "$path.$name"
-            if (other == null) {
-                println("config null at $newName")
-            } else {
-                findNull(other, newName)
-            }
+        if (obj.javaClass.isEnum) return
+        for (field in obj.javaClass.fields) {
+            if (field.name in FIND_NULL_BLOCKED_NAMES) continue
+            if (obj is Position && field.name == "internalName") continue
+            val value = field.get(obj)
+            val newName = "$path.${field.name}"
+            if (value == null) println("config null at $newName")
+            else findNull(value, newName)
         }
     }
 
     private fun resetConfig() {
         // saving old config state
-        SkyHanniMod.configManager.saveConfig(ConfigFileType.FEATURES, "reload config manager")
-        SkyHanniMod.configManager.saveConfig(ConfigFileType.SACKS, "reload config manager")
-        SkyHanniMod.configManager.saveConfig(ConfigFileType.PETS, "reload config manager")
+        SkyHanniMod.configManager.saveConfig(ConfigFileType.FEATURES, "reload config manager", now = true)
+        SkyHanniMod.configManager.saveConfig(ConfigFileType.SACKS, "reload config manager", now = true)
+        SkyHanniMod.configManager.saveConfig(ConfigFileType.PETS, "reload config manager", now = true)
         Thread {
             Thread.sleep(500)
             SkyHanniMod.configManager.disableSaving()
@@ -255,28 +277,16 @@ object SkyHanniDebugsAndTests {
     }
 
     private fun reloadListeners() {
-        // TODO: use repo for this and implement it correctly
-        val blockedFeatures = try {
-            File("config/skyhanni/blocked-features.txt").readLines().toList()
-        } catch (_: Exception) {
-            emptyList()
-        }
-
         val modules = SkyHanniMod.modules
         for (original in modules.toMutableList()) {
             val javaClass = original.javaClass
             val simpleName = javaClass.simpleName
             SkyHanniEvents.unregister(original)
             println("Unregistered listener $simpleName")
-
-            if (simpleName !in blockedFeatures) {
-                modules.remove(original)
-                modules.add(original)
-                SkyHanniEvents.register(original)
-                println("Registered listener $simpleName")
-            } else {
-                println("Skipped registering listener $simpleName")
-            }
+            modules.remove(original)
+            modules.add(original)
+            SkyHanniEvents.register(original)
+            println("Registered listener $simpleName")
         }
         ChatUtils.chat("Reloaded ${modules.size} listener classes.")
     }
@@ -354,10 +364,22 @@ object SkyHanniDebugsAndTests {
         )
     }
 
-    @HandleEvent(GuiKeyPressEvent::class)
-    fun onKeybind() {
-        if (!debugConfig.copyInternalName.isKeyHeld()) return
-        val stack = stackUnderCursor() ?: return
+    private var skinId: String? = null
+    private var skinIdTime: SimpleTimeMark = SimpleTimeMark.farPast()
+
+    @HandleEvent(onlyOnSkyblock = true)
+    private fun onGuiKeyPress(event: GuiKeyPressEvent) {
+        if (debugConfig.copyCosmeticsSkullData.isKeyHeld()) {
+            val stack = event.stackUnderCursor ?: return
+            copyCosmeticsData(stack)
+        }
+        if (debugConfig.copyInternalName.isKeyHeld()) {
+            val stack = event.stackUnderCursor ?: return
+            copyInternalName(stack)
+        }
+    }
+
+    private fun copyInternalName(stack: SafeItemStack) {
         val internalName = stack.getInternalNameOrNull() ?: return
         val rawInternalName = internalName.asString()
         OSUtils.copyToClipboard(rawInternalName)
@@ -365,7 +387,7 @@ object SkyHanniDebugsAndTests {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onShowInternalName(event: ToolTipTextEvent) {
+    private fun onShowInternalName(event: ToolTipTextEvent) {
         if (!debugConfig.showInternalName) return
         val itemStack = event.itemStack
         val internalName = itemStack.getInternalName()
@@ -374,7 +396,7 @@ object SkyHanniDebugsAndTests {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun showItemRarity(event: ToolTipTextEvent) {
+    private fun showItemRarity(event: ToolTipTextEvent) {
         if (!debugConfig.showItemRarity) return
         val itemStack = event.itemStack
 
@@ -383,7 +405,7 @@ object SkyHanniDebugsAndTests {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun showItemCategory(event: ToolTipTextEvent) {
+    private fun showItemCategory(event: ToolTipTextEvent) {
         if (!debugConfig.showItemCategory) return
         val itemStack = event.itemStack
 
@@ -392,7 +414,7 @@ object SkyHanniDebugsAndTests {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onShowNpcPrice(event: ToolTipTextEvent) {
+    private fun onShowNpcPrice(event: ToolTipTextEvent) {
         if (!debugConfig.showNpcPrice) return
         val internalName = event.itemStack.getInternalNameOrNull() ?: return
 
@@ -401,7 +423,7 @@ object SkyHanniDebugsAndTests {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onShowBaseStats(event: ToolTipTextEvent) {
+    private fun onShowBaseStats(event: ToolTipTextEvent) {
         if (!debugConfig.showBaseValues) return
         val internalName = event.itemStack.getInternalNameOrNull() ?: return
 
@@ -416,7 +438,7 @@ object SkyHanniDebugsAndTests {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onShowCraftPrice(event: ToolTipTextEvent) {
+    private fun onShowCraftPrice(event: ToolTipTextEvent) {
         if (!debugConfig.showCraftPrice) return
         val price = event.itemStack.getInternalNameOrNull()?.getRawCraftCostOrNull() ?: return
 
@@ -424,7 +446,7 @@ object SkyHanniDebugsAndTests {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onShowBzPrice(event: ToolTipTextEvent) {
+    private fun onShowBzPrice(event: ToolTipTextEvent) {
         if (!debugConfig.showBZPrice) return
         val internalName = event.itemStack.getInternalNameOrNull() ?: return
 
@@ -437,7 +459,7 @@ object SkyHanniDebugsAndTests {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onShowBinPrice(event: ToolTipTextEvent) {
+    private fun onShowBinPrice(event: ToolTipTextEvent) {
         if (!debugConfig.showBinPrice) return
         val internalName = event.itemStack.getInternalNameOrNull() ?: return
         if (!internalName.isAuctionHouseItem()) return
@@ -448,7 +470,7 @@ object SkyHanniDebugsAndTests {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onShowItemName(event: ToolTipTextEvent) {
+    private fun onShowItemName(event: ToolTipTextEvent) {
         if (!debugConfig.showItemName) return
         val itemStack = event.itemStack
         val internalName = itemStack.getInternalName()
@@ -460,23 +482,49 @@ object SkyHanniDebugsAndTests {
         event.toolTip.add("Item name: '$name§7'")
     }
 
-    @HandleEvent(GuiRenderEvent.GuiOverlayRenderEvent::class, onlyOnSkyblock = true)
-    fun onRenderOverlay() {
+    @HandleEvent(onlyOnSkyblock = true)
+    private fun onGuiRenderOverlay() {
         // TODO: make this not tied to debug HUD
         if (!debugConfig.enabled || !MinecraftCompat.showDebugHud) return
         config.debugPos.renderRenderables(displayList, posLabel = "Test Display")
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onOreMined(event: OreMinedEvent) {
+    private fun onOreMined(event: OreMinedEvent) {
         if (!debugConfig.oreEventMessages) return
         val originalOre = event.originalOre?.let { "$it " }.orEmpty()
         val extraBlocks = event.extraBlocks.map { "${it.key.name}: ${it.value}" }
         ChatUtils.debug("Mined: $originalOre(${extraBlocks.joinToString()})")
     }
 
+    @HandleEvent(onlyOnSkyblock = true)
+    private fun onGuiRender() {
+        if (debugConfig.copyCosmeticsSkullData == GLFW.GLFW_KEY_UNKNOWN) return
+        val stack = InventoryCompat.stackUnderCursor() ?: return
+        if (!stack.getCleanLore().any { it.contains("Right-click to preview!") }) return
+
+        val internalName = stack.getInternalNameOrNull() ?: return
+        skinId = internalName.asString()
+        skinIdTime = SimpleTimeMark.now()
+    }
+
+    private fun copyCosmeticsData(stack: SafeItemStack) {
+        if (!stack.`is`(Items.PLAYER_HEAD)) return
+        val skinId = skinId ?: return
+        if (skinIdTime.passedSince() > 2.minutes) return
+
+        val skullTexture = stack.getSkullTexture()
+        val skullOwner = stack.getSkullOwner() ?: "unknown"
+        val skull = if (skullTexture != null) "\"$skullOwner:$skullTexture\"" else ""
+        val skinColor = stack.cleanName.uppercase(Locale.getDefault()).replace(" ", "_")
+        val formatted = "\"${skinId}_${skinColor}\": {\"ticks\": 1, \"textures\": [$skull]},"
+
+        OSUtils.copyToClipboard(formatted)
+        ChatUtils.chat("§eCopied cosmetic data to the clipboard!")
+    }
+
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(3, "dev.debugEnabled", "dev.debug.enabled")
         event.move(3, "dev.showInternalName", "dev.debug.showInternalName")
         event.move(3, "dev.showEmptyNames", "dev.debug.showEmptyNames")
@@ -488,7 +536,7 @@ object SkyHanniDebugsAndTests {
 
     @Suppress("LongMethod")
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shresetconfig") {
             description = "Reloads the config manager and rendering processors of MoulConfig. " +
                 "This §cWILL RESET §7your config, but also update the config files " +
@@ -574,15 +622,17 @@ object SkyHanniDebugsAndTests {
             }
             simpleCallback { waypoint() }
         }
-        event.registerBrigadier("shstoplisteners") {
-            description = "Unregistering all loaded event listeners"
-            category = CommandCategory.DEVELOPER_TEST
-            callback { stopListeners() }
-        }
-        event.registerBrigadier("shreloadlisteners") {
-            description = "Reloads all event listeners again"
-            category = CommandCategory.DEVELOPER_TEST
-            callback { reloadListeners() }
+        if (PlatformUtils.isDevEnvironment) {
+            event.registerBrigadier("shstoplisteners") {
+                description = "Unregistering all loaded event listeners"
+                category = CommandCategory.DEVELOPER_TEST
+                callback { stopListeners() }
+            }
+            event.registerBrigadier("shreloadlisteners") {
+                description = "Reloads all event listeners again"
+                category = CommandCategory.DEVELOPER_TEST
+                callback { reloadListeners() }
+            }
         }
         event.registerBrigadier("shresetcontestdata") {
             description = "Resets Jacob's Contest Data"
@@ -595,8 +645,10 @@ object SkyHanniDebugsAndTests {
             callback {
                 if (SkyBlockUtils.inSkyBlock) {
                     ChatUtils.chat("§eYou are currently in ${SkyBlockUtils.currentIsland}.")
+                } else if (SkyBlockUtils.onHypixel) {
+                    ChatUtils.chat("§eYou are on Hypixel, but not in SkyBlock.")
                 } else {
-                    ChatUtils.chat("§eYou are not in SkyBlock.")
+                    ChatUtils.chat("§eYou are not on Hypixel.")
                 }
             }
         }

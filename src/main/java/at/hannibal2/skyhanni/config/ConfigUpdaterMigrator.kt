@@ -3,7 +3,7 @@ package at.hannibal2.skyhanni.config
 import at.hannibal2.skyhanni.api.event.SkyHanniEvent
 import at.hannibal2.skyhanni.skyhannimodule.PrimaryFunction
 import at.hannibal2.skyhanni.test.command.ErrorManager
-import at.hannibal2.skyhanni.utils.LorenzLogger
+import at.hannibal2.skyhanni.utils.SkyHanniLogger
 import at.hannibal2.skyhanni.utils.json.asIntOrNull
 import at.hannibal2.skyhanni.utils.json.shDeepCopy
 import com.google.gson.JsonElement
@@ -11,9 +11,8 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 
 object ConfigUpdaterMigrator {
-
-    val logger = LorenzLogger("ConfigMigration")
-    const val CONFIG_VERSION = 127
+    val logger = SkyHanniLogger("ConfigMigration")
+    const val CONFIG_VERSION = 149
     fun JsonElement.at(chain: List<String>, init: Boolean): JsonElement? {
         if (chain.isEmpty()) return this
         if (this !is JsonObject) return null
@@ -33,7 +32,6 @@ object ConfigUpdaterMigrator {
         var movesPerformed: Int,
         val dynamicPrefix: Map<String, List<String>>,
     ) : SkyHanniEvent() {
-
         init {
             dynamicPrefix.entries
                 .filter { it.value.isEmpty() }
@@ -67,8 +65,8 @@ object ConfigUpdaterMigrator {
                 }
                 for (realPrefix in realPrefixes) {
                     add(since, "$realPrefix.${path.substringAfter('.')}", value)
-                    return
                 }
+                return
             }
             val newParentElement = new.at(np.dropLast(1), true)
             if (newParentElement !is JsonObject) {
@@ -117,6 +115,7 @@ object ConfigUpdaterMigrator {
                         "$realPrefix.${toPath.substringAfter('.')}", transform,
                     )
                 }
+                return
             }
             val oldElem = old.at(op, false)
             if (oldElem == null) {
@@ -165,6 +164,7 @@ object ConfigUpdaterMigrator {
                 for (realPrefix in realPrefixes) {
                     remove(since, "$realPrefix.${oldPath.substringAfter('.')}")
                 }
+                return
             }
             val oldElem = old.at(op, false)
             if (oldElem == null) {

@@ -3,28 +3,33 @@ package at.hannibal2.skyhanni.config
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.config.core.config.Position
 import at.hannibal2.skyhanni.config.core.config.PositionList
+import at.hannibal2.skyhanni.config.storage.AchievementStorage
 import at.hannibal2.skyhanni.config.storage.CustomTodosStorage
 import at.hannibal2.skyhanni.config.storage.OrderedWaypointsRoutes
+import at.hannibal2.skyhanni.config.storage.SeenContributorStorage
 import at.hannibal2.skyhanni.config.storage.SpecificSeaCreatureStorage
+import at.hannibal2.skyhanni.data.HypixelData
 import at.hannibal2.skyhanni.data.PetDataStorage
 import at.hannibal2.skyhanni.data.jsonobjects.local.FriendsJson
 import at.hannibal2.skyhanni.data.jsonobjects.local.JacobContestsJson
 import at.hannibal2.skyhanni.data.jsonobjects.local.KnownFeaturesJson
 import at.hannibal2.skyhanni.data.jsonobjects.local.VisualWordsJson
+import at.hannibal2.skyhanni.features.misc.ContributorManager
 import at.hannibal2.skyhanni.features.misc.update.UpdateManager
+import at.hannibal2.skyhanni.features.pets.PetDisplayConfigGuiManager
 import at.hannibal2.skyhanni.test.command.ErrorManager
+import at.hannibal2.skyhanni.utils.ConfigUtils
+import at.hannibal2.skyhanni.utils.DelayedRun
 import at.hannibal2.skyhanni.utils.IdentityCharacteristics
-import at.hannibal2.skyhanni.utils.LorenzLogger
 import at.hannibal2.skyhanni.utils.OSUtils
 import at.hannibal2.skyhanni.utils.ReflectionUtils.makeAccessible
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
+import at.hannibal2.skyhanni.utils.SkyHanniLogger
 import at.hannibal2.skyhanni.utils.StringFileHandler
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.enumMapOf
 import at.hannibal2.skyhanni.utils.json.BaseGsonBuilder
 import at.hannibal2.skyhanni.utils.system.PlatformUtils
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.TypeAdapterFactory
 import io.github.notenoughupdates.moulconfig.annotations.ConfigLink
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 import io.github.notenoughupdates.moulconfig.gui.GuiOptionEditor
@@ -39,32 +44,23 @@ import java.io.IOException
 import java.lang.reflect.Field
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.concurrent.fixedRateTimer
 import kotlin.reflect.KMutableProperty0
 import kotlin.time.Duration.Companion.days
 
-private fun GsonBuilder.registerIfBeta(create: TypeAdapterFactory): GsonBuilder {
-    return if (SkyHanniMod.isBetaVersion) {
-        registerTypeAdapterFactory(create)
-    } else this
-}
-
 class ConfigManager {
     companion object {
-
-        val gson: Gson = BaseGsonBuilder.gson()
-//             .registerIfBeta(FeatureTogglesByDefaultAdapter)
-            .create()
-
-        val configDirectory = File("config/skyhanni")
+        val gson: Gson = BaseGsonBuilder.gson().create()
     }
 
-    private val logger = LorenzLogger("config_manager")
+    private val logger = SkyHanniLogger("config_manager")
 
     private val jsonHolder: Map<ConfigFileType, Any> = enumMapOf()
 
     lateinit var processor: BlockingMoulConfigProcessor
     private var disableSaving = false
+    private val pendingSaves = ConcurrentHashMap<ConfigFileType, String>()
 
     private fun setConfigHolder(type: ConfigFileType, value: Any) {
         require(value.javaClass == type.clazz)
@@ -77,16 +73,20 @@ class ConfigManager {
         if (jsonHolder.isNotEmpty()) {
             logger.log("Loading config despite config being already loaded?")
         }
-        configDirectory.mkdirs()
+        SkyHanniMod.configDir.mkdirs()
 
 
         for (fileType in ConfigFileType.entries) {
-            setConfigHolder(fileType, firstLoadFile(fileType.file, fileType, fileType.clazz.newInstance()))
+            val clazzInstance = fileType.clazz.getDeclaredConstructor().newInstance()
+            setConfigHolder(fileType, firstLoadFile(fileType.file, fileType, clazzInstance))
         }
 
         // TODO use SecondPassedEvent
-        fixedRateTimer(name = "skyhanni-config-auto-save", period = 60_000L, initialDelay = 60_000L) {
+        fixedRateTimer(name = "skyhanni-config-auto-save", daemon = true, period = 60_000L, initialDelay = 60_000L) {
             saveConfig(ConfigFileType.FEATURES, "auto-save-60s")
+        }
+        fixedRateTimer(name = "skyhanni-config-pending-save", daemon = true, period = 10_000L, initialDelay = 10_000L) {
+            savePendingConfigs()
         }
 
         val features = SkyHanniMod.feature
@@ -102,7 +102,8 @@ class ConfigManager {
     }
 
     private fun deleteOldBackups() {
-        OSUtils.deleteExpiredFiles(File("skyhanni/config/backup"), SkyHanniMod.feature.dev.configBackupExpiryTime.days)
+        val file = SkyHanniMod.configDir.resolve("backup")
+        OSUtils.deleteExpiredFiles(file, SkyHanniMod.feature.dev.configBackupExpiryTime.days)
     }
 
     private fun findPositionLinks(obj: Any?, slog: MutableSet<IdentityCharacteristics<Any>>) {
@@ -173,8 +174,12 @@ class ConfigManager {
                         try {
                             run()
                         } catch (e: Throwable) {
-                            logger.log(e.stackTraceToString())
-                            PlatformUtils.shutdownMinecraft("Config is corrupt inside development environment.")
+                            logger.logError("Failed to read $fileName from $file", e)
+                            PlatformUtils.shutdownMinecraft(
+                                "Config is corrupt inside development environment. " +
+                                    "Maybe you forgot to implement a config migration, or the migration failed. " +
+                                    "Cause: ${e.message}",
+                            )
                         }
                     } else {
                         run()
@@ -185,21 +190,17 @@ class ConfigManager {
 
                 logger.log("Loaded $fileName from file")
             } catch (e: Exception) {
-                logger.log(e.stackTraceToString())
                 val backupFile = file.resolveSibling("$fileName-${SimpleTimeMark.now().toMillis()}-backup.json")
-                logger.log("Exception while reading $file. Will load blank $fileName and save backup to $backupFile")
-                logger.log("Exception was $e")
+                logger.logError(
+                    "Exception while reading $file. Will load blank $fileName and save backup to $backupFile",
+                    e,
+                )
                 try {
                     file.copyTo(backupFile)
                 } catch (e: Exception) {
-                    logger.log("Could not create backup for $fileName file")
-                    logger.log(e.stackTraceToString())
+                    logger.logError("Could not create backup for $fileName file", e)
                 }
             }
-        }
-
-        if (output == defaultValue) {
-            logger.log("Setting $fileName to be blank as it did not exist. It will be saved once something is written to it")
         }
         if (output == null) {
             logger.log("Setting $fileName to be blank as it was null. It will be saved once something is written to it")
@@ -209,7 +210,22 @@ class ConfigManager {
         return output
     }
 
-    fun saveConfig(fileType: ConfigFileType, reason: String) {
+    fun saveConfig(fileType: ConfigFileType, reason: String, now: Boolean = false) {
+        if (now) {
+            pendingSaves.remove(fileType)
+            writeConfig(fileType, reason)
+        } else {
+            pendingSaves[fileType] = reason
+        }
+    }
+
+    fun savePendingConfigs() {
+        for (fileType in ConfigFileType.entries) {
+            pendingSaves.remove(fileType)?.let { writeConfig(fileType, it) }
+        }
+    }
+
+    private fun writeConfig(fileType: ConfigFileType, reason: String) = DelayedRun.runOrNextTick {
         val json = jsonHolder[fileType] ?: error("Could not find json object for $fileType")
         saveFile(fileType.file, fileType.fileName, json, reason)
         saveFile(fileType.backupFile, fileType.fileName, json, reason)
@@ -217,6 +233,7 @@ class ConfigManager {
 
     private fun saveFile(file: File, fileName: String, data: Any, reason: String) {
         if (disableSaving) return
+        if (HypixelData.hypixelAlpha && !PlatformUtils.isDevEnvironment) return
         logger.log("saveConfig: $reason")
         try {
             logger.log("Saving $fileName file")
@@ -233,8 +250,7 @@ class ConfigManager {
                 "fileName" to fileName,
             )
         } catch (e: IOException) {
-            logger.log("Could not save $fileName file to $file")
-            logger.log(e.stackTraceToString())
+            logger.logError("Could not save $fileName file to $file", e)
         }
     }
 
@@ -242,8 +258,15 @@ class ConfigManager {
         disableSaving = true
     }
 
+    /**
+     * Rebuilds the MoulConfig editor and processor only. Config objects (SkyHanniMod.feature and
+     * all nested objects) are not recreated here; they are created once in firstLoad() and remain
+     * the same instances for the entire session.
+     */
     fun recreateConfig() {
         ConfigGuiManager.editor = null
+        PetDisplayConfigGuiManager.invalidate()
+        ConfigUtils.clearEditorCache()
         val features = SkyHanniMod.feature
         processor = BlockingMoulConfigProcessor()
         BuiltinMoulConfigGuis.addProcessors(processor)
@@ -279,13 +302,17 @@ enum class ConfigFileType(val fileName: String, val clazz: Class<*>, val propert
     ROUTES("routes", OrderedWaypointsRoutes::class.java, SkyHanniMod::orderedWaypointsRoutesData),
     CUSTOM_TODOS("custom_todos", CustomTodosStorage::class.java, SkyHanniMod::customTodos),
     SEA_CREATURES("sea_creature_settings", SpecificSeaCreatureStorage::class.java, SkyHanniMod::seaCreatureStorage),
+    ACHIEVEMENTS("achievements", AchievementStorage::class.java, SkyHanniMod::achievementStorage),
+    SEEN_CONTRIBUTORS("seen_contributors", SeenContributorStorage::class.java, SkyHanniMod::seenContributorStorage),
     ;
 
-    val file by lazy { File(ConfigManager.configDirectory, "$fileName.json") }
+    val file: File by lazy { SkyHanniMod.configDir.resolve("$fileName.json") }
     val backupFile get() = getBackupFile(file)
 }
 
 class BlockingMoulConfigProcessor : MoulConfigProcessor<SkyHanniConfig>(SkyHanniMod.feature) {
+    val isDev by lazy { ContributorManager.isSelfDeveloper() }
+
     override fun createOptionGui(
         processedOption: ProcessedOption,
         field: Field,
@@ -305,6 +332,12 @@ class BlockingMoulConfigProcessor : MoulConfigProcessor<SkyHanniConfig>(SkyHanni
 
         EnforcedConfigValues.isBlockedFromEditing(extraPath)?.let { extraMessage ->
             return GuiOptionEditorBlocked(default, extraMessage)
+        }
+
+        if (!isDev) {
+            if (field.isAnnotationPresent(OnlyDebug::class.java)) {
+                return GuiOptionEditorHidden(default)
+            }
         }
 
         return default

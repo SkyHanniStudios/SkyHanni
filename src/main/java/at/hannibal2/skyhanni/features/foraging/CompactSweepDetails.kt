@@ -4,8 +4,7 @@ import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.storage.Resettable
 import at.hannibal2.skyhanni.data.IslandType
-import at.hannibal2.skyhanni.data.IslandTypeTags
-import at.hannibal2.skyhanni.events.IslandChangeEvent
+import at.hannibal2.skyhanni.data.IslandTypeTag
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
@@ -144,7 +143,7 @@ object CompactSweepDetails {
     }
 
     @HandleEvent
-    fun onIslandChange(event: IslandChangeEvent) {
+    fun onIslandLeave() {
         resetSweepDetailsVariables()
     }
 
@@ -182,9 +181,11 @@ object CompactSweepDetails {
         val chatComponent = chatText.asComponent()
 
         chatComponent.hover = hoverText.asComponent()
-        chatComponent.onClick(onClick = {
-            HypixelCommands.treeGifts()
-        })
+        chatComponent.onClick(
+            onClick = {
+                HypixelCommands.treeGifts()
+            },
+        )
 
         ChatUtils.chat(chatComponent, prefix = false)
         resetSweepDetailsVariables()
@@ -202,5 +203,5 @@ object CompactSweepDetails {
 
     private fun isFinalCalculation(regexGroup: String): Boolean = regexGroup == "§a"
 
-    private fun isInIsland(): Boolean = IslandTypeTags.FORAGING.inAny() || IslandType.HUB.isCurrent()
+    private fun isInIsland(): Boolean = IslandTypeTag.FORAGING.isInIsland() || IslandType.HUB.isInIsland()
 }

@@ -28,7 +28,7 @@ object TitleManager {
     private val titleLocationQueues: MutableMap<TitleLocation, CollectionUtils.OrderedQueue<TitleContext>> = enumMapOf()
     private val currentTitles: MutableMap<TitleLocation, TitleContext?> = enumMapOf()
     val guiConfig get() = SkyHanniMod.feature.gui
-    val existingIntentions = guiConfig.titleIntentionPositions.values.map { it.keys }.flatten().toSet()
+    val existingIntentions = guiConfig.titleIntentionPositions.values.flatMap { it.keys }.toSet()
     val intentionMapper: MutableMap<String, TitleIntention> = mutableMapOf()
 
     inline fun<reified E : Enum<E>> registerIntentions(
@@ -240,7 +240,7 @@ object TitleManager {
     }
 
     @HandleEvent
-    fun onDebug(event: DebugDataCollectEvent) {
+    fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("TitleManager")
         event.addIrrelevant {
             add(
@@ -339,7 +339,7 @@ object TitleManager {
     }
 
     @HandleEvent
-    fun onRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
         if (InventoryUtils.inInventory()) return
         val globalTitle = currentTitles[TitleLocation.GLOBAL] ?: return
         globalTitle.tryRenderGlobalTitle()

@@ -148,11 +148,11 @@ data class LorenzVec(
 
     fun roundToBlock() = LorenzVec(floor(x), floor(y), floor(z))
 
-    fun blockCenter() = roundToBlock().add(0.5, 0.5, 0.5)
+    fun blockCenter() = roundToBlock().addHalf()
 
     fun slope(other: LorenzVec, factor: Double) = this + (other - this).scale(factor)
 
-    // TODO better name. dont confuse with roundTo()
+    // TODO better name. don't confuse with roundTo()
     fun roundLocation(): LorenzVec {
         val x = if (x < 0) x.toInt() - 1 else x.toInt()
         val y = y.toInt() - 1
@@ -322,6 +322,8 @@ fun Vec3.toLorenzVec(): LorenzVec = LorenzVec(x, y, z)
 fun Rotations.toLorenzVec(): LorenzVec = LorenzVec(x(), y(), z())
 
 fun ClientboundLevelParticlesPacket.toLorenzVec() = LorenzVec(x, y, z)
+
+fun ClientboundLevelParticlesPacket.toOffset() = LorenzVec(xDist, yDist, zDist)
 
 fun Array<Double>.toLorenzVec(): LorenzVec {
     return LorenzVec(this[0], this[1], this[2])

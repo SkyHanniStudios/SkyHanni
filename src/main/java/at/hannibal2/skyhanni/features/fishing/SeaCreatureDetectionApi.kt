@@ -46,7 +46,8 @@ object SeaCreatureDetectionApi {
 
     private var lastNameFished: String? = null
     private var mobsToFind = 0
-    private var lastSeaCreatureFished = SimpleTimeMark.farPast()
+    var lastSeaCreatureFished = SimpleTimeMark.farPast()
+        private set
 
     private val recentMobs = mutableMapOf<Mob, ServerTimeMark>()
 
@@ -255,7 +256,7 @@ object SeaCreatureDetectionApi {
 
     @Suppress("MaxLineLength")
     @HandleEvent
-    fun onDebug(event: DebugDataCollectEvent) {
+    fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Sea Creatures")
         event.addIrrelevant {
             entityIdToData.forEach { (entityID, data) ->

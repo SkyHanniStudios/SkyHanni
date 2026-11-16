@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -6,26 +7,36 @@ plugins {
 }
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(25))
 }
 
 repositories {
     mavenCentral()
     maven("https://jitpack.io") {
         content {
-            includeGroupByRegex("com\\.github\\..*")
+            includeGroupAndSubgroups("com.github")
         }
     }
 }
 
 dependencies {
-    implementation("com.google.code.gson:gson:2.13.1")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib")
-    implementation("com.github.SkyHanniStudios:SkyHanniChangelogBuilder:1.1.3")
+    implementation(libs.gson)
+    implementation(libs.kotlin.stdlib)
+    implementation(libs.changelog.builder)
     implementation(files("../sharedVariables/build/libs/sharedVariables.jar"))
-    implementation("com.github.mizosoft.methanol:methanol:1.8.3")
+    implementation(libs.methanol)
+    compileOnly(libs.kotlin.compiler.embeddable) {
+        exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib")
+    }
+    compileOnly(libs.detekt.api) {
+        exclude(group = "org.jetbrains.kotlin")
+    }
 }
 
 tasks.withType<KotlinCompile> {
-    compilerOptions.jvmTarget.set(JvmTarget.fromTarget("21"))
+    compilerOptions {
+        jvmTarget.set(JvmTarget.fromTarget("25"))
+        languageVersion.set(KotlinVersion.KOTLIN_2_4)
+        apiVersion.set(KotlinVersion.KOTLIN_2_4)
+    }
 }

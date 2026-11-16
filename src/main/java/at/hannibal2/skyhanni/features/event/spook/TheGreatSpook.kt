@@ -4,23 +4,18 @@ import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.jsonobjects.repo.EventsJson
 import at.hannibal2.skyhanni.data.model.SkyblockStat
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.IslandChangeEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
+import at.hannibal2.skyhanni.utils.Calculator
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.ConditionalUtils.afterChange
 import at.hannibal2.skyhanni.utils.DelayedRun
 import at.hannibal2.skyhanni.utils.HypixelCommands
-import at.hannibal2.skyhanni.utils.Calculator
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderable
-import at.hannibal2.skyhanni.utils.RenderUtils.renderString
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SoundUtils
 import at.hannibal2.skyhanni.utils.TimeUnit
@@ -35,6 +30,7 @@ import kotlin.time.Duration.Companion.seconds
 @SkyHanniModule
 object TheGreatSpook {
     private val config get() = SkyHanniMod.feature.event.spook
+    private val needPrimalFear get() = config.primalFearNotification || config.primalFearTimer
 
     private var isGreatSpookActive = false
     private var greatSpookTimeRange: ClosedRange<SimpleTimeMark>? = null
@@ -44,6 +40,7 @@ object TheGreatSpook {
     private var displayGreatSpookEnd: Renderable? = null
 
     private var timeUntilNextMob = SimpleTimeMark.farPast()
+    private var hasNotifiedPrimalFearReady = false
 
     private val publicSpeakingSolutions = CircularList(
         "I looove SkyHanni!",
@@ -54,31 +51,32 @@ object TheGreatSpook {
     private val patternGroup = RepoPattern.group("event.greatspook")
 
     /**
-     * @regexTest §d§lQUICK MATHS! §r§7Solve: §r§e(10*2)+12*5
+     * REGEX-TEST: QUICK MATHS! Solve: (10*2)+12*5
+     * REGEX-TEST: QUICK MATHS! Solve: 12x11
      */
     private val mathFearMessagePattern by patternGroup.pattern(
-        "chat.math",
-        "§d§lQUICK MATHS! §r§7Solve: §r§e(?<math>.*)",
+        "chat.math.colorless",
+        "QUICK MATHS! Solve: (?<math>.*)",
     )
 
     /**
-     * @regexTest §4[FEAR] Public Speaking Demon§r§f: Speak PlasticEating!
+     * REGEX-TEST: [FEAR] Public Speaking Demon: Speak PlasticEating!
      */
     private val speakingFearMessagePattern by patternGroup.pattern(
-        "chat.speaking",
-        "§4\\[FEAR] Public Speaking Demon§r§f: (?:Speak|Say something interesting) (?<name>.*)!",
+        "chat.speaking.colorless",
+        "\\[FEAR] Public Speaking Demon: (?:Speak|Say something interesting) (?<name>.*)!",
     )
 
     /**
-     * @regexTest §5§lFEAR. §r§eA §r§dPrimal Fear §r§ehas been summoned!
+     * REGEX-TEST: FEAR. A Primal Fear has been summoned!
      */
     private val primalFearSpawnPattern by patternGroup.pattern(
-        "mob.spawn",
-        "§5§lFEAR\\. §r§eA §r§dPrimal Fear §r§ehas been summoned!",
+        "mob.spawn.colorless",
+        "FEAR\\. A Primal Fear has been summoned!",
     )
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed() {
         if (!isGreatSpookActive) return
 
         val fear = SkyblockStat.FEAR.lastKnownValue ?: 0.0
@@ -91,13 +89,13 @@ object TheGreatSpook {
                     showSmallerUnits = false,
                 )
             }"
-        } else {
-            "§5§lPrimal Fear Ready!"
-        }
+        } else "§5§lPrimal Fear Ready!"
+
         displayMobCooldown = Renderable.text(mobCooldownString)
 
-        if (config.primalFearNotification && mobCooldown.isInPast()) {
+        if (config.primalFearNotification && mobCooldown.isInPast() && !hasNotifiedPrimalFearReady) {
             SoundUtils.playPlingSound()
+            hasNotifiedPrimalFearReady = true
         }
 
         val greatSpookEnd = greatSpookTimeRange?.endInclusive ?: return
@@ -115,7 +113,7 @@ object TheGreatSpook {
     }
 
     @HandleEvent
-    fun onConfigLoad(event: ConfigLoadEvent) {
+    private fun onConfigLoad() {
         val config = SkyHanniMod.feature.dev.debug.forceGreatSpook
         config.afterChange {
             if (config.get()) {
@@ -135,7 +133,7 @@ object TheGreatSpook {
     }
 
     @HandleEvent
-    fun onIslandChange(event: IslandChangeEvent) {
+    private fun onIslandChange() {
         val currentTime = SimpleTimeMark.now()
         val timeRange = greatSpookTimeRange ?: run {
             isGreatSpookActive = false
@@ -146,23 +144,17 @@ object TheGreatSpook {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay() {
         if (!isGreatSpookActive) return
 
-        if (config.primalFearTimer) {
-            displayMobCooldown?.let {
-                config.positionTimer.renderRenderable(it, posLabel = "Primal Fear Timer")
-            }
+        if (config.primalFearTimer) displayMobCooldown?.let {
+            config.positionTimer.renderRenderable(it, posLabel = "Primal Fear Timer")
         }
-        if (config.fearStatDisplay) {
-            SkyblockStat.FEAR.displayValue?.let {
-                config.positionFear.renderString(it, posLabel = "Fear Stat Display")
-            }
+        if (config.fearStatDisplay) SkyblockStat.FEAR.displayValue?.let {
+            config.positionFear.renderRenderable(Renderable.text(it), posLabel = "Fear Stat Display")
         }
-        if (config.greatSpookTimeLeft) {
-            displayGreatSpookEnd?.let {
-                config.positionTimeLeft.renderRenderable(it, posLabel = "Great Spook Time Left")
-            }
+        if (config.greatSpookTimeLeft) displayGreatSpookEnd?.let {
+            config.positionTimeLeft.renderRenderable(it, posLabel = "Great Spook Time Left")
         }
     }
 
@@ -195,39 +187,34 @@ object TheGreatSpook {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!isGreatSpookActive) return
-
-        if (primalFearSpawnPattern.matches(event.message)) {
+        val message = event.cleanMessage
+        if (primalFearSpawnPattern.matches(message)) {
             timeUntilNextMob = SimpleTimeMark.now().plus(6.minutes)
-            if (SkyblockStat.FEAR.lastKnownValue == null && (config.primalFearNotification || config.primalFearTimer)) {
-                ChatUtils.userError(
-                    "Fear stat not found! Please enable the Stats widget and enable the Fear stat for the best results.",
-                    replaceSameMessage = true,
-                )
-            }
+            hasNotifiedPrimalFearReady = false
+            if (SkyblockStat.FEAR.lastKnownValue == null && needPrimalFear) ChatUtils.userError(
+                "Fear stat not found! Please enable the Stats widget and enable the Fear stat for the best results.",
+                replaceSameMessage = true,
+            )
             return
         }
 
-        if (config.primalFearSolver.math) {
-            mathFearMessagePattern.matchMatcher(event.message) {
-                DelayedRun.runNextTick {
-                    mathSolver(group("math"))
-                }
+        if (config.primalFearSolver.math) mathFearMessagePattern.matchMatcher(message) {
+            DelayedRun.runNextTick {
+                mathSolver(group("math"))
             }
         }
 
-        if (config.primalFearSolver.publicSpeaking) {
-            speakingFearMessagePattern.matchMatcher(event.message) {
-                DelayedRun.runNextTick {
-                    publicSpeakingSolver()
-                }
+        if (config.primalFearSolver.publicSpeaking) speakingFearMessagePattern.matchMatcher(message) {
+            DelayedRun.runNextTick {
+                publicSpeakingSolver()
             }
         }
     }
 
     @HandleEvent
-    fun onRepoReload(event: RepositoryReloadEvent) {
+    private fun onRepoReload(event: RepositoryReloadEvent) {
         val data = event.getConstant<EventsJson>("Events").greatSpook
 
         val startTime = data["start_time"] ?: SimpleTimeMark.farPast()
@@ -238,7 +225,7 @@ object TheGreatSpook {
     }
 
     @HandleEvent
-    fun onDebug(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Great Spook")
 
         event.addIrrelevant {

@@ -4,14 +4,16 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.config.commands.CommandCategory
 import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
+import at.hannibal2.skyhanni.data.achievements.Achievement
 import at.hannibal2.skyhanni.data.garden.CropCollectionApi.addsToMilestone
 import at.hannibal2.skyhanni.data.garden.cropmilestones.CustomGoals.getCustomGoal
 import at.hannibal2.skyhanni.data.jsonobjects.repo.GardenJson
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
-import at.hannibal2.skyhanni.events.ProfileJoinEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
+import at.hannibal2.skyhanni.events.achievements.AchievementRegistrationEvent
 import at.hannibal2.skyhanni.events.garden.farming.CropCollectionAddEvent
 import at.hannibal2.skyhanni.events.garden.farming.CropMilestoneUpdateEvent
+import at.hannibal2.skyhanni.features.achievements.AchievementManager
 import at.hannibal2.skyhanni.features.garden.CropType
 import at.hannibal2.skyhanni.features.garden.GardenApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -20,12 +22,12 @@ import at.hannibal2.skyhanni.utils.ChatUtils.clickableChat
 import at.hannibal2.skyhanni.utils.ClipboardUtils
 import at.hannibal2.skyhanni.utils.ItemUtils.getLore
 import at.hannibal2.skyhanni.utils.RegexUtils.firstMatcher
+import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.SoundUtils
 import at.hannibal2.skyhanni.utils.SoundUtils.playSound
 import at.hannibal2.skyhanni.utils.StringUtils.removeColor
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
-import net.minecraft.world.item.ItemStack
 
 @SkyHanniModule
 object CropMilestonesApi {
@@ -63,7 +65,7 @@ object CropMilestonesApi {
      */
     val tabListMaxPattern by patternGroup.pattern(
         "tablist.max-no-color",
-        " (?<crop>[\\w ]+) (?<tier>\\d+): MAX"
+        " (?<crop>[\\w ]+) (?<tier>\\d+): MAX",
     )
 
     /**
@@ -75,12 +77,12 @@ object CropMilestonesApi {
     )
 
     @HandleEvent(priority = HandleEvent.LOW)
-    fun onProfileJoin(event: ProfileJoinEvent) {
+    private fun onProfileJoin() {
         if ((cropMilestoneCounter?.size ?: 0) == 0) inaccurateMilestone = true
     }
 
     @HandleEvent
-    fun onCollectionAdd(event: CropCollectionAddEvent) {
+    private fun onCollectionAdd(event: CropCollectionAddEvent) {
         val cropType = event.crop
         val collectionType = event.cropCollectionType
         val amount = event.amount
@@ -101,7 +103,7 @@ object CropMilestonesApi {
     private val cropMilestoneTierCache: MutableMap<CropType, Int> = mutableMapOf()
     private val amountToNextTierCache: MutableMap<CropType, Long> = mutableMapOf()
 
-    fun getCropTypeByLore(itemStack: ItemStack): CropType? {
+    fun getCropTypeByLore(itemStack: SafeItemStack): CropType? {
         cropPattern.firstMatcher(itemStack.getLore()) {
             val name = group("name")
             return CropType.getByNameOrNull(name)
@@ -165,7 +167,7 @@ object CropMilestonesApi {
         return this.milestoneTierAmount(tier + 1)
     }
 
-    fun CropType.milestoneTierAmount(tier: Int): Long { // get the amount of crops for only that tier, eg ms. 46 is 3m
+    fun CropType.milestoneTierAmount(tier: Int): Long { // get the amount of crops for only that tier, e.g. ms. 46 is 3m
         if (tier <= 0) return 0
         val overflowTier = minOf(tier - 1, getMaxTier() - 1)
         val data = this.getMilestoneTiersList()
@@ -191,7 +193,6 @@ object CropMilestonesApi {
 
             return totalCrops
         }
-
 
         for (tierCrops in cropMilestone) {
             totalCrops += tierCrops
@@ -233,6 +234,7 @@ object CropMilestonesApi {
         if (tierProgress >= tierCutoff) {
             val oldLevel = this.getCurrentMilestoneTier() ?: return
             val newLevel = this.milestoneCalculateCurrentTier() ?: return
+            if (newLevel >= 500) AchievementManager.completeAchievement(CROP_MILESTONE_ACHIEVEMENT)
 
             if (config.overflow.chat && sendLevelUp) {
                 if (newLevel > (maxTier)) {
@@ -288,7 +290,6 @@ object CropMilestonesApi {
             return tier
         }
 
-
         tier = getMaxTier()
 
         totalCrops = count - maxMilestoneAmount
@@ -321,7 +322,7 @@ object CropMilestonesApi {
         val cropName = crop.cropName
         val levelUpLine = "§r§b§lGARDEN MILESTONE §3$cropName §8$oldLevel➜§3$newLevel§r"
         val messages = listOf(
-            "§r§3§l▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬§r",
+            "§r§3§l---------------------------------------------§r",
             "  $levelUpLine",
             if (goalReached)
                 listOf(
@@ -333,14 +334,14 @@ object CropMilestonesApi {
                 "",
             "  §r§a§lREWARDS§r",
             rewards.joinToString("\n"),
-            "§r§3§l▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬§r",
+            "§r§3§l---------------------------------------------§r",
         )
 
         clickableChat(
             messages.joinToString("\n"),
             { ClipboardUtils.copyToClipboard(levelUpLine.removeColor()) },
             "Click to copy!",
-            prefix = false
+            prefix = false,
         )
 
         val message = "§e§lYou have reached your milestone goal of §b§l$customGoalLevel " +
@@ -349,7 +350,7 @@ object CropMilestonesApi {
             chat(message, false)
         }
 
-        SoundUtils.createSound("entity.player.levelup", 1f, 1f).playSound()
+        SoundUtils.createSound("entity.player.levelup", 1f, 1f, isWarning = false).playSound()
     }
 
     internal fun clearMilestoneCache() {
@@ -364,12 +365,12 @@ object CropMilestonesApi {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(116, "#profile.garden.cropCounter", "#profile.garden.cropMilestoneCounter")
     }
 
     @HandleEvent
-    fun onRepoReload(event: RepositoryReloadEvent) {
+    private fun onRepoReload(event: RepositoryReloadEvent) {
         cropMilestoneRepoData = event.getConstant<GardenJson>("Garden").cropMilestones
         missingMilestoneRepoData = false
         clearMilestoneCache()
@@ -380,7 +381,7 @@ object CropMilestonesApi {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shresetcropmilestones") {
             description = "Resets crop milestones."
             category = CommandCategory.DEVELOPER_DEBUG
@@ -392,8 +393,8 @@ object CropMilestonesApi {
     }
 
     @HandleEvent
-    fun onDebug(event: DebugDataCollectEvent) {
-        event.title("Crop Milestones Api")
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
+        event.title("Crop Milestones API")
         event.addIrrelevant {
             for (crop in cropMilestoneTierCache) {
                 add("Crop: ${crop.key}, Tier: ${crop.value}")
@@ -402,5 +403,17 @@ object CropMilestonesApi {
                 add("Crop: ${crop.key}, Progress: ${crop.value}")
             }
         }
+    }
+
+    private const val CROP_MILESTONE_ACHIEVEMENT = "Expert Gardener"
+
+    @HandleEvent
+    private fun onAchievementRegistered(event: AchievementRegistrationEvent) {
+        val achievement = Achievement(
+            name = "Expert Gardener",
+            description = "Get a crop milestone to level 500",
+            userLuckAmount = 15f,
+        )
+        event.register(achievement, CROP_MILESTONE_ACHIEVEMENT)
     }
 }

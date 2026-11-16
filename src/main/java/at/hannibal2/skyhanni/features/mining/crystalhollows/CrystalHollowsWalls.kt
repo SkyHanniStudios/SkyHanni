@@ -45,7 +45,7 @@ object CrystalHollowsWalls {
     private const val MIDDLE_Z = 513.0
     private const val MAX_Z = 1024.0
 
-    private val yViewOffset get() = -MinecraftCompat.localPlayer.eyeHeight.toDouble()
+    private val yViewOffset get() = -MinecraftCompat.localPlayerOrThrow.eyeHeight.toDouble()
 
     // Yes Hypixel has misaligned the nucleus
     private val nucleusBB = AABB(
@@ -70,7 +70,7 @@ object CrystalHollowsWalls {
     @HandleEvent
     fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!isEnabled()) return
-        val position = WorldRenderUtils.getViewerPos(event.partialTicks)
+        val position = WorldRenderUtils.getViewerPos()
         when {
             position.y < HEAT_HEIGHT + yViewOffset -> drawHeat(event)
             nucleusBBOffsetY.contains(position.toVec3()) -> {
@@ -296,5 +296,5 @@ object CrystalHollowsWalls {
         )
     }
 
-    private fun isEnabled() = config.enabled && IslandType.CRYSTAL_HOLLOWS.isCurrent()
+    private fun isEnabled() = config.enabled && IslandType.CRYSTAL_HOLLOWS.isInIsland()
 }

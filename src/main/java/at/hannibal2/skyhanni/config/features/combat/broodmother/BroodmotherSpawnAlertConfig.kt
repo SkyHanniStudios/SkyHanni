@@ -21,7 +21,7 @@ class BroodmotherSpawnAlertConfig {
 
     @ConfigOption(name = "Test Sound", desc = "Test current sound settings.")
     @ConfigEditorButton(buttonText = "Test")
-    val testSound: Runnable = Runnable(BroodmotherFeatures::playTestSound)
+    val testSound: () -> Unit = { BroodmotherFeatures.playTestSound() }
 
     @Expose
     @ConfigOption(name = "Repeat Sound", desc = "How many times the sound should be repeated.")

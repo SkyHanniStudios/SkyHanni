@@ -15,7 +15,7 @@ class CakeCounterConfig {
             "\n§eFeatures may also not work as expected if your Cake Counter is not loaded in when on your island.",
     )
     @ConfigEditorInfoText
-    var cakeCounterNote: Boolean = false
+    val cakeCounterNote: Boolean = false
 
     @Expose
     @ConfigOption(
@@ -38,7 +38,8 @@ class CakeCounterConfig {
         DISABLED("Disabled"),
         CAKES_ONLY("Cakes Only"),
         SOULS_ONLY("Souls Only"),
-        BOTH("Both");
+        BOTH("Both"),
+        ;
 
         override fun toString() = displayName
     }
@@ -53,7 +54,8 @@ class CakeCounterConfig {
 
     enum class OfflineTrackingMode(private val displayName: String) {
         SINCE_LAST_LEFT("Since Last Left"),
-        SINCE_LAST_JOINED("Since Last Joined");
+        SINCE_LAST_JOINED("Since Last Joined"),
+        ;
 
         override fun toString() = displayName
     }

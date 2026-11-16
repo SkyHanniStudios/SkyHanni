@@ -5,7 +5,6 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.config.commands.CommandCategory
 import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.bingo.BingoCardUpdateEvent
 import at.hannibal2.skyhanni.features.bingo.BingoApi
 import at.hannibal2.skyhanni.features.bingo.card.goals.BingoGoal
@@ -25,11 +24,13 @@ import at.hannibal2.skyhanni.utils.StringUtils
 import at.hannibal2.skyhanni.utils.StringUtils.removeColor
 import at.hannibal2.skyhanni.utils.TimeUtils.format
 import at.hannibal2.skyhanni.utils.collection.RenderableCollectionUtils.addString
+import at.hannibal2.skyhanni.utils.compat.InventoryGuiScaleCompat
+import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.container.VerticalContainerRenderable.Companion.vertical
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
+import at.hannibal2.skyhanni.utils.renderables.toRenderables
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
-import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.screens.ChatScreen
 import kotlin.time.Duration.Companion.days
 
@@ -40,7 +41,9 @@ object BingoCardDisplay {
     private val config get() = SkyHanniMod.feature.event.bingo.bingoCard
     private val patternGroup = RepoPattern.group("bingo.card.display")
     private val bingoCardInventoryPattern by patternGroup.pattern("inventory", "Bingo Card")
-    private val bingoCardInventoryDetector = InventoryDetector(bingoCardInventoryPattern) { dirty = true }
+    private val bingoCardInventoryDetector = InventoryDetector(
+        onCloseInventory = { dirty = true },
+    ) { bingoCardInventoryPattern }
 
     private var hasHiddenPersonalGoals = false
     private var displayCache: List<Renderable> = emptyList()
@@ -82,8 +85,8 @@ object BingoCardDisplay {
         if (hasHiddenPersonalGoals) dirty = true
     }
 
-    @HandleEvent
-    fun onBingoCardUpdate(event: BingoCardUpdateEvent) {
+    @HandleEvent(BingoCardUpdateEvent::class)
+    fun onBingoCardUpdate() {
         if (!isEnabled()) return
         dirty = true
     }
@@ -110,7 +113,17 @@ object BingoCardDisplay {
 
     // todo use RenderDisplayHelper
     @HandleEvent
-    fun onRenderOverlay(event: GuiRenderEvent) {
+    fun onGuiRenderTop() {
+        if (InventoryUtils.inAnyInventory()) {
+            InventoryGuiScaleCompat.withOriginalHudScale {
+                renderDisplay()
+            }
+        } else {
+            renderDisplay()
+        }
+    }
+
+    private fun renderDisplay() {
         if (!isEnabled()) return
 
         if (dirty) {
@@ -128,11 +141,11 @@ object BingoCardDisplay {
             }
         }
         if (!config.stepHelper && displayMode == 1) displayMode = 2
-        if (displayMode == 0 && Minecraft.getInstance().screen !is ChatScreen) {
+        if (displayMode == 0 && MinecraftCompat.screen !is ChatScreen) {
             config.bingoCardPos.renderRenderables(displayCache, posLabel = "Bingo Card")
         } else if (displayMode == 1) {
             val helpRenderable = Renderable.vertical(
-                BingoNextStepHelper.currentHelp.map { Renderable.text(it) }
+                BingoNextStepHelper.currentHelp.toRenderables()
             )
             config.bingoCardPos.renderRenderable(helpRenderable, posLabel = "Bingo Card")
         }
@@ -266,6 +279,7 @@ object BingoCardDisplay {
     }
 
     private var lastSneak = false
+
     @HandleEvent
     fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(2, "bingo", "event.bingo")

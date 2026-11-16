@@ -14,50 +14,45 @@ import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.ComponentUtils
+import at.hannibal2.skyhanni.utils.DeferredItemStack
 import at.hannibal2.skyhanni.utils.ItemUtils.getLore
 import at.hannibal2.skyhanni.utils.ItemUtils.setLore
 import at.hannibal2.skyhanni.utils.NeuInternalName
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 import at.hannibal2.skyhanni.utils.PrimitiveRecipe
+import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.SkyBlockItemModifierUtils.getPetInfo
 import at.hannibal2.skyhanni.utils.StringUtils.cleanString
 import at.hannibal2.skyhanni.utils.StringUtils.removeUnusedDecimal
 import at.hannibal2.skyhanni.utils.chat.TextHelper.asComponent
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.mapNotNullAsync
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.takeIfNotEmpty
-import at.hannibal2.skyhanni.utils.compat.InventoryCompat.isNotEmpty
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLeadingWhiteLessResets
 import at.hannibal2.skyhanni.utils.compat.getIdentifierString
 import at.hannibal2.skyhanni.utils.compat.getVanillaItem
 import at.hannibal2.skyhanni.utils.compat.setCustomItemName
+import at.hannibal2.skyhanni.utils.itemType
 import at.hannibal2.skyhanni.utils.json.fromJsonOrNull
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
+import net.minecraft.nbt.StringTag
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.ItemStackTemplate
+import java.util.TreeMap
+import kotlin.math.floor
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import net.minecraft.nbt.StringTag
-import net.minecraft.world.item.ItemStack
-import net.minecraft.world.item.Items
-import net.minecraft.world.level.block.Blocks
-import java.io.File
-import java.util.TreeMap
-import kotlin.math.floor
 
 // Most functions are taken from NotEnoughUpdates
 @SkyHanniModule
 object EnoughUpdatesManager {
-
-    val configDirectory = File("config/notenoughupdates")
-    private val repoDirectory = File(configDirectory, "repo")
-    private val itemsFolder = File(repoDirectory, "items")
-
     private val loadingMutex = Mutex()
     private val itemMap = TreeMap<NeuInternalName, NeuItemJson>()
     private val internalNameSet: MutableSet<NeuInternalName> = mutableSetOf()
-    private val itemStackCache = mutableMapOf<NeuInternalName, ItemStack>()
+    private val itemStackCache = mutableMapOf<NeuInternalName, SafeItemStack>()
     private val displayNameCache = mutableMapOf<NeuInternalName, String>()
     private val recipesMap = HashMap<NeuInternalName, MutableSet<PrimitiveRecipe>>()
 
@@ -69,7 +64,7 @@ object EnoughUpdatesManager {
     fun getInternalNames() = internalNameSet
     fun getItemInformation() = itemMap
 
-    fun inLoadingState() = loadingMutex.isLocked || EnoughUpdatesRepoManager.repoMutex.isLocked
+    fun inLoadingState() = loadingMutex.isLocked
 
     /**
      * Called by the Neu Repo Manager when the NEU repo is reloaded.
@@ -88,14 +83,9 @@ object EnoughUpdatesManager {
         loadItemMap(progress, tempItemMap)
 
         progress.update("synchronized itemMap")
-        synchronized(itemMap) {
-            itemMap.putAll(tempItemMap)
-            progress.update("putAll tempItemMap")
-        }
-
-        synchronized(internalNameSet) {
-            internalNameSet.addAll(itemMap.keys)
-        }
+        itemMap.putAll(tempItemMap)
+        progress.update("putAll tempItemMap")
+        internalNameSet.addAll(itemMap.keys)
     }
 
     fun getRecipesFor(internalName: NeuInternalName): Set<PrimitiveRecipe> = recipesMap.getOrDefault(internalName, emptySet())
@@ -105,25 +95,35 @@ object EnoughUpdatesManager {
         val fileSystem = EnoughUpdatesRepoManager.repoFileSystem
         val list = fileSystem.list("items")
         progress.innerProgressStart(list.size)
-        val async = list.mapNotNullAsync { name ->
+        val parsedItems = list.mapNotNullAsync { name ->
             try {
                 val internalName = name.removeSuffix(".json")
                 val itemJson = fileSystem.readJson("items/$name").asJsonObject
-                val item = parseItem(
-                    internalName = internalName,
-                    json = itemJson,
-                )
+                val tryParsedItem = parseItem(itemJson)
                 progress.innerProgressStep()
-                val parsed = item ?: return@mapNotNullAsync null
-                internalName.toInternalName() to parsed
+                val parsedItem = tryParsedItem ?: return@mapNotNullAsync null
+                internalName.toInternalName() to parsedItem
             } catch (e: Exception) {
                 progress.update("Failed to parse item: $name")
                 ErrorManager.logErrorWithData(e, "Failed to parse item: $name")
                 null
             }
         }
-        async.forEach { (internalName, item) ->
+        parsedItems.forEach { (internalName, item) ->
             tempItemMap[internalName] = item
+            // Crafting type recipe
+            item.recipe?.loadAndRegister(item)
+            // Other types of recipes
+            item.recipes.forEach { recipe -> recipe.loadAndRegister(item) }
+            // Title word map
+            item.displayName?.let { displayName ->
+                for ((index, str) in displayName.split(" ").withIndex()) {
+                    val cleanedStr = str.cleanString()
+                    val internalMap = titleWordMap.getOrPut(cleanedStr) { TreeMap() }
+                    val indexList = internalMap.getOrPut(internalName.asString()) { mutableListOf() }
+                    indexList.add(index)
+                }
+            }
         }
     }
 
@@ -142,40 +142,25 @@ object EnoughUpdatesManager {
         }
     }
 
-    private fun parseItem(internalName: String, json: JsonObject): NeuItemJson? = runCatching {
+    private fun parseItem(json: JsonObject): NeuItemJson? = runCatching {
         val itemJson: NeuItemJson = ConfigManager.gson.fromJsonOrNull<NeuItemJson>(json) ?: return@runCatching null
-        // If the itemId is vanilla, replace it with the vanilla item identifier
         itemJson.itemId.getVanillaItem()?.let { mcItem ->
             itemJson.itemId = mcItem.getIdentifierString()
-        }
-        // Crafting type recipe
-        itemJson.recipe?.loadAndRegister(itemJson)
-        // Other types of recipes
-        itemJson.recipes.forEach { recipe ->
-            recipe.loadAndRegister(itemJson)
-        }
-        itemJson.displayName?.let { displayName ->
-            synchronized(titleWordMap) {
-                for ((index, str) in displayName.split(" ").withIndex()) {
-                    val cleanedStr = str.cleanString()
-                    val internalMap = titleWordMap.getOrPut(cleanedStr) { TreeMap() }
-                    val indexList = internalMap.getOrPut(internalName) { mutableListOf() }
-                    indexList.add(index)
-                }
-            }
         }
         return itemJson
     }.getOrThrow()
 
-    fun getItemById(id: String): NeuItemJson? = itemMap[id.toInternalName()]
-    fun getItemById(internalName: NeuInternalName): NeuItemJson? = itemMap[internalName]
+    fun getItemById(id: String): NeuItemJson? = getItemById(id.toInternalName())
+    fun getItemById(internalName: NeuInternalName): NeuItemJson? =
+        if (inLoadingState()) null
+        else itemMap[internalName]
 
-    fun stackToJson(stack: ItemStack): JsonObject {
+    fun stackToJson(stack: SafeItemStack): JsonObject {
         @Suppress("DEPRECATION")
         val lore = stack.getLore()
 
         val json = JsonObject()
-        json.addProperty("itemid", stack.item.getIdentifierString())
+        json.addProperty("itemid", stack.itemType.getIdentifierString())
         json.addProperty("displayname", stack.hoverName.formattedTextCompatLeadingWhiteLessResets())
         json.add("nbttag", ComponentUtils.convertToNeuNbtInfoJson(stack))
 
@@ -187,49 +172,49 @@ object EnoughUpdatesManager {
         return json
     }
 
-    fun neuItemToStack(neuItem: NeuItemJson, useCache: Boolean = true, useReplacements: Boolean = false): ItemStack =
+    fun neuItemToStack(neuItem: NeuItemJson, useCache: Boolean = true, useReplacements: Boolean = false): SafeItemStack =
         neuItem.toStack(useCache, useReplacements)
 
     private fun NeuItemJson?.toStack(
         useCache: Boolean = true,
         useReplacements: Boolean = false,
-    ): ItemStack {
-        this ?: return ItemStack(Items.PAINTING)
+    ): SafeItemStack {
+        this ?: return SafeItemStack.EMPTY
 
         var usingCache = useCache && !useReplacements
         if (internalName.asString() == "_") usingCache = false
         if (usingCache) itemStackCache[internalName]?.let { return it.copy() }
 
-        val defaultStack = ItemStack(Blocks.AIR.asItem())
         val convertedItem = ComponentUtils.convertMinecraftIdToModern(itemId, damage ?: 0)
-        val baseItem = convertedItem.getVanillaItem() ?: return defaultStack
-        val stack = ItemStack(baseItem).takeIf { it.isNotEmpty() } ?: return defaultStack
+        val baseItem = convertedItem.getVanillaItem() ?: return SafeItemStack.EMPTY
 
-        count?.let { stack.count = it }
-        ComponentUtils.convertToComponents(stack, neuNbt)
-
-        var replacements = mapOf<String, String>()
-        if (useReplacements) {
-            replacements = stack.getPetLoreReplacements()
-            displayName?.let {
-                var name = it
-                for ((key, value) in replacements) {
-                    name = name.replace("{$key}", value)
-                }
-                stack.setCustomItemName(name)
-            }
-        }
-
-        lore.takeIfNotEmpty()?.let {
-            val componentLore = processLore(lore, replacements).map { it.value.asComponent() }
-            stack.setLore(componentLore)
-        }
-
-        if (usingCache) itemStackCache[internalName] = stack
-        return stack.copy()
+        return buildDeferredStack(baseItem, count ?: 1, useReplacements).also { if (usingCache) itemStackCache[internalName] = it }.copy()
     }
 
-    private fun ItemStack?.getPetLoreReplacements(): Map<String, String> {
+    private fun NeuItemJson.buildDeferredStack(baseItem: Item, countVal: Int, useReplacements: Boolean): SafeItemStack {
+        val neuItemRef = this
+        val factory: () -> ItemStackTemplate = {
+            val freshStack = ItemStackTemplate(baseItem, countVal).create()
+            ComponentUtils.convertToComponents(freshStack, neuItemRef.neuNbt)
+            var innerReplacements = emptyMap<String, String>()
+            if (useReplacements) {
+                innerReplacements = freshStack.getPetLoreReplacements()
+                neuItemRef.displayName?.let {
+                    var name = it
+                    for ((key, value) in innerReplacements) name = name.replace("{$key}", value)
+                    freshStack.setCustomItemName(name)
+                }
+            }
+            neuItemRef.lore.takeIfNotEmpty()?.let {
+                val componentLore = processLore(neuItemRef.lore, innerReplacements).map { line -> line.value.asComponent() }
+                freshStack.setLore(componentLore)
+            }
+            ItemStackTemplate.fromNonEmptyStack(freshStack)
+        }
+        return DeferredItemStack(baseItem, factory, countVal)
+    }
+
+    private fun SafeItemStack?.getPetLoreReplacements(): Map<String, String> {
         val petInfo = this?.getPetInfo() ?: return emptyMap()
         val properInternalName = petInfo.type
         // We let PetData do the heavy lifting of parsing the pet info
@@ -321,7 +306,7 @@ object EnoughUpdatesManager {
         // Intentionally toString() instead of asString() to indicate failure
         val itemInfo = getItemById(internalName) ?: return@getOrPut internalName.toString()
         itemInfo.displayName ?: run {
-            ErrorManager.skyHanniError("No displayname for $internalName")
+            ErrorManager.skyHanniError("No display name for $internalName")
         }
     }
 
@@ -336,10 +321,10 @@ object EnoughUpdatesManager {
 
     fun reportItemStatus() {
         val loadedItems = itemMap.size
-        val directorySize = itemsFolder.listFiles()?.size ?: 0
+        val directorySize = EnoughUpdatesRepoManager.repoFileSystem.list("items").size
 
         val status = when {
-            directorySize == 0 -> "§cNo items directory found!"
+            directorySize == 0 -> "§cNo item directory entries found!"
             loadedItems == 0 -> "§cNo items loaded!"
             loadedItems < directorySize -> "§eLoaded $loadedItems/$directorySize items"
             loadedItems > directorySize -> "§eLoaded Items: $loadedItems (more than directory size)"

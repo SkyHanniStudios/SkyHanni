@@ -21,6 +21,7 @@ object ForagingTrackerLegacy {
     enum class TreeType(private val displayName: String) {
         FIG("Fig"),
         MANGROVE("Mangrove"),
+        HELIX("Helix"),
         ;
 
         override fun toString() = displayName
@@ -65,6 +66,7 @@ object ForagingTrackerLegacy {
                 "§7You got §6$mobKillCoinsFormat coins §7that way.",
             )
         }
+
         override fun TreeType.isBucketSelectable() = true
         override fun bucketName(): String = "tree"
 
@@ -139,15 +141,16 @@ object ForagingTrackerLegacy {
     )
 
     /**
-     * @regexTestWrapped "                          §r§7§r§aStretching Sticks §r§8(§r§a20%§r§8)"
-     * @regexTestWrapped "          §r§7§r§aEnchanted Book (§r§d§lFirst Impression I§r§a) §r§8(§r§a0.4%§r§8)"
-     * @regexTestWrapped "          §r§7§r§aEnchanted Book (§r§d§lFirst Impression I§r§a) §r§8(§r§a0.4%§r§8)"
-     * @regexTestWrapped "                           §r§7§r§fSweep Booster §r§8(§r§a1%§r§8)"
-     * @regexTestWrapped "                    §r§7§r§fForaging Wisdom Booster §r§8(§r§a0.5%§r§8)"
-     * @regexTestWrapped "                  §r§7§r§aEnchanted Book (§r§d§lMissile I§r§a) §r§8(§r§a0.2%§r§8)"
-     * @regexTestWrapped "                          §r§7§r§cTree the Fish §r§8(§r§a0.05%§r§8)"
-     * @regexTestWrapped "                            §r§6Chameleon §r§8(§r§a0.08%§r§8)"
-     * @regexFailWrapped "                     §r§7A §r§dPhanflare §r§7fell from the Tree!"
+     * WRAPPED-REGEX-TEST: "                          §r§7§r§aStretching Sticks §r§8(§r§a20%§r§8)"
+     * WRAPPED-REGEX-TEST: "          §r§7§r§aEnchanted Book (§r§d§lFirst Impression I§r§a) §r§8(§r§a0.4%§r§8)"
+     * WRAPPED-REGEX-TEST: "          §r§7§r§aEnchanted Book (§r§d§lFirst Impression I§r§a) §r§8(§r§a0.4%§r§8)"
+     * WRAPPED-REGEX-TEST: "                           §r§7§r§fSweep Booster §r§8(§r§a1%§r§8)"
+     * WRAPPED-REGEX-TEST: "                    §r§7§r§fForaging Wisdom Booster §r§8(§r§a0.5%§r§8)"
+     * WRAPPED-REGEX-TEST: "                  §r§7§r§aEnchanted Book (§r§d§lMissile I§r§a) §r§8(§r§a0.2%§r§8)"
+     * WRAPPED-REGEX-TEST: "                          §r§7§r§cTree the Fish §r§8(§r§a0.05%§r§8)"
+     * WRAPPED-REGEX-TEST: "                            §r§6Chameleon §r§8(§r§a0.08%§r§8)"
+     * WRAPPED-REGEX-TEST: "                    §r§7§r§fEnchanted Book (Karma I§r§f) §r§8(§r§a0.02%§r§8)"
+     * WRAPPED-REGEX-FAIL: "                     §r§7A §r§dPhanflare §r§7fell from the Tree!"
      */
     val bonusGiftRewardPattern by patternGroup.pattern(
         "bonus-gift.reward",
@@ -155,12 +158,13 @@ object ForagingTrackerLegacy {
     )
 
     /**
-     * @regexTest §aEnchanted Book (§r§d§lMissile I§r§a)
-     * @regexTest §aEnchanted Book (§r§d§lFirst Impression I§r§a)
+     * REGEX-TEST: §aEnchanted Book (§r§d§lMissile I§r§a)
+     * REGEX-TEST: §aEnchanted Book (§r§d§lFirst Impression I§r§a)
+     * REGEX-TEST: §fEnchanted Book (Karma I§r§f)
      */
     val enchantedBookPattern by patternGroup.pattern(
         "bonus-gift.enchanted-book",
-        " *(?:§.)+Enchanted Book \\((?:§.)+(?<book>.*) (?<tier>[IVCLX])(?:§.)+\\)"
+        " *(?:§.)+Enchanted Book \\((?:§.)*(?<book>.*) (?<tier>[IVCLX])(?:§.)+\\)"
     )
 
     /**

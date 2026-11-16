@@ -5,7 +5,8 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.data.HypixelData
 import at.hannibal2.skyhanni.data.IslandType
-import at.hannibal2.skyhanni.data.IslandTypeTags
+import at.hannibal2.skyhanni.data.IslandTypeTag
+import at.hannibal2.skyhanni.data.model.SkyblockStat
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.features.chat.PowderMiningChatFilter.genericMiningRewardMessage
 import at.hannibal2.skyhanni.features.dungeon.DungeonApi
@@ -31,11 +32,11 @@ object ChatFilter {
     private val foragingConfig get() = config.foraging
     private val huntingConfig get() = config.hunting
 
-    private val chatFilterGroup = RepoPattern.group("chat-filter")
-    private val huntingPatternGroup = chatFilterGroup.group("hunting")
-    private val foragingPatternGroup = chatFilterGroup.group("foraging")
-    private val miscPatternGroup = chatFilterGroup.group("hypixel-misc")
-    private val eventPatternGroup = chatFilterGroup.group("event")
+    private val patternGroup = RepoPattern.group("chat-filter")
+    private val huntingPatternGroup = patternGroup.group("hunting")
+    private val foragingPatternGroup = patternGroup.group("foraging")
+    private val miscPatternGroup = patternGroup.group("hypixel-misc")
+    private val eventPatternGroup = patternGroup.group("event")
 
     // <editor-fold desc="Regex Patterns & Messages">
     // Lobby Messages
@@ -84,7 +85,7 @@ object ChatFilter {
         "§7Request join for Hub (.*)\\.\\.\\.".toPattern(),
         "§7Request join for Dungeon Hub #(.*)\\.\\.\\.".toPattern(),
         // warp portals on public islands
-        // (canvas room – flower house, election room – community center, void sepulchre – the end)
+        // (Canvas Room – Flower House, Election Room – Community Center, Void Sepulture – The End)
         "§dWarped to (.*)§r§d!".toPattern(),
     )
     private val warpingMessages = listOf(
@@ -124,8 +125,16 @@ object ChatFilter {
     )
 
     // Profile Join
-    private val profileJoinMessageStartsWith = listOf(
-        "§aYou are playing on profile: §e", "§8Profile ID: ",
+    /**
+     * REGEX-TEST: §8Profile ID: 691d6a3b-23ea-4541-80b5-771facc73b16
+     * REGEX-TEST: §eProfile ID: 691d6a3b-23ea-4541-80b5-771facc73b16
+     * REGEX-TEST: §aYou are playing on profile: §e691d6a3b-23ea-4541-80b5-771facc73b16
+     */
+    private val profileJoinPatterns by miscPatternGroup.list(
+        "profile-join",
+        "§aYou are playing on profile: §e.*",
+        "§8Profile ID: .*",
+        "§eProfile ID: .*",
     )
 
     // OTHERS
@@ -176,7 +185,7 @@ object ChatFilter {
     @Suppress("MaxLineLength")
     private val slayerDropPatterns = listOf(
         // Zombie
-        // TODO merge patterns together. Just because old ones are designed poorly doesnt mean new ones need to be poor as well
+        // TODO merge patterns together. Just because old ones are designed poorly doesn't mean new ones need to be poor as well
         "§b§lRARE DROP! §r§7\\(§r§f§r§7(.*)x §r§f§r§9Revenant Viscera§r§7\\) (.*)".toPattern(),
         "§b§lRARE DROP! §r§7\\(§r§f§r§9Revenant Viscera§r§7\\) (.*)".toPattern(),
         "§b§lRARE DROP! §r§7\\(§r§f§r§7(.*)x §r§f§r§9Foul Flesh§r§7\\) (.*)".toPattern(),
@@ -283,7 +292,9 @@ object ChatFilter {
         "§cPlace a Dungeon weapon or armor piece above the anvil to salvage it!",
         "§cWhoa! Slow down there!",
         "§cWait a moment before confirming!",
-        "§cYou cannot open the SkyBlock menu while in combat!",
+        "§7Your radio is weak. Find another enjoyer to boost it.",
+        "§7Your radio signal is strong!",
+        "§7Your radio lost signal. There's too many enjoyers on this channel.",
     )
 
     // Annoying Spam
@@ -293,12 +304,11 @@ object ChatFilter {
         "§7Your Molten Wave hit (.*) for §r§c(.*) §r§7damage.".toPattern(),
         "§7Your Spirit Sceptre hit (.*) for §r§c(.*) §r§7damage.".toPattern(),
         "§cYou need a tool with a §r§aBreaking Power §r§cof §r§6(\\d)§r§c to mine (.*)§r§c! Speak to §r§dFragilis §r§cby the entrance to the Crystal Hollows to learn more!".toPattern(),
-        "§9§n\n§c§lYouTube Premier §eCelebrate Hypixel's 12th Anniversary with a special Minecraft Animation, live now §bhttps://youtu.be/ikT631vQd8A\n".toPattern(),
     )
+
     private val annoyingSpamMessages = listOf(
         "§cThere are blocks in the way!",
         "§aYour Blessing enchant got you double drops!",
-        "§cYou can't use the wardrobe in combat!",
         "§6§lGOOD CATCH! §r§bYou found a §r§fFish Bait§r§b.",
         "§6§lGOOD CATCH! §r§bYou found a §r§aGrand Experience Bottle§r§b.",
         "§6§lGOOD CATCH! §r§bYou found a §r§aBlessed Bait§r§b.",
@@ -323,11 +333,12 @@ object ChatFilter {
     )
 
     /**
-     * @regexTest §e[NPC] Jacob§f: §rYour §9Anita's Talisman §fis giving you §6+25☘ Carrot Fortune §fduring the contest!
+     * REGEX-TEST: §e[NPC] Jacob§f: §rYour §9Anita's Talisman §fis giving you §6+25 Carrot Fortune §fduring the contest!
      */
+    @Suppress("MaxLineLength")
     private val anitaFortunePattern by RepoPattern.pattern(
         "chat.jacobevent.accessory",
-        "§e\\[NPC] Jacob§f: §rYour §9Anita's \\w+ §fis giving you §6\\+\\d{1,2}☘ .+ Fortune §fduring the contest!",
+        "§e\\[NPC] Jacob§f: §rYour §9Anita's \\w+ §fis giving you §6\\+\\d{1,2}${SkyblockStat.FARMING_FORTUNE.hypixelIcon} .+ Fortune §fduring the contest!",
     )
 
     // Winter Gift
@@ -460,6 +471,11 @@ object ChatFilter {
         "§4This Teleport Pad does not have a destination set!",
     )
 
+    // §e[NPC] Feast Chef Ted§r§f: §rThanks for the donation! I've added a §eKernel §fto your purse.
+    private val masterChefPatterns = listOf(
+        "§e\\[NPC] Feast Chef Ted§r§f: §rThanks for the donation! I've added a §eKernel §fto your purse.".toPattern(),
+    )
+
     /**
      ** @regexTest §eYou haven't claimed your §r§6Summer Rewards §r§eyet!
      ** @regexTest §eTalk to the §r§bSummer Sloth §r§ein the §r§aHub§r§e!
@@ -551,6 +567,7 @@ object ChatFilter {
         "swoop_axe" to listOf(swoopAxePattern),
         "hoppity_appear" to listOf(hoppityAppearPattern),
         "hoppity_begin" to listOf(hoppityBeginPattern),
+        "profile_join" to profileJoinPatterns,
     )
 
     private val messagesMap: Map<String, List<String>> = mapOf(
@@ -581,7 +598,6 @@ object ChatFilter {
 
     private val messagesStartsWithMap: Map<String, List<String>> = mapOf(
         "slayer" to slayerMessageStartWith,
-        "profile_join" to profileJoinMessageStartsWith,
     )
     // </editor-fold>
 
@@ -616,6 +632,7 @@ object ChatFilter {
         config.profileJoin && message.isPresent("profile_join") -> "profile_join"
         config.parkour && message.isPresent("parkour") -> "parkour"
         config.teleportPads && message.isPresent("teleport_pads") -> "teleport_pads"
+        config.masterChef && masterChefPatterns.matches(message) -> "masterchef"
 
         config.hideAlphaAchievements && HypixelData.hypixelAlpha && message.isPresent("achievement_get") -> "achievement_get"
 
@@ -633,14 +650,14 @@ object ChatFilter {
         config.hoppityBegun && message.isPresent("hoppity_begin") -> "hoppity_begin"
         config.sacrifice && message.isPresent("sacrifice") -> "sacrifice"
         generalConfig.hideJacob && !GardenApi.inGarden() && anitaFortunePattern.matches(message) -> "jacob_event"
-        generalConfig.hideSkyMall && !IslandTypeTags.MINING.inAny() && message.isPresent("skymall") -> "skymall"
-        generalConfig.hideLottery && !IslandTypeTags.FORAGING.inAny() && message.isPresent("lottery") -> "lottery"
+        generalConfig.hideSkyMall && !IslandTypeTag.MINING.isInIsland() && message.isPresent("skymall") -> "skymall"
+        generalConfig.hideLottery && !IslandTypeTag.FORAGING.isInIsland() && message.isPresent("lottery") -> "lottery"
         dungeonConfig.rareDrops && message.isPresent("rare_drops") -> "rare_drops"
         dungeonConfig.soloClass && DungeonApi.inDungeon() && message.isPresent("solo_class") -> "solo_class"
         dungeonConfig.soloStats && DungeonApi.inDungeon() && message.isPresent("solo_stats") -> "solo_stats"
         dungeonConfig.fairy && DungeonApi.inDungeon() && message.isPresent("fairy") -> "fairy"
-        foragingConfig.unmineable && IslandTypeTags.FORAGING_CUSTOM_TREES.inAny() && message.isPresent("unmineable_tree") -> "unmineable_tree"
-        huntingConfig.redundantComments && IslandType.GALATEA.isCurrent() && message.isPresent("redundant_hunting") -> "redundant_hunting"
+        foragingConfig.unmineable && IslandTypeTag.FORAGING_CUSTOM_TREES.isInIsland() && message.isPresent("unmineable_tree") -> "unmineable_tree"
+        huntingConfig.redundantComments && IslandType.GALATEA.isInIsland() && message.isPresent("redundant_hunting") -> "redundant_hunting"
         huntingConfig.swoopAxeMessage && message.isPresent("swoop_axe") -> "swoop_axe"
         config.gardenNoPest && GardenApi.inGarden() && PestApi.noPestsChatPattern.matches(message) -> "garden_pest"
         config.legacyItemsWarning && message.isPresent("legacy_items") -> "legacy_items"

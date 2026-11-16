@@ -1,14 +1,19 @@
 package at.hannibal2.skyhanni.utils.compat
 
+import at.hannibal2.skyhanni.data.ChatManager
 import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.ChatUtils.skyhanniCreated
 import at.hannibal2.skyhanni.utils.ColorUtils
 import at.hannibal2.skyhanni.utils.DelayedRun
 import at.hannibal2.skyhanni.utils.LorenzColor
+import at.hannibal2.skyhanni.utils.SafeItemStack
+import at.hannibal2.skyhanni.utils.chat.TextHelper.asComponent
 import at.hannibal2.skyhanni.utils.collection.TimeLimitedCache
+import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import net.minecraft.ChatFormatting
-import net.minecraft.client.GuiMessageTag
 import net.minecraft.client.Minecraft
+import net.minecraft.client.multiplayer.chat.GuiMessageSource
+import net.minecraft.client.multiplayer.chat.GuiMessageTag
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
@@ -19,12 +24,15 @@ import net.minecraft.network.chat.TextColor
 import net.minecraft.network.chat.contents.PlainTextContents
 import net.minecraft.network.chat.contents.TranslatableContents
 import net.minecraft.resources.Identifier
-import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.ItemStackTemplate
 import java.net.URI
 import java.util.Optional
+import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.jvm.optionals.getOrNull
 import kotlin.math.abs
 import kotlin.time.Duration.Companion.minutes
+
+// TODO do the same thing here as in EntityCompat, no more functions/members that are classless
 
 private val unformattedTextCache = TimeLimitedCache<Component, String>(3.minutes)
 private val formattedTextCache = TimeLimitedCache<TextCacheKey, String>(3.minutes)
@@ -50,6 +58,7 @@ private enum class FormattedTextSettings {
 
 private data class TextCacheKey(val settings: FormattedTextSettings, val component: Component)
 
+@Deprecated("Use string unless you really need color codes")
 fun Component.unformattedTextForChatCompat(): String {
     return unformattedTextCache.getOrPut(this) {
         computeUnformattedTextCompat()
@@ -63,17 +72,12 @@ private fun Component.computeUnformattedTextCompat(): String {
     return (this.contents as? PlainTextContents)?.text().orEmpty()
 }
 
+@Deprecated("Use string unless you really need color codes")
 fun Component.unformattedTextCompat(): String =
-    iterator().map { it.unformattedTextForChatCompat() }.joinToString(separator = "")
-
-// has to be a separate function for pattern mappings
-fun Component?.formattedTextCompatLessResets(): String = this.formattedTextCompat(noExtraResets = true)
-fun Component?.formattedTextCompatLeadingWhite(): String = this.formattedTextCompat(leadingWhite = true)
-fun Component?.formattedTextCompatLeadingWhiteLessResets(): String =
-    this.formattedTextCompat(noExtraResets = true, leadingWhite = true)
+    iterator().joinToString(separator = "") { it.unformattedTextForChatCompat() }
 
 @JvmOverloads
-@Suppress("unused")
+@Deprecated("Use string unless you really need color codes")
 fun Component?.formattedTextCompat(noExtraResets: Boolean = false, leadingWhite: Boolean = false): String {
     this ?: return ""
     val cacheKey = TextCacheKey(FormattedTextSettings.getByArgs(noExtraResets, leadingWhite), this)
@@ -81,6 +85,19 @@ fun Component?.formattedTextCompat(noExtraResets: Boolean = false, leadingWhite:
         computeFormattedTextCompat(noExtraResets, leadingWhite)
     }
 }
+
+@Deprecated("Use string unless you really need color codes")
+@Suppress("DEPRECATION")
+fun Component?.formattedTextCompatLessResets(): String = this.formattedTextCompat(noExtraResets = true)
+
+@Deprecated("Use string unless you really need color codes")
+@Suppress("DEPRECATION")
+fun Component?.formattedTextCompatLeadingWhite(): String = this.formattedTextCompat(leadingWhite = true)
+
+@Deprecated("Use string unless you really need color codes")
+@Suppress("DEPRECATION")
+fun Component?.formattedTextCompatLeadingWhiteLessResets(): String =
+    this.formattedTextCompat(noExtraResets = true, leadingWhite = true)
 
 private fun Component?.computeFormattedTextCompat(noExtraResets: Boolean, leadingWhite: Boolean): String {
     this ?: return ""
@@ -105,11 +122,13 @@ private fun Component?.computeFormattedTextCompat(noExtraResets: Boolean, leadin
 }
 
 private val textColorLUT = ChatFormatting.entries
-    .mapNotNull { formatting -> formatting.color?.let { it to formatting } }
+    .mapNotNull { formatting -> TextColor.fromLegacyFormat(formatting)?.let { it.value to formatting } }
     .toMap()
 
+fun Style?.orEmpty(): Style = this ?: Style.EMPTY
+
 fun Style.chatStyle() = buildString {
-    color?.let { append(it.toChatFormatting()?.toString() ?: "<${it.formatValue()}>") }
+    color?.let { append(it.toChatFormatting()?.toString() ?: "<${it.serialize()}>") }
     if (isBold) append("§l")
     if (isItalic) append("§o")
     if (isUnderlined) append("§n")
@@ -117,12 +136,15 @@ fun Style.chatStyle() = buildString {
     if (isObfuscated) append("§k")
 }
 
+fun Style.takeUnlessEmpty(): Style? = takeUnless { it.isEmpty }
+
 fun TextColor.toChatFormatting(): ChatFormatting? {
     return textColorLUT[this.value]
 }
 
 fun Component.iterator(): Sequence<Component> {
-    return sequenceOf(this) + siblings.asSequence().flatMap { it.iterator() } // TODO: in theory we want to properly inherit styles here
+    // TODO: in theory we want to properly inherit styles here
+    return sequenceOf(this) + siblings.asSequence().flatMap { it.iterator() }
 }
 
 fun MutableComponent.withColor(formatting: ChatFormatting): MutableComponent {
@@ -158,12 +180,18 @@ var Component.hover: Component?
         value?.let { new -> this.copyIfNeeded().withStyle { it.withHoverEvent(HoverEvent.ShowText(new)) } }
     }
 
-var Component.stackHover: ItemStack?
+var Component.stackHover: SafeItemStack?
     get() = this.style.hoverEvent?.takeIf {
         it.action() == HoverEvent.Action.SHOW_ITEM
-    }?.let { (it as HoverEvent.ShowItem).item }
+    }?.let {
+        (it as HoverEvent.ShowItem).item.create()
+    }
     set(value) {
-        value?.let { new -> this.copyIfNeeded().withStyle { it.withHoverEvent(HoverEvent.ShowItem(new)) } }
+        value?.let { new ->
+            this.copyIfNeeded().withStyle {
+                it.withHoverEvent(HoverEvent.ShowItem(ItemStackTemplate.fromNonEmptyStack(new)))
+            }
+        }
     }
 
 var Component.command: String?
@@ -225,7 +253,7 @@ fun Style.setClickRunCommand(text: String): Style {
 }
 
 fun Style.setHoverShowText(text: String): Style {
-    return this.withHoverEvent(HoverEvent.ShowText(Component.literal(text)))
+    return this.withHoverEvent(HoverEvent.ShowText(text.asComponent()))
 }
 
 fun Style.setHoverShowText(text: Component): Style {
@@ -234,15 +262,24 @@ fun Style.setHoverShowText(text: Component): Style {
 
 fun addChatMessageToChat(message: Component, bypassSelfMessages: Boolean = false) {
     if (!bypassSelfMessages) message.skyhanniCreated = true
-    DelayedRun.runOrNextTick { Minecraft.getInstance().player?.displayClientMessage(message, false) }
+    DelayedRun.runOrNextTick {
+        Minecraft.getInstance().player?.sendSystemMessage(message)
+    }
 }
 
 fun addDeletableMessageToChat(component: Component, id: Int, bypassSelfMessages: Boolean = false) {
     if (!bypassSelfMessages) component.skyhanniCreated = true
     DelayedRun.runOrNextTick {
-        val chat = Minecraft.getInstance().gui.chat
-        chat.deleteMessage(idToMessageSignature(id))
-        chat.addMessage(component, idToMessageSignature(id), GuiMessageTag.system())
+        val chat = MinecraftCompat.hud.chat
+        ChatManager.deleteMessage { it.signature == idToMessageSignature(id) }
+        DelayedRun.runOrNextTick {
+            chat.addMessage(
+                component,
+                idToMessageSignature(id),
+                GuiMessageSource.SYSTEM_CLIENT,
+                GuiMessageTag.system(),
+            )
+        }
     }
 }
 
@@ -274,37 +311,42 @@ fun ClickEvent.value(): String {
         ClickEvent.Action.CHANGE_PAGE -> (this as ClickEvent.ChangePage).page.toString()
         ClickEvent.Action.COPY_TO_CLIPBOARD -> (this as ClickEvent.CopyToClipboard).value
         ClickEvent.Action.OPEN_FILE -> (this as ClickEvent.OpenFile).path
-        // todo use error manager here probably, not doing it now because it doesnt compile on 1.21
+        // todo use error manager here probably, not doing it now because it doesn't compile on 1.21
         else -> ""
     }
 
 }
 
-fun HoverEvent.value(): Component {
-    return when (this.action()) {
-        HoverEvent.Action.SHOW_TEXT -> (this as HoverEvent.ShowText).value
-        HoverEvent.Action.SHOW_ITEM -> (this as HoverEvent.ShowItem).item.hoverName
-        HoverEvent.Action.SHOW_ENTITY -> (this as HoverEvent.ShowEntity).entity.name.getOrNull() ?: Component.empty()
-        else -> Component.empty()
-    }
+fun HoverEvent.value(): Component = when (action()) {
+    HoverEvent.Action.SHOW_TEXT -> (this as HoverEvent.ShowText).value
+    HoverEvent.Action.SHOW_ITEM -> (this as HoverEvent.ShowItem).item.create().hoverName
+    HoverEvent.Action.SHOW_ENTITY -> (this as HoverEvent.ShowEntity).entity.name.getOrNull() ?: Component.empty()
 }
 
-fun createHoverEvent(action: HoverEvent.Action?, component: MutableComponent): HoverEvent? {
-    if (action == null) return null
-    when (action) {
-        HoverEvent.Action.SHOW_TEXT -> return HoverEvent.ShowText(component)
-        // I really don't think anyone is using the other 2 lol
-        else -> return null
-    }
+fun createHoverEvent(action: HoverEvent.Action?, component: MutableComponent): HoverEvent? = when (action) {
+    null -> null
+    HoverEvent.Action.SHOW_TEXT -> HoverEvent.ShowText(component)
+    // I really don't think anyone is using the other 2 lol
+    else -> throw NotImplementedError("Action ${action.name} is not implemented")
 }
 
-fun Component.changeColor(color: LorenzColor): Component =
-    this.copyIfNeeded().withStyle(color.toChatFormatting())
+fun Component.changeColor(color: LorenzColor): Component {
+    val component = Component.empty()
+
+    this.visit(
+        { style: Style?, string: String? ->
+            component.append(Component.literal(string.orEmpty()).withStyle((style ?: Style.EMPTY).withColor(color.toChatFormatting())))
+            Optional.empty<Component>()
+        },
+        Style.EMPTY,
+    )
+    return component
+}
 
 fun Component.convertToJsonString(): String {
     return net.minecraft.network.chat.ComponentSerialization.CODEC.encodeStart(
         com.mojang.serialization.JsonOps.INSTANCE,
-        this
+        this,
     ).orThrow.toString()
 }
 
@@ -317,13 +359,13 @@ val formattingPattern = Regex("§.(?:§.)?")
 fun Component.append(newText: String): MutableComponent {
     val mutableText = this.copyIfNeeded()
     if (mutableText.string.matches(formattingPattern)) {
-        return Component.literal(mutableText.string + newText)
+        return (mutableText.string + newText).asComponent()
     }
     return mutableText.append(newText)
 }
 
 fun MutableComponent.append(string: String = "", init: MutableComponent.() -> Unit): MutableComponent {
-    return this.append(Component.literal(string).also(init))
+    return this.append(string.asComponent().also(init))
 }
 
 fun MutableComponent.append(comp: Component, init: MutableComponent.() -> Unit): MutableComponent {
@@ -331,7 +373,7 @@ fun MutableComponent.append(comp: Component, init: MutableComponent.() -> Unit):
 }
 
 fun MutableComponent.appendWithColor(string: String = "", color: Int, init: MutableComponent.() -> Unit = {}): MutableComponent {
-    return this.append(Component.literal(string).withColor(color).also(init))
+    return this.append(string.asComponent().withColor(color).also(init))
 }
 
 fun MutableComponent.appendWithColor(comp: Component, color: Int, init: MutableComponent.() -> Unit = {}): MutableComponent {
@@ -339,7 +381,7 @@ fun MutableComponent.appendWithColor(comp: Component, color: Int, init: MutableC
 }
 
 fun MutableComponent.appendWithColor(string: String = "", color: ChatFormatting, init: MutableComponent.() -> Unit = {}): MutableComponent {
-    return this.append(Component.literal(string).withColor(color).also(init))
+    return this.append(string.asComponent().withColor(color).also(init))
 }
 
 fun MutableComponent.appendWithColor(comp: Component, color: ChatFormatting, init: MutableComponent.() -> Unit = {}): MutableComponent {
@@ -347,7 +389,7 @@ fun MutableComponent.appendWithColor(comp: Component, color: ChatFormatting, ini
 }
 
 fun MutableComponent.appendWithColor(string: String = "", color: TextColor, init: MutableComponent.() -> Unit = {}): MutableComponent {
-    return this.append(Component.literal(string).withColor(color).also(init))
+    return this.append(string.asComponent().withColor(color).also(init))
 }
 
 fun MutableComponent.appendWithColor(comp: Component, color: TextColor, init: MutableComponent.() -> Unit = {}): MutableComponent {
@@ -358,7 +400,7 @@ fun List<Any>.mapToComponents(): List<Component> {
     val newList = mutableListOf<Component>()
     for (entry in this) {
         when (entry) {
-            is String -> newList.add(Component.literal(entry))
+            is String -> newList.add(entry.asComponent())
             is Component -> newList.add(entry)
             else -> throw IllegalArgumentException("$entry is not String or Component")
         }
@@ -377,7 +419,7 @@ fun Component.replace(
     oldValue: String,
     newValue: String,
     onlyReplaceFirst: Boolean = false,
-    predicate: (Style?) -> Boolean = ALWAYS
+    predicate: (Style?) -> Boolean = ALWAYS,
 ): MutableComponent? {
     return replace(this, oldValue, newValue, onlyReplaceFirst, predicate)
 }
@@ -386,7 +428,7 @@ fun Component.replace(
     oldValue: Regex,
     newValue: String,
     onlyReplaceFirst: Boolean = false,
-    predicate: (Style?) -> Boolean = ALWAYS
+    predicate: (Style?) -> Boolean = ALWAYS,
 ): MutableComponent? {
     return replace(this, oldValue, newValue, onlyReplaceFirst, predicate)
 }
@@ -396,27 +438,31 @@ private fun replace(
     oldValue: Any,
     newValue: String,
     onlyReplaceFirst: Boolean,
-    predicate: (Style?) -> Boolean = ALWAYS
+    predicate: (Style?) -> Boolean = ALWAYS,
 ): MutableComponent? {
     val newComp = Component.empty()
     var hasEdited = false
 
-    component.visit({ style: Style?, string: String? ->
-        var edit = string
-        if ((!onlyReplaceFirst || !hasEdited) && predicate(style)) {
-            if (oldValue is String) {
-                edit = string?.replace(oldValue, newValue)
-            } else if (oldValue is Regex) {
-                edit = string?.replace(oldValue, newValue)
-            } else {
-                ErrorManager.skyHanniError("replace oldValue is not Regex or String")
+    component.visit(
+        { style: Style?, string: String? ->
+            var edit = string
+            if ((!onlyReplaceFirst || !hasEdited) && predicate(style)) {
+                edit = when (oldValue) {
+                    is String -> string?.replace(oldValue, newValue)
+                    is Regex -> string?.replace(oldValue, newValue)
+                    else -> {
+                        ErrorManager.skyHanniError("replace oldValue is not Regex or String")
+                    }
+                }
             }
-        }
-        if (edit != string) hasEdited = true
+            if (edit != string) hasEdited = true
 
-        newComp.append(Component.literal(edit).withStyle(style))
-        Optional.empty<Component>()
-    }, Style.EMPTY)
+            val safeStyle = style ?: Style.EMPTY
+            newComp.append(Component.literal(edit.orEmpty()).withStyle(safeStyle))
+            Optional.empty<Component>()
+        },
+        Style.EMPTY,
+    )
 
     if (!hasEdited) return null
     return newComp
@@ -426,38 +472,42 @@ fun Component.replace(
     oldValue: String,
     newValue: Component,
     onlyReplaceFirst: Boolean = false,
-    predicate: (Style?) -> Boolean = ALWAYS
+    predicate: (Style?) -> Boolean = ALWAYS,
 ): MutableComponent? {
     val newComp = Component.empty()
-    var hasEdited = false
+    val hasEdited = AtomicBoolean(false)
 
-    this.visit({ currentStyle: Style?, string: String? ->
-        if (string?.contains(oldValue) == true && (!onlyReplaceFirst || !hasEdited) && predicate(style)) {
-            val split = string.split(oldValue)
-            newComp.append(
-                componentBuilder {
-                    for ((index, str) in split.withIndex()) {
-                        append(Component.literal(str).withStyle(currentStyle))
-                        if (index < split.size - 1) {
-                            if (!onlyReplaceFirst || !hasEdited) {
-                                append(newValue)
-                                hasEdited = true
-                            } else {
-                                append(oldValue) {
-                                    style = currentStyle
+    this.visit(
+        { currentStyle: Style?, string: String? ->
+            val safeCurrentStyle = currentStyle ?: Style.EMPTY
+            if (string?.contains(oldValue) == true && (!onlyReplaceFirst || !hasEdited.load()) && predicate(style)) {
+                val split = string.split(oldValue)
+                newComp.append(
+                    componentBuilder {
+                        for ((index, str) in split.withIndex()) {
+                            append(Component.literal(str).withStyle(safeCurrentStyle))
+                            if (index < split.size - 1) {
+                                if (!onlyReplaceFirst || !hasEdited.load()) {
+                                    append(newValue)
+                                    hasEdited.store(true)
+                                } else {
+                                    append(oldValue) {
+                                        style = safeCurrentStyle
+                                    }
                                 }
                             }
                         }
-                    }
-                }
-            )
-        } else {
-            newComp.append(Component.literal(string).withStyle(currentStyle))
-        }
-        Optional.empty<Component>()
-    }, Style.EMPTY)
+                    },
+                )
+            } else {
+                newComp.append(Component.literal(string.orEmpty()).withStyle(safeCurrentStyle))
+            }
+            Optional.empty<Component>()
+        },
+        Style.EMPTY,
+    )
 
-    if (!hasEdited) return null
+    if (!hasEdited.load()) return null
     return newComp
 }
 
@@ -469,7 +519,4 @@ fun componentBuilder(init: MutableComponent.() -> Unit): Component {
     return Component.empty().also(init)
 }
 
-fun Component.copyIfNeeded(): MutableComponent {
-    if (this is MutableComponent) return this
-    else return this.copy()
-}
+fun Component.copyIfNeeded(): MutableComponent = this as? MutableComponent ?: this.copy()

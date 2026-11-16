@@ -6,7 +6,7 @@ import at.hannibal2.skyhanni.events.GuiContainerEvent
 import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
-import at.hannibal2.skyhanni.utils.ItemUtils.getLore
+import at.hannibal2.skyhanni.utils.ItemUtils.getCleanLore
 import at.hannibal2.skyhanni.utils.LorenzColor
 import at.hannibal2.skyhanni.utils.RegexUtils.anyMatches
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
@@ -19,30 +19,32 @@ object TabWidgetSettings {
     private val patternGroup = RepoPattern.group("tab.widget.setting")
 
     /**
-     * @regexTest Widgets on Private Island
-     * @regexTest Widgets in Crystal Hollows
+     * REGEX-TEST: Widgets on Private Island
+     * REGEX-TEST: Widgets in Crystal Hollows
+     * REGEX-TEST: (1/2) Widgets on Galatea
+     * REGEX-TEST: (1/2) Widgets in Crystal Hollows
      */
     private val mainPageSettingPattern by patternGroup.pattern(
         "gui",
-        "Widgets in.*|Widgets on.*",
+        "^(?:\\(\\d+/\\d+\\) )?Widgets (?:in|on) .*$",
     )
 
     /**
-     * @regexTest §7Currently: §aALWAYS ENABLED
-     * @regexTest §7Currently: §cDISABLED
+     * REGEX-TEST: Currently: ALWAYS ENABLED
+     * REGEX-TEST: Currently: DISABLED
      */
     private val mainPageWidgetPattern by patternGroup.pattern(
-        "main",
-        "§7Currently:.*",
+        "main.colorless",
+        "Currently:.*",
     )
 
     /**
-     * @regexTest §eClick to disable!
-     * @regexTest §eClick to edit!
+     * REGEX-TEST: Click to disable!
+     * REGEX-TEST: Click to edit!
      */
     private val subPageWidgetPattern by patternGroup.pattern(
-        "sub",
-        "§eClick to .*",
+        "sub.colorless",
+        "Click to .*",
     )
 
     /**
@@ -54,18 +56,18 @@ object TabWidgetSettings {
     )
 
     /**
-     * @regexTest §eClick to disable!
+     * REGEX-TEST: Click to disable!
      */
     private val clickToDisablePattern by patternGroup.pattern(
-        "click.disable",
+        "click.disable.colorless",
         ".*disable!",
     )
 
     /**
-     * @regexTest §7Currently: §aENABLED
+     * REGEX-TEST: Currently: ENABLED
      */
     private val enabledPattern by patternGroup.pattern(
-        "is.enabled",
+        "is.enabled.colorless",
         ".*ENABLED",
     )
 
@@ -80,9 +82,9 @@ object TabWidgetSettings {
         val inventoryName = event.inventoryName
         if (mainPageSettingPattern.matches(inventoryName)) {
             inInventory = true
-            val items = event.inventoryItems.filter { mainPageWidgetPattern.anyMatches(it.value.getLore()) }
+            val items = event.inventoryItems.filter { mainPageWidgetPattern.anyMatches(it.value.getCleanLore()) }
             for ((slot, stack) in items) {
-                highlights[slot] = if (enabledPattern.anyMatches(stack.getLore())) {
+                highlights[slot] = if (enabledPattern.anyMatches(stack.getCleanLore())) {
                     LorenzColor.GREEN
                 } else {
                     LorenzColor.RED
@@ -93,11 +95,11 @@ object TabWidgetSettings {
         if (shownSettingPattern.matches(inventoryName)) {
             inInventory = true
             val items = event.inventoryItems.filter {
-                subPageWidgetPattern.matches(it.value.getLore().lastOrNull())
+                subPageWidgetPattern.matches(it.value.getCleanLore().lastOrNull())
             }
 
             for ((slot, stack) in items) {
-                highlights[slot] = if (clickToDisablePattern.anyMatches(stack.getLore())) {
+                highlights[slot] = if (clickToDisablePattern.anyMatches(stack.getCleanLore())) {
                     LorenzColor.GREEN
                 } else {
                     LorenzColor.RED

@@ -2,31 +2,26 @@ package at.hannibal2.skyhanni.test.renderable
 
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.FakePlayer
-import at.hannibal2.skyhanni.utils.compat.EnchantmentsCompat
+import at.hannibal2.skyhanni.utils.ItemUtils.addEnchantGlint
+import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.container.HorizontalContainerRenderable.Companion.horizontal
 import at.hannibal2.skyhanni.utils.renderables.fakePlayer
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.item.Item
-import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 import kotlin.random.Random
 
 @SkyHanniModule(devOnly = true)
 object TestFakePlayer : RenderableTestSuite.TestRenderable("fakeplayer") {
 
-
-    private val fakePlayer1 by lazy {
+    private fun lazyFakePlayer() = lazy {
         Renderable.fakePlayer(createFakePlayer(), followMouse = true)
     }
 
-    private val fakePlayer2 by lazy {
-        Renderable.fakePlayer(createFakePlayer(), followMouse = true)
-    }
-
-    private val fakePlayer3 by lazy {
-        Renderable.fakePlayer(createFakePlayer(), followMouse = true)
-    }
+    private val fakePlayer1 by lazyFakePlayer()
+    private val fakePlayer2 by lazyFakePlayer()
+    private val fakePlayer3 by lazyFakePlayer()
 
     private val helmetList = setOf(
         Items.IRON_HELMET,
@@ -60,14 +55,13 @@ object TestFakePlayer : RenderableTestSuite.TestRenderable("fakeplayer") {
         Items.CHAINMAIL_BOOTS,
     )
 
-    private fun createRandomArmorPiece(armorPieces: Set<Item>): ItemStack = ItemStack(armorPieces.random()).also {
-        if (Random.nextBoolean()) it.enchant(
-            EnchantmentsCompat.PROTECTION.enchantment, 1,
-        )
-    }
+    private fun createRandomArmorPiece(armorPieces: Collection<Item>): SafeItemStack =
+        SafeItemStack(armorPieces.random()).also {
+            if (Random.nextBoolean()) it.addEnchantGlint()
+        }
 
     private fun createFakePlayer(): FakePlayer {
-        val fakePlayer = FakePlayer()
+        val fakePlayer = FakePlayer.fromLocalPlayerOrThrow()
 
         val helmet = createRandomArmorPiece(helmetList)
         val chestplate = createRandomArmorPiece(chestplateList)
@@ -77,21 +71,16 @@ object TestFakePlayer : RenderableTestSuite.TestRenderable("fakeplayer") {
         val armor = listOf(helmet, chestplate, leggings, boots)
         for (equipment in Inventory.EQUIPMENT_SLOT_MAPPING.values) {
             val armorOrdinal = equipment.ordinal - 2
-            if (armorOrdinal < 0 || armorOrdinal > 3) continue
+            if (armorOrdinal !in 0..3) continue
             fakePlayer.equipment.set(equipment, armor.reversed()[armorOrdinal])
         }
 
         return fakePlayer
     }
 
-    override fun renderable(): Renderable {
-        return with(Renderable) {
-            horizontal(
-                fakePlayer1,
-                fakePlayer2,
-                fakePlayer3,
-            )
-        }
-    }
-
+    override fun renderable() = Renderable.horizontal(
+        fakePlayer1,
+        fakePlayer2,
+        fakePlayer3,
+    )
 }

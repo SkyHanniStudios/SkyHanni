@@ -1,44 +1,54 @@
-import at.skyhanni.sharedvariables.MultiVersionStage
 import at.skyhanni.sharedvariables.ProjectTarget
 import at.skyhanni.sharedvariables.SHVersionInfo
-import at.skyhanni.sharedvariables.versionString
-import io.gitlab.arturbosch.detekt.Detekt
-import io.gitlab.arturbosch.detekt.DetektCreateBaselineTask
+import dev.detekt.gradle.Detekt
+import dev.detekt.gradle.DetektCreateBaselineTask
+import net.fabricmc.loom.api.fabricapi.FabricApiExtension
+import net.fabricmc.loom.task.RemapSourcesJarTask
+import net.fabricmc.loom.task.ValidateAccessWidenerTask
 import net.fabricmc.loom.task.prod.ClientProductionRunTask
+import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.build.event.BuildEventsListenerRegistry
+import org.gradle.kotlin.dsl.support.serviceOf
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.CompilerPluginConfig
+import org.jetbrains.kotlin.gradle.plugin.InternalSubpluginOption
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import skyhannibuildsystem.BuildProgress
+import skyhannibuildsystem.BuildProgressService
 import skyhannibuildsystem.ChangelogVerification
+import skyhannibuildsystem.JavacProgressArgument
 import skyhannibuildsystem.DownloadBackupRepo
 import skyhannibuildsystem.PublishToModrinth
+import skyhannibuildsystem.progress.DetektProgressListener
+import skyhannibuildsystem.progress.KspProgressProbe
+import com.google.devtools.ksp.gradle.KspAATask
+import kotlin.jvm.java
+import org.gradle.jvm.tasks.Jar as GradleJar
 
 plugins {
     idea
     java
-    id("com.gradleup.shadow") version "9.3.1"
-    id("net.fabricmc.fabric-loom-remap")
+    alias(libs.plugins.shadow)
+    id("net.fabricmc.fabric-loom")
     kotlin("jvm")
     id("com.google.devtools.ksp")
-    kotlin("plugin.power-assert")
     `maven-publish`
-    id("io.gitlab.arturbosch.detekt")
+    id("dev.detekt")
 }
 
-val target = ProjectTarget.values().find { it.projectPath == project.path }!!
+val target = ProjectTarget.entries.find { it.projectPath == project.path }!!
+val primaryTarget = ProjectTarget.MODERN_26200
 
 // Toolchains:
 java {
     toolchain.languageVersion.set(target.minecraftVersion.javaLanguageVersion)
-    // We specifically request ADOPTIUM because if we do not restrict the vendor DCEVM is a
-    // possible candidate. Some DCEVMs are however incompatible with some things gradle is doing,
-    // causing crashes during tests. You can still manually select DCEVM in the Minecraft Client
-    // IntelliJ run configuration.
-    toolchain.vendor.set(JvmVendorSpec.ADOPTIUM)
 }
 val runDirectory = rootProject.file("run")
 runDirectory.mkdirs()
 
 // Minecraft configuration:
-loom {
+loom.apply {
     val classTweakerFile = sc.process(
         rootProject.file("src/main/resources/skyhanni.classtweaker"),
         "build/skyhanni.classtweaker",
@@ -49,163 +59,272 @@ loom {
         println("No classTweaker file for ${target.minecraftVersion}")
     }
 
-    fabricModJsonPath = rootProject.file("src/main/resources/fabric.mod.json")
-
     runs {
         named("client") {
-            isIdeConfigGenerated = true
-            appendProjectPathToConfigName.set(true)
-            this.runDir(rootProject.file("versions/${target.projectName}/run").relativeTo(projectDir).toString())
-            property("mixin.debug", "true")
+            generateRunConfig = true
+            preferGradleTask = true
+            appendProjectPathToDisplayName.set(true)
+            this.runDirectory = rootProject.file("versions/${target.projectName}/run").relativeTo(projectDir)
             if (System.getenv("repo_action") != "true") {
-                property("devauth.configDir", rootProject.file(".devauth").absolutePath)
+                systemProperties.put("devauth.configDir", rootProject.file(".devauth").absolutePath)
             }
-            vmArgs("-Xmx4G")
-            programArgs("--tweakClass", "at.hannibal2.skyhanni.tweaker.SkyHanniTweaker")
-            programArgs("--tweakClass", "io.github.notenoughupdates.moulconfig.tweaker.DevelopmentResourceTweaker")
+            jvmArguments.add("-Xmx4G")
         }
         removeIf { it.name == "server" }
     }
 }
 
-val shadowImpl: Configuration by configurations.creating {
+val shadowImpl = configurations.create("shadowImpl") {
     configurations.implementation.get().extendsFrom(this)
 }
 
-val shadowModImpl: Configuration by configurations.creating {
-    configurations.modImplementation.get().extendsFrom(this)
+val shadowOnly = configurations.create("shadowOnly")
+
+val buildSrcJar = files(rootProject.layout.projectDirectory.file("buildSrc/build/libs/buildSrc.jar"))
+
+val buildProgressService = gradle.sharedServices.registerIfAbsent("buildProgress", BuildProgressService::class.java) {}
+serviceOf<BuildEventsListenerRegistry>().onTaskCompletion(buildProgressService)
+val buildProgressDirectory = layout.projectDirectory.dir(BuildProgress.DIRECTORY).asFile
+val buildProgressTimings = System.getenv("CI") != null || findProperty(BuildProgress.TIMING_PROPERTY) == "true"
+val kspProcessorCount = rootProject.layout.projectDirectory
+    .file("annotation-processors/src/main/resources/META-INF/services/com.google.devtools.ksp.processing.SymbolProcessorProvider")
+    .asFile.readLines().count(String::isNotBlank)
+
+val buildProgressPlugin = configurations.create("buildProgressPlugin") {
+    isCanBeConsumed = false
+    isTransitive = false
 }
 
-val includeBackupRepo by tasks.registering(DownloadBackupRepo::class) {
-    this.user = "hannibal002"
-    this.repo = "SkyHanni-Repo"
+val buildProgressJavacPlugin = configurations.create("buildProgressJavacPlugin") {
+    isCanBeConsumed = false
+    isTransitive = false
+    extendsFrom(buildProgressPlugin)
+}
+
+val mixinTestRuntime = configurations.create("mixinTestRuntime") {
+    isCanBeConsumed = false
+    extendsFrom(configurations.testRuntimeClasspath.get())
+}
+
+val includeBackupRepo = tasks.register<DownloadBackupRepo>("includeBackupRepo") {
+    description = "Download the SH repo archive, bundled as the backup repo"
+    this.user = "SkyHanniStudios"
+    this.repo = "SkyHanni-REPO"
     this.branch = "main"
-    this.resourcePath = "assets/skyhanni/repo.zip"
+    this.resourcePath = "assets/skyhanni/shrepo.tar.gz"
     this.outputDirectory.set(layout.buildDirectory.dir("downloadedRepo"))
 }
 
-val includeBackupNeuRepo by tasks.registering(DownloadBackupRepo::class) {
+val includeBackupNeuRepo = tasks.register<DownloadBackupRepo>("includeBackupNeuRepo") {
+    description = "Download the NEU repo archive, bundled as the backup repo"
     this.user = "NotEnoughUpdates"
     this.repo = "NotEnoughUpdates-Repo"
     this.branch = "master"
-    this.resourcePath = "assets/skyhanni/neu-repo.zip"
+    this.resourcePath = "assets/skyhanni/neurepo.tar.gz"
     this.outputDirectory.set(layout.buildDirectory.dir("downloadedNeuRepo"))
 }
 
-val publishToModrinth by tasks.registering(PublishToModrinth::class)
-
-tasks.runClient {
-    this.javaLauncher.set(
-        javaToolchains.launcherFor {
-            languageVersion.set(target.minecraftVersion.javaLanguageVersion)
-        },
-    )
+val publishToModrinth = tasks.register<PublishToModrinth>("publishToModrinth") {
+    description = "Publish the mod to Modrinth"
 }
 
-tasks.register("checkPrDescription", ChangelogVerification::class) {
-    this.outputDirectory.set(layout.buildDirectory)
-    this.prTitle = project.findProperty("prTitle") as? String ?: ""
-    this.prBody = project.findProperty("prBody") as? String ?: ""
+tasks.named<JavaExec>("runClient") {
+    this.javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
+}
+
+@Suppress("UnstableApiUsage")
+abstract class ArgFileClientProductionRunTask : ClientProductionRunTask() {
+    override fun configureClasspath(exec: ExecSpec) {
+        val argFile = temporaryDir.resolve("classpath.args")
+        val classpath = streamClasspath().toList().joinToString(File.pathSeparator) { it.absolutePath }
+        argFile.writeText("-cp \"${classpath.replace("\\", "\\\\")}\"")
+        exec.args("@${argFile.absolutePath}")
+    }
+}
+
+tasks.register<ArgFileClientProductionRunTask>("prodClient") {
+    description = "Interactive Minecraft client"
+    notCompatibleWithConfigurationCache("Interactive client launches must start a new process every time.")
+    outputs.upToDateWhen { false }
+    runDir = file("run")
+}
+
+if (target == primaryTarget) {
+    tasks.register("checkPrDescription", ChangelogVerification::class) {
+        description = "Check PR title + body against SH changelog format"
+        this.prTitle = System.getenv("PR_TITLE") ?: project.findProperty("prTitle") as? String ?: ""
+        this.prBody = System.getenv("PR_BODY") ?: project.findProperty("prBody") as? String ?: ""
+        this.outputDirectory.set(
+            layout.buildDirectory.dir("changelog-verification")
+        )
+    }
 }
 
 dependencies {
     val versionName = target.minecraftVersion.versionNameOverride ?: target.minecraftVersion.versionName
     minecraft("com.mojang:minecraft:$versionName")
-    if (target.mappingDependency == "official") {
-        mappings(loom.layered {
-            officialMojangMappings()
-            if (versionName == "1.21.10") {
-                mappings("dev.lambdaurora:yalmm-mojbackward:1.21.10+build.3")
-            }
-        })
-    } else {
-        mappings(target.mappingDependency)
-    }
 
-    // Discord RPC client
-    includeImplementation("com.github.caoimhebyrne:KDiscordIPC:0.2.3")
-    include("com.kohlschutter.junixsocket:junixsocket-common:2.6.2")
-    include("com.kohlschutter.junixsocket:junixsocket-native-common:2.6.2")
     compileOnly(libs.jbAnnotations)
     ksp(project(":annotation-processors"))?.let { compileOnly(it) }
+    buildProgressPlugin(buildSrcJar)
+    buildProgressJavacPlugin(libs.kotlin.stdlib)
+    detektPlugins(buildSrcJar)
 
     ksp(libs.autoservice.ksp)
     implementation(libs.autoservice.annotations)
 
-    target.fabricLoaderVersion?.let { modImplementation(it) }
-    target.fabricApiVersion?.let { modImplementation(it) }
-    modImplementation(libs.fabricLanguageKotlin)
-    target.modMenuVersion?.let { modImplementation("maven.modrinth:modmenu:$it") }
+    target.fabricLoaderVersion.let {
+        implementation(it)
+        "productionRuntimeMods"(it)
+        mixinTestRuntime("net.fabricmc:fabric-loader-junit:${it.substringAfterLast(':')}")
+    }
+    target.fabricApiVersion.let {
+        implementation(it)
+        "productionRuntimeMods"(it)
+    }
+    implementation(libs.fabricLanguageKotlin)
+    "productionRuntimeMods"(libs.fabricLanguageKotlin)
 
-    modRuntimeOnly("me.djtheredstoner:DevAuth-fabric:1.2.1")
+    implementation("maven.modrinth:modmenu:${target.modMenuVersion}")
+
+    runtimeOnly(libs.devauth)
+    "productionRuntimeMods"(libs.devauth)
 
     val moulconfigVersion = target.minecraftVersion.moulconfigMinecraftVersionOverride ?: target.minecraftVersion.versionName
-    shadowModImpl("org.notenoughupdates.moulconfig:modern-$moulconfigVersion:${libs.versions.moulconfig.get()}") {
+    shadowImpl("org.notenoughupdates.moulconfig:modern-$moulconfigVersion:${libs.versions.moulconfig.get()}") {
         exclude("org.jetbrains.kotlin")
         exclude("org.jetbrains.kotlinx")
     }
-    include("org.notenoughupdates.moulconfig:modern-$moulconfigVersion:${libs.versions.moulconfig.get()}")
+    "minecraftTestClientRuntimeLibraries"(
+        "org.notenoughupdates.moulconfig:modern-$moulconfigVersion:${libs.versions.moulconfig.get()}"
+    )
 
-    @Suppress("UnstableApiUsage")
     shadowImpl(libs.libautoupdate) {
         exclude(module = "gson")
     }
+    "minecraftTestClientRuntimeLibraries"(libs.libautoupdate)
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.11.0")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("io.mockk:mockk:1.12.5")
+    testImplementation(libs.junit)
+    testRuntimeOnly(libs.junit.launcher)
+    testImplementation(libs.mockk)
+    testImplementation(libs.mockk.agent)
 
-    modImplementation(libs.hypixelmodapi)
-    include(libs.hypixelmodapi.fabric)
+    implementation(target.hypixelModApiVersion)
+    runtimeOnly(target.hypixelModApiFabricVersion)
+    "productionRuntimeMods"(target.hypixelModApiFabricVersion)
 
-
-    modCompileOnly(libs.roughlyenoughitems) {
-        exclude(group = "net.fabricmc.fabric-api")
+    val reiVersion = when (target) {
+        ProjectTarget.MODERN_26200 -> "26.2.820"
+        ProjectTarget.MODERN_26100 -> "26.1.819"
     }
-
+    val reiApi = "me.shedaniel:RoughlyEnoughItems-api:$reiVersion"
+    compileOnly(reiApi) { isTransitive = false }
+    "minecraftTestClientRuntimeLibraries"(reiApi) {
+        isTransitive = false
+    }
+    compileOnly(libs.basicMath)
+    "minecraftTestClientRuntimeLibraries"(libs.basicMath)
 
     // getting clock offset
-    includeImplementation("commons-net:commons-net:3.11.1")
+    shadowImpl(libs.commons.net)
+    "minecraftTestClientRuntimeLibraries"(libs.commons.net)
 
     // Calculator
-    includeImplementation("com.notkamui.libs:keval:1.1.1")
+    shadowImpl(libs.keval) {
+        exclude(group = "org.jetbrains.kotlin")
+    }
+    "minecraftTestClientRuntimeLibraries"(libs.keval)
 
-    detektPlugins("org.notenoughupdates:detektrules:1.0.0")
+    detektPlugins(libs.detektrules.neu)
     detektPlugins(project(":detekt"))
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.7")
+    detektPlugins(libs.detektrules.ktlint)
 
-    if (target != ProjectTarget.MODERN_12110) shadowImpl("org.apache.httpcomponents:httpclient:4.5.14")
+    shadowImpl(libs.httpclient)
+    "minecraftTestClientRuntimeLibraries"(libs.httpclient)
+
+    target.renderChestVersion?.let {
+        includeImplementation("net.azureaaron:render-chest:$it")
+        "productionRuntimeMods"("net.azureaaron:render-chest:$it")
+        "minecraftTestClientRuntimeLibraries"("net.azureaaron:render-chest:$it") {
+            isTransitive = false
+        }
+    }
 }
 
+/**
+ * Includes [dep] as jar-in-jar (puts the .jar into `skyhanni.jar/META-INF/jars`).
+ * Use this when you intentionally want to deduplicate a dependency between mods;
+ * prefer `shadowImpl` if it's local to us and shouldn't interfere with other mods.
+ *
+ * A configuration block is intentionally not provided, as it is not possible to
+ * exclude something from a nested jar without a manual repackage step.
+ */
 fun DependencyHandler.includeImplementation(dep: Any) {
     include(dep)
-    modImplementation(dep)
+    implementation(dep)
 }
 
 afterEvaluate {
     loom.runs.named("client") {
-        programArgs("--quickPlayMultiplayer", "hypixel.net")
+        programArguments.addAll("--quickPlayMultiplayer", "hypixel.net")
     }
 
     ksp {
         arg("skyhanni.modver", version.toString())
         arg("skyhanni.mcver", target.minecraftVersion.versionName)
         arg("skyhanni.buildpaths", project.file("buildpaths-excluded.txt").absolutePath)
+        arg("skyhanni.cachedir", layout.buildDirectory.get().asFile.absolutePath)
+        arg(KspProgressProbe.REPORT_FILE_OPTION, buildProgressDirectory.resolve("kspKotlin.txt").absolutePath)
+        arg(KspProgressProbe.PROCESSOR_COUNT_OPTION, kspProcessorCount.toString())
     }
 }
 
-tasks.withType(Test::class) {
+tasks.withType<KspAATask> {
+    kspClasspath.from(layout.buildDirectory.file("ksp-loader-${target.minecraftVersion.versionName}"))
+    BuildProgress.watch(this, buildProgressDirectory.resolve("$name.txt"), buildProgressService, objects, buildProgressTimings)
+}
+
+tasks.withType<Test> {
     useJUnitPlatform()
+    testLogging {
+        showStackTraces = true
+        exceptionFormat = TestExceptionFormat.FULL
+    }
     javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
     workingDir(file(runDirectory))
     systemProperty("junit.jupiter.extensions.autodetection.enabled", "true")
+    systemProperty("joml.nounsafe", "true")
+    systemProperty("net.bytebuddy.safe", "true")
+    jvmArgs(
+        "--add-opens", "java.base/java.lang=ALL-UNNAMED",
+        "--add-opens", "java.base/java.util=ALL-UNNAMED",
+        "-XX:+EnableDynamicAgentLoading",
+        // Fixes the "bootstrap class append" warnings post J-25
+        "-Xshare:off",
+        // Tests start NPE-ing without this on Java 25
+        "-Dnet.bytebuddy.experimental=true",
+    )
+}
+
+val mixinTest = tasks.register<Test>("mixinTest") {
+    description = "Audits mixin application under Fabric Loader."
+    group = "verification"
+    testClassesDirs = sourceSets.test.get().output.classesDirs
+    classpath = sourceSets.test.get().output + sourceSets.main.get().output + mixinTestRuntime
+    filter {
+        includeTestsMatching("at.hannibal2.skyhanni.test.MixinTest")
+    }
+}
+
+tasks.test {
+    dependsOn(mixinTest)
+    exclude("at/hannibal2/skyhanni/test/MixinTest.class")
 }
 
 kotlin {
     sourceSets.all {
         languageSettings {
-            languageVersion = "2.0"
-            enableLanguageFeature("BreakContinueInInlineLambdas")
+            languageVersion = "2.4"
         }
     }
 }
@@ -214,11 +333,20 @@ kotlin {
 tasks.processResources {
     from(includeBackupRepo)
     from(includeBackupNeuRepo)
-    val fapiVersion = target.fabricApiVersion?.split(":")?.last() ?: ""
+    val fabLoaderVersion = target.fabricLoaderVersion.split(":").last()
+    val fapiVersion = target.fabricApiVersion.split(":").last()
+    val fabLangKotlinVersion = target.fabricLanguageKotlinVersion.split(":").last()
+    val hypixelModApiVersion = target.hypixelModApiFabricVersion.split(":").last()
+    val minecraftVersion = target.minecraftVersion.fabricModJsonVersion
+    val renderChestVersion = target.renderChestVersion ?: ""
     val props = buildMap {
         put("version", version)
-        put("minecraft", target.minecraftVersion.versionName)
+        put("minecraft", minecraftVersion)
         put("fapi", fapiVersion)
+        put("fabloader", fabLoaderVersion)
+        put ("fablangkotlin", fabLangKotlinVersion)
+        put("hypixelmodapi", hypixelModApiVersion)
+        put("renderchest", renderChestVersion)
     }
 
     props.forEach(inputs::property)
@@ -228,8 +356,9 @@ tasks.processResources {
     }
 }
 
-if (target == ProjectTarget.MODERN_12110) {
-    fabricApi {
+@Suppress("UnstableApiUsage")
+if (target == primaryTarget) {
+    configure<FabricApiExtension> {
         configureTests {
             modId = "skyhanni"
             enableGameTests = false // Server game tests
@@ -237,16 +366,17 @@ if (target == ProjectTarget.MODERN_12110) {
             eula = true
         }
     }
-    tasks.register("generateRepoPatterns", ClientProductionRunTask::class.java).configure {
+    tasks.register("generateRepoPatterns", ArgFileClientProductionRunTask::class.java) {
+        description = "Runs an MC client, and dumps RepoPatterns to build/regexes/constants.json"
+    }.configure {
         javaLauncher.set(javaToolchains.launcherFor(java.toolchain))
-        dependsOn(tasks.configureLaunch)
+        dependsOn(tasks.named("configureLaunch"))
         val outputFile = project.file("build/regexes/constants.json")
-        mods.from(project.configurations.modImplementation.get())
 
         jvmArgs.add("-DSkyHanniDumpRegex.enabled=true")
         jvmArgs.add("-DSkyHanniDumpRegex=${SHVersionInfo.gitHash}:${outputFile.absolutePath}")
         jvmArgs.add("-Dfabric.client.gametest=true")
-        useXVFB = true
+        useXVFB = System.getProperty("os.name").startsWith("Linux", ignoreCase = true)
     }
     loom.runs.removeIf { it.name == "clientGameTest" }
 }
@@ -267,64 +397,76 @@ excludeBuildPaths(file("buildpaths-excluded.txt"), sourceSets.main)
 excludeBuildPaths(file("buildpaths-excluded.txt"), sourceSets.test)
 
 tasks.withType<KotlinCompile> {
-    compilerOptions.jvmTarget.set(JvmTarget.fromTarget(target.minecraftVersion.formattedJavaLanguageVersion))
+    val reportFile = buildProgressDirectory.resolve("$name.txt")
+    val reportFileOption = InternalSubpluginOption(BuildProgress.KOTLIN_REPORT_FILE_OPTION, reportFile.absolutePath)
+    pluginClasspath.from(buildProgressPlugin)
+    pluginOptions.add(CompilerPluginConfig().apply { addPluginArgument(BuildProgress.KOTLIN_PLUGIN_ID, reportFileOption) })
+    BuildProgress.watch(this, reportFile, buildProgressService, objects, buildProgressTimings)
+    compilerOptions {
+        val jvmTargetStr = target.minecraftVersion.formattedKotlinJvmTarget
+        jvmTarget.set(JvmTarget.fromTarget(jvmTargetStr))
+        allWarningsAsErrors = true
+        optIn.addAll(
+            "kotlin.concurrent.atomics.ExperimentalAtomicApi",
+            "kotlin.io.path.ExperimentalPathApi",
+            "kotlin.time.ExperimentalTime"
+        )
+        freeCompilerArgs.addAll(
+            // 0 (all cores) triggers a race condition in JvmIrCodegenFactory's parallel codegen on Kotlin 2.4.x,
+            // leaving corrupt .class files that break subsequent incremental builds.
+            // see: https://youtrack.jetbrains.com/issue/KT-85498/
+            "-Xbackend-threads=1",
+            // This is so that workflows logs look cleaner, IntelliJ shows the warnings in the IDE anyway
+            "-Xwarning-level=DEPRECATION:disabled",
+            "-Xintrinsic-const-evaluation",
+            "-Xcontext-sensitive-resolution"
+        )
+    }
 }
 
-tasks.withType(JavaCompile::class) {
+tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
+    val reportFile = buildProgressDirectory.resolve("$name.txt")
+    options.annotationProcessorPath = (options.annotationProcessorPath ?: files()) + buildProgressJavacPlugin
+    options.compilerArgumentProviders.add(JavacProgressArgument(reportFile))
+    BuildProgress.watch(this, reportFile, buildProgressService, objects, buildProgressTimings)
 }
 
-tasks.withType(org.gradle.jvm.tasks.Jar::class) {
+tasks.withType<GradleJar> {
     archiveBaseName.set("SkyHanni")
     archiveVersion.set("$version-mc${target.minecraftVersion.versionName}")
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE // Why do we have this here? This only *hides* errors.
-}
-
-val remapJar by tasks.named<net.fabricmc.loom.task.RemapJarTask>("remapJar") {
-    archiveClassifier.set("")
-    dependsOn(tasks.shadowJar)
-    inputFile.set(tasks.shadowJar.get().archiveFile)
-    destinationDirectory.set(rootProject.layout.buildDirectory.dir("libs"))
 }
 
 tasks.shadowJar {
-    destinationDirectory.set(layout.buildDirectory.dir("badjars"))
-    archiveClassifier.set("all-dev")
-    configurations = listOf(shadowImpl, shadowModImpl)
+    destinationDirectory.set(rootProject.layout.buildDirectory.dir("libs"))
+    archiveClassifier.set("")
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    filesMatching("META-INF/services/**") {
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    }
+    configurations = buildList {
+        add(shadowImpl)
+        add(shadowOnly)
+    }
     exclude("META-INF/versions/**")
+    exclude("META-INF/*.kotlin_module")
     mergeServiceFiles()
     relocate("io.github.notenoughupdates.moulconfig", "at.hannibal2.skyhanni.deps.moulconfig")
     relocate("moe.nea.libautoupdate", "at.hannibal2.skyhanni.deps.libautoupdate")
-    relocate("net.hypixel.modapi.tweaker", "at.hannibal2.skyhanni.deps.hypixel.modapi.tweaker")
+    relocate("com.notkamui.keval", "at.hannibal2.skyhanni.deps.keval")
 }
+// Loom only nests `include`d jars into the default jar task; wire them into the final jar too
+@Suppress("UnstableApiUsage")
+loom.nestJars(tasks.shadowJar, configurations.named("include"))
 tasks.jar {
     archiveClassifier.set("nodeps")
     destinationDirectory.set(layout.buildDirectory.dir("badjars"))
 }
-tasks.assemble.get().dependsOn(tasks.remapJar)
 
-tasks.withType(KotlinCompile::class) {
-    compilerOptions {
-        jvmTarget.set(JvmTarget.fromTarget(target.minecraftVersion.javaLanguageVersion.versionString()))
-    }
-}
+tasks.assemble.get().dependsOn(tasks.shadowJar)
 
-if (!MultiVersionStage.activeState.shouldCompile(target)) {
-    tasks.withType<JavaCompile> {
-        onlyIf { false }
-    }
-    tasks.withType<KotlinCompile> {
-        onlyIf { false }
-    }
-    tasks.withType<AbstractArchiveTask> {
-        onlyIf { false }
-    }
-    tasks.withType<ProcessResources> {
-        onlyIf { false }
-    }
-}
-
-val sourcesJar by tasks.registering(Jar::class) {
+val sourcesJar = tasks.register<Jar>("sourcesJar") {
+    description = "Assemble main source set into a jar, for Maven publication"
     destinationDirectory.set(layout.buildDirectory.dir("badjars"))
     archiveClassifier.set("src")
     from(sourceSets.main.get().allSource)
@@ -332,18 +474,18 @@ val sourcesJar by tasks.registering(Jar::class) {
 
 publishing.publications {
     create<MavenPublication>("maven") {
-        artifact(tasks.remapJar)
+        artifact(tasks.shadowJar)
         artifact(sourcesJar) { classifier = "sources" }
         pom {
             name.set("SkyHanni")
             licenses {
                 license {
                     name.set("GNU Lesser General Public License")
-                    url.set("https://github.com/hannibal002/SkyHanni/blob/HEAD/LICENSE")
+                    url.set("https://github.com/SkyHanniStudios/SkyHanni/blob/HEAD/LICENSE")
                 }
             }
             developers {
-                developer { name.set("hannibal002") }
+                developer { name.set("hannibal2") }
                 developer { name.set("The SkyHanni contributors") }
             }
         }
@@ -351,48 +493,76 @@ publishing.publications {
 }
 
 detekt {
-    buildUponDefaultConfig = true // preconfigure defaults
-    config.setFrom(rootProject.layout.projectDirectory.file("detekt/detekt.yml")) // point to your custom config defining rules to run, overwriting default behavior
-    baseline = file(rootProject.layout.projectDirectory.file("detekt/baseline-main.xml")) // a way of suppressing issues before introducing detekt
-    source.setFrom(project.sourceSets.named("main").map { it.allSource })
+    buildUponDefaultConfig = true
+    config.setFrom(rootProject.layout.projectDirectory.file("detekt/detekt.yml"))
+    baseline = file(rootProject.layout.projectDirectory.file("detekt/baseline-main.xml"))
+    source.setFrom(
+        project.sourceSets.named("main").map {
+            it.allSource.matching {
+                exclude { elem -> elem.file.absolutePath.replace('\\', '/').contains("/build/generated/") }
+            }
+        }
+    )
+}
+
+// Detekt is handled by a dedicated CI workflow; exclude it from the check/build lifecycle
+// so it doesn't slow down normal builds. It still runs when invoked explicitly.
+afterEvaluate {
+    tasks.findByName("check")?.setDependsOn(
+        tasks.getByName("check").dependsOn.filterNot { dep ->
+            (dep is Task && dep.name.startsWith("detekt")) ||
+                (dep is TaskProvider<*> && dep.name.startsWith("detekt"))
+        }
+    )
 }
 
 tasks.withType<Detekt>().configureEach {
-    onlyIf {
-        target == ProjectTarget.MODERN_12110 && project.findProperty("skipDetekt") != "true"
+    source = source.matching {
+        exclude { it.file.absolutePath.replace('\\', '/').contains("/build/generated/") }
     }
-    jvmTarget = target.minecraftVersion.formattedJavaLanguageVersion
-    outputs.cacheIf { false } // Custom rules won't work if cached
+    val isTargetVersion = target == primaryTarget
+    val skipDetekt = project.findProperty("skipDetekt") == "true"
+    onlyIf { isTargetVersion && !skipDetekt }
 
-    val isDetektMain = (this.name == "detektMain")
+    val detektBasePath = basePath.map(::File).getOrElse(rootProject.layout.projectDirectory.asFile)
+    val reportFile = detektBasePath.resolve(BuildProgress.DIRECTORY).resolve(BuildProgress.DETEKT_REPORT_FILE_NAME)
+    BuildProgress.watch(this, reportFile, buildProgressService, objects, buildProgressTimings, DetektProgressListener.SESSION_STATUS)
+
+    val isDetektMain = name == "detektMain"
     val outputFileName = if (isDetektMain) "main" else "detekt"
     val detektDir = rootProject.layout.buildDirectory.dir("reports/detekt").get().asFile.absolutePath
     reports {
-        html.required.set(true) // observe findings in your browser with structure and code snippets
+        html.required.set(true)
         html.outputLocation.set(file("$detektDir/$outputFileName.html"))
-        xml.required.set(true) // checkstyle like format mainly for integrations like Jenkins
-        xml.outputLocation.set(file("$detektDir/$outputFileName.xml"))
-        sarif.required.set(true) // standardized SARIF format (https://sarifweb.azurewebsites.net/) to support integrations with GitHub Code Scanning
+        sarif.required.set(true)
         sarif.outputLocation.set(file("$detektDir/$outputFileName.sarif"))
-        md.required.set(true) // simple Markdown format
-        md.outputLocation.set(file("$detektDir/$outputFileName.md"))
-        txt.required.set(true)
-        txt.outputLocation.set(file("$detektDir/$outputFileName.txt"))
     }
 }
 
 tasks.withType<DetektCreateBaselineTask>().configureEach {
+    val isTargetVersion = target == primaryTarget
     jvmTarget = target.minecraftVersion.formattedJavaLanguageVersion
-    outputs.cacheIf { false } // Custom rules won't work if cached
-    onlyIf {
-        // We only need one baseline for the main source set
-        target == ProjectTarget.MODERN_12110
-    }
+    outputs.cacheIf { false }
+    onlyIf { isTargetVersion }
 
-    val isMainBaseline = (this.name == "detektBaselineMain")
+    val isMainBaseline = name == "detektBaselineMain"
     val outputFileName = if (isMainBaseline) "baseline-main" else "baseline"
     baseline.set(file(rootProject.layout.projectDirectory.file("detekt/$outputFileName.xml")))
 }
+
+tasks.withType<RemapSourcesJarTask>().configureEach {
+    enabled = false
+}
+
+tasks.matching { it.name == "kspTestKotlin" || it.name == "kspTestJava" }.configureEach {
+    enabled = false
+}
+
+tasks.withType<ValidateAccessWidenerTask>().configureEach {
+    dependsOn("stonecutterPrepare")
+}
+
 repositories {
+    mavenLocal()
     mavenCentral()
 }

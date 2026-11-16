@@ -8,16 +8,16 @@ import at.hannibal2.skyhanni.events.minecraft.ToolTipTextEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.InventoryUtils.getAllItems
+import at.hannibal2.skyhanni.utils.ItemUtils.cleanName
 import at.hannibal2.skyhanni.utils.KeyboardManager
 import at.hannibal2.skyhanni.utils.LorenzColor
 import at.hannibal2.skyhanni.utils.RenderUtils.highlight
+import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.StringUtils.removeColor
-import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLeadingWhiteLessResets
 import net.minecraft.client.gui.screens.inventory.ContainerScreen
 import net.minecraft.network.chat.Component
 import net.minecraft.world.inventory.ChestMenu
-import net.minecraft.world.item.ItemStack
 
 @SkyHanniModule
 object QuickCraftFeatures {
@@ -50,7 +50,7 @@ object QuickCraftFeatures {
         if (needsQuickCraftConfirmation(event.itemStack)) {
             for ((index, line) in event.toolTip.withIndex()) {
                 if (line.string.removeColor() == "Click to craft!") {
-                    event.toolTip.set(index, Component.literal("§c${KeyboardManager.getModifierKeyName()} + Click to craft!"))
+                    event.toolTip[index] = Component.literal("§c${KeyboardManager.getModifierKeyName()} + Click to craft!")
                     break
                 }
             }
@@ -84,8 +84,8 @@ object QuickCraftFeatures {
         }
     }
 
-    private fun needsQuickCraftConfirmation(item: ItemStack): Boolean {
-        return !quickCraftableItems.contains(item.hoverName.string.removeColor())
+    private fun needsQuickCraftConfirmation(item: SafeItemStack): Boolean {
+        return !quickCraftableItems.contains(item.cleanName)
     }
 
     private fun getInventoryType(): InventoryType? {

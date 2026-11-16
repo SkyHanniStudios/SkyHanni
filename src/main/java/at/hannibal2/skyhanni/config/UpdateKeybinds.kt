@@ -8,7 +8,7 @@ import at.hannibal2.skyhanni.events.hypixel.HypixelJoinEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.SkyHanniConfigSearchResetCommand
 import at.hannibal2.skyhanni.utils.ChatUtils
-import at.hannibal2.skyhanni.utils.LorenzLogger
+import at.hannibal2.skyhanni.utils.SkyHanniLogger
 import at.hannibal2.skyhanni.utils.system.PlatformUtils
 
 @SkyHanniModule
@@ -16,7 +16,7 @@ object UpdateKeybinds {
 
     var keybinds: MutableSet<String> = mutableSetOf()
 
-    private val logger = LorenzLogger("keybind_upgrader")
+    private val logger = SkyHanniLogger("keybind_upgrader")
 
     private fun fixKeybinds() {
         for (keybind in keybinds) {
@@ -50,7 +50,7 @@ object UpdateKeybinds {
     fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shresetkeybinds") {
             category = CommandCategory.USERS_RESET
-            description = "Resets all of your skyhanni keybinds"
+            description = "Resets all of your SkyHanni keybinds"
             aliases = listOf("shkeybindreset")
             simpleCallback {
                 for (keybind in keybinds) {

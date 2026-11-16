@@ -7,10 +7,10 @@ enum class CropCollectionType(val displayName: String) {
     PEST_BASE("Pest Base Drop"),
     PEST_RNG("Pest RNG Drop"),
     GREENHOUSE("Greenhouse Drops"),
-    UNKNOWN("Unknown")
+    UNKNOWN("Unknown"),
     ;
 
     companion object {
-        fun getByName(name: String) = CropCollectionType.entries.firstOrNull { it.displayName.lowercase() == name.lowercase() }
+        fun getByName(name: String) = CropCollectionType.entries.firstOrNull { it.displayName.equals(name, ignoreCase = true) }
     }
 }

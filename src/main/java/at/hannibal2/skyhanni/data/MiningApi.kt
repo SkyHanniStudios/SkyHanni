@@ -2,6 +2,7 @@ package at.hannibal2.skyhanni.data
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.jsonobjects.repo.MiningJson
+import at.hannibal2.skyhanni.data.model.SkyblockStat
 import at.hannibal2.skyhanni.events.BlockClickEvent
 import at.hannibal2.skyhanni.events.ColdUpdateEvent
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
@@ -12,10 +13,10 @@ import at.hannibal2.skyhanni.events.ServerBlockChangeEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.mining.OreMinedEvent
 import at.hannibal2.skyhanni.events.player.PlayerDeathEvent
+import at.hannibal2.skyhanni.events.skyblock.GraphAreaChangeEvent
 import at.hannibal2.skyhanni.events.skyblock.ScoreboardAreaChangeEvent
-import at.hannibal2.skyhanni.features.dungeon.DungeonApi.dungeonRoomPattern
+import at.hannibal2.skyhanni.features.dungeon.DungeonApi
 import at.hannibal2.skyhanni.features.mining.OreBlock
-import at.hannibal2.skyhanni.features.mining.isTitanium
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.BlockUtils.getBlockStateAt
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
@@ -32,6 +33,7 @@ import at.hannibal2.skyhanni.utils.collection.CollectionUtils.countBy
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.removeIf
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.block.state.BlockState
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.math.absoluteValue
@@ -42,54 +44,60 @@ import kotlin.time.Duration.Companion.seconds
 @SkyHanniModule
 object MiningApi {
 
-    private val group = RepoPattern.group("data.miningapi")
+    private val patternGroup = RepoPattern.group("data.miningapi")
 
     /**
      * @regexTest Glacite Tunnels
      * @regexTest Great Glacite Lake
      */
-    private val glaciteAreaPattern by group.pattern("area.glacite", "Glacite Tunnels|Great Glacite Lake")
-    private val dwarvenBaseCampPattern by group.pattern("area.basecamp", "Dwarven Base Camp")
+    private val glaciteAreaPattern by patternGroup.pattern("area.glacite", "Glacite Tunnels|Great Glacite Lake")
+    private val dwarvenBaseCampPattern by patternGroup.pattern("area.basecamp", "Dwarven Base Camp")
 
     /**
      * @regexTest Mines of Divan
      */
-    private val minesOfDivanPattern by group.pattern("area.minesofdivan", "Mines of Divan")
+    private val minesOfDivanPattern by patternGroup.pattern("area.minesofdivan", "Mines of Divan")
+
+    private val icyBiomePattern by patternGroup.pattern("area.icybiome", "Icy Biome")
 
     /**
-     * @regexTest §6The warmth of the campfire reduced your §r§b❄ Cold §r§6to §r§a0§r§6!
-     * @regexTest §c ☠ §r§7You froze to death§r§7.
+     * REGEX-TEST: §6The warmth of the campfire reduced your §r§b Cold §r§6to §r§a0§r§6!
+     * REGEX-TEST: §c ☠ §r§7You froze to death§r§7.
      */
-    private val coldResetPattern by group.pattern(
+    @Suppress("MaxLineLength")
+    private val coldResetPattern by patternGroup.pattern(
         "cold.reset",
-        "§6The warmth of the campfire reduced your §r§b❄ Cold §r§6to §r§a0§r§6!|§c ☠ §r§7You froze to death§r§7\\.",
+        "§6The warmth of the campfire reduced your §r§b${SkyblockStat.COLD_RESISTANCE.hypixelIcon} Cold §r§6to §r§a0§r§6!|§c ☠ §r§7You froze to death§r§7\\.",
     )
 
+    // This intentionally uses the old heat icon, since Hypixel has not updated it in this location.
     /**
      * @regexTest Heat: §6IMMUNE
      * @regexTest Heat: §c14♨
      * @regexTest Heat: §c0♨
      */
-    val heatPattern by group.pattern(
+    val heatPattern by patternGroup.pattern(
         "heat.scoreboard",
         "^Heat: (?<scoreboard>§.(?<heat>\\d+|IMMUNE)♨?)\$",
     )
 
+    // This intentionally uses the old cold icon, since Hypixel has not updated it in this location.
     /**
-     * @regexTest Cold: §b-1❄
+     * REGEX-TEST: Cold: §b-1❄
+     * REGEX-TEST: Cold: §b-3❄
      */
-    val coldPattern by group.pattern(
+    val coldPattern by patternGroup.pattern(
         "cold",
         "(?:§.)*Cold: §.(?<cold>-?\\d+)❄",
     )
 
-    private val pickbobulusGroup = group.group("pickobulus")
+    private val pickobulusGroup = patternGroup.group("pickobulus")
 
     /**
      * @regexTest §aYou used your §r§6Pickobulus §r§aPickaxe Ability!
      */
 
-    private val pickobulusUsePattern by pickbobulusGroup.pattern(
+    private val pickobulusUsePattern by pickobulusGroup.pattern(
         "use",
         "§aYou used your §r§6Pickobulus §r§aPickaxe Ability!",
     )
@@ -97,7 +105,7 @@ object MiningApi {
     /**
      * @regexTest §7Your §r§aPickobulus §r§7destroyed §r§e140 §r§7blocks!
      */
-    private val pickobulusEndPattern by pickbobulusGroup.pattern(
+    private val pickobulusEndPattern by pickobulusGroup.pattern(
         "end",
         "§7Your §r§aPickobulus §r§7destroyed §r§e(?<amount>[\\d,.]+) §r§7blocks!",
     )
@@ -105,7 +113,7 @@ object MiningApi {
     /**
      * @regexTest §7Your §r§aPickobulus §r§7didn't destroy any blocks!
      */
-    private val pickobulusFailPattern by pickbobulusGroup.pattern(
+    private val pickobulusFailPattern by pickobulusGroup.pattern(
         "fail",
         "§7Your §r§aPickobulus §r§7didn't destroy any blocks!",
     )
@@ -141,7 +149,7 @@ object MiningApi {
     private var pickobulusWaitingForSound = false
     private var pickobulusWaitingForBlock = false
 
-    // oreblock data
+    // OreBlock data
     var inGlacite = false
         private set
     var inTunnels = false
@@ -193,37 +201,56 @@ object MiningApi {
 
     private var lastOreMinedTime = SimpleTimeMark.farPast()
 
-    fun inGlaciteArea() = inGlacialTunnels() || IslandType.MINESHAFT.isCurrent()
+    fun inGlaciteArea() = inGlacialTunnels() || IslandType.MINESHAFT.isInIsland()
 
-    fun inDwarvenBaseCamp() = IslandType.DWARVEN_MINES.isCurrent() && dwarvenBaseCampPattern.matches(SkyBlockUtils.graphArea)
+    fun inDwarvenBaseCamp() = IslandType.DWARVEN_MINES.isInIsland() && dwarvenBaseCampPattern.matches(SkyBlockUtils.graphArea)
 
-    fun inRegularDwarven() = IslandType.DWARVEN_MINES.isCurrent() && !inGlacialTunnels()
+    fun inRegularDwarven() = IslandType.DWARVEN_MINES.isInIsland() && !inGlacialTunnels()
 
-    fun inCrystalHollows() = IslandType.CRYSTAL_HOLLOWS.isCurrent()
+    fun inCrystalHollows() = IslandType.CRYSTAL_HOLLOWS.isInIsland()
 
     fun inMinesOfDivan() = inCrystalHollows() && minesOfDivanPattern.matches(HypixelData.skyBlockArea)
 
-    fun inMineshaft() = IslandType.MINESHAFT.isCurrent()
+    fun inMineshaft() = IslandType.MINESHAFT.isInIsland()
 
-    fun inGlacialTunnels() = IslandType.DWARVEN_MINES.isCurrent() && glaciteAreaPattern.matches(SkyBlockUtils.graphArea)
+    fun inGlacialTunnels() = IslandType.DWARVEN_MINES.isInIsland() && glaciteAreaPattern.matches(SkyBlockUtils.graphArea)
+
+    /**
+     * Whether cold can currently apply to the player.
+     * On the Critter Safari cold is limited to the Icy Biome, which is why the area is checked here.
+     * The other cold islands are not narrowed down further, there we rely on Hypixel removing the scoreboard line.
+     */
+    fun inColdArea(): Boolean {
+        if (!IslandTypeTag.IS_COLD.isInIsland()) return false
+        if (IslandType.SAFARI.isInIsland()) return icyBiomePattern.matches(SkyBlockUtils.graphArea)
+        return true
+    }
 
     @HandleEvent
-    fun onScoreboardChange(event: ScoreboardUpdateEvent) {
-        if (IslandTypeTags.IS_COLD.inAny()) {
-            dungeonRoomPattern.firstMatcher(event.new) {
+    private fun onScoreboardChange(event: ScoreboardUpdateEvent) {
+        if (IslandType.MINESHAFT.isInIsland()) {
+            DungeonApi.dungeonRoomPattern.firstMatcher(event.new) {
                 groupOrNull("roomId")?.let { mineshaftRoomId = it }
             }
+        }
+        if (IslandTypeTag.IS_COLD.isInIsland()) {
+            var found = false
+            if (inColdArea()) {
+                coldPattern.firstMatcher(event.new) {
+                    found = true
+                    val newCold = group("cold").toInt().absoluteValue
 
-            coldPattern.firstMatcher(event.added) {
-                val newCold = group("cold").toInt().absoluteValue
-
-                if (newCold != cold) {
-                    updateCold(newCold)
+                    if (newCold != cold) {
+                        updateCold(newCold)
+                    }
                 }
             }
+            // Cold is reset when the line is gone from the scoreboard, and also when the player left the cold area,
+            // since Hypixel only removes the line after a delay.
+            if (!found) resetCold()
         }
 
-        if (IslandType.CRYSTAL_HOLLOWS.isCurrent()) {
+        if (IslandType.CRYSTAL_HOLLOWS.isInIsland()) {
             var found = false
             heatPattern.firstMatcher(event.new) {
                 found = true
@@ -245,10 +272,10 @@ object MiningApi {
     }
 
     @HandleEvent
-    fun onBlockClick(event: BlockClickEvent) {
-        if (!IslandTypeTags.CUSTOM_MINING.inAny()) return
-        if (event.clickType != ClickType.LEFT_CLICK) return
-        if (OreBlock.getByStateOrNull(event.getBlockState) == null) return
+    private fun onBlockClick(event: BlockClickEvent) {
+        if (!IslandTypeTag.CUSTOM_MINING.isInIsland()) return
+        if (event.clickType != InteractClickType.LEFT_CLICK) return
+        if (OreBlock.getByStateOrNull(event.blockState) == null) return
         val now = SimpleTimeMark.now()
         recentClickedBlocks[event.position] = now
         lastClickedPos = event.position
@@ -256,15 +283,15 @@ object MiningApi {
     }
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
-        if (!IslandTypeTags.CUSTOM_MINING.inAny()) return
-        if (IslandTypeTags.IS_COLD.inAny()) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
+        if (IslandTypeTag.IS_COLD.isInIsland()) {
             if (coldResetPattern.matches(event.message)) {
                 updateCold(0)
                 lastColdReset = SimpleTimeMark.now()
                 return
             }
         }
+        if (!IslandTypeTag.CUSTOM_MINING.isInIsland()) return
         if (pickobulusUsePattern.matches(event.message)) {
             lastPickobulusUse = SimpleTimeMark.now()
             return
@@ -286,7 +313,7 @@ object MiningApi {
     }
 
     @HandleEvent
-    fun onPlayerDeath(event: PlayerDeathEvent.Allow) {
+    private fun onPlayerDeath(event: PlayerDeathEvent.Allow) {
         if (event.isSelf) {
             updateCold(0)
             updateHeat(0)
@@ -296,8 +323,8 @@ object MiningApi {
     }
 
     @HandleEvent
-    fun onPlaySound(event: PlaySoundEvent) {
-        if (!IslandTypeTags.CUSTOM_MINING.inAny()) return
+    private fun onPlaySound(event: PlaySoundEvent) {
+        if (!IslandTypeTag.CUSTOM_MINING.isInIsland()) return
         if (event.soundName == "entity.generic.explode" && lastPickobulusUse.passedSince() < 5.seconds) {
             lastPickobulusExplosion = SimpleTimeMark.now()
             pickobulusExplosionPos = event.location
@@ -310,24 +337,10 @@ object MiningApi {
             pickobulusWaitingForBlock = true
             return
         }
+
         if (waitingForInitSound) {
-            if (event.soundName != "entity.experience_orb.pickup") {
-                if (event.pitch != 0.7936508f) return
-                val pos = event.location.roundToBlock()
-                if (!recentClickedBlocks.containsKey(pos)) return
-                waitingForInitSound = false
-                waitingForEffMinerBlock = true
-                initBlockPos = event.location.roundToBlock()
-                lastInitSound = SimpleTimeMark.now()
-            } else {
-                if (lastClicked.passedSince() > 1.seconds) return
-                val block = lastClickedPos ?: return
-                val ore = OreBlock.getByStateOrNull(block.getBlockStateAt()) ?: return
-                if (ore.hasInitSound) return
-                ignoreInit = true
-                waitingForInitSound = false
-                waitingForEffMinerBlock = true
-                lastInitSound = SimpleTimeMark.now()
+            if (if (event.soundName == "entity.experience_orb.pickup") orbSound() else event.noOrbSound()) {
+                return
             }
         }
         if (waitingForEffMinerSound) {
@@ -339,9 +352,32 @@ object MiningApi {
         }
     }
 
+    private fun orbSound(): Boolean {
+        if (lastClicked.passedSince() > 1.seconds) return true
+        val block = lastClickedPos ?: return true
+        val ore = OreBlock.getByStateOrNull(block.getBlockStateAt()) ?: return true
+        if (ore.hasInitSound) return true
+        ignoreInit = true
+        waitingForInitSound = false
+        waitingForEffMinerBlock = true
+        lastInitSound = SimpleTimeMark.now()
+        return false
+    }
+
+    private fun PlaySoundEvent.noOrbSound(): Boolean {
+        if (pitch != 0.7936508f) return true
+        val pos = location.roundToBlock()
+        if (!recentClickedBlocks.containsKey(pos)) return true
+        waitingForInitSound = false
+        waitingForEffMinerBlock = true
+        initBlockPos = location.roundToBlock()
+        lastInitSound = SimpleTimeMark.now()
+        return false
+    }
+
     @HandleEvent
-    fun onBlockChange(event: ServerBlockChangeEvent) {
-        if (!IslandTypeTags.CUSTOM_MINING.inAny()) return
+    private fun onBlockChange(event: ServerBlockChangeEvent) {
+        if (!IslandTypeTag.CUSTOM_MINING.isInIsland()) return
         val oldState = event.oldState
         val newState = event.newState
         val oldBlock = oldState.block
@@ -349,19 +385,13 @@ object MiningApi {
 
         if (oldState == newState) return
         if (oldBlock == Blocks.AIR || oldBlock == Blocks.BEDROCK) return
-        if (newBlock != Blocks.AIR && newBlock != Blocks.BEDROCK && !isTitanium(newState)) return
+        if (newBlock != Blocks.AIR && newBlock != Blocks.BEDROCK && !OreBlock.isTitanium(newState)) return
 
-        val pos = event.location
-        if (pickobulusActive && pickobulusWaitingForBlock) {
-            val explosionPos = pickobulusExplosionPos ?: return
-            if (explosionPos.distance(pos) > 15) return
-            val ore = OreBlock.getByStateOrNull(oldState) ?: return
-            if (pickobulusMinedBlocks.any { it.first == pos }) return
-            pickobulusMinedBlocks += pos to ore
-            pickobulusWaitingForBlock = false
-            pickobulusWaitingForSound = true
-            return
-        }
+        handleBlockBreak(event.location, oldState)
+    }
+
+    private fun handleBlockBreak(pos: LorenzVec, oldState: BlockState) {
+        if (tryHandlePickobulusBlock(pos, oldState)) return
 
         if (lastInitSound.passedSince() > 100.milliseconds) return
         if (pos.distanceToPlayer() > 7) return
@@ -374,18 +404,35 @@ object MiningApi {
             return
         }
 
-        if (waitingForEffMinerBlock && (!ignoreInit || !ore.hasInitSound)) {
-            if (surroundingMinedBlocks.any { it.second == pos }) return
-            waitingForEffMinerBlock = false
-            surroundingMinedBlocks += MinedBlock(ore, false) to pos
-            waitingForEffMinerSound = true
-            return
-        }
+        handleEffMinerBlock(ore, pos)
+    }
+
+    private fun handleEffMinerBlock(ore: OreBlock, pos: LorenzVec) {
+        if (!waitingForEffMinerBlock) return
+        if (ignoreInit && ore.hasInitSound) return
+
+        if (surroundingMinedBlocks.any { it.second == pos }) return
+        waitingForEffMinerBlock = false
+        surroundingMinedBlocks += MinedBlock(ore, false) to pos
+        waitingForEffMinerSound = true
+        return
+    }
+
+    private fun tryHandlePickobulusBlock(pos: LorenzVec, oldState: BlockState): Boolean {
+        if (!pickobulusActive || !pickobulusWaitingForBlock) return false
+        val explosionPos = pickobulusExplosionPos ?: return true
+        if (explosionPos.distance(pos) > 15) return true
+        val ore = OreBlock.getByStateOrNull(oldState) ?: return true
+        if (pickobulusMinedBlocks.any { it.first == pos }) return true
+        pickobulusMinedBlocks += pos to ore
+        pickobulusWaitingForBlock = false
+        pickobulusWaitingForSound = true
+        return true
     }
 
     @HandleEvent
-    fun onTick() {
-        if (!IslandTypeTags.CUSTOM_MINING.inAny()) return
+    private fun onTick() {
+        if (!IslandTypeTag.CUSTOM_MINING.isInIsland()) return
         if (currentAreaOreBlocks.isEmpty()) return
 
         // if somehow you take more than 10 seconds to mine a single block, congrats
@@ -403,13 +450,19 @@ object MiningApi {
     }
 
     @HandleEvent(ScoreboardAreaChangeEvent::class)
-    fun onAreaChange() {
-        if (!IslandTypeTags.CUSTOM_MINING.inAny()) return
+    private fun onScoreboardAreaChange() {
+        if (!IslandTypeTag.CUSTOM_MINING.isInIsland()) return
         updateLocation()
     }
 
+    // Resets cold the moment the player leaves a cold area, without waiting for the scoreboard to catch up.
+    @HandleEvent(GraphAreaChangeEvent::class)
+    private fun onAreaChange() {
+        if (!inColdArea()) resetCold()
+    }
+
     @HandleEvent
-    fun onIslandChange() {
+    private fun onIslandChange() {
         updateLocation()
 
         mineshaftRoomId = null
@@ -430,7 +483,7 @@ object MiningApi {
         val extraBlocks = surroundingMinedBlocks.filter {
             // We can do this because all blocks that don't have an init sound also cannot be mined by
             // efficient miner when other blocks are mined.
-            // The more correct way of doing this would be making sure the oretype of the originally mined
+            // The more correct way of doing this would be making sure the OreType of the originally mined
             // block matches
             if (ignoreFilter) it.first.ore == originalBlock.ore else it.first.confirmed
         }.countBy { it.first.ore }
@@ -444,7 +497,7 @@ object MiningApi {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         if (cold != 0) updateCold(0)
         lastColdReset = SimpleTimeMark.now()
         recentClickedBlocks.clear()
@@ -478,9 +531,9 @@ object MiningApi {
     }
 
     @HandleEvent
-    fun onDebug(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Mining API")
-        if (!IslandTypeTags.CUSTOM_MINING.inAny()) {
+        if (!IslandTypeTag.CUSTOM_MINING.isInIsland()) {
             event.addIrrelevant("not in a mining island")
             return
         }
@@ -514,6 +567,12 @@ object MiningApi {
         }
     }
 
+    private fun resetCold() {
+        if (cold == 0) return
+        updateCold(0)
+        lastColdReset = SimpleTimeMark.now()
+    }
+
     private fun updateCold(newCold: Int) {
         // Hypixel sends cold data once in scoreboard even after resetting it
         if (cold == 0 && lastColdUpdate.passedSince() < 1.seconds) return
@@ -534,15 +593,15 @@ object MiningApi {
         inMineshaft = inMineshaft()
         inDwarvenMines = inRegularDwarven()
         inCrystalHollows = inCrystalHollows()
-        inCrimsonIsle = IslandType.CRIMSON_ISLE.isCurrent()
-        inEnd = IslandType.THE_END.isCurrent()
-        inSpidersDen = IslandType.SPIDER_DEN.isCurrent()
+        inCrimsonIsle = IslandType.CRIMSON_ISLE.isInIsland()
+        inEnd = IslandType.THE_END.isInIsland()
+        inSpidersDen = IslandType.SPIDER_DEN.isInIsland()
 
         currentAreaOreBlocks = OreBlock.entries.filter { it.checkArea() }.toSet()
     }
 
     @HandleEvent
-    fun onRepoReload(event: RepositoryReloadEvent) {
+    private fun onRepoReload(event: RepositoryReloadEvent) {
         val repo = event.getConstant<MiningJson>("Mining")
 
         blockStrengths.clear()

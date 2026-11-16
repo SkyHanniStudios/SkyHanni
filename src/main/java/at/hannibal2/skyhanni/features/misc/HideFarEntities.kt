@@ -19,26 +19,25 @@ import at.hannibal2.skyhanni.utils.EntityUtils.isNpc
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
 import at.hannibal2.skyhanni.utils.MobUtils.mob
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
-import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLessResets
 import net.minecraft.client.player.RemotePlayer
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.animal.golem.IronGolem
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon
 import net.minecraft.world.entity.boss.wither.WitherBoss
 import net.minecraft.world.entity.monster.Ghast
-import net.minecraft.world.entity.monster.MagmaCube
+import net.minecraft.world.entity.monster.cubemob.MagmaCube
 
 @SkyHanniModule
 object HideFarEntities {
     private val config get() = SkyHanniMod.feature.misc.hideFarEntities
 
-    private var ignored = emptySet<Int>()
+    private var hidden = emptySet<Int>()
     private var neverHide = emptySet<Int>()
 
     // TODO: use entity events
     @OptIn(AllEntitiesGetter::class)
     @HandleEvent
-    fun onTick(event: SkyHanniTickEvent) {
+    private fun onTick(event: SkyHanniTickEvent) {
         if (GlobalRender.renderDisabled) return
         if (!isEnabled()) return
         if (event.isMod(20)) {
@@ -48,7 +47,7 @@ object HideFarEntities {
         val maxAmount = config.maxAmount.coerceAtLeast(1)
         val minDistance = config.minDistance.coerceAtLeast(3)
 
-        ignored = EntityUtils.getAllEntities()
+        hidden = EntityUtils.getAllEntities()
             .map { it.id to it.distanceToPlayer() }
             .filter { it.second > minDistance && it.first !in neverHide }
             .sortedBy { it.second }.drop(maxAmount)
@@ -57,7 +56,7 @@ object HideFarEntities {
 
     /**
      * TODO mobs to add to never hide list
-     * golden/diamond golbins (mining islands)
+     * Golden/Diamond Goblins (mining islands)
      * beach ball (great and normal, from year of the seal)
      * worms/scatha in dwarven mines
      * dungeon wither+blood key
@@ -88,10 +87,10 @@ object HideFarEntities {
             // other party members
             list += allEntities.filter { it is RemotePlayer && !it.isNpc() }
         }
-        if (IslandType.WINTER.isCurrent()) {
+        if (IslandType.WINTER.isInIsland()) {
             list += allEntities.filter { it is MagmaCube }
         }
-        if (IslandType.DWARVEN_MINES.isCurrent()) {
+        if (IslandType.DWARVEN_MINES.isInIsland()) {
             // powder ghast & golem defender (from goblin raid event)
             list += allEntities.filter { it is Ghast || it is IronGolem }
         }
@@ -107,10 +106,10 @@ object HideFarEntities {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onCheckRender(event: CheckRenderEntityEvent<Entity>) {
+    private fun onCheckRender(event: CheckRenderEntityEvent<Entity>) {
         if (!isEnabled()) return
         val entity = event.entity
-        if (entity.id in ignored) {
+        if (entity.id in hidden) {
             event.cancel()
         }
     }

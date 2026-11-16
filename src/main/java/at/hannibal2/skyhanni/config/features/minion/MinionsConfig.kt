@@ -20,6 +20,7 @@ class MinionsConfig {
     @ConfigEditorBoolean
     var nameOnlyTier: Boolean = false
 
+    // TODO rename minionConfigHelper to minionUpgradeHelper
     @Expose
     @ConfigOption(
         name = "Minion Upgrade Helper",
@@ -69,4 +70,9 @@ class MinionsConfig {
     @ConfigEditorBoolean
     @FeatureToggle
     var infernoFuelBlocker: Boolean = false
+
+    @Expose
+    @ConfigOption(name = "Inferno Minion Profit Tracker", desc = "")
+    @Accordion
+    val infernoProfitTracker: InfernoProfitTrackerConfig = InfernoProfitTrackerConfig()
 }

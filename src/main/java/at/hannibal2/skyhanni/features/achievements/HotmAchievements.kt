@@ -1,0 +1,39 @@
+package at.hannibal2.skyhanni.features.achievements
+
+import at.hannibal2.skyhanni.api.event.HandleEvent
+import at.hannibal2.skyhanni.data.achievements.Achievement
+import at.hannibal2.skyhanni.data.hotx.HotmData
+import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
+import at.hannibal2.skyhanni.events.achievements.AchievementRegistrationEvent
+import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
+import at.hannibal2.skyhanni.utils.chat.TextHelper.asComponent
+
+@SkyHanniModule
+object HotmAchievements {
+
+    private const val PICKAXE_ABILITY_ACHIEVEMENT = "ability master"
+
+    @HandleEvent
+    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+        val achievement = Achievement(
+            name = "Have 4 Pickaxe Abilities unlocked".asComponent(),
+            description = "Jack of all Abilities, master of none".asComponent(),
+            userLuckAmount = 4f,
+            secret = true,
+        )
+        event.register(achievement, PICKAXE_ABILITY_ACHIEVEMENT)
+    }
+
+    @HandleEvent(onlyOnSkyblock = true)
+    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+        if (AchievementManager.isCompleted(PICKAXE_ABILITY_ACHIEVEMENT)) return
+        if (!HotmData.inInventory) return
+        var count = 0
+        for (ability in HotmData.abilities) {
+            if (ability.isUnlocked) count++
+        }
+        if (count >= 4) {
+            AchievementManager.completeAchievement(PICKAXE_ABILITY_ACHIEVEMENT)
+        }
+    }
+}

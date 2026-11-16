@@ -19,11 +19,11 @@ import at.hannibal2.skyhanni.utils.NeuInternalName
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
+import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.StringUtils.removeColor
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLeadingWhiteLessResets
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
-import net.minecraft.world.item.ItemStack
 
 @SkyHanniModule
 object MagicalPowerDisplay {
@@ -38,40 +38,40 @@ object MagicalPowerDisplay {
     private val riftPrism = "RIFT_PRISM".toInternalName()
 
     /**
-     * @regexTest Accessory Bag
-     * @regexTest Accessory Bag (1/75)
-     * @regexTest Accessory Bag (909/394294)
-     * @regexTest Auctions Browser
-     * @regexTest Auctions: "ligma"
-     * @regexTest Auctions: ""sugoma""
-     * */
+     * REGEX-TEST: Accessory Bag
+     * REGEX-TEST: Accessory Bag (1/75)
+     * REGEX-TEST: Accessory Bag (909/394294)
+     * REGEX-TEST: Auctions Browser
+     * REGEX-TEST: Auctions: "ligma"
+     * REGEX-TEST: Auctions: ""sugoma""
+     */
     private val acceptedInvPattern by RepoPattern.pattern(
         "inv.acceptable",
         "^(?:Accessory Bag(?: \\(\\d+\\/\\d+\\))?|Auctions Browser|Manage Auctions|Auctions: \".*\"?)$",
     )
 
-    private val abiphoneGroup = RepoPattern.group("data.abiphone")
+    private val patternGroup = RepoPattern.group("data.abiphone")
 
     /**
-     * @regexTest Abiphone X Plus
-     * @regexTest Abiphone X Plus Special Edition
-     * @regexTest Abiphone XI Ultra Style
-     * @regexTest Abiphone XII Mega Color
-     * @regexTest Abiphone XIII Pro
-     * @regexTest Abiphone XIV Enormous Purple
-     * @regexTest Abiphone Flip
-     * */
-    private val abiphoneNamePattern by abiphoneGroup.pattern(
+     * REGEX-TEST: Abiphone X Plus
+     * REGEX-TEST: Abiphone X Plus Special Edition
+     * REGEX-TEST: Abiphone XI Ultra Style
+     * REGEX-TEST: Abiphone XII Mega Color
+     * REGEX-TEST: Abiphone XIII Pro
+     * REGEX-TEST: Abiphone XIV Enormous Purple
+     * REGEX-TEST: Abiphone Flip
+     */
+    private val abiphoneNamePattern by patternGroup.pattern(
         "name",
         "Abiphone .*",
     )
 
     /**
-     * @regexTest Your contacts: 0/0
-     * @regexTest Your contacts: 1/75
-     * @regexTest Your contacts: 52/60
-     * */
-    private val yourContactPattern by abiphoneGroup.pattern(
+     * REGEX-TEST: Your contacts: 0/0
+     * REGEX-TEST: Your contacts: 1/75
+     * REGEX-TEST: Your contacts: 52/60
+     */
+    private val yourContactPattern by patternGroup.pattern(
         "contacts",
         "Your contacts: (?<contacts>\\d+)\\/\\d+",
     )
@@ -124,11 +124,11 @@ object MagicalPowerDisplay {
         else -> null
     }
 
-    private fun ItemStack.getAccessoryRarityOrNull(): LorenzRarity? {
+    private fun SafeItemStack.getAccessoryRarityOrNull(): LorenzRarity? {
         val category = this.getItemCategoryOrNull() ?: return null
         if (category != ItemCategory.ACCESSORY && category != ItemCategory.HATCESSORY) return null
         return this.getItemRarityOrNull()
     }
 
-    private fun isEnabled() = SkyBlockUtils.inSkyBlock && !IslandType.THE_RIFT.isCurrent() && config.enabled
+    private fun isEnabled() = SkyBlockUtils.inSkyBlock && !IslandType.THE_RIFT.isInIsland() && config.enabled
 }

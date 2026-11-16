@@ -1,3 +1,4 @@
+# Execution context: PR branch code on pull_request, base branch code on push/workflow_dispatch
 name: Check banned imports
 on:
   - pull_request
@@ -8,7 +9,7 @@ jobs:
   check-imports:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
         name: Checkout code
       - name: Check imports
         run: |

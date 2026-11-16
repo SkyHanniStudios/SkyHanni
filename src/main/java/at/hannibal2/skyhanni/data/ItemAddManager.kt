@@ -3,14 +3,17 @@ package at.hannibal2.skyhanni.data
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.commands.CommandCategory
 import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
+import at.hannibal2.skyhanni.data.achievements.Achievement
+import at.hannibal2.skyhanni.data.model.SkyblockStat
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.InventoryOpenEvent
 import at.hannibal2.skyhanni.events.ItemAddEvent
 import at.hannibal2.skyhanni.events.SackChangeEvent
+import at.hannibal2.skyhanni.events.achievements.AchievementRegistrationEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.entity.ItemAddInInventoryEvent
 import at.hannibal2.skyhanni.events.item.ShardGainEvent
+import at.hannibal2.skyhanni.features.achievements.AchievementManager
 import at.hannibal2.skyhanni.features.inventory.SuperCraftFeatures.craftedPattern
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
@@ -22,9 +25,14 @@ import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.StringUtils.removeColor
 import at.hannibal2.skyhanni.utils.TimeUtils.format
+import at.hannibal2.skyhanni.utils.chat.TextHelper.asComponent
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.evictOldestEntry
 import at.hannibal2.skyhanni.utils.collection.TimeLimitedSet
+import at.hannibal2.skyhanni.utils.compat.append
+import at.hannibal2.skyhanni.utils.compat.componentBuilder
+import at.hannibal2.skyhanni.utils.compat.withColor
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import net.minecraft.ChatFormatting
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
@@ -40,9 +48,10 @@ object ItemAddManager {
     private val ARCHFIEND_DICE = "ARCHFIEND_DICE".toInternalName()
     private val HIGH_CLASS_ARCHFIEND_DICE = "HIGH_CLASS_ARCHFIEND_DICE".toInternalName()
 
+    @Suppress("MaxLineLength")
     private val diceRollChatPattern by RepoPattern.pattern(
         "data.itemmanager.diceroll",
-        "§eYour §r§(?:5|6High Class )Archfiend Dice §r§erolled a §r§.(?<number>.)§r§e! Bonus: §r§.(?<hearts>.*)❤",
+        "§eYour §r§(?:5|6High Class )Archfiend Dice §r§erolled a §r§.(?<number>.)§r§e! Bonus: §r§.(?<hearts>.*)${SkyblockStat.HEALTH.hypixelIcon}",
     )
 
     private var inSackInventory = false
@@ -56,7 +65,7 @@ object ItemAddManager {
     }
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    fun onInventoryClose() {
         if (inSackInventory) {
             inSackInventory = false
             lastSackInventoryLeave = SimpleTimeMark.now()
@@ -110,7 +119,7 @@ object ItemAddManager {
     }
 
     @HandleEvent
-    fun onDebug(event: DebugDataCollectEvent) {
+    fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Recent Item Adds")
         if (recentItems.isEmpty()) return event.addIrrelevant("no items added")
 
@@ -125,7 +134,7 @@ object ItemAddManager {
     @HandleEvent
     fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shdebugrecentitemadds") {
-            description = "Shows recent item addions."
+            description = "Shows recent item additions."
             category = CommandCategory.DEVELOPER_DEBUG
             simpleCallback {
                 ChatUtils.clickToClipboard("Recent Item adds", formattedList())
@@ -144,10 +153,31 @@ object ItemAddManager {
     private var lastDiceRoll = SimpleTimeMark.farPast()
     private val superCraftedItems = TimeLimitedSet<NeuInternalName>(30.seconds)
 
+    private const val DICE_ACHIEVEMENT = "100 dice rolls"
+
+    @HandleEvent
+    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+        val achievement = Achievement(
+            "Professional Gambler".asComponent(),
+            componentBuilder {
+                append("Spin 100 dice")
+                append(" I doubt you make money from this...") {
+                    withColor(ChatFormatting.DARK_GRAY)
+                }
+            },
+            7f,
+            false,
+            listOf(100),
+        )
+        event.register(achievement, DICE_ACHIEVEMENT)
+    }
+
     @HandleEvent
     fun onChat(event: SkyHanniChatEvent.Allow) {
         if (diceRollChatPattern.matches(event.message)) {
             lastDiceRoll = SimpleTimeMark.now()
+            val achievement = AchievementManager.getAchievement(DICE_ACHIEVEMENT)
+            AchievementManager.updateTieredAchievement(DICE_ACHIEVEMENT, achievement.data.progress + 1)
         }
         craftedPattern.matchMatcher(event.message) {
             val internalName = NeuInternalName.fromItemName(group("item"))

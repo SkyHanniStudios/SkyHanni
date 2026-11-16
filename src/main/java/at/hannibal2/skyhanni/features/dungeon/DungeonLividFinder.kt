@@ -39,7 +39,7 @@ import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLessResets
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawFilledBoundingBox
-import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawLineToEye
+import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawLineToCrosshair
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.exactBoundingBox
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.exactLocation
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
@@ -89,12 +89,13 @@ object DungeonLividFinder {
     )
 
     /**
-     * @regexTest §2﴾ §2§lLivid§r§r §a7M§c❤ §2﴿
-     * @regexTest §5﴾ §5§lLivid§r§r §a7M§c❤ §5﴿
+     * REGEX-TEST: §2﴾ §2§lLivid§r§r §a7M§c❤ §2﴿
+     * REGEX-TEST: §5﴾ §5§lLivid§r§r §a7M§c❤ §5﴿
+     * REGEX-TEST: §5﴾ §e§5 §5§lLivid§r§r §a7M§c❤ §5﴿
      */
     private val lividArmorStandNamePattern by RepoPattern.pattern(
         "dungeon.f5.livid.armorstand",
-        "^§(?<colorCode>.)﴾ §.§lLivid.*$",
+        "§(?<colorCode>.)﴾ (?:§e\uE07B§5\uE073 )?§.§lLivid.*",
     )
 
     /**
@@ -243,7 +244,7 @@ object DungeonLividFinder {
 
         val color = lorenzColor.toChromaColor()
         event.drawFilledBoundingBox(boundingBox, color, 0.5f)
-        event.drawLineToEye(location.add(x = 0.5, z = 0.5), color, 3, true)
+        event.drawLineToCrosshair(location.add(x = 0.5, z = 0.5), color, 3, true)
     }
 
     private fun inLividBossRoom() = DungeonApi.inBossRoom && DungeonApi.getCurrentBoss() == DungeonFloor.F5
@@ -312,7 +313,7 @@ object DungeonLividFinder {
     }
 
     @HandleEvent
-    fun onDebug(event: DebugDataCollectEvent) {
+    fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Livid Finder")
 
         if (!inLividBossRoom()) {
