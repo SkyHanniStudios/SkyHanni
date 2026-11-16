@@ -60,7 +60,7 @@ object MobUtils {
         entity: Entity,
         distance: Double,
         partialTicks: Float,
-        offset: LorenzVec = LorenzVec(),
+        offset: LorenzVec = LorenzVec.ZERO,
     ) = raycastForMob(entity, partialTicks, offset)?.takeIf {
         it.baseEntity.distanceTo(entity.getLorenzVec()) <= distance
     }
@@ -69,15 +69,15 @@ object MobUtils {
         entity: Entity,
         distance: Double,
         partialTicks: Float,
-        offset: LorenzVec = LorenzVec(),
+        offset: LorenzVec = LorenzVec.ZERO,
     ) = raycastForMobs(entity, partialTicks, offset)?.filter {
         it.baseEntity.distanceTo(entity.getLorenzVec()) <= distance
     }.takeIf { it?.isNotEmpty() ?: false }
 
-    fun raycastForMob(entity: Entity, partialTicks: Float, offset: LorenzVec = LorenzVec()) =
+    fun raycastForMob(entity: Entity, partialTicks: Float, offset: LorenzVec = LorenzVec.ZERO) =
         raycastForMobs(entity, partialTicks, offset)?.firstOrNull()
 
-    fun raycastForMobs(entity: Entity, partialTicks: Float, offset: LorenzVec = LorenzVec()): List<Mob>? {
+    fun raycastForMobs(entity: Entity, partialTicks: Float, offset: LorenzVec = LorenzVec.ZERO): List<Mob>? {
         val look = entity.lookAngle.toLorenzVec().normalize()
         val pos = entity.eyePosition.toLorenzVec() + offset
         val possibleEntities = MobData.entityToMob.filterKeys {

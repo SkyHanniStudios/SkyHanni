@@ -1,5 +1,6 @@
 package at.hannibal2.skyhanni.utils.renderables
 
+import at.hannibal2.skyhanni.utils.vector.KVector
 import net.minecraft.core.Direction.Axis
 import net.minecraft.world.phys.Vec3
 import kotlin.math.roundToInt
@@ -10,7 +11,7 @@ class SnappedVec3(
     private val snappedZ: Double = 0.0,
     private val snapValue: Double = 1.0,
     private val maxValue: Double = 360.0,
-) : Vec3(
+) : KVector(
     snap(snappedX, snapValue),
     snap(snappedY, snapValue),
     snap(snappedZ, snapValue),

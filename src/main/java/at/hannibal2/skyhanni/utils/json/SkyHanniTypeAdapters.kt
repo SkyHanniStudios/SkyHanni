@@ -32,10 +32,8 @@ import at.hannibal2.skyhanni.utils.system.ModVersion
 import at.hannibal2.skyhanni.utils.tracker.SessionUptime
 import at.hannibal2.skyhanni.utils.tracker.SessionUptimeTypeAdapter
 import at.hannibal2.skyhanni.utils.tracker.SkyHanniTracker
-import at.hannibal2.skyhanni.utils.vector.SkyHanniBlockVector
-import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.KVector
 import at.hannibal2.skyhanni.utils.vector.VectorFormat
-import at.hannibal2.skyhanni.utils.vector.VectorFormat.asStoredString
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import com.google.gson.TypeAdapter
@@ -69,12 +67,8 @@ enum class SkyHanniTypeAdapters(
         SimpleStringTypeAdapter({ this.asString() }, { NbtBoolean.fromString(this) }),
     ),
     VEC(
-        SkyHanniVector::class.java,
+        KVector::class.java,
         SimpleStringTypeAdapter({ asStoredString() }, { VectorFormat.parseStored(this) }),
-    ),
-    BLOCK_VEC(
-        SkyHanniBlockVector::class.java,
-        SimpleStringTypeAdapter({ asStoredString() }, { VectorFormat.parseStoredBlock(this) }),
     ),
     TROPHY_RARITY(
         TrophyRarity::class.java,

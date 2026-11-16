@@ -3,7 +3,7 @@ package at.hannibal2.skyhanni.mixins.hooks
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.events.PlaySoundEvent
 import at.hannibal2.skyhanni.utils.SkyHanniSoundInstance
-import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.KVector
 import net.minecraft.client.resources.sounds.SoundInstance
 
 object SoundEngineHook {
@@ -11,7 +11,7 @@ object SoundEngineHook {
     @JvmStatic
     fun shouldCancel(soundInstance: SoundInstance): Boolean = PlaySoundEvent(
         soundInstance.identifier.toString().removePrefix("minecraft:"),
-        SkyHanniVector(soundInstance.x, soundInstance.y, soundInstance.z),
+        KVector(soundInstance.x, soundInstance.y, soundInstance.z),
         soundInstance.pitch,
         soundInstance.volume,
     ).post().isCancelled

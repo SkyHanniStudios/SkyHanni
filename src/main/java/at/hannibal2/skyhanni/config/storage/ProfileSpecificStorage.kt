@@ -719,7 +719,7 @@ class ProfileSpecificStorage(
 
     class ExperimentationStorage {
         @Expose
-        var tablePos: LorenzVec = LorenzVec()
+        var tablePos: LorenzVec = LorenzVec.ZERO
 
         @Expose
         var dryStreak: ExperimentsDryStreakStorage = ExperimentsDryStreakStorage()

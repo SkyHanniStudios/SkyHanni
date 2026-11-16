@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.psi.psiUtil.getParentOfType
 
 class NoLorenzVec(config: Config) : SkyHanniRule(
     config,
-    "LorenzVec is deprecated. Use SkyHanniVector or SkyHanniBlockVector from utils.vector.",
+    "LorenzVec is deprecated. Use KVector from utils.vector.",
 ) {
 
     override fun visitKtFile(file: KtFile) {
@@ -19,11 +19,11 @@ class NoLorenzVec(config: Config) : SkyHanniRule(
             it.getReferencedName() == LEGACY_NAME && it.getParentOfType<KtImportDirective>(strict = true) == null
         }
         val first = usages.firstOrNull() ?: return
-        first.reportIssue("${usages.size} LorenzVec usages in this file. Use SkyHanniVector or SkyHanniBlockVector.")
+        first.reportIssue("${usages.size} LorenzVec usages in this file. Use KVector.")
     }
 
     companion object {
         private const val LEGACY_NAME = "LorenzVec"
-        private val EXEMPT_FILES = listOf("utils/LorenzVec.kt", "utils/vector/SkyHanniVector.kt")
+        private val EXEMPT_FILES = listOf("utils/LorenzVec.kt", "utils/vector/KVector.kt")
     }
 }

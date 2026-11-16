@@ -21,7 +21,7 @@ import at.hannibal2.skyhanni.utils.compat.position
 import at.hannibal2.skyhanni.utils.compat.rotation
 import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.toLorenzVec
-import at.hannibal2.skyhanni.utils.vector.SkyHanniVector
+import at.hannibal2.skyhanni.utils.vector.KVector
 import at.hannibal2.skyhanni.utils.vector.VectorBounds.inflate
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
@@ -942,7 +942,7 @@ object WorldRenderUtils {
 
     private const val BLOCK_OUTLINE_INFLATION = 0.002f
 
-    val EXPAND_VECTOR = SkyHanniVector(1.0, 1.0, 1.0) * BLOCK_OUTLINE_INFLATION.toDouble()
+    val EXPAND_VECTOR = KVector(1.0, 1.0, 1.0) * BLOCK_OUTLINE_INFLATION.toDouble()
 
     fun AABB.expandBlock(n: Int = 1) = inflate(EXPAND_VECTOR * n)
     fun AABB.inflateBlock(n: Int = 1) = inflate(EXPAND_VECTOR * -n)
