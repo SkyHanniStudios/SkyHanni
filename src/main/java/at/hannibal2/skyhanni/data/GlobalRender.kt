@@ -26,7 +26,7 @@ object GlobalRender {
     val renderDisabled get() = !enabled
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shrendertoggle") {
             description = "Disables/enables the rendering of all SkyHanni guis."
             category = CommandCategory.USERS_BUG_FIX
@@ -42,7 +42,7 @@ object GlobalRender {
     }
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Global Render")
         if (enabled) {
             event.addIrrelevant("normal enabled")

@@ -33,7 +33,7 @@ object MuteBanshee {
     )
 
     @HandleEvent(onlyOnIsland = IslandType.BACKWATER_BAYOU)
-    fun onPlaySound(event: PlaySoundEvent) {
+    private fun onPlaySound(event: PlaySoundEvent) {
         if (!SkyHanniMod.feature.fishing.muteBanshee) return
         if (event.pitch in bansheePitches && event.soundName == "entity.ghast.ambient") event.cancel()
     }

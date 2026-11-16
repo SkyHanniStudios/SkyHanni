@@ -36,7 +36,7 @@ object ServerRestartTitle {
     )
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         if (!config.serverRestartTitle) {
             timerTitleContext?.stop()
             timerTitleContext = null

@@ -11,7 +11,7 @@ object DateAPI {
     var date: LocalDate? = null
 
     @HandleEvent
-    fun onSecond(event: SecondPassedEvent) {
+    private fun onSecond(event: SecondPassedEvent) {
         val now = LocalDate.now()
         if (now != date) {
             date?.let {

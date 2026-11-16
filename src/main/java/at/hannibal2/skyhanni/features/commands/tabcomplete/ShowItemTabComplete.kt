@@ -32,7 +32,7 @@ object ShowItemTabComplete {
     )
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onTabComplete(event: TabCompletionEvent) {
+    private fun onTabComplete(event: TabCompletionEvent) {
         if (!config.showItem) return
 
         if (!showItemCommands.any { event.isCommand(it) }) return

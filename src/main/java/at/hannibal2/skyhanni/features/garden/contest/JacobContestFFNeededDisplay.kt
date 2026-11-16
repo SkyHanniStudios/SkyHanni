@@ -29,7 +29,7 @@ object JacobContestFFNeededDisplay {
     private val cache = mutableMapOf<SafeItemStack, List<Renderable>>()
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onRenderItemTooltip(event: RenderItemTooltipEvent) {
+    private fun onRenderItemTooltip(event: RenderItemTooltipEvent) {
         if (!config.ffForContest) return
 
         if (!FarmingContestApi.inInventory) return
@@ -52,7 +52,7 @@ object JacobContestFFNeededDisplay {
     }
 
     @HandleEvent
-    fun onInventoryClose() {
+    private fun onInventoryClose() {
         cache.clear()
     }
 
@@ -140,7 +140,7 @@ object JacobContestFFNeededDisplay {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChestGuiRender() {
+    private fun onChestGuiRender() {
         if (!config.ffForContest) return
         if (!FarmingContestApi.inInventory) return
         if (lastToolTipTime.passedSince() > 200.milliseconds) return

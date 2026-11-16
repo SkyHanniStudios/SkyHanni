@@ -20,7 +20,7 @@ class RepoPatternGui private constructor() {
     companion object {
 
         @HandleEvent
-        fun onCommandRegistration(event: CommandRegistrationEvent) {
+        private fun onCommandRegistration(event: CommandRegistrationEvent) {
 
             /**
              * Open the [RepoPatternGui]

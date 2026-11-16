@@ -45,12 +45,12 @@ class RenderDisplayHelper(
         private var currentlyVisibleDisplays = emptyList<RenderDisplayHelper>()
 
         @HandleEvent
-        fun onTick() {
+        private fun onTick() {
             currentlyVisibleDisplays = allDisplays.filter { it.checkCondition() }
         }
 
         @HandleEvent
-        fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
+        private fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
             val isInOwnInventory = MinecraftCompat.screen is InventoryScreen
             for (display in currentlyVisibleDisplays) {
                 if (display.renderIn(isInOwnInventory)) {
@@ -66,7 +66,7 @@ class RenderDisplayHelper(
         }
 
         @HandleEvent
-        fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+        private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
             val isInOwnInventory = MinecraftCompat.screen is InventoryScreen
             for (display in currentlyVisibleDisplays) {
                 if (display.outsideInventory && !display.renderIn(isInOwnInventory)) {

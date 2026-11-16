@@ -25,7 +25,7 @@ object SpookyAchievement {
     private const val SPOOKY_ACHIEVEMENT = "Spooky Double Points"
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val netheriteIngot = TextHelper.createAtlasSprite("item/netherite_ingot", "items", "minecraft")
         val achievement = Achievement(
             name = "Netherite Spooky Bracket".asComponent(),
@@ -40,7 +40,7 @@ object SpookyAchievement {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         candyPattern.matchMatcher(event.cleanMessage) {
             if (group("candy").formatInt() >= 10_000) {
                 AchievementManager.completeAchievement(SPOOKY_ACHIEVEMENT)

@@ -60,7 +60,7 @@ object FarmingMilestoneCommand {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shcalccrop") {
             description = "Calculate how many crops need to be farmed between different crop milestones."
             category = CommandCategory.USERS_ACTIVE

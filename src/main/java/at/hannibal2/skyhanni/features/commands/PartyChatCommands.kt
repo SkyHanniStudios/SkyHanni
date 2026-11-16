@@ -118,7 +118,7 @@ object PartyChatCommands {
     }
 
     @HandleEvent
-    fun onPartyCommand(event: PartyChatEvent.Allow) {
+    private fun onPartyCommand(event: PartyChatEvent.Allow) {
         if (event.cleanMessage.firstOrNull() !in commandPrefixes) return
         val commandLabel = event.cleanMessage.substring(1).substringBefore(' ')
         val command = indexedPartyChatCommands[commandLabel.lowercase()] ?: return
@@ -148,7 +148,7 @@ object PartyChatCommands {
     }
 
     @HandleEvent
-    fun onTabComplete(event: TabCompletionEvent) {
+    private fun onTabComplete(event: TabCompletionEvent) {
         if (PartyApi.partyLeader == null) return
         val prefix = event.fullText.firstOrNull() ?: return
         if (prefix !in commandPrefixes) return
@@ -161,7 +161,7 @@ object PartyChatCommands {
     }
 
     @HandleEvent
-    fun onCommandRegister(event: CommandRegistrationEvent) {
+    private fun onCommandRegister(event: CommandRegistrationEvent) {
         event.registerBrigadier("shignore") {
             description = "Add/Remove a user from your blacklist"
             category = CommandCategory.USERS_ACTIVE
@@ -252,7 +252,7 @@ object PartyChatCommands {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(95, "misc.partyCommands.defaultRequiredTrustLevel", "misc.partyCommands.requiredTrustLevel")
     }
 }

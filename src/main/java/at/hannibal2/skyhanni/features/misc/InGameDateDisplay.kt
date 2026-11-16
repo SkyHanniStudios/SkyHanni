@@ -44,7 +44,7 @@ object InGameDateDisplay {
     private var display: Renderable? = null
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed(event: SecondPassedEvent): Unit = with(config) {
+    private fun onSecondPassed(event: SecondPassedEvent): Unit = with(config) {
         if (!enabled || (!useScoreboard && !event.repeatSeconds(refreshSeconds))) return
         checkDate()
     }
@@ -78,7 +78,7 @@ object InGameDateDisplay {
     private fun String.removeOrdinal() = replace("nd", "").replace("rd", "").replace("st", "").replace("th", "")
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
         if (!config.enabled) return
 
         val display = display ?: return

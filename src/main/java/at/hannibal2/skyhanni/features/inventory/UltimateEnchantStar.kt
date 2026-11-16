@@ -15,7 +15,7 @@ object UltimateEnchantStar {
     private val config get() = SkyHanniMod.feature.inventory
 
     @HandleEvent
-    fun onRenderItemTip(event: RenderItemTipEvent) {
+    private fun onRenderItemTip(event: RenderItemTipEvent) {
         if (!isEnabled()) return
         if (!event.stack.`is`(Items.ENCHANTED_BOOK)) return
         val enchants = event.stack.getHypixelEnchantments() ?: return

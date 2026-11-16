@@ -49,7 +49,7 @@ object OldSkyblockMenu {
     private fun isEnabled() = !RiftApi.inRift() && skyblockMenu.isInside() && enabled
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onReplaceItem(event: ReplaceItemEvent) {
+    private fun onReplaceItem(event: ReplaceItemEvent) {
         if (!isEnabled()) return
 
         val sbButton = slotMap[event.slot]?.takeIf { !it.disabled } ?: return
@@ -60,7 +60,7 @@ object OldSkyblockMenu {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         if (!isEnabled()) return
         val sbButton = slotMap[event.slotId]?.takeIf { !it.disabled } ?: return
 

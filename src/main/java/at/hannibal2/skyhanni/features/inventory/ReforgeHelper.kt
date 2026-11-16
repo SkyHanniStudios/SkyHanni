@@ -134,7 +134,7 @@ object ReforgeHelper {
     }
 
     @HandleEvent
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         if (!isEnabled()) return
         rareReforgeBlocked = false
 
@@ -183,7 +183,7 @@ object ReforgeHelper {
     }
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!isEnabled()) return
         val message = event.cleanMessage
         when {
@@ -209,7 +209,7 @@ object ReforgeHelper {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         when {
             isHexReforgeMenu(event.inventoryName) -> {
                 isInHexReforgeMenu = true
@@ -233,7 +233,7 @@ object ReforgeHelper {
     }
 
     @HandleEvent
-    fun onInventoryClose() {
+    private fun onInventoryClose() {
         if (!isInReforgeMenu) return
         isInReforgeMenu = false
         isInHexReforgeMenu = false
@@ -404,13 +404,13 @@ object ReforgeHelper {
     }
 
     @HandleEvent
-    fun onChestGuiRender() {
+    private fun onChestGuiRender() {
         if (!isEnabled()) return
         config.position.renderRenderables(display, posLabel = "Reforge Overlay")
     }
 
     @HandleEvent
-    fun onForegroundDrawn(event: GuiContainerEvent.ForegroundDrawnEvent) {
+    private fun onForegroundDrawn(event: GuiContainerEvent.ForegroundDrawnEvent) {
         if (!isEnabled()) return
         if (currentReforge == null) return
 
@@ -431,7 +431,7 @@ object ReforgeHelper {
     }
 
     @HandleEvent
-    fun onBackgroundDrawn() {
+    private fun onBackgroundDrawn() {
         if (hoveredReforge != null && isInHexReforgeMenu) {
             if (hoveredReforge != currentReforge) {
                 colorReforgeStone(

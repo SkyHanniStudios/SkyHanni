@@ -28,7 +28,7 @@ object GardenComposterInventoryFeatures {
     private val config get() = GardenApi.config.composters
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onToolTip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!config.upgradePrice) return
 
         if (InventoryUtils.openInventoryName() != "Composter Upgrades") return
@@ -75,7 +75,7 @@ object GardenComposterInventoryFeatures {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
+    private fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
         if (!config.highlightUpgrade) return
 
         if (InventoryUtils.openInventoryName() == "Composter Upgrades") {
@@ -91,7 +91,7 @@ object GardenComposterInventoryFeatures {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(3, "garden.composterUpgradePrice", "garden.composters.upgradePrice")
         event.move(3, "garden.composterHighLightUpgrade", "garden.composters.highlightUpgrade")
     }

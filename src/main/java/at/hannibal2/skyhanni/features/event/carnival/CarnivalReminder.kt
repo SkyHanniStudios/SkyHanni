@@ -56,13 +56,13 @@ object CarnivalReminder {
     )
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         if (!isEnabled() || nextCheckTime.isInFuture()) return
         check()
     }
 
     @HandleEvent
-    fun onProfileJoin(event: ProfileJoinEvent) {
+    private fun onProfileJoin(event: ProfileJoinEvent) {
         claimedToday = false
         if (!isEnabled()) return
         nextCheckTime = 30.0.seconds.fromNow()
@@ -71,7 +71,7 @@ object CarnivalReminder {
     }
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!isEnabled() && !claimedToday) return
         if (!ticketClaimedPattern.matches(event.message) && !alreadyClaimedPattern.matches(event.message)) return
         claimedToday = true

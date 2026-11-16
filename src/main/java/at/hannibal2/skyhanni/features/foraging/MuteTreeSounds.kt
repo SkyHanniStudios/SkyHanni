@@ -12,7 +12,7 @@ object MuteTreeSounds {
     val config get() = SkyHanniMod.feature.foraging.trees
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onPlaySound(event: PlaySoundEvent) {
+    private fun onPlaySound(event: PlaySoundEvent) {
         if (event.soundName == "entity.creaking.death" && config.muteBreaking) {
             if (IslandTypeTag.FORAGING_CUSTOM_TREES.isInIsland() && !config.muteBreakingOnGalatea) return
             event.cancel()

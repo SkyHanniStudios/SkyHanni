@@ -23,7 +23,7 @@ object MuseumCategoryHighlighter {
     )
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
+    private fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
         if (!SkyHanniMod.feature.inventory.museumCategoryHighlight) return
         if (!museumDetector.isInside()) return
         for (slot in event.container.slots) {

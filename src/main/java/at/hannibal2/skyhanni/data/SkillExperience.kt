@@ -34,12 +34,12 @@ object SkillExperience {
     )
 
     @HandleEvent
-    fun onProfileJoin(event: ProfileJoinEvent) {
+    private fun onProfileJoin(event: ProfileJoinEvent) {
         skillExp.clear()
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onActionBarUpdate(event: ActionBarUpdateEvent) {
+    private fun onActionBarUpdate(event: ActionBarUpdateEvent) {
 
         actionBarPattern.matchMatcher(event.actionBar) {
             val skill = group("skill").removeColor().lowercase()
@@ -53,7 +53,7 @@ object SkillExperience {
     }
 
     @HandleEvent
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         if (!SkillApi.skillMenuDetector.isInside()) return
 
         for ((_, stack) in event.inventoryItems) {

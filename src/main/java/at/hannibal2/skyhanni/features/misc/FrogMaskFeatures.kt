@@ -60,7 +60,7 @@ object FrogMaskFeatures {
     private val frogMaskRenderable = Renderable.item(FROG_MASK)
 
     @HandleEvent(GuiRenderEvent.GuiOverlayRenderEvent::class, onlyOnSkyblock = true)
-    fun onGuiRenderOverlay() {
+    private fun onGuiRenderOverlay() {
         if (!isEnabled()) return
 
         display?.let {
@@ -69,7 +69,7 @@ object FrogMaskFeatures {
     }
 
     @HandleEvent(SecondPassedEvent::class, onlyOnSkyblock = true)
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         if (!isEnabled()) return
         display = null
 
@@ -137,7 +137,7 @@ object FrogMaskFeatures {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(86, "misc.frogMaskDisplay", "misc.frogMaskFeatures.display")
         event.move(86, "misc.frogMaskDisplayPosition", "misc.frogMaskFeatures.position")
         event.transform(97, "misc.frogMaskFeatures.display") {
@@ -150,7 +150,7 @@ object FrogMaskFeatures {
     private val logTypes = BlockCompat.getAllLogs()
 
     @HandleEvent(onlyOnIsland = IslandType.THE_PARK)
-    fun onBlockClick(event: BlockClickEvent) {
+    private fun onBlockClick(event: BlockClickEvent) {
         if (!isEnabled()) return
         if (event.clickType != InteractClickType.LEFT_CLICK) return
         if (event.position.getBlockAt() !in logTypes) return

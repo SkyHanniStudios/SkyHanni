@@ -24,7 +24,7 @@ object BlizzardAchievement {
     private const val BLIZZARD_ACHIEVEMENT = "Blizzard"
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "Weather Mastermind",
             description = "Spawn a blizzard",
@@ -34,7 +34,7 @@ object BlizzardAchievement {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         blizzardPattern.matchMatcher(event.cleanMessage) {
             if (group("name").cleanPlayerName() == PlayerUtils.getName()) {
                 AchievementManager.completeAchievement(BLIZZARD_ACHIEVEMENT)

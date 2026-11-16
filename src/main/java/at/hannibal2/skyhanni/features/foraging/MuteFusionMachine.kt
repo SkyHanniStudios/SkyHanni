@@ -15,7 +15,7 @@ object MuteFusionMachine {
     )
 
     @HandleEvent(onlyOnIsland = IslandType.GALATEA)
-    fun onPlaySound(event: PlaySoundEvent) {
+    private fun onPlaySound(event: PlaySoundEvent) {
         if (!SkyHanniMod.feature.foraging.muteFusionMachine) return
         if (event.soundName in sounds && event.volume == 20f) {
             event.cancel()

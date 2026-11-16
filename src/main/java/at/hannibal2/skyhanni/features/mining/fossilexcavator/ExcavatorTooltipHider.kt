@@ -23,7 +23,7 @@ object ExcavatorTooltipHider {
     )
 
     @HandleEvent
-    fun onToolTip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!isEnabled()) return
         event.slot ?: return
 

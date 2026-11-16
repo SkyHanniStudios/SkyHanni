@@ -121,7 +121,7 @@ object CompactJacobClaim {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!config.compactJacobClaim) return
         val message = event.cleanMessage
         var eventDelay = 300.milliseconds
@@ -192,7 +192,7 @@ object CompactJacobClaim {
     }
 
     @HandleEvent
-    fun onContestRewardsClaimed(event: ContestRewardsClaimedEvent) {
+    private fun onContestRewardsClaimed(event: ContestRewardsClaimedEvent) {
         if (!config.compactJacobClaim) return
         event.sendCompact()
     }

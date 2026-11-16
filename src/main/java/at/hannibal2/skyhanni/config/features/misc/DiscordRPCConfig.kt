@@ -110,7 +110,7 @@ class DiscordRPCConfig {
     @SkyHanniModule
     companion object {
         @HandleEvent
-        fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+        private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
             event.move(128, "gui.discordRPC.showEliteBotButton", "gui.discordRPC.showEliteSkyBlockButton")
         }
     }

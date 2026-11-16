@@ -18,7 +18,7 @@ object PigFeatures {
     private val config get() = SkyHanniMod.feature.event.yearOfThePig
 
     @HandleEvent
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!config.linesToDraw.any()) return
 
         PigFeaturesApi.dataSetList.forEach { dataSet ->

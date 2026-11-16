@@ -21,7 +21,7 @@ object NoBreak {
     private val config get() = GardenApi.config
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onBlockClick(event: BlockClickEvent) {
+    private fun onBlockClick(event: BlockClickEvent) {
         if (event.clickType != InteractClickType.LEFT_CLICK) return
         // TODO make this work with CropClickEvent
         if (event.getCropType() == null) return
@@ -33,7 +33,7 @@ object NoBreak {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(138, "garden.noRodBreak", "garden.noBreakItems") { element ->
             if (element.asBoolean) {
                 ConfigManager.gson.toJsonTree(NoBreakItem.entries)

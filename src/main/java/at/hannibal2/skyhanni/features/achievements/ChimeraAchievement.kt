@@ -12,7 +12,7 @@ object ChimeraAchievement {
     private const val CHIMERA_ACHIEVEMENT = "chim v"
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "Pet Symbiosis",
             description = "Make your weapon gain all the stats of your pet",
@@ -22,7 +22,7 @@ object ChimeraAchievement {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onItemInHandChange(event: ItemInHandChangeEvent) {
+    private fun onItemInHandChange(event: ItemInHandChangeEvent) {
         if (AchievementManager.isCompleted(CHIMERA_ACHIEVEMENT)) return
         val enchantments = event.newStack.getHypixelEnchantments() ?: return
         if (enchantments["ultimate_chimera"] == 5) {

@@ -20,7 +20,7 @@ object EggAchievement {
     private const val EGG_ACHIEVEMENT = "egg layer"
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "Lay 25 Eggs".asComponent(),
             description = TextHelper.createAtlasSprite("item/egg", "items", "minecraft"),
@@ -32,7 +32,7 @@ object EggAchievement {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (eggPatternPattern.matches(event.cleanMessage)) {
             val achievement = AchievementManager.getAchievement(EGG_ACHIEVEMENT)
             AchievementManager.updateTieredAchievement(EGG_ACHIEVEMENT, achievement.data.progress + 1)

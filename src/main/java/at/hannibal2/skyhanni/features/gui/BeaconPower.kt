@@ -74,7 +74,7 @@ object BeaconPower {
     private const val STATS_SLOT = 23
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onInventoryUpdated(event: InventoryUpdatedEvent) {
+    private fun onInventoryUpdated(event: InventoryUpdatedEvent) {
         if (event.inventoryName != "Beacon") return
         val items = event.inventoryItems
 
@@ -103,13 +103,13 @@ object BeaconPower {
     }
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
         if (!isEnabled()) return
         config.beaconPowerPosition.renderRenderable(Renderable.text(display), posLabel = "Beacon Power")
     }
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         if (!isEnabled()) return
         display = drawDisplay()
     }
@@ -138,7 +138,7 @@ object BeaconPower {
     }
 
     @HandleEvent
-    fun onProfileJoin(event: ProfileJoinEvent) {
+    private fun onProfileJoin(event: ProfileJoinEvent) {
         display = Component.empty()
     }
 

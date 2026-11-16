@@ -40,25 +40,25 @@ object CFShortcut {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         if (IslandTypeTag.HOPPITY_DISALLOWED.isInIsland()) return
         showItem = config.hoppityMenuShortcut && UtilsPatterns.skyblockMenuInventory.isInside()
     }
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    private fun onInventoryClose(event: InventoryCloseEvent) {
         showItem = false
     }
 
     @HandleEvent
-    fun replaceItem(event: ReplaceItemEvent) {
+    private fun replaceItem(event: ReplaceItemEvent) {
         if (event.inventory is SimpleContainer && showItem && event.slot == slotId) {
             event.replace(item.stack)
         }
     }
 
     @HandleEvent(priority = HandleEvent.HIGH)
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         if (!showItem || event.slotId != slotId) return
         event.cancel()
         if (lastClick.passedSince() > 2.seconds) {

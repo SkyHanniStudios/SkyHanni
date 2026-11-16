@@ -24,7 +24,7 @@ object SprayDisplay {
     private val currentSprayPlot get() = GardenPlotApi.getCurrentPlot()?.takeUnless { it.isBarn() || it.greenhouse }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onTick(event: SkyHanniTickEvent) {
+    private fun onTick(event: SkyHanniTickEvent) {
         if (!event.isMod(5, 3)) return
 
         // Todo this calculation should not be running onTick
@@ -41,13 +41,13 @@ object SprayDisplay {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onIslandChange(event: IslandChangeEvent) {
+    private fun onIslandChange(event: IslandChangeEvent) {
         if (!config.expiryNotification || event.newIsland != IslandType.GARDEN) return
         sendExpiredPlotsToChat(true)
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onGuiRenderOverlay() {
+    private fun onGuiRenderOverlay() {
         if (!config.displayEnabled) return
         val display = display ?: return
         config.displayPosition.renderRenderable(display, posLabel = "Active Plot Spray Display")

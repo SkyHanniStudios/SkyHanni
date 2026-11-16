@@ -41,12 +41,12 @@ object GardenBpsTracker {
     }
 
     @HandleEvent
-    fun onCropBreak(event: CropClickEvent) {
+    private fun onCropBreak(event: CropClickEvent) {
         blockBreaksLastFiveTicks++
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onTick(event: SkyHanniTickEvent) {
+    private fun onTick(event: SkyHanniTickEvent) {
         if (!event.isMod(5)) return
         if (blockBreaksLastFiveTicks == 0) return
         tracker.modify { it.blocksBroken += blockBreaksLastFiveTicks }
@@ -54,13 +54,13 @@ object GardenBpsTracker {
     }
 
     @HandleEvent
-    fun onGuiRenderOverlay() {
+    private fun onGuiRenderOverlay() {
         if (!isEnabled()) return
         tracker.renderDisplay(config.pos)
     }
 
     @HandleEvent
-    fun onConfigLoad() {
+    private fun onConfigLoad() {
         config.uptimeDisplayText.afterChange {
             tracker.update()
         }

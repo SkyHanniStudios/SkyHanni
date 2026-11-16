@@ -97,19 +97,19 @@ object StashCompact {
     }
 
     @HandleEvent
-    fun onProfileJoin() {
+    private fun onProfileJoin() {
         joinedProfileAt = SimpleTimeMark.now()
     }
 
     @HandleEvent
-    fun onIslandChange() {
+    private fun onIslandChange() {
         if (!config.hideDuplicateWarning.worldChangeReset) return
         currentMessages.clear()
         lastMessages.clear()
     }
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!isEnabled()) return
 
         // TODO make a system for detecting message "groups" (multiple consecutive messages)
@@ -178,14 +178,14 @@ object StashCompact {
     private fun isEnabled() = SkyBlockUtils.inSkyBlock && config.enabled
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         val base = "chat.filterType.stashMessages"
 
         event.move(87, "$base.hideDuplicateCounts", "$base.hideDuplicateWarning.enabled")
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onTabComplete(event: TabCompletionEvent) {
+    private fun onTabComplete(event: TabCompletionEvent) {
         if (!config.tabCompleteStashCommand) return
         if (!event.isCommand("viewstash")) return
         event.addSuggestions(listOf("item", "material"))

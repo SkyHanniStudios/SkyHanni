@@ -24,7 +24,7 @@ object HighlightJerries {
     private val jerryPattern by RepoPattern.pattern("jerry.highlight", "(?<color>\\w+) Jerry")
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
+    private fun onMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
         if (!config.highlightJerries.get() && !config.lineJerries.get()) return
         parseJerry(event.mob)
     }
@@ -44,7 +44,7 @@ object HighlightJerries {
     }
 
     @HandleEvent(ConfigLoadEvent::class)
-    fun onConfigLoad() {
+    private fun onConfigLoad() {
         config.highlightJerries.onEnable { MobData.skyblockMobs.forEach { parseJerry(it) } }
         config.lineJerries.onEnable { MobData.skyblockMobs.forEach { parseJerry(it) } }
     }

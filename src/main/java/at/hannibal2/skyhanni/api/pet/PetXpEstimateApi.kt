@@ -82,7 +82,7 @@ object PetXpEstimateApi {
     private var pendingSpawnAutopetSwap: SpawnAutopetContext? = null
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSkillExpGain(event: SkillExpGainEvent) {
+    private fun onSkillExpGain(event: SkillExpGainEvent) {
         val currentPet = CurrentPetApi.currentPet
         val skillReads = readSkillGains(event, currentPet?.uuid)
         skillReads.forEach { updatePetExp(event, it, currentPet) }
@@ -106,7 +106,7 @@ object PetXpEstimateApi {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         val cleanMessage = event.message.removeColor().removeResets()
         petLevelUpPattern.matchMatcher(cleanMessage) {
             val currentPet = CurrentPetApi.currentPet ?: return
@@ -135,7 +135,7 @@ object PetXpEstimateApi {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onAccessoryBagUpdate(event: AccessoryBagUpdateEvent) {
+    private fun onAccessoryBagUpdate(event: AccessoryBagUpdateEvent) {
         val currentBeastmasterMultiplier = event.inventoryItems.values
             .mapNotNull { it.readBeastmasterMultiplierOrNull() }
             .maxOrNull()
@@ -149,22 +149,22 @@ object PetXpEstimateApi {
     }
 
     @HandleEvent(OwnInventoryItemUpdateEvent::class)
-    fun onOwnInventoryItemUpdate() {
+    private fun onOwnInventoryItemUpdate() {
         clearBeastmasterMultiplierCache()
     }
 
     @HandleEvent(SkyblockEquipmentDataUpdateEvent::class)
-    fun onSkyblockEquipmentDataUpdate() {
+    private fun onSkyblockEquipmentDataUpdate() {
         clearBeastmasterMultiplierCache()
     }
 
     @HandleEvent(ProfileJoinEvent::class)
-    fun onProfileJoin() {
+    private fun onProfileJoin() {
         resetProfileState()
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         resetWorldState()
     }
 

@@ -32,7 +32,7 @@ object ShortenCoins {
     )
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Modify) {
+    private fun onChat(event: SkyHanniChatEvent.Modify) {
         if (!config.shortenCoinAmounts) return
         val message = event.cleanMessage
         var newComp = event.chatComponent.copy()

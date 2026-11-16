@@ -25,7 +25,7 @@ object LivingMetalSuitProgress {
     private var progressMap = mapOf<SafeItemStack, Double?>()
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
         if (!isEnabled()) return
         config.position.renderRenderables(
             display,
@@ -64,7 +64,7 @@ object LivingMetalSuitProgress {
     }
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         if (!isEnabled()) return
         val old = progressMap
         progressMap = buildMap {

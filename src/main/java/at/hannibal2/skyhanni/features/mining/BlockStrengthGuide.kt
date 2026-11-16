@@ -448,7 +448,7 @@ object BlockStrengthGuide {
     }
 
     @HandleEvent
-    fun onGuiContainerPreDraw(event: GuiContainerEvent.PreDraw) {
+    private fun onGuiContainerPreDraw(event: GuiContainerEvent.PreDraw) {
         if (!shouldBlockSHMenu) return
 
         if (waitingForStats) {
@@ -500,7 +500,7 @@ object BlockStrengthGuide {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         if (!CurrentEquipmentApi.inventory.isInside()) return
         if (waitingForStats && lastRunCommand.passedSince() < 3.seconds) {
             statsMenuOpened = true
@@ -513,7 +513,7 @@ object BlockStrengthGuide {
     }
 
     @HandleEvent
-    fun onTick() {
+    private fun onTick() {
         val now = KeyboardManager.isModifierKeyDown()
         if (showExtraInfos != now) {
             showExtraInfos = now
@@ -522,18 +522,18 @@ object BlockStrengthGuide {
     }
 
     @HandleEvent
-    fun onInventoryClose() {
+    private fun onInventoryClose() {
         if (!statsOpened) return
         shouldBlockSHMenu = false
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         shouldBlockSHMenu = false
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shblockstrength") {
             description = "Shows how many ticks you need to break any block with your mining speed."
             category = CommandCategory.MAIN

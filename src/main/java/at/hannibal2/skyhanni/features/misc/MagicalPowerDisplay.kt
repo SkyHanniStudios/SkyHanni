@@ -77,7 +77,7 @@ object MagicalPowerDisplay {
     )
 
     @HandleEvent
-    fun onRenderItemTip(event: RenderItemTipEvent) {
+    private fun onRenderItemTip(event: RenderItemTipEvent) {
         if (!isEnabled()) return
         if (!acceptedInvPattern.matches(InventoryUtils.openInventoryName().removeColor())) return
 
@@ -99,7 +99,7 @@ object MagicalPowerDisplay {
     }
 
     @HandleEvent
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         if (!isEnabled()) return
         if (!abiphoneNamePattern.matches(event.inventoryName)) return
 

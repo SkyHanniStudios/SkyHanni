@@ -32,7 +32,7 @@ object SpringBootsHelper {
     private var soundStreak = 0
 
     @HandleEvent(onlyOnIsland = IslandType.CATACOMBS)
-    fun onPlaySound(event: PlaySoundEvent) {
+    private fun onPlaySound(event: PlaySoundEvent) {
         if (!isEnabled()) return
         if (InventoryUtils.getBoots()?.getInternalName() != SPRING_BOOTS) return
         if (event.soundName !in springBootsSounds) return

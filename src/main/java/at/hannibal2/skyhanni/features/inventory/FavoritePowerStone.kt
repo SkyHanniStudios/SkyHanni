@@ -25,14 +25,14 @@ object FavoritePowerStone {
     private var inInventory = false
 
     @HandleEvent
-    fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
+    private fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
         if (!isEnabled() || !inInventory) return
 
         highlightedSlots.forEach { event.container.slots[it].highlight(LorenzColor.AQUA) }
     }
 
     @HandleEvent
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         if (!isEnabled() || !KeyboardManager.isShiftKeyDown() || !inInventory) return
 
         val displayName = event.item?.cleanName?.trim() ?: return
@@ -50,14 +50,14 @@ object FavoritePowerStone {
     }
 
     @HandleEvent
-    fun onInventoryOpen(event: InventoryOpenEvent) {
+    private fun onInventoryOpen(event: InventoryOpenEvent) {
         if (!isEnabled() || !MaxwellApi.isThaumaturgyInventory(event.inventoryName)) return
 
         inInventory = true
     }
 
     @HandleEvent
-    fun onInventoryUpdated(event: InventoryUpdatedEvent) {
+    private fun onInventoryUpdated(event: InventoryUpdatedEvent) {
         if (!isEnabled() || !inInventory) return
 
         highlightedSlots = event.inventoryItems
@@ -66,7 +66,7 @@ object FavoritePowerStone {
     }
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    private fun onInventoryClose(event: InventoryCloseEvent) {
         inInventory = false
     }
 

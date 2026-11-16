@@ -32,7 +32,7 @@ object ShowFishingItemName {
     private val cheapCoins get() = setOfNotNull(CHEAP_COINS_1, CHEAP_COINS_2)
 
     @HandleEvent
-    fun onTick() {
+    private fun onTick() {
         if (!isEnabled()) return
         for (entityItem in EntityUtils.getEntitiesNearby<ItemEntity>(15.0)) {
             val itemStack = entityItem.item.orNull() ?: continue
@@ -58,7 +58,7 @@ object ShowFishingItemName {
     }
 
     @HandleEvent
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!isEnabled()) return
 
         for ((item, text) in itemsOnGround) {

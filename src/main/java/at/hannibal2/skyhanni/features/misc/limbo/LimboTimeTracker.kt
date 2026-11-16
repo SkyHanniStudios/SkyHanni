@@ -60,7 +60,7 @@ object LimboTimeTracker {
     private val bedWarsLobbyLimbo = AABB(-662.0, 43.0, -76.0, -619.0, 86.0, -27.0)
 
     @HandleEvent
-    fun onServerChange(event: HypixelApiServerChangeEvent) {
+    private fun onServerChange(event: HypixelApiServerChangeEvent) {
         val wasInLimbo = inLimbo
 
         inRealLimbo = event.serverName == "limbo"
@@ -71,7 +71,7 @@ object LimboTimeTracker {
     }
 
     @HandleEvent
-    fun onTick() {
+    private fun onTick() {
         val wasInLimbo = inLimbo
         inFakeLimbo = inBedWarsLobby && bedWarsLobbyLimbo.isPlayerInside()
         updateLimboState(wasInLimbo)
@@ -81,7 +81,7 @@ object LimboTimeTracker {
     }
 
     @HandleEvent
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         val personalBest = storage?.personalBest ?: 0
         if (inLimbo && !shownPB && limboJoinTime.passedSince() >= personalBest.seconds && personalBest != 0) {
             shownPB = true
@@ -108,7 +108,7 @@ object LimboTimeTracker {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         val wasInLimbo = inLimbo
         inRealLimbo = false
         inBedWarsLobby = false
@@ -117,7 +117,7 @@ object LimboTimeTracker {
     }
 
     @HandleEvent
-    fun onMessageSendToServer(event: MessageSendToServerEvent) {
+    private fun onMessageSendToServer(event: MessageSendToServerEvent) {
         if (event.message.startsWith("/playtime") && inLimbo) {
             event.cancel()
             printStats(true)
@@ -125,7 +125,7 @@ object LimboTimeTracker {
     }
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
         if (!config.showTimeInLimbo || !inLimbo) return
         val duration = limboJoinTime.passedSince().format()
         val display = Renderable.text("§eIn Limbo since §b$duration")
@@ -133,7 +133,7 @@ object LimboTimeTracker {
     }
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "Forgot to turn off the PC".asComponent(),
             description = componentBuilder {
@@ -199,7 +199,7 @@ object LimboTimeTracker {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(27, fromPath = "misc.limboTimePB", toPath = "#player.personalBest")
     }
 
@@ -230,7 +230,7 @@ object LimboTimeTracker {
     }
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Limbo")
         if (!inLimbo) {
             event.addIrrelevant("not in limbo")
@@ -250,7 +250,7 @@ object LimboTimeTracker {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shlimbostats") {
             description = "Prints your Limbo Stats.\n §7This includes your Personal Best, Playtime, and §aSkyHanni User Luck§7!"
             category = CommandCategory.USERS_ACTIVE

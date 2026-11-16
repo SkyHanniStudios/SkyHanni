@@ -25,7 +25,7 @@ object HeavyPearlAchievement {
     private const val HEAVY_PEARL_ACHIEVEMENT = "Triple Heavy Pearl"
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "Triple Pearls",
             description = "Have the Matriarch Cub attribute trigger 3 times",
@@ -35,7 +35,7 @@ object HeavyPearlAchievement {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (AchievementManager.isCompleted(HEAVY_PEARL_ACHIEVEMENT)) return
         if (allCollectedPattern.matches(event.cleanMessage)) {
             currentBonus = 0

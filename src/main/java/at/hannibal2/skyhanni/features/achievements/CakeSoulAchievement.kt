@@ -22,7 +22,7 @@ object CakeSoulAchievement {
     private const val CAKE_SOUL_ACHIEVEMENT = "Found Cake Soul"
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "Hmmmmm cake... soul".asComponent(),
             description = Component.literal("Find a cake soul").withColor(ChatFormatting.LIGHT_PURPLE),
@@ -32,7 +32,7 @@ object CakeSoulAchievement {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (cakeSoulPattern.matches(event.cleanMessage)) {
             AchievementManager.completeAchievement(CAKE_SOUL_ACHIEVEMENT)
         }

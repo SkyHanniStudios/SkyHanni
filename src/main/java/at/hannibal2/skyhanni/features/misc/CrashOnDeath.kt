@@ -13,7 +13,7 @@ object CrashOnDeath {
     private val config get() = SkyHanniMod.feature.misc
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onPlayerDeath(event: PlayerDeathEvent.Allow) {
+    private fun onPlayerDeath(event: PlayerDeathEvent.Allow) {
         if (!config.crashOnDeath) return
 
         if (event.isSelf) {

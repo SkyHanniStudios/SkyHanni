@@ -19,7 +19,7 @@ import at.hannibal2.skyhanni.utils.compat.formattedTextCompat
 object GardenNextPlotPrice {
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onToolTip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!GardenApi.config.plotPrice) return
 
         if (InventoryUtils.openInventoryName() != "Configure Plots") return

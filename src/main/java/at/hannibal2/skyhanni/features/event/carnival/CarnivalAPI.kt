@@ -19,12 +19,12 @@ object CarnivalAPI {
     private var isAreaHidden = false
 
     @HandleEvent
-    fun onAreaChange(event: GraphAreaChangeEvent) {
+    private fun onAreaChange(event: GraphAreaChangeEvent) {
         inArea = event.area == "Carnival"
     }
 
     @HandleEvent(MayorChangeEvent::class, onlyOnIsland = IslandType.HUB)
-    fun onMayorChange() {
+    private fun onMayorChange() {
         if (isActive != isAreaHidden) return
 
         for (node in IslandGraphs.nodes("Carnival", GraphNodeTag.SMALL_AREA)) {

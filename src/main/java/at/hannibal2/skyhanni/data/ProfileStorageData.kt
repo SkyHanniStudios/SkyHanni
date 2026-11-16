@@ -47,7 +47,7 @@ object ProfileStorageData {
     var orderedWaypointsRoutes: OrderedWaypointsRoutes? = null
 
     @HandleEvent(priority = HandleEvent.HIGHEST)
-    fun onProfileJoin(event: ProfileJoinEvent) {
+    private fun onProfileJoin(event: ProfileJoinEvent) {
         val playerSpecific = playerSpecific
         val sackPlayers = sackPlayers
         val storagePlayer = storagePlayer
@@ -111,13 +111,13 @@ object ProfileStorageData {
     }
 
     @HandleEvent
-    fun onWidgetUpdate(event: WidgetUpdateEvent) {
+    private fun onWidgetUpdate(event: WidgetUpdateEvent) {
         if (!event.isWidget(TabWidget.PROFILE)) return
         noTabListTime = if (event.isClear()) SimpleTimeMark.now() else SimpleTimeMark.farPast()
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         if (noTabListTime.isFarPast() || noTabListTime.passedSince() < 10.seconds) return
 
         playerSpecific?.let {
@@ -174,7 +174,7 @@ object ProfileStorageData {
     }
 
     @HandleEvent
-    fun onHypixelJoin(event: HypixelJoinEvent) {
+    private fun onHypixelJoin(event: HypixelJoinEvent) {
         val playerUuid = PlayerUtils.getRawUuid()
         playerSpecific = SkyHanniMod.feature.storage.players.getOrPut(playerUuid) { PlayerSpecificStorage() }
         sackPlayers = SkyHanniMod.sackData.players.getOrPut(playerUuid) { SackData.PlayerSpecific() }
@@ -185,7 +185,7 @@ object ProfileStorageData {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         hypixelDataLoaded = false
     }
 

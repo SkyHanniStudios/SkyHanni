@@ -14,7 +14,7 @@ import net.minecraft.network.protocol.game.ClientboundHurtAnimationPacket
 object EntityEvents {
 
     @HandleEvent
-    fun onPacketReceived(event: PacketReceivedEvent) {
+    private fun onPacketReceived(event: PacketReceivedEvent) {
         val packet = event.packet as? ClientboundHurtAnimationPacket ?: return
 
         val entity = MinecraftCompat.localWorldOrNull?.getEntity(packet.id()) ?: return

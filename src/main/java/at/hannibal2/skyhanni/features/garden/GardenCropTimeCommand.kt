@@ -74,7 +74,7 @@ object GardenCropTimeCommand {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shcroptime") {
             description =
                 "Calculates with your current crop per second speed how long you need to farm a crop to collect this amount of items"

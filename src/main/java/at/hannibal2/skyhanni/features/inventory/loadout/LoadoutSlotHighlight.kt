@@ -11,7 +11,7 @@ object LoadoutSlotHighlight {
     val config get() = SkyHanniMod.feature.inventory.customLoadout.highlighting
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
+    private fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
         if (!isEnabled()) return
 
         LoadoutApi.slots

@@ -45,7 +45,7 @@ object HypixelBazaarFetcher {
     private var nextFetchIsManual = false
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Bazaar Data Fetcher from API")
 
         val data = listOf(
@@ -63,7 +63,7 @@ object HypixelBazaarFetcher {
     }
 
     @HandleEvent
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         if (!canFetch()) return
         bazaarFetchCoroutine.launch { fetchAndProcessBazaarData() }
     }
@@ -167,7 +167,7 @@ object HypixelBazaarFetcher {
         nextFetchTime.isInPast()
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shupdatebazaarprices") {
             description = "Forcefully updating the bazaar prices right now."
             category = CommandCategory.USERS_BUG_FIX

@@ -276,7 +276,7 @@ object CFStrayTracker {
     }
 
     @HandleEvent(SecondPassedEvent::class)
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         if (!isEnabled()) return
         InventoryUtils.getItemsInOpenChest().filter {
             claimedStraysSlots.contains(it.containerSlot)
@@ -288,7 +288,7 @@ object CFStrayTracker {
     }
 
     @HandleEvent
-    fun onEggFound(event: EggFoundEvent) {
+    private fun onEggFound(event: EggFoundEvent) {
         if (!isEnabled() || event.type != HoppityEggType.SIDE_DISH) return
         event.slotIndex?.let {
             claimedStraysSlots.add(it)
@@ -308,7 +308,7 @@ object CFStrayTracker {
     }
 
     @HandleEvent(InventoryFullyOpenedEvent::class)
-    fun onInventoryFullyOpened() {
+    private fun onInventoryFullyOpened() {
         if (!isEnabled()) return
         // Force a refresh for party mode
         if (CFApi.inChocolateFactory && config.partyMode.get()) tracker.update()
@@ -316,7 +316,7 @@ object CFStrayTracker {
     }
 
     @HandleEvent(InventoryCloseEvent::class)
-    fun onInventoryClose() {
+    private fun onInventoryClose() {
         if (!isEnabled()) return
         tracker.update() // Make sure we don't stay in party mode
     }
@@ -338,7 +338,7 @@ object CFStrayTracker {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.transform(58, "chocolateFactory.strayTracker.straysCaught") { element ->
             migrateJsonStringKeyToRarityKey(element, LorenzRarity::class.java)
         }
@@ -348,12 +348,12 @@ object CFStrayTracker {
     }
 
     @HandleEvent(ConfigLoadEvent::class)
-    fun onConfigLoad() {
+    private fun onConfigLoad() {
         config.partyMode.onToggle(tracker::update)
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shresetstrayrabbittracker") {
             description = "Resets the Stray Rabbit Tracker"
             category = CommandCategory.USERS_RESET

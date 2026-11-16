@@ -23,7 +23,7 @@ object SkillTooltip {
     private val customGoalConfig get() = SkillProgress.config.customGoalConfig
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onToolTip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         val inventoryName = InventoryUtils.openInventoryName()
         val stack = event.itemStack
         if (inventoryName == "Your Skills" && stack.getLoreComponent().any { it.string.contains("Click to view!") }) {

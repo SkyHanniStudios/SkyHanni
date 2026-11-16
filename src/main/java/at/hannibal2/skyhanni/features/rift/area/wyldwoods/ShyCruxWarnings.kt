@@ -17,7 +17,7 @@ object ShyCruxWarnings {
     private val shyNames = setOf("I'm ugly! :(", "Eek!", "Don't look at me!", "Look away!")
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onTick() {
+    private fun onTick() {
         if (!config.shyWarning) return
         checkForShy()
     }
@@ -29,7 +29,7 @@ object ShyCruxWarnings {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(9, "rift.area.wyldWoodsConfig", "rift.area.wyldWoods")
     }
 }

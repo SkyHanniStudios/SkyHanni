@@ -20,7 +20,7 @@ object GriffinPetWarning {
     private var lastWarnTime = SimpleTimeMark.farPast()
 
     @HandleEvent
-    fun onTick(event: SkyHanniTickEvent) {
+    private fun onTick(event: SkyHanniTickEvent) {
         if (!event.isMod(10)) return
         if (!config.petWarning) return
         if (!DianaApi.isDoingDiana()) return
@@ -38,14 +38,14 @@ object GriffinPetWarning {
     }
 
     @HandleEvent
-    fun onBurrowDug(event: BurrowDugEvent) {
+    private fun onBurrowDug(event: BurrowDugEvent) {
         DelayedRun.runDelayed(2.seconds) {
             wasCorrectPetAlready = false
         }
     }
 
     @HandleEvent
-    fun onIslandChange(event: IslandChangeEvent) {
+    private fun onIslandChange(event: IslandChangeEvent) {
         DelayedRun.runDelayed(5.seconds) {
             wasCorrectPetAlready = false
         }

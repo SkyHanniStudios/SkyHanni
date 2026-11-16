@@ -16,7 +16,7 @@ import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 object CommandsRegistry {
 
     @HandleEvent(PreInitFinishedEvent::class)
-    fun onPreInitFinished() {
+    private fun onPreInitFinished() {
         ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
             CommandRegistrationEvent(dispatcher).post()
         }

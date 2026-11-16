@@ -80,7 +80,7 @@ object ScoreboardData {
     }
 
     @HandleEvent(receiveCancelled = true)
-    fun onPacketReceive(event: PacketReceivedEvent) {
+    private fun onPacketReceive(event: PacketReceivedEvent) {
         when (val packet = event.packet) {
             is ClientboundSetScorePacket -> {
                 if (packet.objectiveName == "update") {
@@ -125,7 +125,7 @@ object ScoreboardData {
     }
 
     @HandleEvent(priority = HandleEvent.HIGHEST)
-    fun onTick() {
+    private fun onTick() {
         if (!dirty) return
         dirty = false
         monitor()
@@ -235,7 +235,7 @@ object ScoreboardData {
     )
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shdebugscoreboard") {
             description = "Monitors the scoreboard changes: " +
                 "Prints the raw scoreboard lines in the console after each update, with time since last update."

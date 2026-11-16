@@ -41,7 +41,7 @@ object GardenVisitorSupercraft {
     }
 
     @HandleEvent(InventoryCloseEvent::class)
-    fun onInventoryClose() {
+    private fun onInventoryClose() {
         if (hasIngredients) {
             hasIngredients = false
         }
@@ -49,7 +49,7 @@ object GardenVisitorSupercraft {
 
     // needs to run later than onVisitorOpen at GardenVisitorFeatures
     @HandleEvent(priority = HandleEvent.LOW)
-    fun onVisitorOpen(event: VisitorOpenEvent) {
+    private fun onVisitorOpen(event: VisitorOpenEvent) {
         val visitor = event.visitor
         visitor.offer?.offerItem ?: return
         for ((internalName, amount) in visitor.shoppingList) {
@@ -93,7 +93,7 @@ object GardenVisitorSupercraft {
     }
 
     @HandleEvent
-    fun replaceItem(event: ReplaceItemEvent) {
+    private fun replaceItem(event: ReplaceItemEvent) {
         if (!hasIngredients) return
         if (event.inventory is Inventory) return
 
@@ -103,7 +103,7 @@ object GardenVisitorSupercraft {
     }
 
     @HandleEvent(priority = HandleEvent.HIGH)
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         if (!hasIngredients) return
 
         if (event.slotId != 31) return

@@ -28,7 +28,7 @@ object SlayerAchievements {
     private const val RNG_ACHIEVEMENT_10M = "10m rng xp"
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement3m = Achievement(
             name = "Desperate Slayer",
             description = "Get over 3m Stored RNG XP",
@@ -49,7 +49,7 @@ object SlayerAchievements {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         rngMeterPattern.matchMatcher(event.cleanMessage) {
             val xp = group("xp").formatInt()
             if (xp >= 3_000_000) {

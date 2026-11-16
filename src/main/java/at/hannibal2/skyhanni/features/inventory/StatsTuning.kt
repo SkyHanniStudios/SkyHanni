@@ -30,7 +30,7 @@ object StatsTuning {
     )
 
     @HandleEvent
-    fun onRenderItemTip(event: RenderInventoryItemTipEvent) {
+    private fun onRenderItemTip(event: RenderInventoryItemTipEvent) {
         val inventoryName = event.inventoryName
 
         val stack = event.stack
@@ -97,7 +97,7 @@ object StatsTuning {
     }
 
     @HandleEvent(priority = HandleEvent.LOW, onlyOnSkyblock = true)
-    fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
+    private fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
         val chestName = InventoryUtils.openInventoryName()
         if (!config.selectedTemplate || chestName != "Stats Tuning") return
         for (slot in InventoryUtils.getItemsInOpenChest()) {
@@ -111,7 +111,7 @@ object StatsTuning {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(3, "inventory.statsTuningSelectedStats", "inventory.statsTuning.selectedStats")
         event.move(3, "inventory.statsTuningSelectedTemplate", "inventory.statsTuning.selectedTemplate")
         event.move(3, "inventory.statsTuningTemplateStats", "inventory.statsTuning.templateStats")

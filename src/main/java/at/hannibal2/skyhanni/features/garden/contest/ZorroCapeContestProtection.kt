@@ -21,7 +21,7 @@ object ZorroCapeContestProtection {
     private val zorroCape = "ZORROS_CAPE".toInternalName()
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         if (!config.zorroCapeProtection) return
         if (!FarmingContestApi.inInventory) return
 

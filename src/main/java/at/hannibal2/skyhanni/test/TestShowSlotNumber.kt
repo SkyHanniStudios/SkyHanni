@@ -9,7 +9,7 @@ import at.hannibal2.skyhanni.utils.KeyboardManager.isKeyHeld
 object TestShowSlotNumber {
 
     @HandleEvent
-    fun onRenderItemTip(event: RenderInventoryItemTipEvent) {
+    private fun onRenderItemTip(event: RenderInventoryItemTipEvent) {
         if (DevApi.config.showSlotNumberKey.isKeyHeld()) {
             val slotIndex = event.slot.containerSlot
             event.stackTip = "$slotIndex"

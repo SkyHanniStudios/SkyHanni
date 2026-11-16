@@ -60,7 +60,7 @@ object BingoCardTips {
     private val bingoCardInventory = InventoryDetector { inventoryPattern }
 
     @HandleEvent
-    fun onToolTip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!isEnabled()) return
         if (!bingoCardInventory.isInside()) return
 
@@ -105,7 +105,7 @@ object BingoCardTips {
     }
 
     @HandleEvent
-    fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
+    private fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
         if (!isEnabled()) return
         if (!inventoryPattern.matches(InventoryUtils.openInventoryName())) return
 

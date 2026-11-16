@@ -18,7 +18,7 @@ object FlowerAchievement {
     private val SKYBLOCK_MENU = "SKYBLOCK_MENU".toInternalName()
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "Fill your hotbar with flowers".asComponent(),
             description = "Have your hotbar look like Romero's".asComponent(),
@@ -29,7 +29,7 @@ object FlowerAchievement {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         if (AchievementManager.isCompleted(ROMERO_ACHIEVEMENT)) return
         val flowerSack = SackApi.sacks["Flower"] ?: return
         var counter = 0

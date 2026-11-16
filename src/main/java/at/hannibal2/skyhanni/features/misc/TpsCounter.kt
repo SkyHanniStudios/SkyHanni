@@ -51,7 +51,7 @@ object TpsCounter {
     private var pendingTpsCommand = false
 
     @HandleEvent
-    fun onServerTick(event: ServerTickEvent) {
+    private fun onServerTick(event: ServerTickEvent) {
         val now = SimpleTimeMark.now()
         if (!lastServerTick.isFarPast()) {
             msPerTickList[event.tick] = (now - lastServerTick).inPartialMilliseconds
@@ -60,7 +60,7 @@ object TpsCounter {
     }
 
     @HandleEvent
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         display = Renderable.text(getTpsString(compact = true))
 
         if (pendingTpsCommand) {
@@ -107,20 +107,20 @@ object TpsCounter {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         msPerTickList.clear()
         display = null
         lastServerTick = SimpleTimeMark.farPast()
     }
 
     @HandleEvent(onlyOnSkyblockOrFeatures = [OutsideSBFeature.TPS_DISPLAY])
-    fun onGuiRenderOverlay() {
+    private fun onGuiRenderOverlay() {
         if (!isEnabled()) return
         display?.let { config.tpsDisplayPosition.renderRenderable(it, posLabel = "TPS Display") }
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shtps") {
             description = "Informs in chat about the server ticks per second (TPS)."
             category = CommandCategory.USERS_ACTIVE
@@ -131,7 +131,7 @@ object TpsCounter {
     private fun isEnabled() = SkyBlockUtils.onHypixel && config.tpsDisplay
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(2, "misc.tpsDisplayEnabled", "gui.tpsDisplay")
         event.move(2, "misc.tpsDisplayPosition", "gui.tpsDisplayPosition")
     }
@@ -158,7 +158,7 @@ object TpsCounter {
     }
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("TPS Counter")
         event.addIrrelevant {
             add("TPS: ${rawTps?.oneDecimal()}")

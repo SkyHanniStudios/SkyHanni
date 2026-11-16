@@ -27,7 +27,7 @@ object GardenInventoryTooltipOverflow {
     private val config get() = GardenApi.config.cropMilestones.overflow
 
     @HandleEvent
-    fun onToolTip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!isEnabled()) return
 
         val inventoryName = InventoryUtils.openInventoryName()

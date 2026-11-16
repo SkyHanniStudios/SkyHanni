@@ -81,7 +81,7 @@ object UpgradeReminder {
 
     // TODO: (for 0.27) merge this logic with reminder manager
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         if (!isEnabled()) return
         if (ReminderUtils.isBusy()) return
         if (inInventory || SkyBlockUtils.graphArea == "Community Center") return
@@ -94,7 +94,7 @@ object UpgradeReminder {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         inInventory = event.inventoryName == "Community Shop" &&
             event.inventoryItems[11]?.isStainedGlassPane(ColoredBlockCompat.LIME) == true
         if (!inInventory) return
@@ -133,12 +133,12 @@ object UpgradeReminder {
     }
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    private fun onInventoryClose(event: InventoryCloseEvent) {
         inInventory = false
     }
 
     @HandleEvent
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         if (!inInventory) return
         val item = event.item ?: return
         clickedUpgradeType = UpgradeType.fromItem(item) ?: return
@@ -155,7 +155,7 @@ object UpgradeReminder {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (upgradeStartedPattern.matches(event.message)) {
             startUpgrade(clickedUpgradeType, clickedUpgrade)
             return
@@ -173,7 +173,7 @@ object UpgradeReminder {
     private fun isEnabled() = SkyBlockUtils.inSkyBlock && config.accountUpgradeReminder
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(
             49,
             "#player.currentAccountUpgrade",

@@ -26,7 +26,7 @@ object ArmorStackDisplay {
     )
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onActionBar(event: ActionBarUpdateEvent) {
+    private fun onActionBar(event: ActionBarUpdateEvent) {
         if (!config.enabled) return
         val stacks = armorStackPattern.findMatcher(event.actionBar) {
             "§6§l" + group("stack")
@@ -35,7 +35,7 @@ object ArmorStackDisplay {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
         if (!config.enabled) return
         val display = display ?: return
         config.position.renderRenderable(display, posLabel = "Armor Stack Display")

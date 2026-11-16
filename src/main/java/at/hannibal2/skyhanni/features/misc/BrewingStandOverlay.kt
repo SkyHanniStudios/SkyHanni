@@ -10,7 +10,7 @@ import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLeadingWhiteLessRes
 object BrewingStandOverlay {
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onRenderItemTip(event: RenderInventoryItemTipEvent) {
+    private fun onRenderItemTip(event: RenderInventoryItemTipEvent) {
         if (!SkyHanniMod.feature.misc.brewingStandOverlay) return
 
         if (event.inventoryName != "Brewing Stand") return

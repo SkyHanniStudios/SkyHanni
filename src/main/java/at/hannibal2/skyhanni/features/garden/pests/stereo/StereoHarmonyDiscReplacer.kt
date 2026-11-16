@@ -23,7 +23,7 @@ object StereoHarmonyDiscReplacer {
 
     // TODO cache. load on inventory open only once, then read from a map slotId -> item stack
     @HandleEvent
-    fun replaceItem(event: ReplaceItemEvent) {
+    private fun replaceItem(event: ReplaceItemEvent) {
         if (!config.replaceMenuIcons) return
         if (!PestApi.stereoInventory.isInside()) return
         if (event.slot !in 11..15 && event.slot !in 20..24 && event.slot !in 30..32) return

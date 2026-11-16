@@ -28,7 +28,7 @@ object RngMeterInventory {
     )
 
     @HandleEvent
-    fun onRenderItemTip(event: RenderItemTipEvent) {
+    private fun onRenderItemTip(event: RenderItemTipEvent) {
         val chestName = InventoryUtils.openInventoryName()
 
         val stack = event.stack
@@ -42,7 +42,7 @@ object RngMeterInventory {
     }
 
     @HandleEvent(priority = HandleEvent.LOW, onlyOnSkyblock = true)
-    fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
+    private fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
 
         val chestName = InventoryUtils.openInventoryName()
         if (config.noDrop && chestName == "Catacombs RNG Meter") {
@@ -65,7 +65,7 @@ object RngMeterInventory {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(3, "inventory.rngMeterFloorName", "inventory.rngMeter.floorName")
         event.move(3, "inventory.rngMeterNoDrop", "inventory.rngMeter.noDrop")
         event.move(3, "inventory.rngMeterSelectedDrop", "inventory.rngMeter.selectedDrop")

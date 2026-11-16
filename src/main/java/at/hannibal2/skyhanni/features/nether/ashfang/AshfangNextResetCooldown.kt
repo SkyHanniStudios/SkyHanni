@@ -18,7 +18,7 @@ object AshfangNextResetCooldown {
     private val ashfangResetTime = 46.1.seconds
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
         if (!isEnabled() || AshfangManager.lastSpawnTime.isFarPast()) return
         val nextSpawn = AshfangManager.lastSpawnTime + ashfangResetTime
 
@@ -30,7 +30,7 @@ object AshfangNextResetCooldown {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(2, "ashfang.nextResetCooldown", "crimsonIsle.ashfang.nextResetCooldown")
         event.move(2, "ashfang.nextResetCooldownPos", "crimsonIsle.ashfang.nextResetCooldownPos")
     }

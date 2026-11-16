@@ -15,14 +15,14 @@ object BossbarData {
     fun getBossbar() = bossbar.orEmpty()
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         val oldBossbar = bossbar ?: return
         previousServerBossbar = oldBossbar
         bossbar = null
     }
 
     @HandleEvent
-    fun onTick() {
+    private fun onTick() {
         var multipleBossBars = false
         for (bossBar in MinecraftCompat.hud.bossOverlay.events.values) {
             if (multipleBossBars) {

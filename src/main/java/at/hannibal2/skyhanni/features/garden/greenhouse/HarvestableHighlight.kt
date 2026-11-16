@@ -18,7 +18,7 @@ object HarvestableHighlight {
     private val config get() = SkyHanniMod.feature.garden.greenhouse
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onGrowthStatusDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
+    private fun onGrowthStatusDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
         if (!config.highlightHarvestableStatus) return
         if (!GreenhouseUtils.cropDiagnosticInventory.isInside()) return
         val slot = InventoryUtils.getSlotAtIndex(24) ?: return
@@ -40,7 +40,7 @@ object HarvestableHighlight {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onWaterLevelDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
+    private fun onWaterLevelDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
         if (!config.highlightWaterStatus) return
         if (!GreenhouseUtils.cropDiagnosticInventory.isInside()) return
         val slot = InventoryUtils.getSlotAtIndex(21) ?: return

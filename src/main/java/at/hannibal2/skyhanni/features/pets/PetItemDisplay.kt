@@ -14,7 +14,7 @@ object PetItemDisplay {
     private val config get() = SkyHanniMod.feature.misc.pets
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onRenderItemOverlayPost(event: GuiRenderItemEvent.RenderOverlayEvent.GuiRenderItemPost) {
+    private fun onRenderItemOverlayPost(event: GuiRenderItemEvent.RenderOverlayEvent.GuiRenderItemPost) {
         val stack = event.stack?.takeIf { it.count == 1 } ?: return
         if (config.petItemDisplay.isEmpty()) return
 

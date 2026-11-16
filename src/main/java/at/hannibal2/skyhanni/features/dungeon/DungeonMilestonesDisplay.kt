@@ -40,14 +40,14 @@ object DungeonMilestonesDisplay {
     // Todo I like the ingenuity of the fade-out effect here, but this should probably be made
     //  into a reusable decorator of TextRenderable/StringRenderable
     @HandleEvent
-    fun onTick(event: SkyHanniTickEvent) {
+    private fun onTick(event: SkyHanniTickEvent) {
         if (!event.isMod(5) || displayString.isEmpty()) return
         if (currentMilestone < 3 || timeReached.passedSince() < 3.seconds) return
         displayString = displayString.substring(1)
     }
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!config.showMilestonesDisplay) return
         if (milestonePattern.matches(event.chatComponent)) {
             event.blockedReason = "dungeon_milestone"
@@ -69,19 +69,19 @@ object DungeonMilestonesDisplay {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         displayString = ""
         currentMilestone = 0
     }
 
     @HandleEvent
-    fun onDungeonStart(event: DungeonStartEvent) {
+    private fun onDungeonStart(event: DungeonStartEvent) {
         currentMilestone = 0
         update()
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CATACOMBS)
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
         if (!config.showMilestonesDisplay) return
 
         val display = display ?: return

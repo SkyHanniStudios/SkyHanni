@@ -25,7 +25,7 @@ object VanquisherAchievement {
     private const val VANQUISHER_ACHIEVEMENT = "Double Trouble"
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "Vanquisher Double Trouble".asComponent(),
             description = "Spawn two of them within one second".asComponent(),
@@ -38,7 +38,7 @@ object VanquisherAchievement {
     private var lastVanquisher = SimpleTimeMark.farPast()
 
     @HandleEvent(onlyOnIsland = IslandType.CRIMSON_ISLE)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!vanquisherSpawnPattern.matches(event.cleanMessage)) return
         if (lastVanquisher.passedSince() < 1.seconds) {
             AchievementManager.completeAchievement(VANQUISHER_ACHIEVEMENT)

@@ -18,7 +18,7 @@ object DungeonRankTabListColor {
     private val config get() = SkyHanniMod.feature.dungeon.tabList
 
     @HandleEvent
-    fun onTabListText(event: TabListLineRenderEvent) {
+    private fun onTabListText(event: TabListLineRenderEvent) {
         if (!isEnabled()) return
 
         DungeonApi.playerDungeonTeamPattern.matchMatcher(event.text.stripHypixelMessage().removeColor()) {

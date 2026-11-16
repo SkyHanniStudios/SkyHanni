@@ -42,7 +42,7 @@ object AcceptLastPartyInvite {
     private var lastInviter = ""
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!config.acceptLastInvite) return
         inviteReceivedPattern.findMatcher(event.message) {
             lastInviter = group("player")
@@ -59,7 +59,7 @@ object AcceptLastPartyInvite {
     }
 
     @HandleEvent
-    fun onMessageSendToServer(event: MessageSendToServerEvent) {
+    private fun onMessageSendToServer(event: MessageSendToServerEvent) {
         if (!config.acceptLastInvite) return
         if (event.senderIsSkyhanni()) return
         val message = event.message.lowercase()

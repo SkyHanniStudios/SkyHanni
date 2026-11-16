@@ -47,7 +47,7 @@ object KloonHacking {
     private val RETRO_ENCABULATING_VISOR = "RETRO_ENCABULATING_VISOR".toInternalName()
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         checkHelmet()
     }
 
@@ -56,7 +56,7 @@ object KloonHacking {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         inTerminalInventory = false
         inColorInventory = false
         nearestTerminal = null
@@ -76,13 +76,13 @@ object KloonHacking {
     }
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    private fun onInventoryClose(event: InventoryCloseEvent) {
         inTerminalInventory = false
         inColorInventory = false
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
+    private fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
         if (inTerminalInventory) {
             if (!config.solver) return
             var i = 0
@@ -114,13 +114,13 @@ object KloonHacking {
     }
 
     @HandleEvent(priority = HandleEvent.HIGH, onlyOnIsland = IslandType.THE_RIFT)
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         if (!inTerminalInventory) return
         event.makePickblock()
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!config.waypoints) return
         if (!wearingHelmet) return
         val storage = ProfileStorageData.profileSpecific?.rift ?: return
@@ -132,7 +132,7 @@ object KloonHacking {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!wearingHelmet) return
         colorPattern.matchMatcher(event.cleanMessage) {
             val storage = ProfileStorageData.profileSpecific?.rift ?: return
@@ -144,7 +144,7 @@ object KloonHacking {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onToolTip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         event.slot ?: return
         if (!inTerminalInventory) return
         if (!config.solver) return
@@ -172,7 +172,7 @@ object KloonHacking {
 
     @HandleEvent
     @Suppress("AvoidBritishSpelling")
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(9, "rift.area.westVillageConfig", "rift.area.westVillage")
 
         val basePath = "rift.area.westVillage"

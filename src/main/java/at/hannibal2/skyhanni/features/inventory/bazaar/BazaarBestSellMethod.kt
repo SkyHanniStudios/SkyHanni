@@ -33,7 +33,7 @@ object BazaarBestSellMethod {
     private var nextCloseWillResetItem = false
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    private fun onInventoryClose(event: InventoryCloseEvent) {
         display = null
         if (lastClickedItem != null) {
             if (nextCloseWillResetItem) {
@@ -44,7 +44,7 @@ object BazaarBestSellMethod {
     }
 
     @HandleEvent
-    fun onBazaarOpenedProduct(event: BazaarOpenedProductEvent) {
+    private fun onBazaarOpenedProduct(event: BazaarOpenedProductEvent) {
         if (!isEnabled()) return
         display = getDisplay(event.openedProduct)
 
@@ -79,7 +79,7 @@ object BazaarBestSellMethod {
     }
 
     @HandleEvent
-    fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
+    private fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
         if (!isEnabled()) return
 
         val display = display ?: return
@@ -87,7 +87,7 @@ object BazaarBestSellMethod {
     }
 
     @HandleEvent(priority = HandleEvent.HIGH)
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         lastClickedItem = event.slot?.item
         nextCloseWillResetItem = false
     }

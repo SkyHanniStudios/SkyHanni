@@ -143,7 +143,7 @@ object BingoNextStepHelper {
     }
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         if (!isEnabled()) return
 
         update()
@@ -151,7 +151,7 @@ object BingoNextStepHelper {
     }
 
     @HandleEvent
-    fun onTick(event: SkyHanniTickEvent) {
+    private fun onTick(event: SkyHanniTickEvent) {
         if (!isEnabled()) return
 
         if (event.isMod(5)) {
@@ -162,7 +162,7 @@ object BingoNextStepHelper {
     private var nextMessageIsCrystal = false
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!isEnabled()) return
 
         for (currentStep in currentSteps) {
@@ -473,7 +473,7 @@ object BingoNextStepHelper {
     private fun isEnabled() = SkyBlockUtils.isBingoProfile && config.enabled
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shprintbingohelper") {
             description = "Prints the next step helper for the bingo card"
             category = CommandCategory.DEVELOPER_DEBUG

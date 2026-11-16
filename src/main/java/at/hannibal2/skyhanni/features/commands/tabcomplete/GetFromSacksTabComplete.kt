@@ -16,7 +16,7 @@ object GetFromSacksTabComplete {
     private val config get() = SkyHanniMod.feature.misc.commands.tabComplete
 
     @HandleEvent
-    fun onTabComplete(event: TabCompletionEvent) {
+    private fun onTabComplete(event: TabCompletionEvent) {
         if (!isEnabled()) return
         if (GetFromSackApi.commands.none { event.isCommand(it) }) return
         if (!event.leftOfCursor.contains(" ")) return
@@ -29,7 +29,7 @@ object GetFromSacksTabComplete {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onMessageToServer(event: MessageSendToServerEvent) {
+    private fun onMessageToServer(event: MessageSendToServerEvent) {
         if (SkyBlockUtils.isOnAlphaServer) return
         if (!event.isCommand(GetFromSackApi.commandsWithSlash)) return
         val replacedEvent = handleUnderlineReplace(event)

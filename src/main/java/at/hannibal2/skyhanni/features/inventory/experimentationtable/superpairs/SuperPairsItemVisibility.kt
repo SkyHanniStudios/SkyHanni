@@ -16,7 +16,7 @@ object SuperPairsItemVisibility {
     private val config get() = SkyHanniMod.feature.inventory.experimentationTable.superpairs.clickedItemsVisible
 
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onReplaceItem(event: ReplaceItemEvent) {
+    private fun onReplaceItem(event: ReplaceItemEvent) {
         if (!config.enabled) return
         if (!ExperimentationTableApi.inSuperpairs) return
         val replacementItem = ExperimentationSuperpairApi.uncoveredItemStacks[event.slot] ?: return

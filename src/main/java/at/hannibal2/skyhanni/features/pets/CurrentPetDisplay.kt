@@ -457,7 +457,7 @@ object CurrentPetDisplay {
     }
 
     @HandleEvent(ConfigLoadEvent::class)
-    fun onConfigLoad() {
+    private fun onConfigLoad() {
         val currentConfig = config
         if (observedConfig === currentConfig) return
         observedConfig = currentConfig
@@ -467,12 +467,12 @@ object CurrentPetDisplay {
     }
 
     @HandleEvent(PetChangeEvent::class)
-    fun onPetChange() {
+    private fun onPetChange() {
         invalidateRenderable()
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onTooltip(event: ToolTipTextEvent) {
+    private fun onTooltip(event: ToolTipTextEvent) {
         if (!PetStorageExpShare.isInventory(InventoryUtils.openInventoryName())) return
         val slot = event.slot?.containerSlot ?: return
         if (!PetStorageExpShare.isSlotDisabled(slot)) return
@@ -483,7 +483,7 @@ object CurrentPetDisplay {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onRenderOverlayPost(event: GameOverlayRenderPostEvent) {
+    private fun onRenderOverlayPost(event: GameOverlayRenderPostEvent) {
         if (event.type != RenderLayer.HOTBAR) return
         if (RiftApi.inRift() || !config.general.enabled.get()) return
         val widgetWarning = PetStorageApi.getPetWidgetWarning(
@@ -505,7 +505,7 @@ object CurrentPetDisplay {
     }
 
     @HandleEvent
-    fun onRenderingTick(event: RenderingTickEvent) {
+    private fun onRenderingTick(event: RenderingTickEvent) {
         if (event.startPhase) return
         if (!PetDisplayConfigGuiManager.isOpen()) return
         if (!config.general.enabled.get()) return
@@ -515,7 +515,7 @@ object CurrentPetDisplay {
     }
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Pet Display")
         event.addIrrelevant {
             val currentPet = CurrentPetApi.currentPet
@@ -531,7 +531,7 @@ object CurrentPetDisplay {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(3, "misc.petDisplay", "misc.pets.display")
         event.move(9, "misc.petDisplayPos", "misc.pets.displayPos")
         event.move(138, "misc.pets.display", "misc.pets.display.general.enabled")

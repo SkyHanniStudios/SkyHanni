@@ -23,7 +23,7 @@ class CustomTodos(
     companion object {
 
         @HandleEvent
-        fun onCommandRegistration(event: CommandRegistrationEvent) {
+        private fun onCommandRegistration(event: CommandRegistrationEvent) {
             event.registerBrigadier("shtodos") {
                 description = "Edit custom TODOs"
                 category = CommandCategory.USERS_ACTIVE

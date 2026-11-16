@@ -47,7 +47,7 @@ object PestTrapApi {
     val inInventory get() = InventoryUtils.openInventoryName() in inventoryNames
 
     @HandleEvent
-    fun onWidgetUpdate(event: WidgetUpdateEvent) {
+    private fun onWidgetUpdate(event: WidgetUpdateEvent) {
         if (!event.isWidget(TabWidget.PEST_TRAPS, TabWidget.FULL_TRAPS, TabWidget.NO_BAIT)) return
         if (event.lines.isEmpty()) return
         val timeEnteredGarden = timeEnteredGarden ?: run {
@@ -91,7 +91,7 @@ object PestTrapApi {
     }
 
     @HandleEvent
-    fun onIslandChange(event: IslandChangeEvent) {
+    private fun onIslandChange(event: IslandChangeEvent) {
         if (event.newIsland != IslandType.GARDEN) return
         timeEnteredGarden = SimpleTimeMark.now()
     }

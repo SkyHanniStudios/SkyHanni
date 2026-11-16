@@ -54,12 +54,12 @@ object CorpseLoot {
     private var pendingKeyConsumed = true
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onIslandChange() {
+    private fun onIslandChange() {
         pendingKeyConsumed = true
     }
 
     @HandleEvent(onlyOnIsland = IslandType.MINESHAFT)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         val message = event.message
 
         startPattern.matchMatcher(message) {

@@ -169,13 +169,13 @@ object PartyApi {
     }
 
     @HandleEvent
-    fun onPartyChat(event: PartyChatEvent.Allow) {
+    private fun onPartyChat(event: PartyChatEvent.Allow) {
         val name = event.author.cleanPlayerName()
         addPlayer(name)
     }
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         val message = event.message.trimWhiteSpace().removeResets()
 
         // new member joined
@@ -286,7 +286,7 @@ object PartyApi {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shpartydebug") {
             description = "List persons into the chat SkyHanni thinks are in your party."
             category = CommandCategory.DEVELOPER_TEST
@@ -295,7 +295,7 @@ object PartyApi {
     }
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Party")
         event.addIrrelevant {
             val size = partyMembers.size

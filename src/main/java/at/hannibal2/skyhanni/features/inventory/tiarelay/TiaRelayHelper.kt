@@ -29,7 +29,7 @@ object TiaRelayHelper {
     private val resultDisplay = mutableMapOf<Int, Int>()
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onPlaySound(event: PlaySoundEvent) {
+    private fun onPlaySound(event: PlaySoundEvent) {
         val soundName = event.soundName
 
         if (config.tiaRelayMute && soundName == "entity.wolf.whine") {
@@ -54,7 +54,7 @@ object TiaRelayHelper {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         if (!config.soundHelper) return
 
         if (InventoryUtils.openInventoryName().contains("Network Relay")) {
@@ -100,7 +100,7 @@ object TiaRelayHelper {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onRenderItemTip(event: RenderInventoryItemTipEvent) {
+    private fun onRenderItemTip(event: RenderInventoryItemTipEvent) {
         if (!config.soundHelper) return
         if (!inInventory) return
 
@@ -128,7 +128,7 @@ object TiaRelayHelper {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         if (!config.soundHelper) return
         if (!inInventory) return
 
@@ -140,7 +140,7 @@ object TiaRelayHelper {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(2, "misc.tiaRelayMute", "inventory.helper.tiaRelay.tiaRelayMute")
         event.move(2, "misc.tiaRelayHelper", "inventory.helper.tiaRelay.soundHelper")
 

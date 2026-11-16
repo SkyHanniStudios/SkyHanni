@@ -30,7 +30,7 @@ object NavigationFeedback {
     private var navLastActive: SimpleTimeMark = SimpleTimeMark.farPast()
 
     @HandleEvent
-    fun onConfigLoad() {
+    private fun onConfigLoad() {
         ConditionalUtils.onToggle(config.feedbackMode) {
             guiRenderable = null
         }
@@ -90,7 +90,7 @@ object NavigationFeedback {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(114, "misc.pathfinding", "misc.navigation.pathfinding")
     }
 }

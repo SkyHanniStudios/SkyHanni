@@ -82,7 +82,7 @@ object PartyCommands {
     }
 
     @HandleEvent
-    fun onMessageSendToServer(event: MessageSendToServerEvent) {
+    private fun onMessageSendToServer(event: MessageSendToServerEvent) {
         if (!config.partyKickReason) {
             return
         }
@@ -107,14 +107,14 @@ object PartyCommands {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(5, "commands.usePartyTransferAlias", "commands.shortCommands")
 
         event.move(31, "commands", "misc.commands")
     }
 
     @HandleEvent(priority = HandleEvent.LOW)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!config.reversePT.clickable) return
 
         // The message was likely already modified by us, return to avoid infinite recursion
@@ -134,7 +134,7 @@ object PartyCommands {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("pko") {
             description = "Kicks offline party members"
             category = CommandCategory.SHORTENED_COMMANDS

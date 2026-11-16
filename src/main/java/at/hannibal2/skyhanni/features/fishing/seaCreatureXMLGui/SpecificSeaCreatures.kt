@@ -35,7 +35,7 @@ class SpecificSeaCreatures(
     companion object {
 
         @HandleEvent
-        fun onCommandRegistration(event: CommandRegistrationEvent) {
+        private fun onCommandRegistration(event: CommandRegistrationEvent) {
             event.registerBrigadier("shseacreatures") {
                 description = "Opens a Special Config Menu for Specific Sea Creature Settings."
                 category = CommandCategory.USERS_ACTIVE

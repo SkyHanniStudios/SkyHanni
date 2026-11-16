@@ -138,20 +138,20 @@ object HypixelData {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         joinedWorld = SimpleTimeMark.now()
         skyBlockArea = null
         skyBlockAreaWithSymbol = null
     }
 
     @HandleEvent(ClientDisconnectEvent::class)
-    fun onDisconnect() {
+    private fun onDisconnect() {
         skyBlockArea = null
         skyBlockAreaWithSymbol = null
     }
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!SkyBlockUtils.onHypixel) return
 
         val message = event.cleanMessage.lowercase()
@@ -183,7 +183,7 @@ object HypixelData {
 
     // TODO rewrite everything in here
     @HandleEvent
-    fun onTick(event: SkyHanniTickEvent) {
+    private fun onTick(event: SkyHanniTickEvent) {
         if (SkyBlockUtils.onHypixel && SkyBlockUtils.inSkyBlock) {
             loop@ for (line in ScoreboardData.sidebarLinesFormatted) {
                 skyblockAreaPattern.matchMatcher(line) {
@@ -212,7 +212,7 @@ object HypixelData {
     }
 
     @HandleEvent
-    fun onWidgetUpdate(event: WidgetUpdateEvent) {
+    private fun onWidgetUpdate(event: WidgetUpdateEvent) {
         when (event.widget) {
             TabWidget.AREA -> checkIsland(event)
             TabWidget.PROFILE -> checkProfile()
@@ -266,7 +266,7 @@ object HypixelData {
     private var tabListDataDirty = false
 
     @HandleEvent(IslandJoinEvent::class)
-    fun onIslandJoin() {
+    private fun onIslandJoin() {
         tabListDataDirty = true
     }
 
@@ -295,7 +295,7 @@ object HypixelData {
     }
 
     @HandleEvent(HypixelJoinEvent::class)
-    fun onHypixelJoin() {
+    private fun onHypixelJoin() {
         CoroutineSettings("hypixel join repo update").launchCoroutine {
             val progress = progressCategory.start("hypixel join repo update check")
             SkyHanniRepoManager.displayRepoStatus(progress, joinEvent = true)

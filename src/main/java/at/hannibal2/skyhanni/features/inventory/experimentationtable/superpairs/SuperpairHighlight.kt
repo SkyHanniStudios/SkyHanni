@@ -17,7 +17,7 @@ object SuperpairHighlight {
     private val config get() = SkyHanniMod.feature.inventory.experimentationTable.superpairs
 
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
+    private fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
         if (!config.highlightPairs) return
         if (!ExperimentationTableApi.inSuperpairs) return
 

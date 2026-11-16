@@ -28,7 +28,7 @@ object PartyOnBoop {
     )
 
     @HandleEvent
-    fun onPrivateMessageChat(event: PrivateMessageChatEvent.Allow) {
+    private fun onPrivateMessageChat(event: PrivateMessageChatEvent.Allow) {
         if (!isEnabled()) return
         if (event.direction == Direction.OUTGOING) return
 

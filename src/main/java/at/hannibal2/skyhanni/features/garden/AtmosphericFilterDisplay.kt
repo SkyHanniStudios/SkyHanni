@@ -19,7 +19,7 @@ object AtmosphericFilterDisplay {
     private var display: Renderable? = null
 
     @HandleEvent(onlyOnSkyblockOrFeatures = [OutsideSBFeature.ATMOSPHERIC_FILTER])
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         if (!isEnabled()) return
         @Suppress("IsInIslandEarlyReturn")
         if (!GardenApi.inGarden() && !config.outsideGarden) return
@@ -27,7 +27,7 @@ object AtmosphericFilterDisplay {
     }
 
     @HandleEvent(onlyOnSkyblockOrFeatures = [OutsideSBFeature.ATMOSPHERIC_FILTER])
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
         if (!isEnabled()) return
         val display = display ?: return
         val position = if (GardenApi.inGarden()) config.position else config.positionOutside

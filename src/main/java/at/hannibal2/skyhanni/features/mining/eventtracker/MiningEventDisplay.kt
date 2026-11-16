@@ -29,12 +29,12 @@ object MiningEventDisplay {
     private val islandEventData = mutableMapOf<IslandType, MiningIslandEventInfo>()
 
     @HandleEvent(onlyOnSkyblockOrFeatures = [OutsideSBFeature.MINING_EVENT_DISPLAY])
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         updateDisplay()
     }
 
     @HandleEvent(GuiRenderEvent.GuiOverlayRenderEvent::class, onlyOnSkyblockOrFeatures = [OutsideSBFeature.MINING_EVENT_DISPLAY])
-    fun onGuiRenderOverlay() {
+    private fun onGuiRenderOverlay() {
         val shouldDisplay = if (SkyBlockUtils.inSkyBlock) {
             MiningEventTracker.isMiningIsland() || config.outsideMining
         } else {
@@ -136,7 +136,7 @@ object MiningEventDisplay {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.transform(46, "mining.miningEvent.compressedFormat") {
             ConfigUtils.migrateBooleanToEnum(it, CompressFormat.COMPACT_TEXT, CompressFormat.DEFAULT)
         }

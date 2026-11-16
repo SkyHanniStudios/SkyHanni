@@ -17,7 +17,7 @@ import net.minecraft.world.inventory.Slot
 object HighlightMissingRepoItems {
 
     @HandleEvent(priority = HandleEvent.LOWEST, onlyOnSkyblock = true)
-    fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
+    private fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
         if (!DevApi.config.debug.highlightMissingRepo) return
 
         val gui = event.gui
@@ -44,7 +44,7 @@ object HighlightMissingRepoItems {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(3, "dev.highlightMissingRepo", "dev.debug.highlightMissingRepo")
     }
 }

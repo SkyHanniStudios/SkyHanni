@@ -58,7 +58,7 @@ object FrozenTreasureTracker {
     ) : TrackerData<SessionUptime.Normal>(SessionUptime.Normal::class)
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         icePerHour = 0
         stoppedChecks = 0
         icePerSecond = mutableListOf()
@@ -66,7 +66,7 @@ object FrozenTreasureTracker {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.WINTER)
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         val difference = estimatedIce - lastEstimatedIce
         lastEstimatedIce = estimatedIce
 
@@ -103,7 +103,7 @@ object FrozenTreasureTracker {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.WINTER)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!ProfileStorageData.loaded) return
 
         val message = event.cleanMessage.trim()
@@ -167,12 +167,12 @@ object FrozenTreasureTracker {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(2, "misc.frozenTreasureTracker", "event.winter.frozenTreasureTracker")
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shresetfrozentreasuretracker") {
             description = "Resets the Frozen Treasure Tracker"
             category = CommandCategory.USERS_RESET

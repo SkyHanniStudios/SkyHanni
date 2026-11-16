@@ -28,7 +28,7 @@ object RenderableTestSuite {
     private val active = mutableSetOf<TestRenderableBase<*>>()
 
     @HandleEvent(GuiRenderEvent.GuiOnTopRenderEvent::class)
-    fun onGuiRender() {
+    private fun onGuiRender() {
         for (test in active.filter { it.eventClass == GuiRenderEvent.GuiOnTopRenderEvent::class }) {
             test.finalRenderable?.let {
                 test.position.renderRenderable(it, posLabel = "Renderable Test: $test")
@@ -37,7 +37,7 @@ object RenderableTestSuite {
     }
 
     @HandleEvent
-    fun onRenderOverlayPost(event: GameOverlayRenderPostEvent) {
+    private fun onRenderOverlayPost(event: GameOverlayRenderPostEvent) {
         if (event.type != RenderLayer.HOTBAR) return
         for (test in active.filter { it.eventClass == GameOverlayRenderPostEvent::class }) {
             test.finalRenderable?.let {
@@ -47,7 +47,7 @@ object RenderableTestSuite {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shtestrenderable") {
             category = CommandCategory.DEVELOPER_TEST
             description = "Used for testing specific gui element primitives."

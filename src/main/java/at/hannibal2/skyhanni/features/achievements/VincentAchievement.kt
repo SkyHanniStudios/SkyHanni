@@ -23,7 +23,7 @@ object VincentAchievement {
     private const val VINCENT_ACHIEVEMENT = "Strawberry Collector"
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "Strawberry Collector".asComponent(),
             description = "Attempt to turn a rose into a strawberry".asComponent(),
@@ -34,7 +34,7 @@ object VincentAchievement {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.HUB)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!vincentPattern.matches(event.cleanMessage)) return
         val achievement = AchievementManager.getAchievement(VINCENT_ACHIEVEMENT)
         AchievementManager.updateTieredAchievement(VINCENT_ACHIEVEMENT, achievement.data.progress + 1)

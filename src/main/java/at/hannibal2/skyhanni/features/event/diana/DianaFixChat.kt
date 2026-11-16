@@ -31,7 +31,7 @@ object DianaFixChat {
     private var foundGuess = false
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         if (!isEnabled()) return
         if (lastSpadeUse.passedSince() > 1.minutes) return
 
@@ -83,7 +83,7 @@ object DianaFixChat {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.HUB)
-    fun onItemClick(event: ItemClickEvent) {
+    private fun onItemClick(event: ItemClickEvent) {
         if (!isEnabled()) return
         if (event.clickType != InteractClickType.RIGHT_CLICK) return
         if (!DianaApi.hasSpadeInHand()) return
@@ -95,7 +95,7 @@ object DianaFixChat {
     }
 
     @HandleEvent
-    fun onBurrowGuess(event: BurrowGuessEvent) {
+    private fun onBurrowGuess(event: BurrowGuessEvent) {
         foundGuess = true
 
         if (hasSetParticleQuality) {
@@ -114,7 +114,7 @@ object DianaFixChat {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         successfulCounter = 0
     }
 

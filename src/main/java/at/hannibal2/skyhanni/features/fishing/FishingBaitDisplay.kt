@@ -37,13 +37,13 @@ object FishingBaitDisplay {
     )
 
     @HandleEvent
-    fun onBaitUpdate(event: BaitUpdateEvent) {
+    private fun onBaitUpdate(event: BaitUpdateEvent) {
         bait = getBaitDisplayEntry(event.itemStack, event.baitType, event.amount)
         updateDisplay()
     }
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
         if (!isEnabled()) return
         if (!FishingApi.holdingRod) return
         if (bait == null) return
@@ -60,7 +60,7 @@ object FishingBaitDisplay {
     }
 
     @HandleEvent
-    fun onConfigLoad(event: ConfigLoadEvent) {
+    private fun onConfigLoad(event: ConfigLoadEvent) {
         ConditionalUtils.onToggle(config.showIcon) {
             updateDisplay()
         }

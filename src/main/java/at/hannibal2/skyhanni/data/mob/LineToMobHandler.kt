@@ -28,18 +28,18 @@ object LineToMobHandler {
     }
 
     @HandleEvent
-    fun onMobDeSpawn(event: MobEvent.DeSpawn) {
+    private fun onMobDeSpawn(event: MobEvent.DeSpawn) {
         lines.remove(event.mob)
     }
 
     // TODO remove workaround once we can confirm why lines show up after world switch
     @HandleEvent(WorldChangeEvent::class)
-    fun onWorldChange() {
+    private fun onWorldChange() {
         lines.clear()
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (lines.isEmpty()) return
 
         for ((mob, settings) in lines) {

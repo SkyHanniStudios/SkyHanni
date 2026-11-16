@@ -71,7 +71,7 @@ object ComposterDisplay {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onWidgetUpdate(event: WidgetUpdateEvent) {
+    private fun onWidgetUpdate(event: WidgetUpdateEvent) {
         if (!event.isWidget(TabWidget.COMPOSTER)) return
 
         val newData = mutableMapOf<DataType, Component>()
@@ -149,7 +149,7 @@ object ComposterDisplay {
         GuiRenderEvent.GuiOverlayRenderEvent::class,
         onlyOnSkyblockOrFeatures = [OutsideSBFeature.COMPOSTER_TIME],
     )
-    fun onGuiRenderOverlay() {
+    private fun onGuiRenderOverlay() {
         if (GardenApi.inGarden() && config.displayEnabled) {
             display?.let {
                 config.displayPos.renderRenderable(it, posLabel = "Composter Display")
@@ -205,7 +205,7 @@ object ComposterDisplay {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(3, "garden.composterDisplayEnabled", "garden.composters.displayEnabled")
         event.move(3, "garden.composterDisplayOutsideGarden", "garden.composters.displayOutsideGarden")
         event.move(3, "garden.composterWarnAlmostClose", "garden.composters.warnAlmostClose")

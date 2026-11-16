@@ -28,7 +28,7 @@ object CropSpeedMeter {
     private var startCrops = mapOf<CropType, Long>()
 
     @HandleEvent
-    fun onCropClick(event: CropClickEvent) {
+    private fun onCropClick(event: CropClickEvent) {
         if (!isEnabled()) return
         if (startCrops.isEmpty()) return
 
@@ -42,7 +42,7 @@ object CropSpeedMeter {
     }
 
     @HandleEvent
-    fun onTick(event: SkyHanniTickEvent) {
+    private fun onTick(event: SkyHanniTickEvent) {
         if (!isEnabled()) return
         if (!event.isMod(15)) return
 
@@ -79,7 +79,7 @@ object CropSpeedMeter {
     }
 
     @HandleEvent
-    fun onCropMilestoneUpdate(event: CropMilestoneUpdateEvent) {
+    private fun onCropMilestoneUpdate(event: CropMilestoneUpdateEvent) {
         if (!isEnabled()) return
         val counters = mutableMapOf<CropType, Long>()
         for (cropType in CropType.entries) {
@@ -119,7 +119,7 @@ object CropSpeedMeter {
     }
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
         if (!isEnabled()) return
 
         GardenApi.config.cropSpeedMeterPos.renderStrings(display, posLabel = "Crop Speed Meter")
@@ -128,7 +128,7 @@ object CropSpeedMeter {
     fun isEnabled() = enabled && GardenApi.inGarden()
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shcropspeedmeter") {
             description = "Debugs how many crops you collect over time"
             category = CommandCategory.DEVELOPER_DEBUG

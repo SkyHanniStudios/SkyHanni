@@ -50,7 +50,7 @@ object CraftableItemList {
     )
 
     @HandleEvent
-    fun onInventoryOpen(event: InventoryOpenEvent) {
+    private fun onInventoryOpen(event: InventoryOpenEvent) {
         if (!isEnabled()) return
         if (!craftItemPattern.matches(event.inventoryName)) return
         inInventory = true
@@ -137,7 +137,7 @@ object CraftableItemList {
     }
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    private fun onInventoryClose(event: InventoryCloseEvent) {
         inInventory = false
     }
 
@@ -173,7 +173,7 @@ object CraftableItemList {
     }
 
     @HandleEvent
-    fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
+    private fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
         if (!isEnabled()) return
         if (!inInventory) return
 

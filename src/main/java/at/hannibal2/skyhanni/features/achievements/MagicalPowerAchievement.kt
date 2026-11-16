@@ -13,7 +13,7 @@ object MagicalPowerAchievement {
     private const val MP_ACHIEVEMENT = "Magic Sigma"
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "Magical Sigma".asComponent(),
             description = "Pro tip: Magical Power gives you good stats".asComponent(),
@@ -24,7 +24,7 @@ object MagicalPowerAchievement {
     }
 
     @HandleEvent(onlyOnSkyblock = true, priority = HandleEvent.LOW)
-    fun onAccessoryBagUpdate() {
+    private fun onAccessoryBagUpdate() {
         val mp = ProfileStorageData.profileSpecific?.maxwell?.magicalPower ?: return
         val achievement = AchievementManager.getAchievement(MP_ACHIEVEMENT)
         if (mp > achievement.data.progress) {

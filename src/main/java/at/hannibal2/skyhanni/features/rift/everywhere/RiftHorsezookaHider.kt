@@ -15,7 +15,7 @@ object RiftHorsezookaHider {
     private val HORSEZOOKA = "HORSEZOOKA".toInternalName()
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onCheckRender(event: CheckRenderEntityEvent<Horse>) {
+    private fun onCheckRender(event: CheckRenderEntityEvent<Horse>) {
         if (!SkyHanniMod.feature.rift.horsezookaHider) return
 
         if (InventoryUtils.itemInHandId == HORSEZOOKA) {

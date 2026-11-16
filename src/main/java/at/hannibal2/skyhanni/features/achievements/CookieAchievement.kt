@@ -14,7 +14,7 @@ object CookieAchievement {
     private const val COOKIE_ACHIEVEMENT = "cookie fan"
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "Cookie Monster Super Fan",
             description = "Get 6 months of Cookie Buff",
@@ -24,7 +24,7 @@ object CookieAchievement {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         if (AchievementManager.isCompleted(COOKIE_ACHIEVEMENT)) return
         if (!event.repeatSeconds(100)) return
         val time = BitsApi.cookieBuffTime ?: return

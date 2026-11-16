@@ -135,7 +135,7 @@ object ProfitPerDragon {
     private var lastScanned = SimpleTimeMark.farPast()
 
     @HandleEvent(onlyOnIsland = IslandType.THE_END)
-    fun onTick() {
+    private fun onTick() {
         if (lastScanned.passedSince() >= 1.seconds && !DragonFeatures.eggSpawned && !finishedLoot) {
             scanForLoot()
             lastScanned = SimpleTimeMark.now()

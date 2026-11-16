@@ -17,7 +17,7 @@ object SeaCreatureCocoonWarning {
     private val config get() = SkyHanniMod.feature.fishing.cocoonSettings
 
     @HandleEvent
-    fun onHypixelCocoonMessage(event: HypixelCocoonChatMessageEvent) {
+    private fun onHypixelCocoonMessage(event: HypixelCocoonChatMessageEvent) {
         val name = event.mobName
         if (config.warnWhenCocooned) {
             if (SeaCreatureSettings.getConfig(name)?.shouldWarnWhenCocooned == true) {

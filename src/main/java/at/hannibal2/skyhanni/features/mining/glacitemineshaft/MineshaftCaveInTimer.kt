@@ -41,7 +41,7 @@ object MineshaftCaveInTimer {
     private var display: List<Renderable> = emptyList()
 
     @HandleEvent(WorldChangeEvent::class)
-    fun onWorldChange() {
+    private fun onWorldChange() {
         caveInTimerStart = SimpleTimeMark.farPast()
         firstColdTime = SimpleTimeMark.farPast()
         lastColdValue = null
@@ -51,7 +51,7 @@ object MineshaftCaveInTimer {
     }
 
     @HandleEvent(GlaciteMineshaftDetectEvent::class)
-    fun onMineshaftDetect() {
+    private fun onMineshaftDetect() {
         caveInTimerStart = SimpleTimeMark.now()
         firstColdTime = SimpleTimeMark.farPast()
         lastColdValue = null
@@ -60,7 +60,7 @@ object MineshaftCaveInTimer {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.MINESHAFT)
-    fun onColdUpdate(event: ColdUpdateEvent) {
+    private fun onColdUpdate(event: ColdUpdateEvent) {
         val prev = lastColdValue
         lastColdValue = event.cold
 
@@ -76,7 +76,7 @@ object MineshaftCaveInTimer {
     }
 
     @HandleEvent(SecondPassedEvent::class, onlyOnIsland = IslandType.MINESHAFT)
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         if (!config.enabled || caveInTimerStart.isFarPast()) {
             display = emptyList()
             return
@@ -128,7 +128,7 @@ object MineshaftCaveInTimer {
     }
 
     @HandleEvent(GuiRenderEvent.GuiOverlayRenderEvent::class, onlyOnIsland = IslandType.MINESHAFT)
-    fun onGuiRenderOverlay() {
+    private fun onGuiRenderOverlay() {
         if (display.isEmpty()) return
         config.position.renderRenderables(display, posLabel = "Mineshaft Cave-in Timer")
     }

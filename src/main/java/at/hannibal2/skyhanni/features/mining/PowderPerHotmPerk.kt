@@ -15,7 +15,7 @@ object PowderPerHotmPerk : CurrencyPerHotxPerk<HotmData.Companion>(HotmData, "Po
     private val config get() = SkyHanniMod.feature.mining.hotm
 
     @HandleEvent
-    fun onToolTip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!isEnabled()) return
         handleHotxCurrency(
             event,

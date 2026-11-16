@@ -18,12 +18,12 @@ object AnvilCombineHelper {
     private var highlightedSlots = setOf<Int>()
 
     @HandleEvent(priority = HandleEvent.LOW)
-    fun onInventoryUpdated(event: AnvilUpdateEvent) {
+    private fun onInventoryUpdated(event: AnvilUpdateEvent) {
         highlightedSlots = updateSlots(event.left, event.right)
     }
 
     @HandleEvent
-    fun onInventoryUpdated(event: InventoryUpdatedEvent) {
+    private fun onInventoryUpdated(event: InventoryUpdatedEvent) {
         highlightedSlots = updateSlots(AnvilApi.left, AnvilApi.right)
     }
 
@@ -47,7 +47,7 @@ object AnvilCombineHelper {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
+    private fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
         if (!isEnabled()) return
 
         for (slot in InventoryUtils.getSlotsInOwnInventory()) {

@@ -18,12 +18,12 @@ object MinecraftData {
         private set
 
     @HandleEvent(priority = HandleEvent.LOW)
-    fun onConnect() {
+    private fun onConnect() {
         hasLeftMainScreen = true
     }
 
     @HandleEvent(receiveCancelled = true)
-    fun onPacket(event: PacketReceivedEvent) {
+    private fun onPacket(event: PacketReceivedEvent) {
         val packet = event.packet as? ClientboundPingPacket ?: return
 
         if (lastPingParameter == packet.id) return
@@ -38,7 +38,7 @@ object MinecraftData {
         private set
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onItemInHandChange(event: ItemInHandChangeEvent) {
+    private fun onItemInHandChange(event: ItemInHandChangeEvent) {
         if (event.newItem != event.oldItem) {
             if (event.newItem != NeuInternalName.NONE) {
                 InventoryUtils.recentItemsInHand.add(event.newItem)
@@ -51,13 +51,13 @@ object MinecraftData {
     }
 
     @HandleEvent
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         val cutoff = SimpleTimeMark.now() - 50.seconds
         InventoryUtils.pastItemsInHand.removeAll { it.first < cutoff }
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         InventoryUtils.itemInHandId = NeuInternalName.NONE
         InventoryUtils.recentItemsInHand.clear()
     }

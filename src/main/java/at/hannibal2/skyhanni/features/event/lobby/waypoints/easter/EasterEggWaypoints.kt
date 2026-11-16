@@ -23,7 +23,7 @@ object EasterEggWaypoints {
     private var isEgg: Boolean = false
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!config.allWaypoints && !config.allEntranceWaypoints) return
         if (!isEgg) return
 
@@ -47,7 +47,7 @@ object EasterEggWaypoints {
     private fun isActive(): Boolean = isEnabled() && config.allWaypoints || config.allEntranceWaypoints
 
     @HandleEvent(SecondPassedEvent::class)
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         active = isActive()
         if (!active) return
 
@@ -76,7 +76,7 @@ object EasterEggWaypoints {
     }
 
     @HandleEvent
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!isEnabled()) return
         if (!isEgg) return
 

@@ -41,7 +41,7 @@ object AuctionHouseOpenPriceWebsite {
     private var displayItem: SafeItemStack? = null
 
     @HandleEvent
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         if (!isEnabled()) return
         // TODO get search from search sign (slot 48) since it can be cut off in title
         ahSearchPattern.matchMatcher(event.inventoryName) {
@@ -62,12 +62,12 @@ object AuctionHouseOpenPriceWebsite {
     )
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    private fun onInventoryClose(event: InventoryCloseEvent) {
         displayItem = null
     }
 
     @HandleEvent
-    fun replaceItem(event: ReplaceItemEvent) {
+    private fun replaceItem(event: ReplaceItemEvent) {
         if (!isEnabled()) return
         if (event.inventory is Inventory) return
 
@@ -79,7 +79,7 @@ object AuctionHouseOpenPriceWebsite {
     }
 
     @HandleEvent(priority = HandleEvent.HIGH)
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         if (!isEnabled()) return
         displayItem ?: return
         if (event.slotId != 8) return

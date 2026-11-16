@@ -55,7 +55,7 @@ object CFBarnManager {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         HoppityEggsManager.newRabbitFound.matchMatcher(event.message) {
             val profileStorage = profileStorage ?: return@matchMatcher
             profileStorage.currentRabbits += 1
@@ -75,7 +75,7 @@ object CFBarnManager {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Modify) {
+    private fun onChat(event: SkyHanniChatEvent.Modify) {
         HoppityEggsManager.duplicateRabbitFound.matchMatcher(event.message) {
             event.duplicateFoundMessage(group("amount"))
         }
@@ -125,7 +125,7 @@ object CFBarnManager {
     }
 
     @HandleEvent(InventoryCloseEvent::class)
-    fun onInventoryClose() {
+    private fun onInventoryClose() {
         sentBarnFullWarning = false
     }
 

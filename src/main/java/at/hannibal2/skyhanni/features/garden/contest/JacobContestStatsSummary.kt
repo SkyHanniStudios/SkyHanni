@@ -24,7 +24,7 @@ object JacobContestStatsSummary {
     private var startTime = SimpleTimeMark.farPast()
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN, priority = HandleEvent.HIGHEST)
-    fun onCropClick(event: CropClickEvent) {
+    private fun onCropClick(event: CropClickEvent) {
         if (!config.enabled) return
 
         if (FarmingContestApi.inContest && event.crop == FarmingContestApi.contestCrop) {
@@ -33,7 +33,7 @@ object JacobContestStatsSummary {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onFarmingContest(event: FarmingContestEvent) {
+    private fun onFarmingContest(event: FarmingContestEvent) {
         if (!config.enabled) return
         val cropsBroken = blocksBroken[event.crop] ?: 0
         if (event.phase == FarmingContestPhase.STOP && config.hideZeroCropStats && cropsBroken == 0) return
@@ -79,7 +79,7 @@ object JacobContestStatsSummary {
     )
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         val oldBase = "garden"
         val newBase = "garden.jacobContest"
         massMigrationPairs.forEach { (oldPath, newPath) ->

@@ -12,7 +12,7 @@ object GuildApi {
     private val list = mutableListOf<String>()
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         val message = event.message
         if (message.startsWith("§6Guild Name: ")) {
             inGuildMessage = true

@@ -197,7 +197,7 @@ object ExperimentsAddonsHelper {
 
     // <editor-fold desc="Next click highlighting">
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onReplaceItem(event: ReplaceItemEvent) {
+    private fun onReplaceItem(event: ReplaceItemEvent) {
         if (!config.enabled) return
         if (!ExperimentationTableApi.inAddon || !config.highlightNextClick || currentAddonPhase != HelperPhase.REPLICATE) return
 

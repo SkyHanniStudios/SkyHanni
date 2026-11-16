@@ -64,7 +64,7 @@ object HalloweenBasketWaypoints {
     )
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         if (!event.repeatSeconds(2)) return
         if (!isActive || !isEnabled()) return
 
@@ -83,7 +83,7 @@ object HalloweenBasketWaypoints {
     }
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!config.enabled.get()) return
         if (!isActive) return
         if (!isEnabled()) return
@@ -104,7 +104,7 @@ object HalloweenBasketWaypoints {
     }
 
     @HandleEvent
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!isEnabled()) return
         if (!isActive) return
         if (!config.enabled.get()) return
@@ -124,7 +124,7 @@ object HalloweenBasketWaypoints {
     }
 
     @HandleEvent
-    fun onScoreboardChange(event: ScoreboardUpdateEvent) {
+    private fun onScoreboardChange(event: ScoreboardUpdateEvent) {
         if (SkyBlockUtils.inSkyBlock) {
             isActive = false
             return
@@ -162,7 +162,7 @@ object HalloweenBasketWaypoints {
     }
 
     @HandleEvent(ConfigLoadEvent::class)
-    fun onConfigLoad() {
+    private fun onConfigLoad() {
         ConditionalUtils.onToggle(config.enabled, config.pathfind) {
             if (config.pathfind.get() && isActive && isEnabled()) startPathfinding()
         }
@@ -199,7 +199,7 @@ object HalloweenBasketWaypoints {
     private fun isEnabled() = HypixelData.hypixelLive && !SkyBlockUtils.inSkyBlock
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(13, "event.halloweenBasket", "event.lobbyWaypoints.halloweenBasket")
         event.move(108, "event.lobbyWaypoints.halloweenBasket.allWaypoints", "event.lobbyWaypoints.halloweenBasket.enabled")
     }

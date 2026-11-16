@@ -27,7 +27,7 @@ object TrackerManager {
 
 
     @HandleEvent
-    fun onConfigLoad(event: ConfigLoadEvent) {
+    private fun onConfigLoad(event: ConfigLoadEvent) {
         with(SkyHanniMod.feature.misc.tracker) {
             ConditionalUtils.onToggle(
                 this.itemTracker.textOrder,
@@ -71,14 +71,14 @@ object TrackerManager {
     }
 
     @HandleEvent(priority = HandleEvent.HIGHEST)
-    fun onRenderOverlayFirst(event: GuiRenderEvent) {
+    private fun onRenderOverlayFirst(event: GuiRenderEvent) {
         if (hasChanged) {
             dirty = true
         }
     }
 
     @HandleEvent(priority = HandleEvent.LOWEST)
-    fun onRenderOverlayLast(event: GuiRenderEvent) {
+    private fun onRenderOverlayLast(event: GuiRenderEvent) {
         if (hasChanged) {
             dirty = false
             hasChanged = false
@@ -109,7 +109,7 @@ object TrackerManager {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shedittracker") {
             description = "Changes the tracked item amount for Diana, Fishing, Pest, Excavator, and Slayer Item Trackers."
             category = CommandCategory.USERS_BUG_FIX
@@ -118,7 +118,7 @@ object TrackerManager {
     }
 
     @HandleEvent(priority = HandleEvent.LOWEST)
-    fun onItemAdd(event: ItemAddEvent) {
+    private fun onItemAdd(event: ItemAddEvent) {
         if (event.source != ItemAddManager.Source.COMMAND || event.isCancelled) return
         if (!commandEditTrackerSuccess) {
             ChatUtils.userError("Could not edit the Item Tracker! Does this item belong to this tracker? Is the tracker active right now?")
@@ -126,7 +126,7 @@ object TrackerManager {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         val oldBase = "misc.tracker"
         val newBase = "misc.tracker.itemTracker"
         val movedList: List<String> = listOf(

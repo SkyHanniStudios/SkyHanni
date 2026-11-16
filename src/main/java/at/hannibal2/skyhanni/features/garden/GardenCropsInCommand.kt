@@ -75,7 +75,7 @@ object GardenCropsInCommand {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shcropsin") {
             description = "Calculates with your current crop per second how many items you can collect in this amount of time"
             category = CommandCategory.USERS_ACTIVE

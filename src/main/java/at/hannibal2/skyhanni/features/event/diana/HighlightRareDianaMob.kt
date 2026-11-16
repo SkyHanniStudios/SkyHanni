@@ -13,7 +13,7 @@ object HighlightRareDianaMob {
     private val config get() = SkyHanniMod.feature.event.diana
 
     @HandleEvent
-    fun onRareDianaMobFound(event: RareDianaMobFoundEvent) {
+    private fun onRareDianaMobFound(event: RareDianaMobFoundEvent) {
         if (!config.highlightRareMobs) return
 
         val rareMob = event.entity

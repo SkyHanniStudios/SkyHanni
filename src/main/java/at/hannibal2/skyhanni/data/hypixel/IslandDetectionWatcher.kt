@@ -30,7 +30,7 @@ object IslandDetectionWatcher {
     private val logger = SkyHanniLogger("debug/island_change")
 
     @HandleEvent
-    fun onIslandJoin(event: IslandJoinEvent) {
+    private fun onIslandJoin(event: IslandJoinEvent) {
         val newIsland = event.island
         val oldIsland = event.previousIsland
         log("IslandJoinEvent $oldIsland -> $newIsland")
@@ -38,22 +38,22 @@ object IslandDetectionWatcher {
     }
 
     @HandleEvent
-    fun onIslandLeave(event: IslandLeaveEvent) {
+    private fun onIslandLeave(event: IslandLeaveEvent) {
         log("IslandLeaveEvent ${event.island}")
     }
 
     @HandleEvent(WorldChangeEvent::class)
-    fun onWorldChange() {
+    private fun onWorldChange() {
         log("WorldChangeEvent")
     }
 
     @HandleEvent(ProfileJoinEvent::class)
-    fun onProfileJoin() {
+    private fun onProfileJoin() {
         log("ProfileJoinEvent")
     }
 
     @HandleEvent(HypixelJoinEvent::class)
-    fun onHypixelJoin() {
+    private fun onHypixelJoin() {
         log("HypixelJoinEvent")
     }
 
@@ -68,7 +68,7 @@ object IslandDetectionWatcher {
     }
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Island Detection Watcher")
 
         val currentEventType = latestEventType

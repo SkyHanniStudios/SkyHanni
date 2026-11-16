@@ -43,7 +43,7 @@ object CruxTalismanDisplay {
     private var percentValue = 0.0
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
         if (!isEnabled()) return
         config.position.renderRenderables(
             display,
@@ -88,7 +88,7 @@ object CruxTalismanDisplay {
     }
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         if (!isEnabled()) return
         if (!event.repeatSeconds(2)) return
         if (!InventoryUtils.getItemsInOwnInventory().any { it.getInternalName().startsWith(PARTIAL_NAME) }) return
@@ -125,7 +125,7 @@ object CruxTalismanDisplay {
     }
 
     @HandleEvent
-    fun onConfigLoad(event: ConfigLoadEvent) {
+    private fun onConfigLoad(event: ConfigLoadEvent) {
         ConditionalUtils.onToggle(config.showBonuses) { update() }
     }
 

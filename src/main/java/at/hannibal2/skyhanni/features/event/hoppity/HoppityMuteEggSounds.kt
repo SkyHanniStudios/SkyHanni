@@ -21,7 +21,7 @@ object HoppityMuteEggSounds {
     ) { HoppityRabbitTheFishChecker.mealEggInventoryPattern }
 
     @HandleEvent
-    fun onPlaySound(event: PlaySoundEvent) {
+    private fun onPlaySound(event: PlaySoundEvent) {
         if (!eggInventory.isInside() && lastInInventory.passedSince() > 2.seconds) return
         if (!event.isEggSound()) return
         when (config.soundMode) {

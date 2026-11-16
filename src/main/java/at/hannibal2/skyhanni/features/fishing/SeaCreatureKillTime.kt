@@ -17,7 +17,7 @@ object SeaCreatureKillTime {
     private val config get() = SkyHanniMod.feature.fishing
 
     @HandleEvent
-    fun onSeaCreatureDeath(event: SeaCreatureEvent.Death) {
+    private fun onSeaCreatureDeath(event: SeaCreatureEvent.Death) {
         if (!config.seaCreatureKillTimer) return
         if (SeaCreatureSettings.getConfig(event.name)?.shouldShowKillTime != true) return
         if (!event.seaCreature.isOwn && config.seaCreatureKillTimerOwnMobsOnly) return

@@ -30,7 +30,7 @@ object CurrentPing {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shping") {
             category = CommandCategory.USERS_ACTIVE
             description = "Shows your current ping"
@@ -50,7 +50,7 @@ object CurrentPing {
     fun isEnabled() = DevApi.mainToggles.pingApi
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(102, "dev.hypixelPingApi", "dev.pingApi")
     }
 }

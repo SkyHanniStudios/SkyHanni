@@ -13,7 +13,7 @@ object ItemValueAchievement {
     private const val ITEM_VALUE_ACHIEVEMENT = "Hefty Items"
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "Hefty Item",
             description = "Swing an item worth more than 500mil",
@@ -23,7 +23,7 @@ object ItemValueAchievement {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onItemInHandChange(event: ItemInHandChangeEvent) {
+    private fun onItemInHandChange(event: ItemInHandChangeEvent) {
         if (AchievementManager.isCompleted(ITEM_VALUE_ACHIEVEMENT)) return
         val stack = event.newStack
         val value = EstimatedItemValueCalculator.getTotalPrice(stack, ignoreBasePrice = true) ?: return

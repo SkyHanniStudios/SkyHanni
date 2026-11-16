@@ -26,7 +26,7 @@ object GardenOptimalAngles {
     private var display = listOf<Renderable>()
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onGuiOpen(event: GuiScreenOpenEvent) {
+    private fun onGuiOpen(event: GuiScreenOpenEvent) {
         if (!config.signEnabled) return
         val gui = event.gui as? SignEditScreen ?: return
         if (!gui.isMousematSign()) return
@@ -72,7 +72,7 @@ object GardenOptimalAngles {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onScreenDrawn(event: ScreenDrawnEvent) {
+    private fun onScreenDrawn(event: ScreenDrawnEvent) {
         if (!config.signEnabled) return
         val gui = event.gui as? SignEditScreen ?: return
         if (!gui.isMousematSign()) return
@@ -83,7 +83,7 @@ object GardenOptimalAngles {
     }
 
     @HandleEvent
-    fun onGardenToolChange(event: GardenToolChangeEvent) {
+    private fun onGardenToolChange(event: GardenToolChangeEvent) {
         cropInHand = event.crop
         event.crop?.let { lastCrop = it }
     }

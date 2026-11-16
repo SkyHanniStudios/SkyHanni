@@ -15,7 +15,7 @@ object DungeonShadowAssassinNotification {
     private val config get() = SkyHanniMod.feature.dungeon
 
     @HandleEvent(onlyOnIsland = IslandType.CATACOMBS)
-    fun onWorldBorderChange(event: PacketReceivedEvent) {
+    private fun onWorldBorderChange(event: PacketReceivedEvent) {
         if (!isEnabled()) return
         if (DungeonApi.dungeonFloor?.contains("3") == true && DungeonApi.inBossRoom) return
 

@@ -42,7 +42,7 @@ object AvoriusHelper {
     )
 
     @HandleEvent(onlyOnIsland = IslandType.CRIMSON_ISLE)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!isEnabled()) return
         if (lastSentMessage.passedSince() < 15.seconds) return
 

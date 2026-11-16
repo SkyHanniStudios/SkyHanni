@@ -68,7 +68,7 @@ object UbikReminder {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!config.ubikReminder) return
 
         cooldownPattern.matchMatcher(event.cleanMessage) {
@@ -77,7 +77,7 @@ object UbikReminder {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         val storage = storage ?: return
         if (storage.ubikRemindTime.isInFuture()) return
         if (config.ubikReminder) {
@@ -91,7 +91,7 @@ object UbikReminder {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onRender(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onRender(event: GuiRenderEvent.GuiOverlayRenderEvent) {
         if (!config.ubikReminder || !config.ubikGui) return
         val storage = storage ?: return
         val remindTime = storage.ubikRemindTime

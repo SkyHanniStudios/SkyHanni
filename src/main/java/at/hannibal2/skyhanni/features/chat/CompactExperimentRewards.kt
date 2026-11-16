@@ -59,14 +59,14 @@ object CompactExperimentRewards {
     )
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    private fun onInventoryClose(event: InventoryCloseEvent) {
         if (isEnabled() && experimentInventoriesPattern.matches(InventoryUtils.openInventoryName())) {
             lastTimeTableOpened = SimpleTimeMark.now()
         }
     }
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!isEnabled() || lastTimeTableOpened.passedSince() >= 3.seconds || event.blockedReason != "") return
 
         val message = event.message

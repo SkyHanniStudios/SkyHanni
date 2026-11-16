@@ -64,12 +64,12 @@ object GardenVisitorTimer {
         }
 
     @HandleEvent(VisitorArrivalEvent::class)
-    fun onVisitorArrival() {
+    private fun onVisitorArrival() {
         visitorJustArrived = true
     }
 
     @HandleEvent(ProfileJoinEvent::class)
-    fun onProfileJoin() {
+    private fun onProfileJoin() {
         display = null
         lastMillis = 0.seconds
         sixthVisitorArrivalTime = SimpleTimeMark.farPast()
@@ -106,7 +106,7 @@ object GardenVisitorTimer {
     }
 
     @HandleEvent
-    fun onTabListUpdate(event: TabListUpdateEvent) {
+    private fun onTabListUpdate(event: TabListUpdateEvent) {
         val visitorInterval = visitorInterval ?: return
         val context = TabUpdateContext(
             visitorsAmount = VisitorApi.visitorsInTabList(event.tabList).size,
@@ -217,7 +217,7 @@ object GardenVisitorTimer {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         lastVisitors = -1
         GardenApi.storage?.nextSixthVisitorArrival?.let {
             if (it.isFarFuture() && it.toMillis() != -9223370336633802065) {
@@ -228,7 +228,7 @@ object GardenVisitorTimer {
     }
 
     @HandleEvent(CropClickEvent::class)
-    fun onCropClick() {
+    private fun onCropClick() {
         if (!isEnabled()) return
         sixthVisitorArrivalTime -= 100.milliseconds
 
@@ -239,7 +239,7 @@ object GardenVisitorTimer {
     }
 
     @HandleEvent(PestKillEvent::class)
-    fun onPestKill() {
+    private fun onPestKill() {
         if (!isEnabled()) return
         sixthVisitorArrivalTime -= 30.seconds
 
@@ -257,7 +257,7 @@ object GardenVisitorTimer {
     private fun isEnabled() = GardenApi.inGarden() && config.enabled
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(3, "garden.visitorTimerEnabled", "garden.visitors.timer.enabled")
         event.move(3, "garden.visitorTimerSixthVisitorEnabled", "garden.visitors.timer.sixthVisitorEnabled")
         event.move(3, "garden.visitorTimerSixthVisitorWarning", "garden.visitors.timer.sixthVisitorWarning")

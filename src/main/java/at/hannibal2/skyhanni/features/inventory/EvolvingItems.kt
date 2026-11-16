@@ -16,7 +16,7 @@ object EvolvingItems {
     private val config get() = SkyHanniMod.feature.inventory.evolvingItems
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onToolTip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!config.timeHeldInLore && !config.timeLeftInLore) return
 
         val secondsHeld = event.itemStack.getSecondsHeld() ?: return
@@ -29,7 +29,7 @@ object EvolvingItems {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(86, "inventory.timeHeldInLore", "inventory.evolvingItems.timeHeldInLore")
     }
 }

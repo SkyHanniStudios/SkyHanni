@@ -15,7 +15,7 @@ object XpAchievement {
     private val ignoredAreas = setOf(IslandType.THE_RIFT, IslandType.CATACOMBS)
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "High Level Gamer",
             description = "Have 1000 XP Levels",
@@ -25,7 +25,7 @@ object XpAchievement {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         if (AchievementManager.isCompleted(XP_ACHIEVEMENT)) return
         if (ignoredAreas.isInAnyIsland()) return
         if (MinecraftCompat.localPlayerOrThrow.experienceLevel == 1000) {

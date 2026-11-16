@@ -25,7 +25,7 @@ object AccessoryBagApi {
     fun isAccessoryBag(inventoryName: String): Boolean = inventoryNamePattern.matches(inventoryName)
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onInventoryUpdated(event: InventoryUpdatedEvent) {
+    private fun onInventoryUpdated(event: InventoryUpdatedEvent) {
         if (!isAccessoryBag(event.inventoryName)) return
 
         AccessoryBagUpdateEvent(event.inventoryName, event.inventoryItems).post()

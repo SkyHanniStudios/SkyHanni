@@ -92,12 +92,12 @@ object CollectionApi {
     )
 
     @HandleEvent
-    fun onProfileJoin(event: ProfileJoinEvent) {
+    private fun onProfileJoin(event: ProfileJoinEvent) {
         collectionValue.clear()
     }
 
     @HandleEvent
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         val inventoryName = event.inventoryName
         if (!collectionInventory.isInside()) return
 
@@ -153,7 +153,7 @@ object CollectionApi {
     }
 
     @HandleEvent
-    fun onItemAdd(event: ItemAddEvent) {
+    private fun onItemAdd(event: ItemAddEvent) {
         if (event.source == ItemAddManager.Source.COMMAND) return
         val internalName = event.internalName
         val amount = NeuItems.getPrimitiveMultiplier(internalName).amount

@@ -172,12 +172,12 @@ enum class CarnivalGoal(
             entries.filter { it.type.item == item }.firstOrNull { it.lorePattern.matches(lore.firstOrNull()) }
 
         @HandleEvent
-        fun onProfileJoin(event: ProfileJoinEvent) {
+        private fun onProfileJoin(event: ProfileJoinEvent) {
             dirty = true
         }
 
         @HandleEvent
-        fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+        private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
             if (!isEnabled()) return
             if (!inventoryPattern.matches(event.inventoryName)) return
             for (stack in event.inventoryItems.values) {
@@ -189,7 +189,7 @@ enum class CarnivalGoal(
         }
 
         @HandleEvent
-        fun onChat(event: SkyHanniChatEvent.Allow) {
+        private fun onChat(event: SkyHanniChatEvent.Allow) {
             if (!isEnabled()) return
             entries.firstOrNull { it.chatPattern.matches(event.message) }?.isReached = true
         }
@@ -197,7 +197,7 @@ enum class CarnivalGoal(
         private var display = emptyList<Renderable>()
 
         @HandleEvent
-        fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+        private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
             if (!isEnabled()) return
             if (dirty) {
                 display = buildList {

@@ -28,7 +28,7 @@ object RestorePieceOfWizardPortalLore {
     )
 
     @HandleEvent
-    fun onToolTip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!config.restorePieceOfWizardPortalLore) return
         val stack = event.itemStack
         if (stack.getInternalName() != item) return

@@ -42,7 +42,7 @@ object MotesSession {
     private const val MOTES_ACHIEVEMENT = "Mote Collector"
 
     @HandleEvent
-    fun onWidgetUpdate(event: WidgetUpdateEvent) {
+    private fun onWidgetUpdate(event: WidgetUpdateEvent) {
         if (!event.isWidget(TabWidget.RIFT_INFO)) return
         lifetimeMotesPattern.firstMatcher(event.widget.lines.map { it.string }) {
             val amount = group("motes").formatLong()
@@ -59,7 +59,7 @@ object MotesSession {
     }
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "Mote Millionaire",
             description = "Become a millionaire 20 times over",
@@ -69,7 +69,7 @@ object MotesSession {
     }
 
     @HandleEvent
-    fun onIslandLeave(event: IslandLeaveEvent) {
+    private fun onIslandLeave(event: IslandLeaveEvent) {
         if (event.island == IslandType.THE_RIFT) {
             sendMotesInfo()
             initialMotes = null

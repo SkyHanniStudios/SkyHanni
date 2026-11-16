@@ -21,7 +21,7 @@ object ActionBarData {
     fun getActionBar() = actionBar
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shtestactionbar") {
             description = "Set your clipboard as a fake action bar."
             category = CommandCategory.DEVELOPER_TEST
@@ -43,7 +43,7 @@ object ActionBarData {
     }
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Action Bar")
         debugActionBar?.let {
             event.addData {
@@ -56,7 +56,7 @@ object ActionBarData {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         actionBar = ""
     }
 

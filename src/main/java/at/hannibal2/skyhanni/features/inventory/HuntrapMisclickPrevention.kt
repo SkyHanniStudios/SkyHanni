@@ -18,7 +18,7 @@ object HuntrapMisclickPrevention {
     private var lastNotified = SimpleTimeMark.farPast()
 
     @HandleEvent
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         if (!config.huntrapMisclick) return
 
         val inventoryName = InventoryUtils.openInventoryName()
