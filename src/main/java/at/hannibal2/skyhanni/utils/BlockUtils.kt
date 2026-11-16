@@ -46,8 +46,8 @@ object BlockUtils {
 
     fun raycast(start: LorenzVec, end: LorenzVec): BlockHitResult = world.clip(
         ClipContext(
-            start.toVec3(),
-            end.toVec3(),
+            start,
+            end,
             ClipContext.Block.COLLIDER,
             ClipContext.Fluid.NONE,
             MinecraftCompat.localPlayerOrThrow,

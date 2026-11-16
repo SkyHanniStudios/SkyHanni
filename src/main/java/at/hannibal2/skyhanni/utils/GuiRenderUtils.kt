@@ -7,6 +7,7 @@ import at.hannibal2.skyhanni.utils.compat.RenderCompat
 import at.hannibal2.skyhanni.utils.render.item.SkyHanniGuiItemRenderState
 import at.hannibal2.skyhanni.utils.renderables.animated.AnimatedItemRenderableConfig
 import at.hannibal2.skyhanni.utils.renderables.primitives.ItemRenderableConfig
+import at.hannibal2.skyhanni.utils.vector.KVector
 import com.mojang.blaze3d.platform.Lighting
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Font
@@ -17,7 +18,6 @@ import net.minecraft.resources.Identifier
 import net.minecraft.util.ARGB
 import net.minecraft.util.FormattedCharSequence
 import net.minecraft.world.item.ItemDisplayContext
-import net.minecraft.world.phys.Vec3
 import org.joml.Matrix3x2f
 import kotlin.math.min
 import kotlin.math.sqrt
@@ -255,8 +255,8 @@ object GuiRenderUtils {
         scale = config.scale,
         rescaleSkulls = config.rescaleSkulls,
         alpha = config.alpha,
-        rotationVec = if (config is AnimatedItemRenderableConfig<*>) config.rotationStorage.currentRotation else Vec3.ZERO,
-        translationVec = if (config is AnimatedItemRenderableConfig<*>) config.bounceStorage.currentBounce else Vec3.ZERO,
+        rotationVec = if (config is AnimatedItemRenderableConfig<*>) config.rotationStorage.currentRotation else KVector.ZERO,
+        translationVec = if (config is AnimatedItemRenderableConfig<*>) config.bounceStorage.currentBounce else KVector.ZERO,
         stableRenderId = stableRenderId,
     )
 
@@ -270,8 +270,8 @@ object GuiRenderUtils {
         y: Float,
         scale: Double = NeuItems.ITEM_FONT_SIZE,
         rescaleSkulls: Boolean = true,
-        rotationVec: Vec3 = Vec3.ZERO,
-        translationVec: Vec3 = Vec3.ZERO,
+        rotationVec: KVector = KVector.ZERO,
+        translationVec: KVector = KVector.ZERO,
         stableRenderId: Int? = null,
         frameNumber: Int? = null,
         alpha: Float = 1f,
@@ -298,7 +298,7 @@ object GuiRenderUtils {
         val trackingState = TrackingItemStackRenderState()
         Minecraft.getInstance().itemModelResolver.updateForTopItem(trackingState, item, ItemDisplayContext.GUI, null, null, 0)
 
-        if (rotationVec == Vec3.ZERO && (totalItemScale <= 1 || !trackingState.usesBlockLight()))
+        if (rotationVec.isZero() && (totalItemScale <= 1 || !trackingState.usesBlockLight()))
             return item.normalRenderOnScreen(translateX, translateY, finalItemScale.toFloat())
 
         /**

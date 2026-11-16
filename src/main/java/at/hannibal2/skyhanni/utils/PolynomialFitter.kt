@@ -1,6 +1,6 @@
 package at.hannibal2.skyhanni.utils
 
-import at.hannibal2.skyhanni.utils.vector.VectorFormat.toKVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.toKVector
 import kotlin.math.pow
 import kotlin.time.Duration.Companion.seconds
 

@@ -22,7 +22,6 @@ import at.hannibal2.skyhanni.utils.compat.rotation
 import at.hannibal2.skyhanni.utils.getLorenzVec
 import at.hannibal2.skyhanni.utils.toLorenzVec
 import at.hannibal2.skyhanni.utils.vector.KVector
-import at.hannibal2.skyhanni.utils.vector.VectorBounds.inflate
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
 import io.github.notenoughupdates.moulconfig.ChromaColour
@@ -944,8 +943,8 @@ object WorldRenderUtils {
 
     val EXPAND_VECTOR = KVector(1.0, 1.0, 1.0) * BLOCK_OUTLINE_INFLATION.toDouble()
 
-    fun AABB.expandBlock(n: Int = 1) = inflate(EXPAND_VECTOR * n)
-    fun AABB.inflateBlock(n: Int = 1) = inflate(EXPAND_VECTOR * -n)
+    fun AABB.expandBlock(n: Int = 1): AABB = inflate(EXPAND_VECTOR.x * n)
+    fun AABB.inflateBlock(n: Int = 1) = expandBlock(-n)
 
     fun exactLocation(entity: Entity, partialTicks: Float): LorenzVec {
         if (!entity.isAlive) return entity.getLorenzVec()

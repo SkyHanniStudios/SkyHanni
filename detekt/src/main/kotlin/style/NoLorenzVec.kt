@@ -14,7 +14,7 @@ class NoLorenzVec(config: Config) : SkyHanniRule(
 ) {
 
     override fun visitKtFile(file: KtFile) {
-        if (EXEMPT_FILES.any { file.virtualFilePath.endsWith(it) }) return
+        if (file.virtualFilePath.endsWith(EXEMPT_FILE)) return
         val usages = file.collectDescendantsOfType<KtSimpleNameExpression> {
             it.getReferencedName() == LEGACY_NAME && it.getParentOfType<KtImportDirective>(strict = true) == null
         }
@@ -24,6 +24,6 @@ class NoLorenzVec(config: Config) : SkyHanniRule(
 
     companion object {
         private const val LEGACY_NAME = "LorenzVec"
-        private val EXEMPT_FILES = listOf("utils/LorenzVec.kt", "utils/vector/KVector.kt")
+        private const val EXEMPT_FILE = "utils/LorenzVec.kt"
     }
 }

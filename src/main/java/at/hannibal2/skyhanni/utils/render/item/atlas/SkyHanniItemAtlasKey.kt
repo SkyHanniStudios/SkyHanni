@@ -1,12 +1,13 @@
 package at.hannibal2.skyhanni.utils.render.item.atlas
 
+import at.hannibal2.skyhanni.utils.vector.KVector
 import net.minecraft.world.phys.Vec3
 import java.util.Objects
 
 open class SkyHanniAtlasKey(
     open val item: String,
     open val modelIdentity: Any,
-    open val rotationVector: Vec3,
+    open val rotationVector: KVector,
 ) {
     open val rotationSnapDegrees: Float = 2f
     private val quantizedRotationVector: Vec3 by lazy {
@@ -39,7 +40,7 @@ open class SkyHanniAtlasKey(
 data class SkyHanniAnimatedAtlasKey(
     override val item: String,
     override val modelIdentity: Any,
-    override val rotationVector: Vec3,
+    override val rotationVector: KVector,
     val frameNumber: Int,
 ) : SkyHanniAtlasKey(item, modelIdentity, rotationVector) {
     override val rotationSnapDegrees: Float = 0.125f

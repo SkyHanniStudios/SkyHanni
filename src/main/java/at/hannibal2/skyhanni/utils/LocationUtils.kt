@@ -66,7 +66,7 @@ object LocationUtils {
         return vec.up(player.eyeHeight.toDouble())
     }
 
-    fun AABB.isInside(vec: LorenzVec) = contains(vec.toVec3())
+    fun AABB.isInside(vec: LorenzVec) = contains(vec)
 
     fun AABB.isPlayerInside() = isInside(playerLocation())
 

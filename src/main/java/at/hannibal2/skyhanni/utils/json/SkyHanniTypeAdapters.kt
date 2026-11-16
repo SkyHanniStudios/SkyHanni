@@ -33,7 +33,7 @@ import at.hannibal2.skyhanni.utils.tracker.SessionUptime
 import at.hannibal2.skyhanni.utils.tracker.SessionUptimeTypeAdapter
 import at.hannibal2.skyhanni.utils.tracker.SkyHanniTracker
 import at.hannibal2.skyhanni.utils.vector.KVector
-import at.hannibal2.skyhanni.utils.vector.VectorFormat
+import at.hannibal2.skyhanni.utils.vector.VectorConversions
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import com.google.gson.TypeAdapter
@@ -68,7 +68,7 @@ enum class SkyHanniTypeAdapters(
     ),
     VEC(
         KVector::class.java,
-        SimpleStringTypeAdapter({ asStoredString() }, { VectorFormat.parseStored(this) }),
+        SimpleStringTypeAdapter({ asStoredString() }, { VectorConversions.parseStored(this) }),
     ),
     TROPHY_RARITY(
         TrophyRarity::class.java,

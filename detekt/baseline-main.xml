@@ -4,7 +4,6 @@
     <ID>MayBeConst:MutationsWebsite.kt$MutationsWebsite$private val link = "https://skymutations.eu/"</ID>
   </ManuallySuppressedIssues>
   <CurrentIssues>
-    <ID>ArrayPrimitive:LorenzVec.kt:Array&lt;Double&gt;</ID>
     <ID>BackingPropertyNaming:DiscordIPC.kt:DiscordIPC$@Volatile private var _connected = false</ID>
     <ID>BackingPropertyNaming:HolographicEntities.kt:HolographicEntities$private var _internalEntityHoloBases: Map&lt;KClass&lt;out LivingEntity&gt;, HolographicBase&lt;out LivingEntity&gt;&gt;? = null</ID>
     <ID>BackingPropertyNaming:LazyVar.kt:LazyVar$private var _value: T? = null</ID>

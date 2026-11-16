@@ -1,17 +1,6 @@
 package at.hannibal2.skyhanni.test.vector
 
 import at.hannibal2.skyhanni.utils.vector.KVector
-import at.hannibal2.skyhanni.utils.vector.VectorFormat.formatRounded
-import at.hannibal2.skyhanni.utils.vector.VectorFormat.toChatFormat
-import at.hannibal2.skyhanni.utils.vector.VectorFormat.toLocalFormat
-import at.hannibal2.skyhanni.utils.vector.VectorMath.blockCenter
-import at.hannibal2.skyhanni.utils.vector.VectorMath.distanceChebyshevIgnoreY
-import at.hannibal2.skyhanni.utils.vector.VectorMath.distanceIgnoreY
-import at.hannibal2.skyhanni.utils.vector.VectorMath.floor
-import at.hannibal2.skyhanni.utils.vector.VectorMath.rotateAroundY
-import at.hannibal2.skyhanni.utils.vector.VectorOperators.minus
-import at.hannibal2.skyhanni.utils.vector.VectorOperators.plus
-import at.hannibal2.skyhanni.utils.vector.VectorOperators.times
 import net.minecraft.core.BlockPos
 import net.minecraft.world.phys.Vec3
 import org.joml.Vector3f
@@ -58,11 +47,14 @@ class KVectorTest {
     }
 
     @Test
-    fun `operators accept a plain Vec3 on either side`() {
-        val plain: Vec3 = Vec3(1.0, 2.0, 3.0)
-        assertEquals(KVector(2, 4, 6), plain + plain)
-        assertEquals(KVector.ZERO, plain - KVector(1, 2, 3))
-        assertEquals(KVector(2, 4, 6), plain * 2)
+    fun `operators accept a plain Vec3 operand`() {
+        val plain = Vec3(1.0, 2.0, 3.0)
+        val v = KVector(1, 2, 3)
+        assertEquals(KVector(2, 4, 6), v + plain)
+        assertEquals(KVector.ZERO, v - plain)
+        assertEquals(KVector(1, 4, 9), v * plain)
+        assertEquals(KVector(2, 4, 6), v * 2)
+        assertEquals(KVector(-1, -2, -3), -v)
     }
 
     @Test
@@ -72,26 +64,26 @@ class KVectorTest {
 
     @Test
     fun `rotateAroundY turns x into negative z`() {
-        assertEquals(KVector(0.0, 0.0, -1.0), Vec3.X_AXIS.rotateAroundY(PI / 2).roundTo(6))
+        assertEquals(KVector(0.0, 0.0, -1.0), KVector(Vec3.X_AXIS).rotateAroundY(PI / 2).roundTo(6))
     }
 
     @Test
     fun `ignore y distances drop the y axis`() {
-        val point: Vec3 = KVector(3.0, 10.0, 4.0)
-        assertEquals(5.0, Vec3.ZERO.distanceIgnoreY(point))
-        assertEquals(4.0, Vec3.ZERO.distanceChebyshevIgnoreY(point))
+        val point = Vec3(3.0, 10.0, 4.0)
+        assertEquals(5.0, KVector.ZERO.distanceIgnoreY(point))
+        assertEquals(4.0, KVector.ZERO.distanceChebyshevIgnoreY(point))
     }
 
     @Test
     fun `block helpers floor toward negative infinity`() {
-        val v: Vec3 = Vec3(1.7, -2.3, 3.0)
+        val v = KVector(1.7, -2.3, 3.0)
         assertEquals(KVector(1.0, -3.0, 3.0), v.floor())
         assertEquals(KVector(1.5, -2.5, 3.5), v.blockCenter())
     }
 
     @Test
     fun `formats match LorenzVec output`() {
-        val v: Vec3 = Vec3(-91.74, 70.0, 29.26)
+        val v = KVector(-91.74, 70.0, 29.26)
         assertEquals("x: -91, y: 70, z: 29", v.toChatFormat())
         assertEquals("-91 70 29", v.toLocalFormat())
         assertEquals("-91.7 70.0 29.3", v.formatRounded(10))

@@ -14,6 +14,7 @@ import at.hannibal2.skyhanni.utils.ClipboardUtils
 import at.hannibal2.skyhanni.utils.LorenzColor
 import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.StringUtils
+import at.hannibal2.skyhanni.utils.vector.VectorConversions
 
 @SkyHanniModule
 object NavigateClipboardCommand {
@@ -104,15 +105,8 @@ object NavigateClipboardCommand {
         }
 
         val lines = clipboard.lines().map { it.trim() }.filter { it.isNotEmpty() }
-        val locations = lines.mapNotNull { parseLocationOrNull(it) }
+        val locations = lines.mapNotNull { VectorConversions.parseStoredOrNull(it) }
         return ParsedLocations(locations, unreadableLines = lines.size - locations.size, format = null)
-    }
-
-    private fun parseLocationOrNull(line: String): LorenzVec? {
-        val parts = line.split(":")
-        if (parts.size != 3) return null
-        val (x, y, z) = parts.map { it.trim().toDoubleOrNull() ?: return null }
-        return LorenzVec(x, y, z)
     }
 
     private fun snapToNodes(graph: Graph, locations: List<LorenzVec>): SnappedLocations {
