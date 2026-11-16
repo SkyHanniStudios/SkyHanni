@@ -51,7 +51,7 @@ enum class SlayerType(
         Zombie::class.java,
         null,
         listOf("Bloodfiend"),
-    )
+    ),
     ;
 
     companion object {
