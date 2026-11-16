@@ -38,7 +38,10 @@ abstract class KVectorDeprecated(x: Double, y: Double, z: Double) : KVectorForma
     @Deprecated("Use lerp", ReplaceWith("lerp(other, factor)"))
     fun slope(other: Vec3, factor: Double) = lerp(other, factor)
     @Deprecated("Use lerp", ReplaceWith("lerp(other, factor)"))
-    fun interpolate(other: Vec3, factor: Double) = lerp(other, factor)
+    fun interpolate(other: Vec3, factor: Double): KVector {
+        require(factor in 0.0..1.0) { "Percentage must be between 0 and 1: $factor" }
+        return lerp(other, factor)
+    }
     @Deprecated("Use lerp", ReplaceWith("lerp(other, 0.5)"))
     fun middle(other: Vec3) = lerp(other, 0.5)
     @Deprecated("Use floor", ReplaceWith("floor()"))

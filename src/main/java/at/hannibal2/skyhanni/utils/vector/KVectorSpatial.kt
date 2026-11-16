@@ -1,5 +1,6 @@
 package at.hannibal2.skyhanni.utils.vector
 
+import at.hannibal2.skyhanni.utils.LocationUtils.calculateEdges
 import at.hannibal2.skyhanni.utils.NumberUtil.roundTo
 import net.minecraft.core.BlockPos
 import net.minecraft.world.phys.AABB
@@ -10,6 +11,8 @@ import kotlin.math.floor
 import kotlin.math.max
 
 abstract class KVectorSpatial(x: Double, y: Double, z: Double) : KVectorMath(x, y, z) {
+
+    val edges by lazy { blockBox().inflate(BLOCK_EDGE_INFLATION).calculateEdges() }
 
     fun floor() = KVector(floor(x), floor(y), floor(z))
     fun ceil() = KVector(ceil(x), ceil(y), ceil(z))
@@ -36,5 +39,9 @@ abstract class KVectorSpatial(x: Double, y: Double, z: Double) : KVectorMath(x, 
         if (lengthSqr == 0.0) return KVector(start)
         val t = (subtract(start).dot(direction) / lengthSqr).coerceIn(0.0, 1.0)
         return KVector(start.add(direction.scale(t)))
+    }
+
+    private companion object {
+        const val BLOCK_EDGE_INFLATION = 0.0001
     }
 }

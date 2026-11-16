@@ -78,7 +78,9 @@ class LineDrawer @PublishedApi internal constructor(
     }
 
     fun drawEdges(location: LorenzVec, color: Color) {
-        drawEdges(location.blockBox().inflate(EDGE_OUTLINE_INFLATION), color)
+        for ((p1, p2) in location.edges) {
+            draw3DLine(p1, p2, color)
+        }
     }
 
     fun drawEdges(axisAlignedBB: AABB, color: Color) {
@@ -123,8 +125,6 @@ class LineDrawer @PublishedApi internal constructor(
     }
 
     companion object {
-        private const val EDGE_OUTLINE_INFLATION = 0.0001
-
         inline fun draw3D(
             event: SkyHanniRenderWorldEvent,
             lineWidth: Int,

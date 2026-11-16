@@ -14,7 +14,7 @@ abstract class KVectorMath(x: Double, y: Double, z: Double) : Vec3(x, y, z) {
     fun addHalf() = add(0.5, 0.5, 0.5)
 
     override fun scale(factor: Double) = KVector(x * factor, y * factor, z * factor)
-    override fun normalize() = KVector(super.normalize())
+    override fun normalize() = div(length())
     override fun lerp(other: Vec3, factor: Double) = KVector(super.lerp(other, factor))
     override fun cross(other: Vec3) = KVector(super.cross(other))
 
