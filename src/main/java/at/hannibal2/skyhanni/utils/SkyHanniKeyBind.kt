@@ -2,8 +2,8 @@ package at.hannibal2.skyhanni.utils
 
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.config.SkyHanniConfig
+import com.mojang.blaze3d.platform.InputConstants
 import io.github.notenoughupdates.moulconfig.observer.Property
-import org.lwjgl.glfw.GLFW
 
 /**
  * A SkyHanni config keybind that is exposed in Minecraft's controls screen and kept in sync with MoulConfig.
@@ -22,5 +22,5 @@ class SkyHanniKeyBind(
 ) {
     val property: Property<Int> get() = configOption(SkyHanniMod.feature)
     val keyCode: Int get() = property.get()
-    val isBound: Boolean get() = keyCode != GLFW.GLFW_KEY_UNKNOWN
+    val isBound: Boolean get() = keyCode != InputConstants.UNKNOWN.value
 }

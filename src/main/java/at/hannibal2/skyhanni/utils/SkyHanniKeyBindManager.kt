@@ -22,7 +22,8 @@ object SkyHanniKeyBindManager {
     private val categories = mutableMapOf<String, KeyMapping.Category>()
     private val syncMutex = Mutex()
 
-    fun init() = LoadedKeyBinds.keyBinds.forEach { (options, keyBind) ->
+    @HandleEvent
+    private fun onPreInitFinished() = LoadedKeyBinds.keyBinds.forEach { (options, keyBind) ->
         val mapping = SkyHanniKeyMapping(options, keyBind, categoryFor(options.category))
         KeyMappingHelper.registerKeyMapping(mapping)
         mappings += mapping

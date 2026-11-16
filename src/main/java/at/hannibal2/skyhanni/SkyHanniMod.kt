@@ -32,7 +32,6 @@ import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.MinecraftConsoleFilter
-import at.hannibal2.skyhanni.utils.SkyHanniKeyBindManager
 import at.hannibal2.skyhanni.utils.VersionConstants
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.coroutines.CompatCoroutineManager
@@ -61,7 +60,6 @@ object SkyHanniMod : CompatCoroutineManager by SkyHanniCoroutineManager(
         LoadedModules.modules.forEach { SkyHanniModLoader.loadModule(it) }
 
         SkyHanniEvents.init(modules)
-        SkyHanniKeyBindManager.init()
 
         PreInitFinishedEvent.post()
     }
