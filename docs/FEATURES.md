@@ -173,7 +173,7 @@ Use `/sh` or `/skyhanni` to open the SkyHanni config in game.
       around items that meet that requirement.
     + Works in:
         + In NPC sell inventories, ender chests and backpacks, salvaging in the dungeon hub, player trade
-        + bazaar, auction house, accessory bag, sack of sacks, fishing bag, potion bag,
+        + bazaar, auction house, accessory bag, sack of sacks, potion bag,
         + chests on the private island, attribute fusion, equipment GUI, Rift Motes Grubber
     + Option to allow/block clicks
 + Option to change the gray-out opacity for 'Not Clickable Items'.
@@ -335,6 +335,9 @@ Use `/sh` or `/skyhanni` to open the SkyHanni config in game.
     + Hold the keybind to mark every item in your inventory that can be crafted into another item.
     + Click a marked item to grab the number of items missing for that craft from your sacks.
     + Items that cannot be used show the reason in their tooltip.
++ Added Stonks Auction features. - RemainingDelta (https://github.com/SkyHanniStudios/SkyHanni/pull/6304)
+    + A One Minute Warning and a New Round Alert.
+    + A Countdown showing the time left in the round and your bid status.
 
 ### Bazaar
 
@@ -1267,6 +1270,13 @@ Use `/sh` or `/skyhanni` to open the SkyHanni config in game.
 + Added Attribute Shard Tracker. - nopo (https://github.com/hannibal002/SkyHanni/pull/4813)
 + Shard Fusion Display. - nopo (https://github.com/hannibal002/SkyHanni/pull/4819)
 + Added tracker for hunting to count shards collected. - Pugzy (https://github.com/hannibal002/SkyHanni/pull/4764)
++ Added an option to hide Critter Capsules on the Critter Safari. - hannibal2 (https://github.com/hannibal002/SkyHanni/pull/6542)
+    + Capsules in flight can be hidden always or only while close to the player.
+    + Capsules lying on the ground can be hidden with a separate option.
++ Added Critter Safari Shard Checklist. - pan_truskawka045 (https://github.com/hannibal002/SkyHanni/pull/6526)
+    + Tracks which shards you caught during the current run and shows the ones still missing.
+    + Can show every biome, the current biome first, or only the current biome with a one-line summary for the rest.
+    + Can hide already caught shards and the shard icons.
 
 </details>
 <details open><summary>
@@ -1956,6 +1966,9 @@ Use `/sh` or `/skyhanni` to open the SkyHanni config in game.
     + Navigate to all occurrences of a target on an island.
     + May be useful for new points of interest on Honey Hives (Torrhus Canyon), and the Bells and Hideyho (Safari).
 + Added support for Minecraft 26.2. - Luna (https://github.com/hannibal002/SkyHanni/pull/5894)
++ Added Muted Narrator Warning. - Dae (https://github.com/SkyHanniStudios/SkyHanni/pull/6663)
+   + Send a warning reminder in chat when the narrator is enabled, but in a muted state.
+   + Narrator destroys performance in SkyBlock.
 
 </details>
 <details open><summary>

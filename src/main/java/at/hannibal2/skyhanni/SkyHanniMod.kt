@@ -45,6 +45,7 @@ import net.minecraft.resources.Identifier
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import java.io.File
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
@@ -106,7 +107,8 @@ object SkyHanniMod : CompatCoroutineManager by SkyHanniCoroutineManager(
 
     @HandleEvent
     private fun onClientShutdown() {
-        configManager.saveConfig(ConfigFileType.FEATURES, "shutdown-hook")
+        configManager.saveConfig(ConfigFileType.FEATURES, "shutdown-hook", now = true)
+        configManager.savePendingConfigs()
         SkyHanniItemRenderCoordinator.closeAtlas()
     }
 
@@ -141,6 +143,18 @@ object SkyHanniMod : CompatCoroutineManager by SkyHanniCoroutineManager(
     lateinit var configManager: ConfigManager
     val logger: Logger = LogManager.getLogger("SkyHanni")
 
+    val dataDir: File by lazy {
+        PlatformUtils.gameDir.resolve(MODID).toFile()
+    }
+
+    val configDir: File by lazy {
+        PlatformUtils.configDir.resolve(MODID).toFile()
+    }
+
+    val logsDir: File by lazy {
+        PlatformUtils.logsDir.resolve(MODID).toFile()
+    }
+
     val modules: MutableList<Any> = ArrayList()
 
     var screenToOpen: Screen? = null
@@ -170,7 +184,7 @@ object SkyHanniMod : CompatCoroutineManager by SkyHanniCoroutineManager(
             category = CommandCategory.DEVELOPER_TEST
             simpleCallback {
                 ChatUtils.chat("Manually saved the config!")
-                configManager.saveConfig(ConfigFileType.FEATURES, "manual-command")
+                configManager.saveConfig(ConfigFileType.FEATURES, "manual-command", now = true)
             }
         }
     }

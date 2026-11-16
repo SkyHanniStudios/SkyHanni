@@ -19,6 +19,7 @@ import at.hannibal2.skyhanni.features.misc.update.UpdateManager
 import at.hannibal2.skyhanni.features.pets.PetDisplayConfigGuiManager
 import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.ConfigUtils
+import at.hannibal2.skyhanni.utils.DelayedRun
 import at.hannibal2.skyhanni.utils.IdentityCharacteristics
 import at.hannibal2.skyhanni.utils.OSUtils
 import at.hannibal2.skyhanni.utils.ReflectionUtils.makeAccessible
@@ -43,6 +44,7 @@ import java.io.IOException
 import java.lang.reflect.Field
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.concurrent.fixedRateTimer
 import kotlin.reflect.KMutableProperty0
 import kotlin.time.Duration.Companion.days
@@ -50,7 +52,6 @@ import kotlin.time.Duration.Companion.days
 class ConfigManager {
     companion object {
         val gson: Gson = BaseGsonBuilder.gson().create()
-        val configDirectory = File("config/skyhanni")
     }
 
     private val logger = SkyHanniLogger("config_manager")
@@ -59,6 +60,7 @@ class ConfigManager {
 
     lateinit var processor: BlockingMoulConfigProcessor
     private var disableSaving = false
+    private val pendingSaves = ConcurrentHashMap<ConfigFileType, String>()
 
     private fun setConfigHolder(type: ConfigFileType, value: Any) {
         require(value.javaClass == type.clazz)
@@ -71,7 +73,7 @@ class ConfigManager {
         if (jsonHolder.isNotEmpty()) {
             logger.log("Loading config despite config being already loaded?")
         }
-        configDirectory.mkdirs()
+        SkyHanniMod.configDir.mkdirs()
 
 
         for (fileType in ConfigFileType.entries) {
@@ -82,6 +84,9 @@ class ConfigManager {
         // TODO use SecondPassedEvent
         fixedRateTimer(name = "skyhanni-config-auto-save", daemon = true, period = 60_000L, initialDelay = 60_000L) {
             saveConfig(ConfigFileType.FEATURES, "auto-save-60s")
+        }
+        fixedRateTimer(name = "skyhanni-config-pending-save", daemon = true, period = 10_000L, initialDelay = 10_000L) {
+            savePendingConfigs()
         }
 
         val features = SkyHanniMod.feature
@@ -97,7 +102,8 @@ class ConfigManager {
     }
 
     private fun deleteOldBackups() {
-        OSUtils.deleteExpiredFiles(File("skyhanni/config/backup"), SkyHanniMod.feature.dev.configBackupExpiryTime.days)
+        val file = SkyHanniMod.configDir.resolve("backup")
+        OSUtils.deleteExpiredFiles(file, SkyHanniMod.feature.dev.configBackupExpiryTime.days)
     }
 
     private fun findPositionLinks(obj: Any?, slog: MutableSet<IdentityCharacteristics<Any>>) {
@@ -204,7 +210,22 @@ class ConfigManager {
         return output
     }
 
-    fun saveConfig(fileType: ConfigFileType, reason: String) {
+    fun saveConfig(fileType: ConfigFileType, reason: String, now: Boolean = false) {
+        if (now) {
+            pendingSaves.remove(fileType)
+            writeConfig(fileType, reason)
+        } else {
+            pendingSaves[fileType] = reason
+        }
+    }
+
+    fun savePendingConfigs() {
+        for (fileType in ConfigFileType.entries) {
+            pendingSaves.remove(fileType)?.let { writeConfig(fileType, it) }
+        }
+    }
+
+    private fun writeConfig(fileType: ConfigFileType, reason: String) = DelayedRun.runOrNextTick {
         val json = jsonHolder[fileType] ?: error("Could not find json object for $fileType")
         saveFile(fileType.file, fileType.fileName, json, reason)
         saveFile(fileType.backupFile, fileType.fileName, json, reason)
@@ -285,7 +306,7 @@ enum class ConfigFileType(val fileName: String, val clazz: Class<*>, val propert
     SEEN_CONTRIBUTORS("seen_contributors", SeenContributorStorage::class.java, SkyHanniMod::seenContributorStorage),
     ;
 
-    val file by lazy { File(ConfigManager.configDirectory, "$fileName.json") }
+    val file: File by lazy { SkyHanniMod.configDir.resolve("$fileName.json") }
     val backupFile get() = getBackupFile(file)
 }
 

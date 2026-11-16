@@ -47,10 +47,6 @@ object HypixelCommands {
         send("craft")
     }
 
-    fun npcOption(npc: String, answer: String) {
-        send("selectnpcoption $npc $answer")
-    }
-
     fun warp(warp: String) {
         send("warp $warp")
     }
@@ -239,8 +235,8 @@ object HypixelCommands {
         send("quiver")
     }
 
-    fun fishingBag() {
-        send("fishingbag")
+    fun baitSack() {
+        send("baitsack")
     }
 
     fun huntingBox() {
