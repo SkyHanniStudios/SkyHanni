@@ -20,6 +20,12 @@
     + Can show every biome, the current biome first, or only the current biome with a one-line summary for the rest.
     + Can hide already caught shards and the shard icons.
 
+#### Misc
+
++ Added Muted Narrator Warning. - Dae (https://github.com/SkyHanniStudios/SkyHanni/pull/6663)
+   + Send a warning reminder in chat when the narrator is enabled, but in a muted state.
+   + Narrator destroys performance in SkyBlock.
+
 ### Improvements
 
 #### Mining
@@ -60,6 +66,8 @@
 
 + Added a way for Contributors to opt out of the chat message other players get on first seeing a Contributor. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6581)
 + Improved `/shcalc` to support the 'x' symbol for multiplication. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6603)
++ Added fox sounds to Chat Sound Responses. - Empa (https://github.com/SkyHanniStudios/SkyHanni/pull/6640)
+
 
 ### Fixes
 
@@ -73,6 +81,8 @@
 + Fixed Slayer Damage Indicator not working and showing errors after Hypixel changed the Slayer boss nametags. - FabiHBBBT (https://github.com/hannibal002/SkyHanni/pull/6588)
 + Fixed items with the new Slayer Weapon item category giving an error. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6617)
 + Fixed outdated Broodmother spawn timings after Hypixel changed them. - Pablete1234 (https://github.com/SkyHanniStudios/SkyHanni/pull/6606)
++ Fixed Slayer features (Time to Kill, Line to Tarantula Boss) not detecting your own Slayer boss. - Fazfoxy (https://github.com/SkyHanniStudios/SkyHanni/pull/6637)
+   + This fix may not work for the Vampire Slayer due to apparent inconsistencies in the Rift.
 
 #### Events
 
@@ -81,7 +91,8 @@
 + Fixed Primal Fear Notify constantly spamming sounds. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6603)
 + Fixed the Broodmother Imminent Warning saying 60 seconds instead of 30 seconds. - MTOnline (https://github.com/SkyHanniStudios/SkyHanni/pull/6586)
 + Fixed the Hoppity Call Warning staying active after answering the call. - Taubsie (https://github.com/SkyHanniStudios/SkyHanni/pull/6576)
-
++ Fixed Carnival Double Click to Start not working. - Taubsie (https://github.com/SkyHanniStudios/SkyHanni/pull/6577)
++ Fixed rabbits bought from Hoppity's Abiphone calls not being detected. - Taubsie (https://github.com/SkyHanniStudios/SkyHanni/pull/6577)
 
 #### Fishing
 
@@ -98,6 +109,8 @@
 + Fixed errors when opening the Tyashoi Alchemist's shop. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6604)
 + Fixed the Perkpocalypse Mayor not being detected when opening the Calendar. - jani (https://github.com/SkyHanniStudios/SkyHanni/pull/6611)
 + Fixed Trinity Helper not working. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6602)
++ Fixed unknown enchanted books being detected as Paleontology. - Dae (https://github.com/SkyHanniStudios/SkyHanni/pull/6646)
+
 
 #### Farming
 
@@ -106,12 +119,19 @@
 #### Command
 
 + Fixed `/gfs` tab completion not working for item names with more than one word. - Empa (https://github.com/SkyHanniStudios/SkyHanni/pull/6612)
++ Fixed Call Tab Complete suggesting invalid names. - Alex (https://github.com/SkyHanniStudios/SkyHanni/pull/6632)
+
 
 #### Dungeon
 
 + Fixed Dungeon features not working because the start of a run was not detected. - heyn (https://github.com/SkyHanniStudios/SkyHanni/pull/6565)
 + Fixed Dungeon Filters not hiding Mort's dialogue. - heyn (https://github.com/SkyHanniStudios/SkyHanni/pull/6565)
 + Fixed the Low Teammate Health Alert not firing. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6574)
+
+#### Mining
+
++ Fixed Mute Powder Chest Opening Sound not muting the full chest opening sound. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6614)
++ Fixed Profit Per Corpse not recognizing the Resourceful perk. - CalMWolfs (https://github.com/SkyHanniStudios/SkyHanni/pull/6621)
 
 #### Misc
 
@@ -121,6 +141,8 @@
 + Fixed Fiesta Flask and Scatha-in-a-Bottle not being detected in Non-God Pot Effects. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6601)
 + Fixed grammar and SkyHanni capitalization in settings and command descriptions. - IGrindDiana77 (https://github.com/SkyHanniStudios/SkyHanni/pull/6568)
 + Fixed old log files not always being deleted after expiring. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6083)
++ Fixed lag spikes caused by the config saving too often. - FabiHBBBT (https://github.com/SkyHanniStudios/SkyHanni/pull/6622)
++ Removed the white background behind the Stonks Auction timer. - RemainingDelta (https://github.com/SkyHanniStudios/SkyHanni/pull/6620)
 
 ### Technical Details
 + Added the internal item name to the `/shcopyentities` output. - hannibal2 (https://github.com/hannibal002/SkyHanni/pull/6542)
@@ -141,6 +163,30 @@
 + Replaced `LorenzRarity.id` and `getById` with `neuPetIndex` and `fromNeuPetIndex`. - hannibal2 (https://github.com/SkyHanniStudios/SkyHanni/pull/6594)
 + Updated the Discord roles documentation to the new role structure. - hannibal2 (https://github.com/SkyHanniStudios/SkyHanni/pull/6607)
     + Renamed Moderator to Discord Moderator and Main Contributor to Veteran Contributor, added Code Reviewer, and removed Mod Maintainer and Member.
++ Added a new NpcApi that takes care of handling the new NPC interactions. - Taubsie (https://github.com/SkyHanniStudios/SkyHanni/pull/6577)
+   + Added a new event `DialogueResponseSentEvent` that is sent on such an NPC interaction.
+   + Added the method `sendNpcResponse` exposed by that class, which replaces the deprecated `HypixelCommands#npcOption`.
++ Added build progress loggers for Java, Kotlin, and Detekt. - Dae (https://github.com/SkyHanniStudios/SkyHanni/pull/6638)
++ Added debouncing to config saving. - FabiHBBBT (https://github.com/SkyHanniStudios/SkyHanni/pull/6622)
++ Added support for Faction Rabbits to the Item Resolution Query. - jani (https://github.com/SkyHanniStudios/SkyHanni/pull/6500)
++ Fixed cosmetic warnings in Gradle tasks. - Dae (https://github.com/SkyHanniStudios/SkyHanni/pull/6641)
++ Fixed Croesus Chest Tracker not removing old chests beyond the chest limit from storage. - 3d3n-pyc (https://github.com/SkyHanniStudios/SkyHanni/pull/6479)
++ Moved `PROJECT_VERSION` from buildTools into buildSrc and set the Kotlin language and API version of buildSrc to 2.4. - Dae (https://github.com/SkyHanniStudios/SkyHanni/pull/6638)
++ Moved Loom off the deprecated `isIdeConfigGenerated` property. - Dae (https://github.com/SkyHanniStudios/SkyHanni/pull/6625)
+   + Also added some unsafe flags to silence test JVMs on Java 25.
++ Re-pointed all enchanted book parsing through ItemNameResolver. - Dae (https://github.com/SkyHanniStudios/SkyHanni/pull/6646)
++ Re-set the preprocessor cache directory in Gradle. - Dae (https://github.com/SkyHanniStudios/SkyHanni/pull/6630)
+   + Preprocessor caching should now happen again.
++ Relocated `keval` since we now ship `2.0`. - Dae (https://github.com/SkyHanniStudios/SkyHanni/pull/6641)
+   + Most other mods seem to stay on 1.x for a while.
++ Removed live plugins. - Dae (https://github.com/SkyHanniStudios/SkyHanni/pull/6653)
+   + Replaced with [SkyHanniDevelopment](https://github.com/SkyHanniStudios/SkyHanniDevelopment).
++ Removed unused shaders. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6563)
++ Upgraded Kotlin to 2.4.21. - Dae (https://github.com/SkyHanniStudios/SkyHanni/pull/6625)
+   + Upgraded fabric-language-kotlin to 1.14.2, KSP to 2.3.12, keval to 2.0.1.
+   + Required adding a flag to disable new features in ModuleProcessor.
++ Upgraded Loom to 1.19.3. - Dae (https://github.com/SkyHanniStudios/SkyHanni/pull/6625)
+   + Shadow to 9.6.1, Gson to 2.15.0, Guava to 33.7.2, JUnit to 6.1.3.
 
 ### Removed Features
 
