@@ -166,7 +166,7 @@ dependencies {
 
     compileOnly(libs.jbAnnotations)
     ksp(buildSrcJar)
-    implementation(buildSrcJar)
+    compileOnly(buildSrcJar)
     buildProgressPlugin(buildSrcJar)
     buildProgressJavacPlugin(libs.kotlin.stdlib)
     detektPlugins(buildSrcJar)
