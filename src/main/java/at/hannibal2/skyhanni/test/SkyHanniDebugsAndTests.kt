@@ -336,7 +336,7 @@ object SkyHanniDebugsAndTests {
             "json" -> location.asStoredString() to "json"
             "pathfind" -> "`/shtestwaypoint $localFormat pathfind`" to "pathfind"
             "navigate" -> "`/shnavigate $localFormat`" to "navigate"
-            else -> "LorenzVec(${location.x}, ${location.y}, ${location.z})" to "LorenzVec"
+            else -> "KVector(${location.x}, ${location.y}, ${location.z})" to "KVector"
         }
     }
 
@@ -581,7 +581,7 @@ object SkyHanniDebugsAndTests {
             }
         }
         event.registerBrigadier("shcopylocation") {
-            description = "Copies the player location as LorenzVec format to the clipboard"
+            description = "Copies the player location as KVector format to the clipboard"
             category = CommandCategory.DEVELOPER_DEBUG
             literalCallback("json") {
                 copyLocation("json")

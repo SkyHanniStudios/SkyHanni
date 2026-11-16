@@ -1,11 +1,15 @@
 package at.hannibal2.skyhanni.test.vector
 
 import at.hannibal2.skyhanni.utils.vector.KVector
+import at.hannibal2.skyhanni.utils.vector.VectorConversions
+import at.hannibal2.skyhanni.utils.vector.VectorConversions.toKVector
 import net.minecraft.core.BlockPos
 import net.minecraft.world.phys.Vec3
 import org.joml.Vector3f
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotEquals
+import org.junit.jupiter.api.Assertions.assertNull
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import kotlin.math.PI
@@ -79,6 +83,39 @@ class KVectorTest {
         val v = KVector(1.7, -2.3, 3.0)
         assertEquals(KVector(1.0, -3.0, 3.0), v.floor())
         assertEquals(KVector(1.5, -2.5, 3.5), v.blockCenter())
+    }
+
+    @Test
+    fun `normalize divides by the length like LorenzVec`() {
+        assertEquals(KVector(0.6, 0.0, 0.8), KVector(3, 0, 4).normalize())
+        assertTrue(KVector.ZERO.normalize().x.isNaN())
+    }
+
+    @Test
+    fun `interpolate rejects a factor outside zero to one`() {
+        val v = KVector(0, 0, 0)
+        assertEquals(KVector(1, 1, 1), v.interpolate(KVector(2, 2, 2), 0.5))
+        assertThrows(IllegalArgumentException::class.java) { v.interpolate(KVector(2, 2, 2), 1.5) }
+    }
+
+    @Test
+    fun `a collection of three doubles becomes a vector`() {
+        assertEquals(KVector(1, 2, 3), listOf(1.0, 2.0, 3.0).toKVector())
+        assertEquals(KVector(1, 2, 3), linkedSetOf(1.0, 2.0, 3.0).toKVector())
+        assertThrows(IllegalArgumentException::class.java) { listOf(1.0, 2.0).toKVector() }
+    }
+
+    @Test
+    fun `parseStoredOrNull returns null for anything but three numbers`() {
+        assertEquals(KVector(1.5, -2, 3), VectorConversions.parseStoredOrNull("1.5: -2 :3"))
+        assertNull(VectorConversions.parseStoredOrNull("1:2"))
+        assertNull(VectorConversions.parseStoredOrNull("1:2:x"))
+    }
+
+    @Test
+    fun `parseStoredList reads quoted json lines`() {
+        val text = "\"-625:119:-962\",\n\"-626:121:-971\""
+        assertEquals(listOf(KVector(-625, 119, -962), KVector(-626, 121, -971)), VectorConversions.parseStoredList(text))
     }
 
     @Test
