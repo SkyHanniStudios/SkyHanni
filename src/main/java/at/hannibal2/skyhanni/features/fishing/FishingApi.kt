@@ -98,7 +98,7 @@ object FishingApi {
     )
 
     /**
-     * REGEX-TEST: Bait Remaining: 49
+     * @regexTest Bait Remaining: 49
      */
     private val baitRemainingPattern by RepoPattern.pattern(
         "fishing.bait.inventory",

@@ -27,7 +27,7 @@ object PestSpawn {
     /**
      * REGEX-TEST: GROSS! A  Pest has appeared in Plot - S 4!
      * REGEX-TEST: GROSS! A  Pest has appeared in The Barn!
-     * REGEX-FAIL: From [MVP+] ThePleader: GROSS! A  Pest has appeared in Plot - 67!
+     * @regexFail From [MVP+] ThePleader: GROSS! A  Pest has appeared in Plot - 67!
      */
     private val onePestPattern by patternGroup.list(
         "one.colorless",
@@ -38,7 +38,7 @@ object PestSpawn {
     /**
      * REGEX-TEST: YUCK! 4  Pest have spawned in Plot - 14!
      * REGEX-TEST: YUCK! 4  Pest have spawned in The Barn!
-     * REGEX-FAIL: From [MVP+] ThePleader: YUCK! 6  Pest have spawned in Plot - 7!
+     * @regexFail From [MVP+] ThePleader: YUCK! 6  Pest have spawned in Plot - 7!
      */
     private val multiplePestsPattern by patternGroup.list(
         "multiple.colorless",
@@ -48,7 +48,7 @@ object PestSpawn {
 
     /**
      * REGEX-TEST: GROSS! While you were offline,  Pest spawned in Plots 12, 9, 5, 11 and 3!
-     * REGEX-FAIL: From [MVP+] ThePleader: GROSS! While you were offline,  Pest spawned in Plots 6 and 7!
+     * @regexFail From [MVP+] ThePleader: GROSS! While you were offline,  Pest spawned in Plots 6 and 7!
      */
     private val offlinePestsPattern by patternGroup.pattern(
         "offline.colorless",
@@ -56,7 +56,7 @@ object PestSpawn {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: "  CLICK HERE to teleport to the plot!"
+     * @regexTestWrapped "  CLICK HERE to teleport to the plot!"
      */
     private val clickToTPPattern by patternGroup.pattern(
         "teleport.colorless",

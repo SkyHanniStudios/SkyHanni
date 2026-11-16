@@ -31,8 +31,8 @@ object BestiaryApi {
     private val patternGroup = RepoPattern.group("combat.bestiary.data")
 
     /**
-     * REGEX-TEST: Progress to Tier 14: 26%
-     * REGEX-TEST: Progress to Tier XV: 57.1%
+     * @regexTest Progress to Tier 14: 26%
+     * @regexTest Progress to Tier XV: 57.1%
      */
     private val tierProgressPattern by patternGroup.pattern(
         "tierprogress.colorless",
@@ -40,8 +40,8 @@ object BestiaryApi {
     )
 
     /**
-     * REGEX-TEST: Overall Progress: 55.2%
-     * REGEX-TEST: Overall Progress: 100% (MAX!)
+     * @regexTest Overall Progress: 55.2%
+     * @regexTest Overall Progress: 100% (MAX!)
      */
     private val overallProgressPattern by patternGroup.pattern(
         "overallprogress.colorless",
@@ -49,8 +49,8 @@ object BestiaryApi {
     )
 
     /**
-     * REGEX-TEST: 9/10
-     * REGEX-TEST: 6/6
+     * @regexTest 9/10
+     * @regexTest 6/6
      */
     private val progressPattern by patternGroup.pattern(
         "progress.colorless",
@@ -58,10 +58,10 @@ object BestiaryApi {
     )
 
     /**
-     * REGEX-TEST: (1/2) Bestiary ➜ The Catacombs
-     * REGEX-TEST: Bestiary ➜ Dwarven Mines
-     * REGEX-TEST: Bestiary ➜ Spider's Den
-     * REGEX-TEST: Fishing ➜ Spooky
+     * @regexTest (1/2) Bestiary ➜ The Catacombs
+     * @regexTest Bestiary ➜ Dwarven Mines
+     * @regexTest Bestiary ➜ Spider's Den
+     * @regexTest Fishing ➜ Spooky
      */
     private val inventoryTitlePattern by patternGroup.pattern(
         "title.colorless",
@@ -69,7 +69,7 @@ object BestiaryApi {
     )
 
     /**
-     * REGEX-TEST: Search Results
+     * @regexTest Search Results
      */
     private val inventorySearchResultsPattern by patternGroup.pattern(
         "title.search-results.colorless",
@@ -77,9 +77,9 @@ object BestiaryApi {
     )
 
     /**
-     * REGEX-TEST: Bestiary
-     * REGEX-TEST: Bestiary ➜ Fishing
-     * REGEX-TEST: Bestiary ➜ Critter Safari
+     * @regexTest Bestiary
+     * @regexTest Bestiary ➜ Fishing
+     * @regexTest Bestiary ➜ Critter Safari
      */
     private val inventoryCategoryOfCategoryPattern by patternGroup.list(
         "category-of-category.colorless",
@@ -89,10 +89,10 @@ object BestiaryApi {
     )
 
     /**
-     * REGEX-TEST: Cave Spider
-     * REGEX-TEST: Cave Spider IV
-     * REGEX-TEST: Cave Spider 5
-     * REGEX-TEST: Blobfish XIV
+     * @regexTest Cave Spider
+     * @regexTest Cave Spider IV
+     * @regexTest Cave Spider 5
+     * @regexTest Blobfish XIV
      */
     private val mobLevelPattern by patternGroup.pattern(
         "mob.level.colorless",
@@ -100,8 +100,8 @@ object BestiaryApi {
     )
 
     /**
-     * REGEX-TEST: Kills: 1,234
-     * REGEX-TEST: Kills: 9,876,543
+     * @regexTest Kills: 1,234
+     * @regexTest Kills: 9,876,543
      */
     private val killsLinePattern by patternGroup.pattern(
         "kills.line.colorless",
@@ -109,9 +109,9 @@ object BestiaryApi {
     )
 
     /**
-     * REGEX-TEST: [Lv40] Endermite
-     * REGEX-TEST: [Lv37] Endermite
-     * REGEX-TEST: [Lv50] Nest Enderman
+     * @regexTest [Lv40] Endermite
+     * @regexTest [Lv37] Endermite
+     * @regexTest [Lv50] Nest Enderman
      */
     private val mobVariantPattern by patternGroup.pattern(
         "mob.variant.colorless",
@@ -119,7 +119,7 @@ object BestiaryApi {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: "                    9/10"
+     * @regexTestWrapped "                    9/10"
      */
     private val progressBarLinePattern by patternGroup.pattern(
         "progress.bar.line",
@@ -127,7 +127,7 @@ object BestiaryApi {
     )
 
     /**
-     * REGEX-TEST: You haven't unlocked this Family yet!
+     * @regexTest You haven't unlocked this Family yet!
      */
     private val notUnlockedFamilyPattern by patternGroup.pattern(
         "progress.not-unlocked-family.colorless",
@@ -135,7 +135,7 @@ object BestiaryApi {
     )
 
     /**
-     * REGEX-TEST: Overall Progress: SHOWN
+     * @regexTest Overall Progress: SHOWN
      */
     private val overallProgressShownPattern by patternGroup.pattern(
         "progress.overall-shown",
@@ -143,7 +143,7 @@ object BestiaryApi {
     )
 
     /**
-     * REGEX-TEST: Families Found 9/10
+     * @regexTest Families Found 9/10
      */
     private val familyFoundPattern by patternGroup.pattern(
         "family.found.colorless",
@@ -151,7 +151,7 @@ object BestiaryApi {
     )
 
     /**
-     * REGEX-TEST: Families Completed 6/10
+     * @regexTest Families Completed 6/10
      */
     private val familyCompletedPattern by patternGroup.pattern(
         "family.completed.colorless",

@@ -126,10 +126,10 @@ object PetUtils {
     )
 
     /**
-     * REGEX-TEST: §7§eRight-click to add this pet to
-     * REGEX-TEST: §7§eRight-click to add this pet to your
-     * REGEX-TEST: §eRight-click to add this pet to your
-     * REGEX-TEST: §eRight-click to add this pet to your pet menu!
+     * @regexTest §7§eRight-click to add this pet to
+     * @regexTest §7§eRight-click to add this pet to your
+     * @regexTest §eRight-click to add this pet to your
+     * @regexTest §eRight-click to add this pet to your pet menu!
      */
     private val neuPetLorePattern by CurrentPetApi.patternGroup.pattern(
         "neu.pet.lore",

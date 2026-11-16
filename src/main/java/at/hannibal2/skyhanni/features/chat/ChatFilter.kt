@@ -126,9 +126,9 @@ object ChatFilter {
 
     // Profile Join
     /**
-     * REGEX-TEST: §8Profile ID: 691d6a3b-23ea-4541-80b5-771facc73b16
-     * REGEX-TEST: §eProfile ID: 691d6a3b-23ea-4541-80b5-771facc73b16
-     * REGEX-TEST: §aYou are playing on profile: §e691d6a3b-23ea-4541-80b5-771facc73b16
+     * @regexTest §8Profile ID: 691d6a3b-23ea-4541-80b5-771facc73b16
+     * @regexTest §eProfile ID: 691d6a3b-23ea-4541-80b5-771facc73b16
+     * @regexTest §aYou are playing on profile: §e691d6a3b-23ea-4541-80b5-771facc73b16
      */
     private val profileJoinPatterns by miscPatternGroup.list(
         "profile-join",
@@ -333,7 +333,7 @@ object ChatFilter {
     )
 
     /**
-     * REGEX-TEST: §e[NPC] Jacob§f: §rYour §9Anita's Talisman §fis giving you §6+25 Carrot Fortune §fduring the contest!
+     * @regexTest §e[NPC] Jacob§f: §rYour §9Anita's Talisman §fis giving you §6+25 Carrot Fortune §fduring the contest!
      */
     @Suppress("MaxLineLength")
     private val anitaFortunePattern by RepoPattern.pattern(

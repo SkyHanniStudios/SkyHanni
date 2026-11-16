@@ -58,8 +58,8 @@ object StockOfStonkFeature {
     )
 
     /**
-     * REGEX-TEST: Your current bid: None
-     * REGEX-TEST: Your current bid: 2,500,500 Coins
+     * @regexTest Your current bid: None
+     * @regexTest Your current bid: 2,500,500 Coins
      */
     private val currentBidPattern by patternGroup.pattern(
         "currentbid",
@@ -67,7 +67,7 @@ object StockOfStonkFeature {
     )
 
     /**
-     * REGEX-TEST: Auction ends in 4h 32m
+     * @regexTest Auction ends in 4h 32m
      */
     private val auctionEndsPattern by patternGroup.pattern(
         "endsin",

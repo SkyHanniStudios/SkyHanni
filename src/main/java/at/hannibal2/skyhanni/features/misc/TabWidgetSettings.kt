@@ -19,10 +19,10 @@ object TabWidgetSettings {
     private val patternGroup = RepoPattern.group("tab.widget.setting")
 
     /**
-     * REGEX-TEST: Widgets on Private Island
-     * REGEX-TEST: Widgets in Crystal Hollows
-     * REGEX-TEST: (1/2) Widgets on Galatea
-     * REGEX-TEST: (1/2) Widgets in Crystal Hollows
+     * @regexTest Widgets on Private Island
+     * @regexTest Widgets in Crystal Hollows
+     * @regexTest (1/2) Widgets on Galatea
+     * @regexTest (1/2) Widgets in Crystal Hollows
      */
     private val mainPageSettingPattern by patternGroup.pattern(
         "gui",
@@ -30,8 +30,8 @@ object TabWidgetSettings {
     )
 
     /**
-     * REGEX-TEST: Currently: ALWAYS ENABLED
-     * REGEX-TEST: Currently: DISABLED
+     * @regexTest Currently: ALWAYS ENABLED
+     * @regexTest Currently: DISABLED
      */
     private val mainPageWidgetPattern by patternGroup.pattern(
         "main.colorless",
@@ -39,8 +39,8 @@ object TabWidgetSettings {
     )
 
     /**
-     * REGEX-TEST: Click to disable!
-     * REGEX-TEST: Click to edit!
+     * @regexTest Click to disable!
+     * @regexTest Click to edit!
      */
     private val subPageWidgetPattern by patternGroup.pattern(
         "sub.colorless",
@@ -56,7 +56,7 @@ object TabWidgetSettings {
     )
 
     /**
-     * REGEX-TEST: Click to disable!
+     * @regexTest Click to disable!
      */
     private val clickToDisablePattern by patternGroup.pattern(
         "click.disable.colorless",
@@ -64,7 +64,7 @@ object TabWidgetSettings {
     )
 
     /**
-     * REGEX-TEST: Currently: ENABLED
+     * @regexTest Currently: ENABLED
      */
     private val enabledPattern by patternGroup.pattern(
         "is.enabled.colorless",

@@ -28,8 +28,8 @@ object InfernoMinionFeatures {
      * REGEX-TEST: Inferno Minion IX
      * REGEX-TEST: Inferno Minion VIII
      * REGEX-TEST: Inferno Minion 1
-     * REGEX-FAIL: Inferno Minion Recipes
-     * REGEX-FAIL: Inferno Minion -> Capsaicin Eyed
+     * @regexFail Inferno Minion Recipes
+     * @regexFail Inferno Minion -> Capsaicin Eyed
      */
     val infernoMinionTitlePattern by RepoPattern.pattern(
         "minion.infernominiontitle",

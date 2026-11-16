@@ -125,7 +125,7 @@ object QuiverApi {
     private val quiverInventoryNamePattern by patternGroup.pattern("quivername", "Quiver")
 
     /**
-     * REGEX-TEST: Active Arrow: Flint Arrow (2880)
+     * @regexTest Active Arrow: Flint Arrow (2880)
      */
     private val quiverInventoryPattern by patternGroup.pattern(
         "quiver.inventory",
@@ -133,7 +133,7 @@ object QuiverApi {
     )
 
     /**
-     * REGEX-TEST: Arrows Remaining: 1,327
+     * @regexTest Arrows Remaining: 1,327
      */
     private val quiverPreviewAmountPattern by patternGroup.pattern(
         "quiver.preview.amount",

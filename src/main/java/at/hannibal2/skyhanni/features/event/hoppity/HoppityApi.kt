@@ -100,7 +100,7 @@ object HoppityApi {
     )
 
     /**
-     * REGEX-TEST: hoppity
+     * @regexTest hoppity
      */
     private val hoppityNpcIdPattern by CFApi.patternGroup.pattern(
         "hoppity.npc.id",
@@ -108,7 +108,7 @@ object HoppityApi {
     )
 
     /**
-     * REGEX-TEST: r_2_1
+     * @regexTest r_2_1
      */
     private val hoppityAcceptResponsePattern by CFApi.patternGroup.pattern(
         "hoppity.response.accept",
@@ -134,7 +134,7 @@ object HoppityApi {
     )
 
     /**
-     * REGEX-TEST: Chocolate Factory
+     * @regexTest Chocolate Factory
      */
     val chocolateFactoryInvPattern by CFApi.patternGroup.pattern(
         "inventory.chocolatefactory",
@@ -142,7 +142,7 @@ object HoppityApi {
     )
 
     /**
-     * REGEX-TEST: Rabbit Hitman
+     * @regexTest Rabbit Hitman
      */
     val hitmanInventoryPattern by CFApi.patternGroup.pattern(
         "hitman.inventory",
@@ -150,7 +150,7 @@ object HoppityApi {
     )
 
     /**
-     * REGEX-TEST: Hoppity
+     * @regexTest Hoppity
      */
     private val hoppityInventoryPattern by CFApi.patternGroup.pattern(
         "hoppity.inventory",

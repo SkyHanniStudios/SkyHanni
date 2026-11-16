@@ -59,11 +59,11 @@ object NeuItems {
     private var ambiguousDisplayNamesColorless = emptySet<String>()
 
     /**
-     * WRAPPED-REGEX-TEST: "§7[lvl 1➡100] "
-     * WRAPPED-REGEX-TEST: "§7[Lvl {LVL}] "
-     * WRAPPED-REGEX-TEST: "§f§f§7[lvl {lvl}] "
-     * WRAPPED-REGEX-TEST: "§f§f§7[lvl 1➡100] "
-     * WRAPPED-REGEX-TEST: "§f§f§7[Lvl {LVL}] "
+     * @regexTestWrapped "§7[lvl 1➡100] "
+     * @regexTestWrapped "§7[Lvl {LVL}] "
+     * @regexTestWrapped "§f§f§7[lvl {lvl}] "
+     * @regexTestWrapped "§f§f§7[lvl 1➡100] "
+     * @regexTestWrapped "§f§f§7[Lvl {LVL}] "
      */
     private val neuPetLevelPattern by patternGroup.pattern(
         "pet-level",

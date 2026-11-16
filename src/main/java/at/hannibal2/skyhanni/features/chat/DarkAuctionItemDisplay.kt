@@ -28,9 +28,9 @@ object DarkAuctionItemDisplay {
     )
 
     /**
-     * REGEX-TEST: [NPC] Sirius: The highest bidder was qtLuna with a bid of 25,950,000 Coins!
-     * REGEX-TEST: [NPC] Sirius: No one made any bids!
-     * REGEX-TEST: [NPC] Sirius: No one made any bids! Let's move on to the next item.
+     * @regexTest [NPC] Sirius: The highest bidder was qtLuna with a bid of 25,950,000 Coins!
+     * @regexTest [NPC] Sirius: No one made any bids!
+     * @regexTest [NPC] Sirius: No one made any bids! Let's move on to the next item.
      */
     private val highestBidPattern by patternGroup.pattern(
         "highest-bid",

@@ -37,7 +37,7 @@ object CropUpgrades {
     )
 
     /**
-     * REGEX-TEST: Crop Upgrades
+     * @regexTest Crop Upgrades
      */
     private val inventoryNamePattern by patternGroup.pattern(
         "inventory",

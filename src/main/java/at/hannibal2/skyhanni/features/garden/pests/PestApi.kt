@@ -79,8 +79,8 @@ object PestApi {
     val patternGroup = RepoPattern.group("garden.pests-api")
 
     /**
-     * WRAPPED-REGEX-TEST: " §7 §aThe Garden §4§l§7 x1"
-     * WRAPPED-REGEX-TEST: " §7 §cThe Garden §4§l§7 x8"
+     * @regexTestWrapped " §7 §aThe Garden §4§l§7 x1"
+     * @regexTestWrapped " §7 §cThe Garden §4§l§7 x8"
      */
     private val pestsInScoreboardPattern by patternGroup.pattern(
         "scoreboard.pests",
@@ -88,8 +88,8 @@ object PestApi {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: " §7 §aPlot §7- §b22a"
-     * WRAPPED-REGEX-TEST: " §7 §aThe Garden"
+     * @regexTestWrapped " §7 §aPlot §7- §b22a"
+     * @regexTestWrapped " §7 §aThe Garden"
      */
     private val noPestsInScoreboardPattern by patternGroup.pattern(
         "scoreboard.no-pests",
@@ -97,7 +97,7 @@ object PestApi {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: "   §aPlot §7- §b4 §4§l§7 x1"
+     * @regexTestWrapped "   §aPlot §7- §b4 §4§l§7 x1"
      */
     private val pestsInPlotScoreboardPattern by patternGroup.pattern(
         "scoreboard.plot.pests",
@@ -113,7 +113,7 @@ object PestApi {
     )
 
     /**
-     * REGEX-TEST: §4§l §cThis plot has §25 §2 Pests§c!
+     * @regexTest §4§l §cThis plot has §25 §2 Pests§c!
      */
     private val pestInventoryPattern by patternGroup.pattern(
         "inventory",

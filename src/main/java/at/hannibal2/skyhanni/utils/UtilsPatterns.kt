@@ -13,21 +13,21 @@ object UtilsPatterns {
     private val rarities = enumJoinToPattern<LorenzRarity> { it.name.replace("_", " ") }
 
     /**
-     * REGEX-TEST: a MYTHIC ACCESSORY a
-     * REGEX-TEST: a SHINY MYTHIC DUNGEON CHESTPLATE a
-     * REGEX-TEST: a VERY SPECIAL HATCESSORY a
-     * REGEX-TEST: SHINY LEGENDARY DUNGEON BOOTS
-     * REGEX-TEST: LEGENDARY DUNGEON BOOTS
-     * REGEX-TEST: EPIC BOOTS
-     * REGEX-TEST: COMMON
-     * REGEX-TEST: COMMON COMBAT SHARD (ID C9)
-     * REGEX-TEST: EPIC WATER SHARD (ID E5)
-     * REGEX-TEST: Rarity: LEGENDARY
-     * REGEX-TEST: Rarity: RARE
-     * REGEX-TEST: a DIVINE a
-     * REGEX-TEST: LEGENDARY DUNGEON ITEM
-     * REGEX-TEST: a MYTHIC DUNGEON ITEM a
-     * REGEX-TEST: LEGENDARY SLAYER SWORD
+     * @regexTest a MYTHIC ACCESSORY a
+     * @regexTest a SHINY MYTHIC DUNGEON CHESTPLATE a
+     * @regexTest a VERY SPECIAL HATCESSORY a
+     * @regexTest SHINY LEGENDARY DUNGEON BOOTS
+     * @regexTest LEGENDARY DUNGEON BOOTS
+     * @regexTest EPIC BOOTS
+     * @regexTest COMMON
+     * @regexTest COMMON COMBAT SHARD (ID C9)
+     * @regexTest EPIC WATER SHARD (ID E5)
+     * @regexTest Rarity: LEGENDARY
+     * @regexTest Rarity: RARE
+     * @regexTest a DIVINE a
+     * @regexTest LEGENDARY DUNGEON ITEM
+     * @regexTest a MYTHIC DUNGEON ITEM a
+     * @regexTest LEGENDARY SLAYER SWORD
      */
     @Suppress("MaxLineLength")
     val rarityLoreLinePattern by patternGroup.pattern(
@@ -36,8 +36,8 @@ object UtilsPatterns {
     )
 
     /**
-     * REGEX-TEST: RARE CROP
-     * REGEX-TEST: RARE CROPS
+     * @regexTest RARE CROP
+     * @regexTest RARE CROPS
      */
     val notRarityLoreLinePattern by patternGroup.pattern(
         "item.lore.not-rarity.line",

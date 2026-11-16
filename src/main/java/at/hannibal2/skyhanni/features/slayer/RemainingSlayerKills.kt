@@ -47,7 +47,7 @@ object RemainingSlayerKills {
     private val patternGroup = RepoPattern.group("slayer.remaining-kills")
 
     /**
-     * REGEX-TEST: (120/500) Atomic Slayer
+     * @regexTest (120/500) Atomic Slayer
      */
     private val progressPattern by patternGroup.pattern(
         "progress",

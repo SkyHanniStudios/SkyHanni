@@ -53,7 +53,7 @@ object RareDropMessages {
     )
 
     /**
-     * REGEX-TEST: §6 §r§6§lGREAT CATCH! §r§fYou caught a §r§7[Lvl 1] §r§aSquid§r§f!
+     * @regexTest §6 §r§6§lGREAT CATCH! §r§fYou caught a §r§7[Lvl 1] §r§aSquid§r§f!
      */
     @Suppress("MaxLineLength")
     private val petFishedPattern by petGroup.pattern(
@@ -97,9 +97,9 @@ object RareDropMessages {
     )
 
     /**
-     * REGEX-TEST: RARE DROP! Enchanted Book
-     * REGEX-TEST: RARE DROP! Enchanted Book (+208% ✯ Magic Find)
-     * REGEX-TEST: RARE DROP! Enchanted Book (+208 ✯ Magic Find)
+     * @regexTest RARE DROP! Enchanted Book
+     * @regexTest RARE DROP! Enchanted Book (+208% ✯ Magic Find)
+     * @regexTest RARE DROP! Enchanted Book (+208 ✯ Magic Find)
      */
     private val enchantedBookPattern by repoGroup.pattern(
         "enchantedbook.colorless",

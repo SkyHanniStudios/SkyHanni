@@ -73,7 +73,7 @@ object UserLuckBreakdown {
     )
 
     /**
-     * REGEX-TEST: Miscellaneous Stats
+     * @regexTest Miscellaneous Stats
      */
     private val miscStatsInventoryPattern by patternGroup.pattern(
         "inventory.miscstats",

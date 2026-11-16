@@ -56,7 +56,7 @@ object EnchantParser {
      * REGEX-TEST: §9Drain IV, Ender Slayer VI, Execute V
      * REGEX-TEST: §9Toxophilite VIII §82.1M
      * REGEX-TEST: §9Cultivating VII §81,625,381
-     * REGEX-FAIL: §c§7by §c10% §7per hit, capped at §c200% §7for 3
+     * @regexFail §c§7by §c10% §7per hit, capped at §c200% §7for 3
      */
     val enchantmentExclusivePattern by patternGroup.pattern(
         "exclusive",
@@ -69,7 +69,7 @@ object EnchantParser {
      * REGEX-TEST: §9Drain IV, Ender Slayer VI, Execute V
      * REGEX-TEST: §9Toxophilite VIII §82.1M
      * REGEX-TEST: §9Cultivating VII §81,625,381
-     * REGEX-FAIL: §c§7by §c10% §7per hit, capped at §c200% §7for 3
+     * @regexFail §c§7by §c10% §7per hit, capped at §c200% §7for 3
      */
     @Suppress("MaxLineLength")
     val enchantmentPattern by patternGroup.pattern(

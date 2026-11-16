@@ -213,7 +213,7 @@ object AttributeShardsData {
      * REGEX-TEST: +1 Arthropod Ruler Attribute (Level 2) - 3 more to upgrade!
      * REGEX-TEST: +2 Essence of Ice Attribute (Level 2) - 1 more to upgrade!
      * REGEX-TEST: +6 Ender Ruler Attribute (Level 3) - 3 more to upgrade!
-     * REGEX-FAIL: +43 Essence of Ice Attribute (Level 10) MAXED
+     * @regexFail +43 Essence of Ice Attribute (Level 10) MAXED
      */
     private val shardSyphonedPattern by patternGroup.pattern(
         "chat.syphoned.colorless",
@@ -222,7 +222,7 @@ object AttributeShardsData {
 
     /**
      * REGEX-TEST: +43 Essence of Ice Attribute (Level 10) MAXED
-     * REGEX-FAIL: +2 Essence of Ice Attribute (Level 2) - 1 more to upgrade!
+     * @regexFail +2 Essence of Ice Attribute (Level 2) - 1 more to upgrade!
      */
     private val shardSyphonedMaxedPattern by patternGroup.pattern(
         "chat.syphoned.maxed.colorless",

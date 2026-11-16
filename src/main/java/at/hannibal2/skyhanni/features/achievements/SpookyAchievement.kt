@@ -15,7 +15,7 @@ import at.hannibal2.skyhanni.utils.compat.componentBuilder
 object SpookyAchievement {
 
     /**
-     * WRAPPED-REGEX-TEST: "                   Your Candy: 4,036 (Position #342)"
+     * @regexTestWrapped "                   Your Candy: 4,036 (Position #342)"
      */
     private val candyPattern by AchievementManager.patternGroup.pattern(
         "spooky-candy",

@@ -101,7 +101,7 @@ object HoppityCollectionStats {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: "                          395/457"
+     * @regexTestWrapped "                          395/457"
      */
     private val rabbitsFoundPattern by patternGroup.pattern(
         "rabbits.found.colorless",

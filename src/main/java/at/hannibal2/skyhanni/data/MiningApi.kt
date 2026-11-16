@@ -61,8 +61,8 @@ object MiningApi {
     private val icyBiomePattern by patternGroup.pattern("area.icybiome", "Icy Biome")
 
     /**
-     * REGEX-TEST: §6The warmth of the campfire reduced your §r§b Cold §r§6to §r§a0§r§6!
-     * REGEX-TEST: §c ☠ §r§7You froze to death§r§7.
+     * @regexTest §6The warmth of the campfire reduced your §r§b Cold §r§6to §r§a0§r§6!
+     * @regexTest §c ☠ §r§7You froze to death§r§7.
      */
     @Suppress("MaxLineLength")
     private val coldResetPattern by patternGroup.pattern(
@@ -83,8 +83,8 @@ object MiningApi {
 
     // This intentionally uses the old cold icon, since Hypixel has not updated it in this location.
     /**
-     * REGEX-TEST: Cold: §b-1❄
-     * REGEX-TEST: Cold: §b-3❄
+     * @regexTest Cold: §b-1❄
+     * @regexTest Cold: §b-3❄
      */
     val coldPattern by patternGroup.pattern(
         "cold",

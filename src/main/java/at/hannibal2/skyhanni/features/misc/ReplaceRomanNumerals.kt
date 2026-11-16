@@ -66,7 +66,7 @@ object ReplaceRomanNumerals {
 
     /**
      * REGEX-TEST: Fishing Skill XXIV
-     * WRAPPED-REGEX-TEST: " ✔ Farming Skill XXIV"
+     * @regexTestWrapped " ✔ Farming Skill XXIV"
      */
     private val skillPattern by inventoryGroup.pattern(
         "skill",
@@ -95,7 +95,7 @@ object ReplaceRomanNumerals {
 
     /**
      * REGEX-TEST: Chili Pepper Collection IX
-     * REGEX-FAIL: View all your Ender Pearl Collection
+     * @regexFail View all your Ender Pearl Collection
      */
     private val collectionPattern by inventoryGroup.pattern(
         "collection",
@@ -107,8 +107,8 @@ object ReplaceRomanNumerals {
      * REGEX-TEST: Progress to Vinesap V:
      * REGEX-TEST: Progress to Helix Log IX:
      * REGEX-TEST: Progress to Milestone CCC:
-     * REGEX-FAIL: Progress: 81.9%
-     * REGEX-FAIL: Progress to Amount Consumed: 0%
+     * @regexFail Progress: 81.9%
+     * @regexFail Progress to Amount Consumed: 0%
      */
     private val progressPattern by inventoryGroup.pattern(
         "progress",
@@ -121,9 +121,9 @@ object ReplaceRomanNumerals {
      * REGEX-TEST: Hunting XIX
      * REGEX-TEST: Runecrafting XXV
      * REGEX-TEST: Social XVII
-     * REGEX-FAIL: Farming Skill XXIV
-     * REGEX-FAIL: Hunting Level XX
-     * REGEX-FAIL: Combat Collections
+     * @regexFail Farming Skill XXIV
+     * @regexFail Hunting Level XX
+     * @regexFail Combat Collections
      */
     private val skillNamePattern by inventoryGroup.pattern(
         "skill-name",
@@ -147,7 +147,7 @@ object ReplaceRomanNumerals {
      * REGEX-TEST: Helix Log IX Rewards:
      * REGEX-TEST: Vinesap V Rewards:
      * REGEX-TEST: Level XVIII Reward:
-     * REGEX-FAIL: Rewards:
+     * @regexFail Rewards:
      */
     private val rewardsPattern by inventoryGroup.pattern(
         "rewards",
@@ -213,7 +213,7 @@ object ReplaceRomanNumerals {
      * Matched against the inventory title. The singular is what separates the detail menu of a
      * single collection from the overview menus, which end in Collections.
      * REGEX-TEST: Honeycomb Collection
-     * REGEX-FAIL: Foraging Collections
+     * @regexFail Foraging Collections
      */
     private val collectionMenuPattern by contextGroup.pattern(
         "collection-menu",
@@ -226,10 +226,10 @@ object ReplaceRomanNumerals {
      * REGEX-TEST: Plant Yield V
      * REGEX-TEST: Critter Catcher VII
      * REGEX-TEST: Diana's Favor III
-     * WRAPPED-REGEX-TEST: "Leftovers II "
-     * REGEX-FAIL: 5 SkyBlock XP
-     * REGEX-FAIL: UNLOCKED
-     * REGEX-FAIL: You can't afford this upgrade!
+     * @regexTestWrapped "Leftovers II "
+     * @regexFail 5 SkyBlock XP
+     * @regexFail UNLOCKED
+     * @regexFail You can't afford this upgrade!
      */
     private val namedTierPattern by contextGroup.pattern(
         "named-tier",

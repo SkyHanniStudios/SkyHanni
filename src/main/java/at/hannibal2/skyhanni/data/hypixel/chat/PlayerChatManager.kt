@@ -32,12 +32,12 @@ object PlayerChatManager {
     private val patternGroup = RepoPattern.group("data.chat.player")
 
     /**
-     * REGEX-TEST: [58] §7nea89o§7: haiiiii
-     * REGEX-TEST: [266] ♫ §b[MVP§d+§b] lrg89§f: a
-     * REGEX-TEST: [302] ♫ [MVP+] lrg89: problematic
-     * REGEX-TEST: [233] §6✿ §a[VIP] dawnbound§f: thats not mine too
-     * REGEX-TEST: [323] §b[MVP§2+§b] xatarna§f: can somebody get these beggars out of here
-     * REGEX-FAIL: Finding player...
+     * @regexTest [58] §7nea89o§7: haiiiii
+     * @regexTest [266] ♫ §b[MVP§d+§b] lrg89§f: a
+     * @regexTest [302] ♫ [MVP+] lrg89: problematic
+     * @regexTest [233] §6✿ §a[VIP] dawnbound§f: thats not mine too
+     * @regexTest [323] §b[MVP§2+§b] xatarna§f: can somebody get these beggars out of here
+     * @regexFail Finding player...
      */
     private val globalPattern by patternGroup.pattern(
         "global",

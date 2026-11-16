@@ -69,9 +69,9 @@ object FannCost {
     private var lastStartTrainingLoreHash: Int = 0
 
     /**
-     * REGEX-TEST: Training Slot 1
-     * REGEX-TEST: Training Slot 2
-     * REGEX-TEST: Training Slot 3
+     * @regexTest Training Slot 1
+     * @regexTest Training Slot 2
+     * @regexTest Training Slot 3
      */
     private val trainingSlotInventoryPattern by patternGroup.pattern(
         "training.slot.inventory",
@@ -79,8 +79,8 @@ object FannCost {
     )
 
     /**
-     * REGEX-TEST: §7§8Will earn a total of 55,000 EXP
-     * REGEX-TEST: §7§8Will earn a total of 550,000 EXP
+     * @regexTest §7§8Will earn a total of 55,000 EXP
+     * @regexTest §7§8Will earn a total of 550,000 EXP
      */
     private val expEarnedPattern by patternGroup.pattern(
         "exp.total",

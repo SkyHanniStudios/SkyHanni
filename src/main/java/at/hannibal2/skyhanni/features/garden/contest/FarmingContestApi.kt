@@ -47,7 +47,7 @@ object FarmingContestApi {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: " ○ Cocoa Beans 15m14s"
+     * @regexTestWrapped " ○ Cocoa Beans 15m14s"
      */
     private val sidebarCropPattern by patternGroup.pattern(
         "sidebarcrop.colorless",

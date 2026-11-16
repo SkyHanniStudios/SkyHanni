@@ -58,12 +58,12 @@ object DungeonFinderFeatures {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: " 4sn_: Archer (29)"
-     * WRAPPED-REGEX-TEST: " kaydo_odyak: Berserk (26)"
-     * WRAPPED-REGEX-TEST: " ItsKind: Berserk (38)"
-     * WRAPPED-REGEX-TEST: " sphxia: Tank (36)"
-     * WRAPPED-REGEX-TEST: " Skept1x: Mage (35)"
-     * WRAPPED-REGEX-TEST: " Mewlius: Archer (41)"
+     * @regexTestWrapped " 4sn_: Archer (29)"
+     * @regexTestWrapped " kaydo_odyak: Berserk (26)"
+     * @regexTestWrapped " ItsKind: Berserk (38)"
+     * @regexTestWrapped " sphxia: Tank (36)"
+     * @regexTestWrapped " Skept1x: Mage (35)"
+     * @regexTestWrapped " Mewlius: Archer (41)"
      */
     private val memberPattern by patternGroup.pattern(
         "member.colorless",
@@ -116,7 +116,7 @@ object DungeonFinderFeatures {
     )
 
     /**
-     * REGEX-TEST: The Catacombs - Entrance
+     * @regexTest The Catacombs - Entrance
      */
     private val entranceFloorPattern by patternGroup.pattern(
         "entrance.colorless",

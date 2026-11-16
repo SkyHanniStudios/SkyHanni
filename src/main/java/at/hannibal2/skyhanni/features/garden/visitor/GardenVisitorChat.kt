@@ -44,8 +44,8 @@ object GardenVisitorChat {
     )
 
     /**
-     * REGEX-TEST: §e[NPC] §r§9Queen Mismyla§r§f: §r§fOh, you refuse to work as well? I should have known.
-     * REGEX-TEST: §e[NPC] §r§aResident Snooty§r§f: §r§fI don't really converse with your kind, but today I'll make an exception.
+     * @regexTest §e[NPC] §r§9Queen Mismyla§r§f: §r§fOh, you refuse to work as well? I should have known.
+     * @regexTest §e[NPC] §r§aResident Snooty§r§f: §r§fI don't really converse with your kind, but today I'll make an exception.
      */
     private val visitorChatMessagePattern by patternGroup.pattern(
         "visitorchat",

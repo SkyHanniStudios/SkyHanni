@@ -47,8 +47,8 @@ object GardenVisitorTooltip {
     private val patternGroup = RepoPattern.group("garden.visitor.tooltip")
 
     /**
-     * WRAPPED-REGEX-TEST: " §8+§c20 Copper"
-     * WRAPPED-REGEX-TEST: " §8+§c150 Copper §d❤"
+     * @regexTestWrapped " §8+§c20 Copper"
+     * @regexTestWrapped " §8+§c150 Copper §d❤"
      */
     private val copperPattern by patternGroup.pattern(
         "copper",

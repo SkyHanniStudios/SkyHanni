@@ -39,8 +39,8 @@ object PowderTracker {
     private val patternGroup = RepoPattern.group("mining.powder.tracker")
 
     /**
-     * WRAPPED-REGEX-TEST: "  CHEST LOCKPICKED "
-     * WRAPPED-REGEX-TEST: "  CHEST LOCKPICKED"
+     * @regexTestWrapped "  CHEST LOCKPICKED "
+     * @regexTestWrapped "  CHEST LOCKPICKED"
      */
     private val pickedPattern by patternGroup.pattern(
         "picked.colorless",

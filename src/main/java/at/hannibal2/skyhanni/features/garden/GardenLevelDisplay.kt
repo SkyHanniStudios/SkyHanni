@@ -67,7 +67,7 @@ object GardenLevelDisplay {
     )
 
     /**
-     * REGEX-TEST: §e§l§m                     §6325,396
+     * @regexTest §e§l§m                     §6325,396
      */
     private val overflowPattern by patternGroup.pattern(
         "inventory.overflow",

@@ -85,7 +85,7 @@ object PestProfitTracker : SkyHanniBucketedItemTracker<PestType, PestProfitTrack
      * REGEX-TEST: §6§lRARE DROP! §aWings of Harmony Vinyl §e(§e+139.5)
      * REGEX-TEST: §6§lRARE DROP! §r§aNot Just a Pest Vinyl §r§6(Cocoaleech)
      * REGEX-TEST: §6§lRARE DROP! §aDynaMITES Vinyl §e(§e+130)
-     * REGEX-FAIL: §6§lRARE CROP! §aCane Knot §e(§e+139.5)
+     * @regexFail §6§lRARE CROP! §aCane Knot §e(§e+139.5)
      */
     // Harvest Feast drops are handled elsewhere; they're added here if determined to come from a pest.
     // This pattern intentionally does not match them.

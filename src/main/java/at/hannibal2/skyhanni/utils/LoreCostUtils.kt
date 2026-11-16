@@ -65,7 +65,7 @@ object LoreCostUtils {
      * REGEX-TEST: Click to bake!
      * REGEX-TEST: Left Click to unlock!
      * REGEX-TEST: You can't afford this upgrade!
-     * REGEX-FAIL: Right Click to preview!
+     * @regexFail Right Click to preview!
      */
     private val tradeLinePattern by patternGroup.pattern(
         "trade.click",

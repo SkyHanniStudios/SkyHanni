@@ -450,18 +450,18 @@ enum class HotmData(
 
         // <editor-fold desc="Patterns">
         /**
-         * @regexTest §5§o§7Level 1§8/50 §7(§b0 §l0%§7):skull:
-         * @regexTest §7Level 1§8/50
+         * @regexTest§5§o§7Level 1§8/50 §7(§b0 §l0%§7):skull:
+         * @regexTest§7Level 1§8/50
          */
         override val levelPattern by patternGroup.pattern(
             "perk.level",
             "(?:§.)*§(?<color>.)Level (?<level>\\d+).*"
         )
         /**
-         * REGEX-TEST: Requires Mining Speed
-         * REGEX-TEST: Requires Tier 10
-         * REGEX-TEST: Mountain!
-         * REGEX-TEST: Click to unlock!
+         * @regexTestRequires Mining Speed
+         * @regexTestRequires Tier 10
+         * @regexTestMountain!
+         * @regexTestClick to unlock!
          */
         override val notUnlockedPattern by patternGroup.pattern(
             "perk.notunlocked",
@@ -469,8 +469,8 @@ enum class HotmData(
         )
 
         /**
-         * REGEX-TEST: SELECTED
-         * REGEX-TEST: ENABLED
+         * @regexTestSELECTED
+         * @regexTestENABLED
          */
         override val enabledPattern by patternGroup.pattern(
             "perk.enable",
@@ -478,8 +478,8 @@ enum class HotmData(
         )
 
         /**
-         * REGEX-TEST: Click to select!
-         * REGEX-TEST: DISABLED
+         * @regexTestClick to select!
+         * @regexTestDISABLED
          */
         @Suppress("UnusedPrivateProperty")
         private val disabledPattern by patternGroup.pattern(
@@ -489,7 +489,7 @@ enum class HotmData(
         // but the value might be useful in the future or for debugging
 
         /**
-         * @regexTest Cost
+         * @regexTestCost
          */
         val perkCostPattern by patternGroup.pattern(
             "perk.cost.new",
@@ -512,7 +512,7 @@ enum class HotmData(
         )
 
         /**
-         * REGEX-TEST: Token of the Mountain: 15
+         * @regexTestToken of the Mountain: 15
          */
         override val heartTokensPattern by patternGroup.pattern(
             "inventory.heart.token",
@@ -520,7 +520,7 @@ enum class HotmData(
         )
 
         /**
-         * WRAPPED-REGEX-TEST: "  - 4 Token of the Mountain"
+         * @regexTestWrapped "  - 4 Token of the Mountain"
          */
         override val resetTokensPattern by patternGroup.pattern(
             "inventory.reset.token",
@@ -528,7 +528,7 @@ enum class HotmData(
         )
 
         /**
-         * REGEX-TEST: MAYHEM! You received a Mining Fortune buff from your Mineshaft Mayhem perk!
+         * @regexTestMAYHEM! You received a Mining Fortune buff from your Mineshaft Mayhem perk!
          */
         private val mayhemChatPattern by patternGroup.pattern(
             "mayhem",
@@ -536,8 +536,8 @@ enum class HotmData(
         )
 
         /**
-         * WRAPPED-REGEX-TEST: " Mithril: 99,918"
-         * WRAPPED-REGEX-TEST: " Gemstone: 37,670"
+         * @regexTestWrapped " Mithril: 99,918"
+         * @regexTestWrapped " Gemstone: 37,670"
          */
         private val powderPattern by patternGroup.pattern(
             "widget.powder-nocolor",

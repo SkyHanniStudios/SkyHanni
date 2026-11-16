@@ -80,8 +80,8 @@ object FriendApi {
     )
 
     /**
-     * REGEX-TEST: The friend request to ouppy has expired.
-     * REGEX-TEST: Your friend request to Eisengolem has expired.
+     * @regexTest The friend request to ouppy has expired.
+     * @regexTest Your friend request to Eisengolem has expired.
      */
     private val friendRequestExpiredPattern by patternGroup.pattern(
         "friend-request-expired",
@@ -89,7 +89,7 @@ object FriendApi {
     )
 
     /**
-     * REGEX-TEST: You sent a friend request to enbylae!
+     * @regexTest You sent a friend request to enbylae!
      */
     private val friendRequestSentPattern by patternGroup.pattern(
         "friend-request-sent",

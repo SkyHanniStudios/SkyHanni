@@ -139,10 +139,10 @@ object DragonFeatures {
     private val scoreDragonPattern by scoreBoardGroup.pattern("dragon", "Dragon HP: .*")
 
     /**
-     * WRAPPED-REGEX-TEST: " JamBeastie: 7.4M"
-     * WRAPPED-REGEX-TEST: " 42069HzMonitor: 3M"
-     * WRAPPED-REGEX-TEST: " ItsJxxxxx2001: 457k"
-     * WRAPPED-REGEX-TEST: " Thunderblade73: 12.3k"
+     * @regexTestWrapped " JamBeastie: 7.4M"
+     * @regexTestWrapped " 42069HzMonitor: 3M"
+     * @regexTestWrapped " ItsJxxxxx2001: 457k"
+     * @regexTestWrapped " Thunderblade73: 12.3k"
      */
     private val tabDamagePattern by tabListGroup.pattern(
         "fight.player",

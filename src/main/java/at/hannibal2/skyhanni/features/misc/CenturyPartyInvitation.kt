@@ -72,9 +72,9 @@ object CenturyPartyInvitation {
     )
 
     /**
-     * REGEX-TEST: §8[§e80§8] - [§e119§8] §eYellow
-     * REGEX-TEST: §8[§c440§8] - [§c479§8] §cRed
-     * REGEX-TEST: §8[§4480§8]+ §4Dark Red
+     * @regexTest §8[§e80§8] - [§e119§8] §eYellow
+     * @regexTest §8[§c440§8] - [§c479§8] §cRed
+     * @regexTest §8[§4480§8]+ §4Dark Red
      */
     private val itemMissingColorLinePattern by chatGroup.pattern(
         "item-lore.missing-color-line",

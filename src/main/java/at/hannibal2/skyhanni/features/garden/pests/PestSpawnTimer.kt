@@ -61,7 +61,7 @@ object PestSpawnTimer {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: " Alive: 8"
+     * @regexTestWrapped " Alive: 8"
      */
     private val maxPestsAlivePattern by patternGroup.pattern(
         "max-pests-alive",

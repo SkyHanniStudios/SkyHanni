@@ -52,7 +52,7 @@ object SlayerApi {
 
     // <editor-fold desc="Patterns">
     /**
-     * WRAPPED-REGEX-TEST: "  SLAYER QUEST STARTED!"
+     * @regexTestWrapped "  SLAYER QUEST STARTED!"
      */
     private val questStartPattern by patternGroup.pattern(
         "quest.start",
@@ -60,7 +60,7 @@ object SlayerApi {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: "  SLAYER QUEST COMPLETE!"
+     * @regexTestWrapped "  SLAYER QUEST COMPLETE!"
      */
     private val questCompletePattern by patternGroup.pattern(
         "quest.complete",
@@ -68,7 +68,7 @@ object SlayerApi {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: "  SLAYER QUEST FAILED!"
+     * @regexTestWrapped "  SLAYER QUEST FAILED!"
      */
     private val questFailedPattern by patternGroup.pattern(
         "quest.failed",
@@ -76,7 +76,7 @@ object SlayerApi {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: "  YOU COCOONED YOUR SLAYER BOSS"
+     * @regexTestWrapped "  YOU COCOONED YOUR SLAYER BOSS"
      */
     private val cocoonPattern by patternGroup.pattern(
         "cocooned.colorless",

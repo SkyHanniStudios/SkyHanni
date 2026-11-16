@@ -92,7 +92,7 @@ object EnigmaSoulWaypoints {
     )
 
     /**
-     * REGEX-TEST: Rift Guide ➜ Enigma Souls
+     * @regexTest Rift Guide ➜ Enigma Souls
      */
     private val inventoryNamePattern by patternGroup.pattern(
         "inventory",

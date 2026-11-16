@@ -80,7 +80,7 @@ object ContributorManager {
      * REGEX-TEST: [MVP+] hannibal2
      * REGEX-TEST: [MVP+] hannibal2 [✪DK✪]
      * REGEX-TEST: [450] hannibal2
-     * REGEX-FAIL: [450] hannibal2 ⛃
+     * @regexFail [450] hannibal2 ⛃
      */
     private val contribNametagAppendSpacePattern by patternGroup.pattern(
         "nametag.appendspace",

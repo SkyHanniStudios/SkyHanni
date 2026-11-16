@@ -49,7 +49,7 @@ object TradeValue {
     )
 
     /**
-     * REGEX-TEST: You     1
+     * @regexTest You     1
      */
     private val tradeMenuPattern by RepoPattern.pattern(
         "inventory.tradevalue.menu",

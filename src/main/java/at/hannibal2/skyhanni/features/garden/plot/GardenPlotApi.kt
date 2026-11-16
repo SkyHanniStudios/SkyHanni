@@ -100,9 +100,9 @@ object GardenPlotApi {
     )
 
     /**
-     * REGEX-TEST: SPRAYONATOR! You sprayed Plot - 6 with Compost!
-     * REGEX-TEST: SPRAYONATOR! You sprayed Plot - 7 with 3 Plant Matter!
-     * REGEX-TEST: SPRAYONATOR! You sprayed Plot - 8 with 5 Jelly!
+     * @regexTest SPRAYONATOR! You sprayed Plot - 6 with Compost!
+     * @regexTest SPRAYONATOR! You sprayed Plot - 7 with 3 Plant Matter!
+     * @regexTest SPRAYONATOR! You sprayed Plot - 8 with 5 Jelly!
      */
     val plotSprayedPattern by patternGroup.pattern(
         "spray.target.colorless",

@@ -36,8 +36,8 @@ object FishingHookDisplay {
      * REGEX-TEST: §e§l1.2
      * REGEX-TEST: §c§l!!!
      * REGEX-TEST: !!!
-     * REGEX-FAIL: §736
-     * REGEX-FAIL: §772
+     * @regexFail §736
+     * @regexFail §772
      */
     private val timerPattern by RepoPattern.pattern(
         "fishing.hook.timer",

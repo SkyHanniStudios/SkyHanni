@@ -218,7 +218,7 @@ object ExperimentationTableApi {
     )
 
     /**
-     * REGEX-TEST: Bottles of Enchanting
+     * @regexTest Bottles of Enchanting
      */
     val bottlesOfEnchantingInventoryPattern by patternGroup.pattern(
         "inventory.bottles-of-enchanting",

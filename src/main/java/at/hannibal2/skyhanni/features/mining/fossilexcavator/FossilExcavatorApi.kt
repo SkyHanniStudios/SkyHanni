@@ -41,7 +41,7 @@ object FossilExcavatorApi {
     private val emptyPattern by chatPatternGroup.pattern("empty", "§cYou didn't find anything. Maybe next time!")
 
     /**
-     * REGEX-TEST: Fossil Excavator
+     * @regexTest Fossil Excavator
      */
     private val excavatorInventoryPattern by patternGroup.pattern("inventory", "Fossil Excavator")
 

@@ -123,12 +123,12 @@ object GardenNextJacobContest {
 
     // This pattern covers both the tab list widget, and calendar item lore.
     /**
-     * REGEX-TEST: ○ Cactus
-     * REGEX-TEST:  Carrot
-     * REGEX-TEST: ○ Melon
-     * WRAPPED-REGEX-TEST: "  Mushroom"
-     * WRAPPED-REGEX-TEST: " ○ Pumpkin"
-     * WRAPPED-REGEX-TEST: " ○ Wheat"
+     * @regexTest ○ Cactus
+     * @regexTest  Carrot
+     * @regexTest ○ Melon
+     * @regexTestWrapped "  Mushroom"
+     * @regexTestWrapped " ○ Pumpkin"
+     * @regexTestWrapped " ○ Wheat"
      */
     private val cropPattern by patternGroup.pattern(
         "crop-no-color",

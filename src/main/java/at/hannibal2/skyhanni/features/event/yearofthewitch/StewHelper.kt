@@ -46,7 +46,7 @@ object StewHelper {
     )
 
     /**
-     * REGEX-TEST: Witches Stew
+     * @regexTest Witches Stew
      */
     private val stewInventoryPattern by patternGroup.pattern(
         "stew-inventory",

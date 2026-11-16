@@ -77,7 +77,7 @@ class ItemResolutionQuery {
         )
 
         /**
-         * REGEX-TEST: ENCHANTMENT_LOOTING_5
+         * @regexTest ENCHANTMENT_LOOTING_5
          */
         private val bazaarEnchantmentPattern by patternGroup.pattern(
             "bazaar.enchantment",

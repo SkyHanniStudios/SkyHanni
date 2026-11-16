@@ -47,7 +47,7 @@ object GeorgeHelper {
     )
 
     /**
-     * REGEX-TEST: Offer Pets
+     * @regexTest Offer Pets
      */
     private val offerPetsInventoryMenuPattern by patternGroup.pattern(
         "offer-pets.inventory-menu",

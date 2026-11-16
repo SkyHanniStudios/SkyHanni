@@ -49,9 +49,9 @@ object MinionCraftHelper {
     )
 
     /**
-     * REGEX-TEST: (1/3) Crafted Minions
-     * REGEX-TEST: (2/3) Crafted Minions
-     * REGEX-TEST: (3/3) Crafted Minions
+     * @regexTest (1/3) Crafted Minions
+     * @regexTest (2/3) Crafted Minions
+     * @regexTest (3/3) Crafted Minions
      */
     private val craftedMinionsInventoryPattern by patternGroup.pattern(
         "inventory",

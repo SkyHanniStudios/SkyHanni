@@ -40,7 +40,7 @@ object MinionUpgradeHelper {
 
     /**
      * REGEX-TEST: You need 512 more Nether Quartz.
-     * WRAPPED-REGEX-TEST: " You need 8 more Condensed Lily Pad."
+     * @regexTestWrapped " You need 8 more Condensed Lily Pad."
      */
     private val requiredItemsPattern by RepoPattern.pattern(
         "minion.items.upgrade.colorless",

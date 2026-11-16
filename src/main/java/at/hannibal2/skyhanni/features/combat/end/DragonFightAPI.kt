@@ -39,7 +39,7 @@ object DragonFightAPI {
     )
 
     /**
-     * REGEX-TEST: Dragon HP: 4,824,217 
+     * @regexTest Dragon HP: 4,824,217 
      */
     private val scoreboardHPPattern by patternGroup.pattern(
         "scoreboard.hp",

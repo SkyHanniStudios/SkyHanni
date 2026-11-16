@@ -137,7 +137,7 @@ object InstanceChestProfit {
     )
 
     /**
-     * REGEX-TEST: §eRequires a Dungeon Chest Key
+     * @regexTest §eRequires a Dungeon Chest Key
      */
     private val requiresDungeonChestKeyPattern by patternGroup.pattern(
         "requiresadungeonchestkey",
