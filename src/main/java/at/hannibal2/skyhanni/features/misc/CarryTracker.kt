@@ -52,8 +52,7 @@ object CarryTracker {
     private val patternGroup = RepoPattern.group("carry")
 
     /**
-     * @regexTest
-     * §6Trade completed with §r§b[MVP§r§c+§r§b] ClachersHD§r§f§r§6!
+     * @regexTest §6Trade completed with §r§b[MVP§r§c+§r§b] ClachersHD§r§f§r§6!
      */
     private val tradeCompletedPattern by patternGroup.pattern(
         "trade.completed",

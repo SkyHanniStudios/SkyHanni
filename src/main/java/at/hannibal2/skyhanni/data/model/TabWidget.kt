@@ -270,23 +270,23 @@ enum class TabWidget(
         // language=RegExp
         "Pest Traps: (?<count>\\d+)\\/(?<max>\\d+)",
     ),
+    /**
+     * @regexTest Full Traps: #1, #2, #3
+     * @regexTest Full Traps: #2, #3
+     * @regexTest Full Traps: #3
+     * @regexTest Full Traps: None
+     */
     FULL_TRAPS(
-        /**
-         * @regexTest Full Traps: #1, #2, #3
-         * @regexTest Full Traps: #2, #3
-         * @regexTest Full Traps: #3
-         * @regexTest Full Traps: None
-         */
         // language=RegExp
         "Full Traps: (?:None|(?<traps>#\\d(?:, #\\d(?:, #\\d)?)?))",
     ),
+    /**
+     * @regexTest No Bait: #1, #2, #3
+     * @regexTest No Bait: #2, #3
+     * @regexTest No Bait: #3
+     * @regexTest No Bait: None
+     */
     NO_BAIT(
-        /**
-         * @regexTest No Bait: #1, #2, #3
-         * @regexTest No Bait: #2, #3
-         * @regexTest No Bait: #3
-         * @regexTest No Bait: None
-         */
         // language=RegExp
         "No Bait: (?:None|(?<traps>#\\d(?:, #\\d(?:, #\\d)?)?))"
     ),
