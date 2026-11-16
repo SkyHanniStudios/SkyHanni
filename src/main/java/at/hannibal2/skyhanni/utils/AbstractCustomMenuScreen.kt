@@ -2,7 +2,7 @@ package at.hannibal2.skyhanni.utils
 
 import at.hannibal2.skyhanni.data.ToolTipData
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
-import at.hannibal2.skyhanni.utils.compat.SkyHanniBaseScreen
+import at.hannibal2.skyhanni.utils.compat.SkyHanniCanvasScreen
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.screens.inventory.MenuAccess
 import net.minecraft.client.input.KeyEvent
@@ -19,13 +19,12 @@ import net.minecraft.world.inventory.ContainerListener
 abstract class AbstractCustomMenuScreen(
     initialMenu: ChestMenu,
     title: Component,
-) : SkyHanniBaseScreen(title), ContainerListener, MenuAccess<ChestMenu> {
+) : SkyHanniCanvasScreen(title), ContainerListener, MenuAccess<ChestMenu> {
 
     private var menu: ChestMenu = initialMenu
 
     init {
         menu.addSlotListener(this)
-        ToolTipData.lastSlot = null
     }
 
     fun changeHandler(newMenu: ChestMenu, inventoryName: Component) {
