@@ -87,7 +87,7 @@ serviceOf<BuildEventsListenerRegistry>().onTaskCompletion(buildProgressService)
 val buildProgressDirectory = layout.projectDirectory.dir(BuildProgress.DIRECTORY).asFile
 val buildProgressTimings = System.getenv("CI") != null || findProperty(BuildProgress.TIMING_PROPERTY) == "true"
 val kspProcessorCount = rootProject.layout.projectDirectory
-    .file("annotation-processors/src/main/resources/META-INF/services/com.google.devtools.ksp.processing.SymbolProcessorProvider")
+    .file("buildSrc/src/main/resources/META-INF/services/com.google.devtools.ksp.processing.SymbolProcessorProvider")
     .asFile.readLines().count(String::isNotBlank)
 
 val buildProgressPlugin = configurations.create("buildProgressPlugin") {
@@ -165,7 +165,8 @@ dependencies {
     minecraft("com.mojang:minecraft:$versionName")
 
     compileOnly(libs.jbAnnotations)
-    ksp(project(":annotation-processors"))?.let { compileOnly(it) }
+    ksp(buildSrcJar)
+    compileOnly(buildSrcJar)
     buildProgressPlugin(buildSrcJar)
     buildProgressJavacPlugin(libs.kotlin.stdlib)
     detektPlugins(buildSrcJar)
