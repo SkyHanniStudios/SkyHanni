@@ -52,7 +52,7 @@ object CarnivalFruitDigging {
     private val patternGroup = RepoPattern.group("event.carnival")
 
     /**
-     * @regexTest[NPC] Carnival Pirateman: Good luck, matey!
+     * @regexTest [NPC] Carnival Pirateman: Good luck, matey!
      */
     private val startPattern by patternGroup.pattern(
         "fruitdigging.started",
@@ -68,8 +68,8 @@ object CarnivalFruitDigging {
     )
 
     /**
-     * @regexTestTREASURE! There is a Durian nearby.
-     * @regexTestTREASURE! There is an Apple nearby.
+     * @regexTest TREASURE! There is a Durian nearby.
+     * @regexTest TREASURE! There is an Apple nearby.
      */
     private val treasurePattern by patternGroup.pattern(
         "fruitdigging.treasure",
@@ -77,8 +77,8 @@ object CarnivalFruitDigging {
     )
 
     /**
-     * @regexTestTREASURE! There are no fruits nearby!
-     * @regexTestANCHOR! There are no fruits nearby!
+     * @regexTest TREASURE! There are no fruits nearby!
+     * @regexTest ANCHOR! There are no fruits nearby!
      */
     private val noFruitsNearbyPattern by patternGroup.pattern(
         "fruitdigging.nofruitsnearby",
@@ -86,8 +86,8 @@ object CarnivalFruitDigging {
     )
 
     /**
-     * @regexTestMINES! There is 1 bomb hidden nearby.
-     * @regexTestMINES! There are 2 bombs hidden nearby.
+     * @regexTest MINES! There is 1 bomb hidden nearby.
+     * @regexTest MINES! There are 2 bombs hidden nearby.
      */
     private val minesPattern by patternGroup.pattern(
         "fruitdigging.mines",
@@ -95,9 +95,9 @@ object CarnivalFruitDigging {
     )
 
     /**
-     * @regexTestPomegranate (+300)
-     * @regexTestBomb
-     * @regexTestRum
+     * @regexTest Pomegranate (+300)
+     * @regexTest Bomb
+     * @regexTest Rum
      */
     private val revealFruitPattern by patternGroup.pattern(
         "fruitdigging.reveal",

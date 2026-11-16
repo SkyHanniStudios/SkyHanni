@@ -38,7 +38,7 @@ object PhantomleafSolver {
     private val patternGroup = RepoPattern.group("garden.greenhouse.phantomleaf")
 
     /**
-     * REGEX-TEST: [CROP] Phantomleaf: Poof! Try and find me!
+     * @regexTest [CROP] Phantomleaf: Poof! Try and find me!
      */
     private val startPattern by patternGroup.pattern(
         "poof",
@@ -46,7 +46,7 @@ object PhantomleafSolver {
     )
 
     /**
-     * REGEX-TEST: [CROP] Phantomleaf: You found me!
+     * @regexTest [CROP] Phantomleaf: You found me!
      */
     private val successPattern by patternGroup.pattern(
         "found",
@@ -54,7 +54,7 @@ object PhantomleafSolver {
     )
 
     /**
-     * REGEX-TEST: [CROP] Phantomleaf: That's not me! Better luck next time!
+     * @regexTest [CROP] Phantomleaf: That's not me! Better luck next time!
      */
     private val failPattern by patternGroup.pattern(
         "failure",

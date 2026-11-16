@@ -65,8 +65,8 @@ object ReforgeHelper {
     )
 
     /**
-     * REGEX-TEST: You reforged your Gentle Dreadlord Sword into a Heroic Dreadlord Sword!
-     * REGEX-TEST: You applied a Recombobulator 3000 to your Heroic Dreadlord Sword!
+     * @regexTest You reforged your Gentle Dreadlord Sword into a Heroic Dreadlord Sword!
+     * @regexTest You applied a Recombobulator 3000 to your Heroic Dreadlord Sword!
      */
     private val reforgeChatSuccessPattern by patternGroup.pattern(
         "chat.success.colorless",
@@ -74,8 +74,8 @@ object ReforgeHelper {
     )
 
     /**
-     * REGEX-TEST: Wait a moment before reforging again!
-     * REGEX-TEST: Whoa! Slow down there!
+     * @regexTest Wait a moment before reforging again!
+     * @regexTest Whoa! Slow down there!
      */
     private val reforgeChatFailPattern by patternGroup.pattern(
         "chat.fail.colorless",

@@ -36,8 +36,8 @@ object GummyWarning {
     private var hasHabanero = false
 
     /**
-     * REGEX-TEST: Smoldering Tomb
-     * REGEX-TEST: The Wasteland
+     * @regexTest Smoldering Tomb
+     * @regexTest The Wasteland
      */
     private val smolderingAreaPattern by RepoPattern.pattern(
         "slayer.gummy.smoldering-area",

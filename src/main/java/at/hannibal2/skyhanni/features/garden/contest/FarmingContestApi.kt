@@ -31,7 +31,7 @@ object FarmingContestApi {
     private val patternGroup = RepoPattern.group("garden.farming.contest")
 
     /**
-     * REGEX-TEST: Spring 31st, Year 494
+     * @regexTest Spring 31st, Year 494
      */
     private val timePattern by patternGroup.pattern(
         "time.colorless",
@@ -39,7 +39,7 @@ object FarmingContestApi {
     )
 
     /**
-     * REGEX-TEST: Carrot Contest
+     * @regexTest Carrot Contest
      */
     private val cropPattern by patternGroup.pattern(
         "crop.colorless",
@@ -55,7 +55,7 @@ object FarmingContestApi {
     )
 
     /**
-     * REGEX-TEST: Claim multiple farming contest
+     * @regexTest Claim multiple farming contest
      */
     private val bulkClaimFarmingPattern by patternGroup.pattern(
         "bulkclaim.colorless",
@@ -63,9 +63,9 @@ object FarmingContestApi {
     )
 
     /**
-     * REGEX-TEST: (1/2) Your Contests
-     * REGEX-TEST: (2/2) Your Contests
-     * REGEX-TEST: Your Contests
+     * @regexTest (1/2) Your Contests
+     * @regexTest (2/2) Your Contests
+     * @regexTest Your Contests
      */
     val yourContestsPattern by patternGroup.pattern(
         "yourcontests",

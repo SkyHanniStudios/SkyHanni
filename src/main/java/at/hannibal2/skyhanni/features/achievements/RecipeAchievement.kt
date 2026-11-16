@@ -15,7 +15,7 @@ import at.hannibal2.skyhanni.utils.chat.TextHelper.asComponent
 object RecipeAchievement {
 
     /**
-     * REGEX-TEST: Recipe Book Unlocked: 98.6%
+     * @regexTest Recipe Book Unlocked: 98.6%
      */
     private val recipeBookPattern by AchievementManager.patternGroup.pattern(
         "recipe-book",

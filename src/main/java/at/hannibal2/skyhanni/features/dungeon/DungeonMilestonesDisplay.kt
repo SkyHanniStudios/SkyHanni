@@ -23,8 +23,8 @@ object DungeonMilestonesDisplay {
     private val config get() = SkyHanniMod.feature.dungeon
 
     /**
-     * REGEX-TEST: Mage Milestone ❷: You have dealt 300,000 Total Damage so far! 07s
-     * REGEX-TEST: Tank Milestone ❷: You have tanked and dealt 180,000 Total Damage so far! 16s
+     * @regexTest Mage Milestone ❷: You have dealt 300,000 Total Damage so far! 07s
+     * @regexTest Tank Milestone ❷: You have tanked and dealt 180,000 Total Damage so far! 16s
      */
     private val milestonePattern by RepoPattern.pattern(
         "dungeon.milestone.colorless",

@@ -23,10 +23,10 @@ object BazaarOrderTooltip {
      * Buy orders name the sellers, sell offers name the buyers, and both switch to a singular
      * header while only one player is involved.
      *
-     * REGEX-TEST: Vendors:
-     * REGEX-TEST: Single vendor:
-     * REGEX-TEST: Customers:
-     * REGEX-TEST: Single customer:
+     * @regexTest Vendors:
+     * @regexTest Single vendor:
+     * @regexTest Customers:
+     * @regexTest Single customer:
      */
     private val tradePartnerHeaderPattern by patternGroup.pattern(
         "tradepartners.colorless",

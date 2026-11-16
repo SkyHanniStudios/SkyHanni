@@ -24,8 +24,8 @@ object SpiderEggSacHighlighter {
     private val highlightedEggSacs = mutableSetOf<ArmorStand>()
 
     /**
-     * REGEX-TEST: 5s 1/3
-     * REGEX-TEST: 12s 3/4
+     * @regexTest 5s 1/3
+     * @regexTest 12s 3/4
      */
     private val eggSacTimerPattern by RepoPattern.pattern(
         "slayer.spider.eggsac.timer",

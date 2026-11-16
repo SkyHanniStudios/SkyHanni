@@ -13,7 +13,7 @@ import at.hannibal2.skyhanni.utils.chat.TextHelper.asComponent
 object DungeonsAchievements {
 
     /**
-     * REGEX-TEST: RNG METER! Reselected the Enchanted Book (Rejuvenate I) for Catacombs - Floor 1! CLICK HERE to select a new drop!
+     * @regexTest RNG METER! Reselected the Enchanted Book (Rejuvenate I) for Catacombs - Floor 1! CLICK HERE to select a new drop!
      */
     private val woodRngPattern by AchievementManager.patternGroup.pattern(
         "wood-rng",

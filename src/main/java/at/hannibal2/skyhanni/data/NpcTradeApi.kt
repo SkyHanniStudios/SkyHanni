@@ -48,8 +48,8 @@ object NpcTradeApi {
         private set
 
     /**
-     * REGEX-TEST: You bought Mechamind Chip!
-     * REGEX-TEST: You bought Supreme Chocolate Bar x5!
+     * @regexTest You bought Mechamind Chip!
+     * @regexTest You bought Supreme Chocolate Bar x5!
      */
     private val itemBoughtPattern by RepoPattern.pattern(
         "data.npctrade.bought",

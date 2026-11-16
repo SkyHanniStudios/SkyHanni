@@ -63,8 +63,8 @@ object ForagingBeaconSolver {
 
     // <editor-fold desc="Patterns">
     /**
-     * REGEX-TEST: Current color: Red
-     * REGEX-TEST: Current color: Light Blue
+     * @regexTest Current color: Red
+     * @regexTest Current color: Light Blue
      */
     private val beaconCurrentColorPattern by patternGroup.pattern(
         "color",
@@ -72,7 +72,7 @@ object ForagingBeaconSolver {
     )
 
     /**
-     * REGEX-TEST: Current speed: 3
+     * @regexTest Current speed: 3
      */
     private val beaconCurrentSpeedPattern by patternGroup.pattern(
         "speed",
@@ -80,7 +80,7 @@ object ForagingBeaconSolver {
     )
 
     /**
-     * REGEX-TEST: Current pitch: Low
+     * @regexTest Current pitch: Low
      */
     private val beaconCurrentPitchPattern by patternGroup.pattern(
         "pitch",
@@ -88,8 +88,8 @@ object ForagingBeaconSolver {
     )
 
     /**
-     * REGEX-TEST: Upgrade Signal Strength
-     * REGEX-TEST: Tune Frequency
+     * @regexTest Upgrade Signal Strength
+     * @regexTest Tune Frequency
      */
     private val beaconInventoryNamePattern by patternGroup.pattern(
         "inventory",

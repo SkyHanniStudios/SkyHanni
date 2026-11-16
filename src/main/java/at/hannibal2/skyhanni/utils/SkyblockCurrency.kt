@@ -211,14 +211,14 @@ enum class SkyblockCurrency(
     @SkyHanniModule
     companion object {
         /**
-         * REGEX-TEST: 5,000 Bits
-         * REGEX-TEST: 40 Pests
-         * REGEX-TEST: 250 Copper
-         * REGEX-TEST: 1,940,000 Coins
-         * REGEX-TEST: 29.1 Coins
-         * REGEX-TEST: 46,559,892,200 Chocolate
-         * REGEX-TEST: 400 Gems
-         * REGEX-TEST: 75 Pelts
+         * @regexTest 5,000 Bits
+         * @regexTest 40 Pests
+         * @regexTest 250 Copper
+         * @regexTest 1,940,000 Coins
+         * @regexTest 29.1 Coins
+         * @regexTest 46,559,892,200 Chocolate
+         * @regexTest 400 Gems
+         * @regexTest 75 Pelts
          */
         private val amountPattern by RepoPattern.pattern(
             "utils.currency.amount",

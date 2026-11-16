@@ -24,7 +24,7 @@ object SkillAchievements {
     val petSkillDetector = InventoryDetector { petSkillMenuPattern }
 
     /**
-     * REGEX-TEST: Ores mined: 2,449,790
+     * @regexTest Ores mined: 2,449,790
      */
     private val oresPattern by AchievementManager.patternGroup.pattern(
         "ores",
@@ -32,7 +32,7 @@ object SkillAchievements {
     )
 
     /**
-     * REGEX-TEST: Sea Creatures killed: 63,641
+     * @regexTest Sea Creatures killed: 63,641
      */
     private val seaCreaturesPattern by AchievementManager.patternGroup.pattern(
         "sea-creatures",
@@ -40,8 +40,8 @@ object SkillAchievements {
     )
 
     /**
-     * REGEX-TEST: Fishing Skill
-     * REGEX-TEST: Mining Skill
+     * @regexTest Fishing Skill
+     * @regexTest Mining Skill
      */
     private val petSkillMenuPattern by AchievementManager.patternGroup.pattern(
         "pet-skill-menu",

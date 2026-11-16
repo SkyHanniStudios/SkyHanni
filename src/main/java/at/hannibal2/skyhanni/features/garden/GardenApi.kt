@@ -238,7 +238,7 @@ object GardenApi {
     private var lastLocation: LorenzVec? = null
 
     /**
-     * REGEX-TEST: Farming Toolkit
+     * @regexTest Farming Toolkit
      */
     private val toolkitInventoryPattern by patternGroup.pattern(
         "toolkit.inventory",

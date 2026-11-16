@@ -51,8 +51,8 @@ object TheGreatSpook {
     private val patternGroup = RepoPattern.group("event.greatspook")
 
     /**
-     * REGEX-TEST: QUICK MATHS! Solve: (10*2)+12*5
-     * REGEX-TEST: QUICK MATHS! Solve: 12x11
+     * @regexTest QUICK MATHS! Solve: (10*2)+12*5
+     * @regexTest QUICK MATHS! Solve: 12x11
      */
     private val mathFearMessagePattern by patternGroup.pattern(
         "chat.math.colorless",
@@ -60,7 +60,7 @@ object TheGreatSpook {
     )
 
     /**
-     * REGEX-TEST: [FEAR] Public Speaking Demon: Speak PlasticEating!
+     * @regexTest [FEAR] Public Speaking Demon: Speak PlasticEating!
      */
     private val speakingFearMessagePattern by patternGroup.pattern(
         "chat.speaking.colorless",
@@ -68,7 +68,7 @@ object TheGreatSpook {
     )
 
     /**
-     * REGEX-TEST: FEAR. A Primal Fear has been summoned!
+     * @regexTest FEAR. A Primal Fear has been summoned!
      */
     private val primalFearSpawnPattern by patternGroup.pattern(
         "mob.spawn.colorless",

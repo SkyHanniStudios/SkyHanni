@@ -16,7 +16,7 @@ import at.hannibal2.skyhanni.utils.chat.TextHelper.asComponent
 object HoppityAchievements {
 
     /**
-     * REGEX-TEST: Rabbits Found: 95.7%
+     * @regexTest Rabbits Found: 95.7%
      */
     private val rabbitsFoundPattern by AchievementManager.patternGroup.pattern(
         "rabbits-found",

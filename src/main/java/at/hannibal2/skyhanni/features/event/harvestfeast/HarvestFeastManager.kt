@@ -80,8 +80,8 @@ object HarvestFeastManager {
     private val sendingFeastDataMutex = Mutex()
 
     /**
-     * REGEX-TEST: Harvest Feast
-     * REGEX-TEST: Grand Feast
+     * @regexTest Harvest Feast
+     * @regexTest Grand Feast
      */
     private val feastInventoryPattern by patternGroup.pattern(
         "main.menu",
@@ -89,7 +89,7 @@ object HarvestFeastManager {
     )
 
     /**
-     * REGEX-TEST: All Crops
+     * @regexTest All Crops
      */
     private val allCropsInventoryPattern by patternGroup.pattern(
         "main.allcrops",
@@ -97,7 +97,7 @@ object HarvestFeastManager {
     )
 
     /**
-     * REGEX-TEST: Out of season until the next Feast!
+     * @regexTest Out of season until the next Feast!
      */
     private val outOfSeasonPattern by patternGroup.pattern(
         "crop.outofseason",
@@ -105,8 +105,8 @@ object HarvestFeastManager {
     )
 
     /**
-     * REGEX-TEST: Will be in-season in 20h!
-     * REGEX-TEST: Will be in-season in 13m!
+     * @regexTest Will be in-season in 20h!
+     * @regexTest Will be in-season in 13m!
      */
     private val willBeInSeasonPattern by patternGroup.pattern(
         "crop.willbe",

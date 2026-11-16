@@ -73,9 +73,9 @@ object NeuItems {
     /**
      * Deliberately looser than [neuPetLevelPattern]: a marker that is still in the name is one
      * that pattern did not match at the start of the name.
-     * REGEX-TEST: [lvl 1➡100]
-     * REGEX-TEST: [Lvl 1➡200]
-     * REGEX-TEST: [lvl {lvl}]
+     * @regexTest [lvl 1➡100]
+     * @regexTest [Lvl 1➡200]
+     * @regexTest [lvl {lvl}]
      */
     private val leftoverPetLevelPattern by patternGroup.pattern(
         "pet-level-leftover",

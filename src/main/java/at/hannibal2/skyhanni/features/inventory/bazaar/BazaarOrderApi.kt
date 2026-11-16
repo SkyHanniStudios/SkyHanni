@@ -41,9 +41,9 @@ object BazaarOrderApi {
     private val sellOffers get() = storage?.sellOffers
 
     /**
-     * REGEX-TEST: §a§lBUY §fWheat
-     * REGEX-TEST: §a§lBUY §aMagma Slug Shard
-     * REGEX-TEST: §a§lBUY §dWither Essence
+     * @regexTest §a§lBUY §fWheat
+     * @regexTest §a§lBUY §aMagma Slug Shard
+     * @regexTest §a§lBUY §dWither Essence
      */
     private val itemNamePattern by patternGroup.pattern(
         "itemname",
@@ -51,9 +51,9 @@ object BazaarOrderApi {
     )
 
     /**
-     * REGEX-TEST: Order amount: 50x
-     * REGEX-TEST: Order amount: 2,000x
-     * REGEX-TEST: Offer amount: 50x
+     * @regexTest Order amount: 50x
+     * @regexTest Order amount: 2,000x
+     * @regexTest Offer amount: 50x
      */
     private val amountPattern by patternGroup.pattern(
         "amount.colorless",
@@ -64,12 +64,12 @@ object BazaarOrderApi {
      * The bazaar omits this line entirely while nothing of the order has been traded yet.
      * Large numbers are abbreviated and rounded, so only the progress text is exact.
      *
-     * REGEX-TEST: Filled: 26/50 (52%)
-     * REGEX-TEST: Filled: 59/59 100%!
-     * REGEX-TEST: Filled: 4/1.5k (0.3%)
-     * REGEX-TEST: Filled: 34/1.9k (1.8%)
-     * REGEX-TEST: Filled: 1.2k/1.5k (80%)
-     * REGEX-TEST: Filled: 1.9k/1.9k 100%!
+     * @regexTest Filled: 26/50 (52%)
+     * @regexTest Filled: 59/59 100%!
+     * @regexTest Filled: 4/1.5k (0.3%)
+     * @regexTest Filled: 34/1.9k (1.8%)
+     * @regexTest Filled: 1.2k/1.5k (80%)
+     * @regexTest Filled: 1.9k/1.9k 100%!
      */
     private val filledPattern by patternGroup.pattern(
         "filled.colorless",
@@ -77,8 +77,8 @@ object BazaarOrderApi {
     )
 
     /**
-     * REGEX-TEST: You have 6 items to claim!
-     * REGEX-TEST: You have 20 items to claim!
+     * @regexTest You have 6 items to claim!
+     * @regexTest You have 20 items to claim!
      */
     private val claimablePattern by patternGroup.pattern(
         "claimable.colorless",
@@ -86,8 +86,8 @@ object BazaarOrderApi {
     )
 
     /**
-     * REGEX-TEST: Price per unit: 521.7 coins
-     * REGEX-TEST: Price per unit: 2,082.3 coins
+     * @regexTest Price per unit: 521.7 coins
+     * @regexTest Price per unit: 2,082.3 coins
      */
     private val pricePerUnitPattern by patternGroup.pattern(
         "price.colorless",
@@ -95,8 +95,8 @@ object BazaarOrderApi {
     )
 
     /**
-     * REGEX-TEST: By: [MVP+] hannibal2
-     * REGEX-TEST: By: hannibal2
+     * @regexTest By: [MVP+] hannibal2
+     * @regexTest By: hannibal2
      */
     val ownerPattern by patternGroup.pattern(
         "owner.colorless",
@@ -104,8 +104,8 @@ object BazaarOrderApi {
     )
 
     /**
-     * REGEX-TEST: [Bazaar] Buy Order Setup! 1x Coal for 4.4 coins.
-     * REGEX-TEST: [Bazaar] Buy Order Setup! 50x Enchanted Iron Ingot for 26,085 coins.
+     * @regexTest [Bazaar] Buy Order Setup! 1x Coal for 4.4 coins.
+     * @regexTest [Bazaar] Buy Order Setup! 50x Enchanted Iron Ingot for 26,085 coins.
      */
     private val orderSetupPattern by patternGroup.pattern(
         "chat.setup.colorless",
@@ -113,7 +113,7 @@ object BazaarOrderApi {
     )
 
     /**
-     * REGEX-TEST: [Bazaar] Claimed 24x Nessie Shard worth 4.8M coins bought for 202k each!
+     * @regexTest [Bazaar] Claimed 24x Nessie Shard worth 4.8M coins bought for 202k each!
      */
     private val claimedPattern by patternGroup.pattern(
         "chat.claimed.colorless",
@@ -121,7 +121,7 @@ object BazaarOrderApi {
     )
 
     /**
-     * REGEX-TEST: [Bazaar] Cancelled! Refunded 12,345 coins from cancelling Buy Order!
+     * @regexTest [Bazaar] Cancelled! Refunded 12,345 coins from cancelling Buy Order!
      */
     val cancelledPattern by patternGroup.pattern(
         "chat.cancelled.colorless",

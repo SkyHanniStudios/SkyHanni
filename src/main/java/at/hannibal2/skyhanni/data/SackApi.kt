@@ -59,8 +59,8 @@ object SackApi {
 
     // <editor-fold desc="Patterns">
     /**
-     * @regexTestFishing Sack
-     * @regexTestEnchanted Agronomy Sack
+     * @regexTest Fishing Sack
+     * @regexTest Enchanted Agronomy Sack
      */
     private val sackPattern by patternGroup.pattern(
         "sack",
@@ -68,8 +68,8 @@ object SackApi {
     )
 
     /**
-     * @regexTest§7Stored: §e28,183§7/60.5k
-     * @regexTest§7Stored: §80§7/60.5k
+     * @regexTest §7Stored: §e28,183§7/60.5k
+     * @regexTest §7Stored: §80§7/60.5k
      */
     @Suppress("MaxLineLength")
     private val numPattern by patternGroup.pattern(
@@ -91,20 +91,20 @@ object SackApi {
     )
 
     /**
-     * @regexTest Rough Jade Gemstone
-     * @regexTest Rough Jade Gemstone
-     * @regexTest Rough Amber Gemstone
-     * @regexTest Rough Topaz Gemstone
-     * @regexTest Rough Sapphire Gemstone
-     * @regexTest Rough Amethyst Gemstone
-     * @regexTest Rough Jasper Gemstone
-     * @regexTest Rough Ruby Gemstone
-     * @regexTest Rough Opal Gemstone
-     * @regexTest Rough Onyx Gemstone
-     * @regexTest Rough Aquamarine Gemstone
-     * @regexTest Flawed Citrine Gemstone
-     * @regexTest Fine Peridot Gemstone
-     * @regexTestTopaz Gemstones
+     * @regexTest  Rough Jade Gemstone
+     * @regexTest  Rough Jade Gemstone
+     * @regexTest  Rough Amber Gemstone
+     * @regexTest  Rough Topaz Gemstone
+     * @regexTest  Rough Sapphire Gemstone
+     * @regexTest  Rough Amethyst Gemstone
+     * @regexTest  Rough Jasper Gemstone
+     * @regexTest  Rough Ruby Gemstone
+     * @regexTest  Rough Opal Gemstone
+     * @regexTest  Rough Onyx Gemstone
+     * @regexTest  Rough Aquamarine Gemstone
+     * @regexTest  Flawed Citrine Gemstone
+     * @regexTest  Fine Peridot Gemstone
+     * @regexTest Topaz Gemstones
      */
     private val gemstoneItemNamePattern by patternGroup.pattern(
         "gemstone.name.colorless",
@@ -112,10 +112,10 @@ object SackApi {
     )
 
     /**
-     * @regexTest▶ No filter
-     * @regexTest▶ Rough
-     * @regexTest▶ Flawed
-     * @regexTest▶ Fine
+     * @regexTest ▶ No filter
+     * @regexTest ▶ Rough
+     * @regexTest ▶ Flawed
+     * @regexTest ▶ Fine
      */
     private val gemstoneFilterPattern by patternGroup.pattern(
         "gemstone.filter.colorless",
@@ -131,7 +131,7 @@ object SackApi {
     )
 
     /**
-     * @regexTestCOMMON_HOOK
+     * @regexTest COMMON_HOOK
      */
     private val ignoreInternalNamePattern by patternGroup.pattern(
         "ignore.internal-name",

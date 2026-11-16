@@ -44,8 +44,8 @@ object DianaProfitTracker {
     private val patternGroup = RepoPattern.group("diana.chat")
 
     /**
-     * REGEX-TEST: You dug out a Griffin Burrow!
-     * REGEX-TEST: You finished the Griffin burrow chain! (4/4)
+     * @regexTest You dug out a Griffin Burrow!
+     * @regexTest You finished the Griffin burrow chain! (4/4)
      */
     private val chatDugOutPattern by patternGroup.pattern(
         "burrow.dug.colorless",
@@ -53,7 +53,7 @@ object DianaProfitTracker {
     )
 
     /**
-     * REGEX-TEST: Wow! You dug out 1,000 coins!
+     * @regexTest Wow! You dug out 1,000 coins!
      */
     private val chatDugOutCoinsPattern by patternGroup.pattern(
         "coins.colorless",
@@ -61,7 +61,7 @@ object DianaProfitTracker {
     )
 
     /**
-     * REGEX-TEST: RARE DROP! You dug out a Griffin Feather!
+     * @regexTest RARE DROP! You dug out a Griffin Feather!
      */
     private val griffinFeatherDropPattern by patternGroup.pattern(
         "griffin.feather.drop",
@@ -69,7 +69,7 @@ object DianaProfitTracker {
     )
 
     /**
-     * REGEX-TEST: Follow the arrows to find the treasure!
+     * @regexTest Follow the arrows to find the treasure!
      */
     private val treasureArrowPattern by patternGroup.pattern(
         "treasure.arrow",

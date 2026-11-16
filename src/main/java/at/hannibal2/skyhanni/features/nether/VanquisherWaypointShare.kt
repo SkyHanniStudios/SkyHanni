@@ -43,8 +43,8 @@ object VanquisherWaypointShare {
     private val patternGroup = RepoPattern.group("vanquisher.waypoint")
 
     /**
-     * REGEX-TEST: Party > [MVP+] itsseth3: x: 100 y: 90 z: 10 | Vanquisher
-     * REGEX-TEST: [MVP+] itsseth3: x: -10 y: 30 z: 22 | Vanquisher
+     * @regexTest Party > [MVP+] itsseth3: x: 100 y: 90 z: 10 | Vanquisher
+     * @regexTest [MVP+] itsseth3: x: -10 y: 30 z: 22 | Vanquisher
      */
     @Suppress("MaxLineLength")
     private val sharedPattern by patternGroup.list(
@@ -53,8 +53,8 @@ object VanquisherWaypointShare {
     )
 
     /**
-     * REGEX-TEST: Party > [MVP+] itsseth3: Vanquisher dead!
-     * REGEX-TEST: [MVP+] itsseth3: Vanquisher dead!
+     * @regexTest Party > [MVP+] itsseth3: Vanquisher dead!
+     * @regexTest [MVP+] itsseth3: Vanquisher dead!
      */
 
     private val diedPattern by patternGroup.pattern(

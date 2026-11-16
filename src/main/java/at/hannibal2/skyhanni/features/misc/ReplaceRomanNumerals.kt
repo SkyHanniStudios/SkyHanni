@@ -34,10 +34,10 @@ object ReplaceRomanNumerals {
     private val skillNames = "(?:" + EnumUtils.enumJoinToPattern<SkillType> { it.displayName } + "|Runecrafting|Social)"
 
     /**
-     * REGEX-TEST: Catacombs Level XII
-     * REGEX-TEST: Reach Catacombs Level XII by
-     * REGEX-TEST: Progress to Level XXIV: 100%
-     * REGEX-TEST: Hunting Level XX
+     * @regexTest Catacombs Level XII
+     * @regexTest Reach Catacombs Level XII by
+     * @regexTest Progress to Level XXIV: 100%
+     * @regexTest Hunting Level XX
      */
     private val levelPattern by inventoryGroup.pattern(
         "level",
@@ -45,9 +45,9 @@ object ReplaceRomanNumerals {
     )
 
     /**
-     * REGEX-TEST: Progress to Tier III: 0%
-     * REGEX-TEST: Progress to Tier X: 100%
-     * REGEX-TEST: Reach Tier IX in your Chili Pepper
+     * @regexTest Progress to Tier III: 0%
+     * @regexTest Progress to Tier X: 100%
+     * @regexTest Reach Tier IX in your Chili Pepper
      */
     private val tierPattern by inventoryGroup.pattern(
         "tier",
@@ -55,9 +55,9 @@ object ReplaceRomanNumerals {
     )
 
     /**
-     * REGEX-TEST: Backwater Bayou Chapter VII
-     * REGEX-TEST: Complete Chapter VII on the
-     * REGEX-TEST: Chapter IV Progress: 66.7%
+     * @regexTest Backwater Bayou Chapter VII
+     * @regexTest Complete Chapter VII on the
+     * @regexTest Chapter IV Progress: 66.7%
      */
     private val chapterPattern by inventoryGroup.pattern(
         "chapter",
@@ -65,7 +65,7 @@ object ReplaceRomanNumerals {
     )
 
     /**
-     * REGEX-TEST: Fishing Skill XXIV
+     * @regexTest Fishing Skill XXIV
      * @regexTestWrapped " ✔ Farming Skill XXIV"
      */
     private val skillPattern by inventoryGroup.pattern(
@@ -74,9 +74,9 @@ object ReplaceRomanNumerals {
     )
 
     /**
-     * REGEX-TEST: Reach Frozen Corpse Milestone VII
-     * REGEX-TEST: Progress to Milestone VII: 0%
-     * REGEX-TEST: Bestiary Milestone CCC
+     * @regexTest Reach Frozen Corpse Milestone VII
+     * @regexTest Progress to Milestone VII: 0%
+     * @regexTest Bestiary Milestone CCC
      */
     private val milestonePattern by inventoryGroup.pattern(
         "milestone",
@@ -84,9 +84,9 @@ object ReplaceRomanNumerals {
     )
 
     /**
-     * REGEX-TEST: Master Catacombs Floor VII
-     * REGEX-TEST: Complete Master Catacombs Floor VII.
-     * REGEX-TEST: Progress to Floor VII: 100%
+     * @regexTest Master Catacombs Floor VII
+     * @regexTest Complete Master Catacombs Floor VII.
+     * @regexTest Progress to Floor VII: 100%
      */
     private val floorPattern by inventoryGroup.pattern(
         "floor",
@@ -94,7 +94,7 @@ object ReplaceRomanNumerals {
     )
 
     /**
-     * REGEX-TEST: Chili Pepper Collection IX
+     * @regexTest Chili Pepper Collection IX
      * @regexFail View all your Ender Pearl Collection
      */
     private val collectionPattern by inventoryGroup.pattern(
@@ -104,9 +104,9 @@ object ReplaceRomanNumerals {
 
     /**
      * Anchored by the prefix and the colon, so the name in between may be any sequence of plain words.
-     * REGEX-TEST: Progress to Vinesap V:
-     * REGEX-TEST: Progress to Helix Log IX:
-     * REGEX-TEST: Progress to Milestone CCC:
+     * @regexTest Progress to Vinesap V:
+     * @regexTest Progress to Helix Log IX:
+     * @regexTest Progress to Milestone CCC:
      * @regexFail Progress: 81.9%
      * @regexFail Progress to Amount Consumed: 0%
      */
@@ -116,11 +116,11 @@ object ReplaceRomanNumerals {
     )
 
     /**
-     * REGEX-TEST: Fishing L
-     * REGEX-TEST: Enchanting LX
-     * REGEX-TEST: Hunting XIX
-     * REGEX-TEST: Runecrafting XXV
-     * REGEX-TEST: Social XVII
+     * @regexTest Fishing L
+     * @regexTest Enchanting LX
+     * @regexTest Hunting XIX
+     * @regexTest Runecrafting XXV
+     * @regexTest Social XVII
      * @regexFail Farming Skill XXIV
      * @regexFail Hunting Level XX
      * @regexFail Combat Collections
@@ -131,10 +131,10 @@ object ReplaceRomanNumerals {
     )
 
     /**
-     * REGEX-TEST: Heart of the Mountain X
-     * REGEX-TEST: Reach Heart of the Mountain X in the
-     * REGEX-TEST: Heart of the Forest III
-     * REGEX-TEST: Reach Heart of the Forest III in
+     * @regexTest Heart of the Mountain X
+     * @regexTest Reach Heart of the Mountain X in the
+     * @regexTest Heart of the Forest III
+     * @regexTest Reach Heart of the Forest III in
      */
     private val heartOfThePattern by inventoryGroup.pattern(
         "heart-of-the",
@@ -144,9 +144,9 @@ object ReplaceRomanNumerals {
     /**
      * Anchored by the suffix, the numeral belongs to whatever is named before it.
      * Singular and plural both occur, depending on how many rewards the level grants.
-     * REGEX-TEST: Helix Log IX Rewards:
-     * REGEX-TEST: Vinesap V Rewards:
-     * REGEX-TEST: Level XVIII Reward:
+     * @regexTest Helix Log IX Rewards:
+     * @regexTest Vinesap V Rewards:
+     * @regexTest Level XVIII Reward:
      * @regexFail Rewards:
      */
     private val rewardsPattern by inventoryGroup.pattern(
@@ -157,8 +157,8 @@ object ReplaceRomanNumerals {
     /**
      * The tier of an item is repeated in its reward lines, where nothing else anchors it.
      * Every hit is checked against the numeral already read from the display name.
-     * REGEX-TEST: Brewer XLIII
-     * REGEX-TEST: Charming XX
+     * @regexTest Brewer XLIII
+     * @regexTest Charming XX
      */
     private val standaloneNumeralPattern by inventoryGroup.pattern(
         "standalone-numeral",
@@ -168,8 +168,8 @@ object ReplaceRomanNumerals {
     private val contextGroup = inventoryGroup.group("context")
 
     /**
-     * REGEX-TEST: 4 tasks
-     * REGEX-TEST: 11 tasks
+     * @regexTest 4 tasks
+     * @regexTest 11 tasks
      */
     private val taskListPattern by contextGroup.pattern(
         "task-list",
@@ -177,10 +177,10 @@ object ReplaceRomanNumerals {
     )
 
     /**
-     * REGEX-TEST: Feast Perk Shop.
-     * REGEX-TEST: Purchase perks from the Safari
-     * REGEX-TEST: Purchase Boss Luck I from the
-     * REGEX-TEST: Purchase Extra Farming Fortune II
+     * @regexTest Feast Perk Shop.
+     * @regexTest Purchase perks from the Safari
+     * @regexTest Purchase Boss Luck I from the
+     * @regexTest Purchase Extra Farming Fortune II
      */
     private val perkShopPattern by contextGroup.pattern(
         "perk-shop",
@@ -189,9 +189,9 @@ object ReplaceRomanNumerals {
 
     /**
      * Matched against the inventory title, not against a lore line.
-     * REGEX-TEST: Plant Yield Upgrades
-     * REGEX-TEST: Growth Speed Upgrades
-     * REGEX-TEST: Plot Limit Upgrades
+     * @regexTest Plant Yield Upgrades
+     * @regexTest Growth Speed Upgrades
+     * @regexTest Plot Limit Upgrades
      */
     private val upgradeMenuPattern by contextGroup.pattern(
         "upgrade-menu",
@@ -200,9 +200,9 @@ object ReplaceRomanNumerals {
 
     /**
      * The name wraps into the next line on long collections, so the prefix carries the match.
-     * REGEX-TEST: Total Collected: 210,194
-     * REGEX-TEST: View all your Gunpowder Collection
-     * REGEX-TEST: View all your Ruby Veilshroom
+     * @regexTest Total Collected: 210,194
+     * @regexTest View all your Gunpowder Collection
+     * @regexTest View all your Ruby Veilshroom
      */
     private val collectionItemPattern by contextGroup.pattern(
         "collection-item",
@@ -212,7 +212,7 @@ object ReplaceRomanNumerals {
     /**
      * Matched against the inventory title. The singular is what separates the detail menu of a
      * single collection from the overview menus, which end in Collections.
-     * REGEX-TEST: Honeycomb Collection
+     * @regexTest Honeycomb Collection
      * @regexFail Foraging Collections
      */
     private val collectionMenuPattern by contextGroup.pattern(
@@ -222,10 +222,10 @@ object ReplaceRomanNumerals {
 
     /**
      * Only used inside a recognised context, where a bare name followed by a numeral is safe.
-     * REGEX-TEST: Leftovers II
-     * REGEX-TEST: Plant Yield V
-     * REGEX-TEST: Critter Catcher VII
-     * REGEX-TEST: Diana's Favor III
+     * @regexTest Leftovers II
+     * @regexTest Plant Yield V
+     * @regexTest Critter Catcher VII
+     * @regexTest Diana's Favor III
      * @regexTestWrapped "Leftovers II "
      * @regexFail 5 SkyBlock XP
      * @regexFail UNLOCKED
@@ -237,8 +237,8 @@ object ReplaceRomanNumerals {
     )
 
     /**
-     * REGEX-TEST: increase your Pumpkin tier!
-     * REGEX-TEST: to increase your Sunflower tier!
+     * @regexTest increase your Pumpkin tier!
+     * @regexTest to increase your Sunflower tier!
      */
     private val cropMilestonePattern by contextGroup.pattern(
         "crop-milestone",

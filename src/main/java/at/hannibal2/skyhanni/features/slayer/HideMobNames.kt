@@ -23,9 +23,9 @@ object HideMobNames {
             "\uE07C\uE07D\uE07E\uE018\uE07F\uE080\uE081\uE082\uE083\uE084\uE085\uE086\uE087"
 
     /**
-     * REGEX-TEST: [Lv1]  Graveyard Zombie 100/100❤
-     * REGEX-TEST: [Lv30]  Crypt Ghoul 2,000/2,000❤
-     * REGEX-TEST: [Lv1]  Zombie Villager 120/120❤
+     * @regexTest [Lv1]  Graveyard Zombie 100/100❤
+     * @regexTest [Lv30]  Crypt Ghoul 2,000/2,000❤
+     * @regexTest [Lv1]  Zombie Villager 120/120❤
      */
     private val hideMobNamePatterns by RepoPattern.list(
         "slayer.hidemobname",

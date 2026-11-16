@@ -35,8 +35,8 @@ object WikiManager {
     val wiki get() = data.unofficial
 
     /**
-     * REGEX-TEST: Close
-     * REGEX-TEST: Go Back
+     * @regexTest Close
+     * @regexTest Go Back
      */
     private val ignoredKeybindItemPattern by RepoPattern.pattern(
         "commands.wiki.ignored-item",

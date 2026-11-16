@@ -46,8 +46,8 @@ object DungeonSpiritLeapOverlay {
     private val colorConfig get() = config.colorConfig
 
     /**
-     * REGEX-TEST: Spirit Leap
-     * REGEX-TEST: Teleport to Player
+     * @regexTest Spirit Leap
+     * @regexTest Teleport to Player
      */
     private val inventoryMenuPattern by DungeonApi.patternGroup.pattern(
         "spirit-leap.menu",

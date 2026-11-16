@@ -89,8 +89,8 @@ object DamageIndicatorManager {
     private val patternGroup = RepoPattern.group("combat.damageindicator")
 
     /**
-     * REGEX-TEST: 86761
-     * REGEX-TEST: ✧3470472✧
+     * @regexTest 86761
+     * @regexTest ✧3470472✧
      */
     private val damagePattern by patternGroup.pattern(
         "damage",
@@ -98,9 +98,9 @@ object DamageIndicatorManager {
     )
 
     /**
-     * REGEX-TEST: §8[§7Lv655§8] §5 §5Voidgloom Seraph IV §f§l94 Hits
-     * REGEX-TEST: §8[§7Lv655§8] §5 §5Voidgloom Seraph IV §c§l33 Hits
-     * REGEX-TEST: §c☠ §bVoidgloom Seraph IV §d§l1 Hit
+     * @regexTest §8[§7Lv655§8] §5 §5Voidgloom Seraph IV §f§l94 Hits
+     * @regexTest §8[§7Lv655§8] §5 §5Voidgloom Seraph IV §c§l33 Hits
+     * @regexTest §c☠ §bVoidgloom Seraph IV §d§l1 Hit
      */
     private val enderSlayerHitsNumberPattern by patternGroup.pattern(
         "enderslayer.hits",

@@ -30,8 +30,8 @@ object NpcDayLimitTracker {
     private val patternGroup = RepoPattern.group("misc.npcdaylimit")
 
     /**
-     * REGEX-TEST: You sold Evergreen Chip x64 for 9,600,000 Coins!
-     * REGEX-TEST: You sold Cicada Symphony Vinyl x1 for 50,000 Coins!
+     * @regexTest You sold Evergreen Chip x64 for 9,600,000 Coins!
+     * @regexTest You sold Cicada Symphony Vinyl x1 for 50,000 Coins!
      */
     private val npcSellPattern by patternGroup.pattern(
         "sold",

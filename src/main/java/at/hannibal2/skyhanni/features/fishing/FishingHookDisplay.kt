@@ -32,10 +32,10 @@ object FishingHookDisplay {
     private var timerDisplay: TimerDisplay? = null
 
     /**
-     * REGEX-TEST: §e§l3.0
-     * REGEX-TEST: §e§l1.2
-     * REGEX-TEST: §c§l!!!
-     * REGEX-TEST: !!!
+     * @regexTest §e§l3.0
+     * @regexTest §e§l1.2
+     * @regexTest §c§l!!!
+     * @regexTest !!!
      * @regexFail §736
      * @regexFail §772
      */

@@ -51,11 +51,11 @@ object EnchantParser {
      * re-populate the tests over time with new examples I guess. (The tests are what is returned
      * from running `formattedTextCompat()` on a lore line, which is what is used against the regex)
      *
-     * REGEX-TEST: §5§r§d§l§r§d§lUltimate Wise V, §r§9Champion X, §r§9Cleave V
-     * REGEX-TEST: §d§l§d§lFatal Tempo I, §9Chance IV, §9Cubism V
-     * REGEX-TEST: §9Drain IV, Ender Slayer VI, Execute V
-     * REGEX-TEST: §9Toxophilite VIII §82.1M
-     * REGEX-TEST: §9Cultivating VII §81,625,381
+     * @regexTest §5§r§d§l§r§d§lUltimate Wise V, §r§9Champion X, §r§9Cleave V
+     * @regexTest §d§l§d§lFatal Tempo I, §9Chance IV, §9Cubism V
+     * @regexTest §9Drain IV, Ender Slayer VI, Execute V
+     * @regexTest §9Toxophilite VIII §82.1M
+     * @regexTest §9Cultivating VII §81,625,381
      * @regexFail §c§7by §c10% §7per hit, capped at §c200% §7for 3
      */
     val enchantmentExclusivePattern by patternGroup.pattern(
@@ -64,11 +64,11 @@ object EnchantParser {
     )
 
     /**
-     * REGEX-TEST: §5§r§d§l§r§d§lUltimate Wise V, §r§9Champion X, §r§9Cleave V
-     * REGEX-TEST: §d§l§d§lFatal Tempo I, §9Chance IV, §9Cubism V
-     * REGEX-TEST: §9Drain IV, Ender Slayer VI, Execute V
-     * REGEX-TEST: §9Toxophilite VIII §82.1M
-     * REGEX-TEST: §9Cultivating VII §81,625,381
+     * @regexTest §5§r§d§l§r§d§lUltimate Wise V, §r§9Champion X, §r§9Cleave V
+     * @regexTest §d§l§d§lFatal Tempo I, §9Chance IV, §9Cubism V
+     * @regexTest §9Drain IV, Ender Slayer VI, Execute V
+     * @regexTest §9Toxophilite VIII §82.1M
+     * @regexTest §9Cultivating VII §81,625,381
      * @regexFail §c§7by §c10% §7per hit, capped at §c200% §7for 3
      */
     @Suppress("MaxLineLength")

@@ -68,7 +68,7 @@ object FarmingFortuneDisplay {
     )
 
     /**
-     * REGEX-TEST: §7You have §6+12 Wheat Fortune
+     * @regexTest §7You have §6+12 Wheat Fortune
      */
     private val collectionPattern by patternGroup.pattern(
         "collection",
@@ -86,7 +86,7 @@ object FarmingFortuneDisplay {
     )
 
     /**
-     * REGEX-TEST: §7Piece Bonus: §6+10
+     * @regexTest §7Piece Bonus: §6+10
      */
     private val lotusAbilityPattern by patternGroup.pattern(
         "lotusability",
@@ -94,7 +94,7 @@ object FarmingFortuneDisplay {
     )
 
     /**
-     * REGEX-TEST: §7Fermento Armor. §7Grants §60 Farming
+     * @regexTest §7Fermento Armor. §7Grants §60 Farming
      */
     // todo make pattern work on Melon and Cropie armor
     private val armorAbilityFortunePattern by patternGroup.pattern(

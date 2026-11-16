@@ -38,8 +38,8 @@ object BestiaryData {
     private val patternGroup = RepoPattern.group("combat.bestiary")
 
     /**
-     * REGEX-TEST: Overall Progress: 100% (MAX!)
-     * REGEX-TEST: Families Completed: 100%
+     * @regexTest Overall Progress: 100% (MAX!)
+     * @regexTest Families Completed: 100%
      */
     private val completedPattern by patternGroup.list(
         "completed",
@@ -48,7 +48,7 @@ object BestiaryData {
     )
 
     /**
-     * REGEX-TEST: Overall Progress: HIDDEN
+     * @regexTest Overall Progress: HIDDEN
      */
     private val hiddenProgressPattern by patternGroup.pattern(
         "hiddenprogress",

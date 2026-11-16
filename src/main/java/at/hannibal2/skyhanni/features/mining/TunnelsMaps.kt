@@ -116,7 +116,7 @@ object TunnelsMaps {
 
     // <editor-fold desc="Patterns">
     /**
-     * REGEX-TEST: Glacite Collector
+     * @regexTest Glacite Collector
      */
     private val collectorCommissionPattern by RepoPattern.pattern(
         "mining.commisson.collector.colorless",
@@ -124,8 +124,8 @@ object TunnelsMaps {
     )
 
     /**
-     * REGEX-TEST: - 277 Glacite Powder
-     * REGEX-TEST: - 1,010 Glacite Powder
+     * @regexTest - 277 Glacite Powder
+     * @regexTest - 1,010 Glacite Powder
      */
     private val glacitePattern by RepoPattern.pattern(
         "mining.commisson.reward.glacite.colorless",

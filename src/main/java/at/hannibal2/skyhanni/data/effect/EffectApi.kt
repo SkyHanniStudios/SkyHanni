@@ -43,7 +43,7 @@ object EffectApi {
     private val patternGroup = RepoPattern.group("api.effects")
 
     /**
-     * @regexTestGod Potion: 4d
+     * @regexTest God Potion: 4d
      */
     private val godPotTabPattern by patternGroup.pattern(
         "tab.god-pot",
@@ -51,7 +51,7 @@ object EffectApi {
     )
 
     /**
-     * @regexTestSCHLURP! The effects of the Hot Chocolate Mixin have been extended by 86h 24m!
+     * @regexTest SCHLURP! The effects of the Hot Chocolate Mixin have been extended by 86h 24m!
      * They will pause if your God Potion expires.
      */
     private val hotChocolateMixinConsumePattern by patternGroup.pattern(
@@ -60,9 +60,9 @@ object EffectApi {
     )
 
     /**
-     * @regexTestGULP! The God Potion grants you powers for 28h 48m!
-     * @regexTestSIP! The God Potion grants you powers for 28h 48m!
-     * @regexTestSLURP! The God Potion grants you powers for 28h 48m!
+     * @regexTest GULP! The God Potion grants you powers for 28h 48m!
+     * @regexTest SIP! The God Potion grants you powers for 28h 48m!
+     * @regexTest SLURP! The God Potion grants you powers for 28h 48m!
      */
     private val godPotConsumePattern by patternGroup.pattern(
         "chat.god-pot-consume",
@@ -78,7 +78,7 @@ object EffectApi {
     )
 
     /**
-     * @regexTest(1/2) Active Effects
+     * @regexTest (1/2) Active Effects
      */
     private val effectsInventoryPattern by patternGroup.pattern(
         "inventory.title",
@@ -86,7 +86,7 @@ object EffectApi {
     )
 
     /**
-     * @regexTestFilter
+     * @regexTest Filter
      */
     private val filterPattern by patternGroup.pattern(
         "inventory.filter",
@@ -94,7 +94,7 @@ object EffectApi {
     )
 
     /**
-     * @regexTest▶ God Potion Effects
+     * @regexTest ▶ God Potion Effects
      */
     private val godPotEffectsFilterSelectPattern by patternGroup.pattern(
         "inventory.filter.god-pot-selected",
@@ -102,7 +102,7 @@ object EffectApi {
     )
 
     /**
-     * @regexTestRemaining: 105:01:34
+     * @regexTest Remaining: 105:01:34
      */
     private val potionRemainingLoreTimerPattern by patternGroup.pattern(
         "inventory.effect-remaining",
@@ -123,7 +123,7 @@ object EffectApi {
      * @regexTestWrapped " Smoldering Polarization I: 58s"
      * @regexTestWrapped " Wisp's Ice-Flavored Water I: 29m"
      * @regexTestWrapped "     Mushed Glowy Tonic I 43m"
-     * @regexTestWisp's Ice-Flavored Water I 10m
+     * @regexTest Wisp's Ice-Flavored Water I 10m
      */
     private val tabEffectPattern by patternGroup.pattern(
         "tab.effect",
@@ -131,9 +131,9 @@ object EffectApi {
     )
 
     /**
-     * @regexTestLushlilac Bonbon: 12h
-     * @regexTestPrime Lushlilac Bonbon: 18h
-     * @regexTestPrime Lushlilac Bonbon: 17h 58m
+     * @regexTest Lushlilac Bonbon: 12h
+     * @regexTest Prime Lushlilac Bonbon: 18h
+     * @regexTest Prime Lushlilac Bonbon: 17h 58m
      */
     private val saltTabPattern by patternGroup.pattern(
         "tab.salt",
@@ -141,7 +141,7 @@ object EffectApi {
     )
 
     /**
-     * @regexTestYou have 10 non-god effects.
+     * @regexTest You have 10 non-god effects.
      */
     private val effectsCountPattern by patternGroup.pattern(
         "footer.effects-count",
@@ -149,7 +149,7 @@ object EffectApi {
     )
 
     /**
-     * @regexTestActive Effects
+     * @regexTest Active Effects
      */
     private val activeEffectsFooterPattern by patternGroup.pattern(
         "footer.title",

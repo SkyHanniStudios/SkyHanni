@@ -18,11 +18,11 @@ object ComposterUpgradesData {
     private val patternGroup = RepoPattern.group("composter")
 
     /**
-     * REGEX-TEST: Composter Speed II
-     * REGEX-TEST: Multi Drop III
-     * REGEX-TEST: Fuel Cap I
-     * REGEX-TEST: Organic Matter Cap IV
-     * REGEX-TEST: Cost Reduction V
+     * @regexTest Composter Speed II
+     * @regexTest Multi Drop III
+     * @regexTest Fuel Cap I
+     * @regexTest Organic Matter Cap IV
+     * @regexTest Cost Reduction V
      */
     val composterUpgradePattern by RepoPattern.pattern(
         "composter.upgrade.name",
@@ -30,7 +30,7 @@ object ComposterUpgradesData {
     )
 
     /**
-     * REGEX-TEST: Composter
+     * @regexTest Composter
      */
     val composterInventoryPattern by patternGroup.pattern(
         "inventory",
@@ -38,7 +38,7 @@ object ComposterUpgradesData {
     )
 
     /**
-     * REGEX-TEST: Composter Upgrades
+     * @regexTest Composter Upgrades
      */
     val composterUpgradesInventoryPattern by patternGroup.pattern(
         "upgrades.inventory",

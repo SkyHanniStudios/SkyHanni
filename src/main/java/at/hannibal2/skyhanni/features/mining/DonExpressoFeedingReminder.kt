@@ -20,7 +20,7 @@ object DonExpressoFeedingReminder {
     private val patternGroup = RepoPattern.group("mining.donexpresso")
 
     /**
-     * REGEX-TEST: [NPC] Don Expresso: I DON'T FEEL SO GOOD...
+     * @regexTest [NPC] Don Expresso: I DON'T FEEL SO GOOD...
      */
     private val fullPattern by patternGroup.pattern(
         "full",

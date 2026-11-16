@@ -40,13 +40,13 @@ object LoreCostUtils {
      * or without one. The prefixes are listed one by one on purpose: a generic word in front of
      * "Cost" would also match ability lines such as "Mana Cost: 100".
      *
-     * REGEX-TEST: §7Cost
-     * REGEX-TEST: §5§o§7Cost
-     * REGEX-TEST: §7Costs
-     * REGEX-TEST: §7Cost:
-     * REGEX-TEST: §7Cost: §b5,000 Bits
-     * REGEX-TEST: §7Cost to unlock: §550 Tokens
-     * REGEX-TEST: §7Donation Cost:
+     * @regexTest §7Cost
+     * @regexTest §5§o§7Cost
+     * @regexTest §7Costs
+     * @regexTest §7Cost:
+     * @regexTest §7Cost: §b5,000 Bits
+     * @regexTest §7Cost to unlock: §550 Tokens
+     * @regexTest §7Donation Cost:
      */
     private val costHeaderPattern by patternGroup.pattern(
         "cost.header",
@@ -57,14 +57,14 @@ object LoreCostUtils {
      * Shops word this line differently, and an entry the player cannot afford says so instead of
      * asking for a click. Kuudra's preview line uses the right button and is no trade.
      *
-     * REGEX-TEST: Click to trade!
-     * REGEX-TEST: Click to unlock!
-     * REGEX-TEST: Click to level up!
-     * REGEX-TEST: Click to buy!
-     * REGEX-TEST: Click to donate!
-     * REGEX-TEST: Click to bake!
-     * REGEX-TEST: Left Click to unlock!
-     * REGEX-TEST: You can't afford this upgrade!
+     * @regexTest Click to trade!
+     * @regexTest Click to unlock!
+     * @regexTest Click to level up!
+     * @regexTest Click to buy!
+     * @regexTest Click to donate!
+     * @regexTest Click to bake!
+     * @regexTest Left Click to unlock!
+     * @regexTest You can't afford this upgrade!
      * @regexFail Right Click to preview!
      */
     private val tradeLinePattern by patternGroup.pattern(
@@ -73,8 +73,8 @@ object LoreCostUtils {
     )
 
     /**
-     * REGEX-TEST: 50 Safari Essence
-     * REGEX-TEST: 50,000 Undead Essence
+     * @regexTest 50 Safari Essence
+     * @regexTest 50,000 Undead Essence
      */
     private val amountFirstPattern by patternGroup.pattern(
         "cost.amount-first",
@@ -83,7 +83,7 @@ object LoreCostUtils {
 
     // Great Spook shop writes "???" for the cost of items
     /**
-     * REGEX-TEST: ???
+     * @regexTest ???
      */
     private val invalidCurrencyNamesPattern by patternGroup.list(
         "cost.invalid-currency-names",

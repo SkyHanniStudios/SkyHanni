@@ -25,8 +25,8 @@ object TrophyFishMessages {
     private val config get() = SkyHanniMod.feature.fishing.trophyFishing.chatMessages
 
     /**
-     * REGEX-TEST: §6 §r§6§lTROPHY FISH! §r§fYou caught §r§fBlobfish §r§8§lBRONZE§r§f!
-     * REGEX-TEST: §6 §r§6§lTROPHY FISH! §r§fYou caught §r§9Lavahorse §r§7§lSILVER§r§f!
+     * @regexTest §6 §r§6§lTROPHY FISH! §r§fYou caught §r§fBlobfish §r§8§lBRONZE§r§f!
+     * @regexTest §6 §r§6§lTROPHY FISH! §r§fYou caught §r§9Lavahorse §r§7§lSILVER§r§f!
      */
     @Suppress("MaxLineLength")
     val trophyFishPattern by RepoPattern.pattern(

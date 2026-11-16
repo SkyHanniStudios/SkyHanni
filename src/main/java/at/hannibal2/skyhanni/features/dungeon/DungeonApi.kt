@@ -62,7 +62,7 @@ object DungeonApi {
     )
 
     /**
-     * @regexTestYour Mage stats are doubled because you are the only player using this class!
+     * @regexTest Your Mage stats are doubled because you are the only player using this class!
      */
     private val uniqueClassBonus by patternGroup.pattern(
         "unique-class-bonus",
@@ -70,7 +70,7 @@ object DungeonApi {
     )
 
     /**
-     * @regexTestView all your Bonzo Collection
+     * @regexTest View all your Bonzo Collection
      */
     private val bossPattern by patternGroup.pattern(
         "boss",
@@ -94,7 +94,7 @@ object DungeonApi {
     )
 
     /**
-     * @regexTestTotal Kills: 123
+     * @regexTest Total Kills: 123
      */
     private val totalKillsPattern by patternGroup.pattern(
         "total-kills",
@@ -126,8 +126,8 @@ object DungeonApi {
     private val WITHER_ESSENCE_TEXTURE by SkullTextureHolder.texture("WITHER_ESSENCE")
 
     /**
-     * @regexTestTime Elapsed: §a01m 17s
-     * @regexTestTime Elapsed: §a14s
+     * @regexTest Time Elapsed: §a01m 17s
+     * @regexTest Time Elapsed: §a14s
      */
     private val timePattern by patternGroup.pattern(
         "time",
@@ -143,7 +143,7 @@ object DungeonApi {
     )
 
     /**
-     * @regexTest§711/15/24 §8m4F 830,-420
+     * @regexTest §711/15/24 §8m4F 830,-420
      */
     val dungeonRoomPattern by patternGroup.pattern(
         "room",
@@ -151,7 +151,7 @@ object DungeonApi {
     )
 
     /**
-     * @regexTest§r§r§fBlessing of Power V§r
+     * @regexTest §r§r§fBlessing of Power V§r
      */
     private val blessingPattern by patternGroup.pattern(
         "blessings.colorless",
@@ -163,7 +163,7 @@ object DungeonApi {
     )
 
     /**
-     * @regexTest[NPC] Mort: Here, I found this map when I first entered the dungeon.
+     * @regexTest [NPC] Mort: Here, I found this map when I first entered the dungeon.
      */
     private val mortStartPattern by patternGroup.pattern(
         "start.mort.colorless",
@@ -171,10 +171,10 @@ object DungeonApi {
     )
 
     /**
-     * @regexTest[319] Empa_ α (Mage XXXIV)
-     * @regexTest[393] [YOUTUBE] Remittal Σ♲ (Mage XL)
-     * @regexTest[273] Ovi_1 Ӄ (Mage XXXVI)
-     * @regexTest[273] Ovi_1 Ӄ (DEAD)
+     * @regexTest [319] Empa_ α (Mage XXXIV)
+     * @regexTest [393] [YOUTUBE] Remittal Σ♲ (Mage XL)
+     * @regexTest [273] Ovi_1 Ӄ (Mage XXXVI)
+     * @regexTest [273] Ovi_1 Ӄ (DEAD)
      */
     @Suppress("MaxLineLength")
     val playerDungeonTeamPattern by patternGroup.pattern(
@@ -183,7 +183,7 @@ object DungeonApi {
     )
 
     /**
-     * @regexTestBoss Collections
+     * @regexTest Boss Collections
      */
     val bossCollectionsInventoryPattern by patternGroup.pattern(
         "boss.collections.inventory",

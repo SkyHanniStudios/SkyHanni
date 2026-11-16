@@ -31,7 +31,7 @@ object FarmingPersonalBestGain {
 
     // <editor-fold desc="Patterns">
     /**
-     * REGEX-TEST: [NPC] Jacob: You collected 1,400,694 items! PERSONAL BEST!
+     * @regexTest [NPC] Jacob: You collected 1,400,694 items! PERSONAL BEST!
      */
     private val newPattern by patternGroup.pattern(
         "collection.new.colorless",
@@ -39,7 +39,7 @@ object FarmingPersonalBestGain {
     )
 
     /**
-     * REGEX-TEST: [NPC] Jacob: Your previous Personal Best was 1,176,372.
+     * @regexTest [NPC] Jacob: Your previous Personal Best was 1,176,372.
      */
     private val oldPattern by patternGroup.pattern(
         "collection.old.colorless",
@@ -47,7 +47,7 @@ object FarmingPersonalBestGain {
     )
 
     /**
-     * REGEX-TEST: [NPC] Jacob: Your Personal Bests perk is now granting you +46.69 Potato Fortune!
+     * @regexTest [NPC] Jacob: Your Personal Bests perk is now granting you +46.69 Potato Fortune!
      */
     private val newFFPattern by patternGroup.pattern(
         "ff.new.colorless",
@@ -55,7 +55,7 @@ object FarmingPersonalBestGain {
     )
 
     /**
-     * REGEX-TEST: §e[NPC] Jacob§f: §rYour §6Personal Bests §fperk is now granting you §6+46.69 Potato Fortune§f!
+     * @regexTest §e[NPC] Jacob§f: §rYour §6Personal Bests §fperk is now granting you §6+46.69 Potato Fortune§f!
      */
     @Deprecated("Only exists for repo. Remove after 9.0.0.", level = DeprecationLevel.ERROR)
     @Suppress("MaxLineLength")

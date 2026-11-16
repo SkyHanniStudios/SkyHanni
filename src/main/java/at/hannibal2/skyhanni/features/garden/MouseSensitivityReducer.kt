@@ -50,10 +50,10 @@ object MouseSensitivityReducer {
         }
 
     /**
-     * REGEX-TEST: Teleported you to Plot - 1!
-     * REGEX-TEST: Teleported you to Plot - 20!
-     * REGEX-TEST: Teleported you to The Barn!
-     * REGEX-TEST: Warping...
+     * @regexTest Teleported you to Plot - 1!
+     * @regexTest Teleported you to Plot - 20!
+     * @regexTest Teleported you to The Barn!
+     * @regexTest Warping...
      */
     private val teleportPattern by RepoPattern.list(
         "garden.mouse-sensitivity-reducer.chat.teleport.list",
@@ -64,7 +64,7 @@ object MouseSensitivityReducer {
     )
 
     /**
-     * REGEX-TEST: Snapped to squeaky mousemat!
+     * @regexTest Snapped to squeaky mousemat!
      */
     private val mousematPattern by RepoPattern.pattern(
         "garden.mouse-sensitivity-reducer.chat.mousemat",

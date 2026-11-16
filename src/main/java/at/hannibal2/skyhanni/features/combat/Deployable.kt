@@ -32,7 +32,7 @@ enum class Deployable(
     ;
 
     /**
-     * REGEX-TEST: Umberella 298s
+     * @regexTest Umberella 298s
      */
     val pattern by RepoPattern.pattern(
         "combat.deployable.${name.lowercase().replace("_", "-")}",

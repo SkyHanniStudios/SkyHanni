@@ -37,8 +37,8 @@ object TreeProgressDisplay {
     private var progressDisplay: TreeProgressDisplay? = null
 
     /**
-     * REGEX-TEST: FIG TREE 88%
-     * REGEX-TEST: MANGROVE TREE 5%
+     * @regexTest FIG TREE 88%
+     * @regexTest MANGROVE TREE 5%
      */
     private val currentTreeProgressPattern by RepoPattern.pattern(
         "foraging.tree.progress.colorless",

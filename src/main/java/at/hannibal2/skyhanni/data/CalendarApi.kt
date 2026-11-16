@@ -34,7 +34,7 @@ object CalendarApi {
     private val patternGroup = RepoPattern.group("calendarapi")
 
     /**
-     * REGEX-TEST: Calendar and Events
+     * @regexTest Calendar and Events
      */
     private val calendarGuiPattern by patternGroup.pattern(
         "gui",
@@ -42,14 +42,14 @@ object CalendarApi {
     )
 
     /**
-     * REGEX-TEST: Summer, Year 498
-     * REGEX-TEST: Late Summer, Year 498
-     * REGEX-TEST: Early Autumn, Year 498
-     * REGEX-TEST: Autumn, Year 498
-     * REGEX-TEST: Late Autumn, Year 498
-     * REGEX-TEST: Early Winter, Year 498
-     * REGEX-TEST: Winter, Year 498
-     * REGEX-TEST: Late Winter, Year 498
+     * @regexTest Summer, Year 498
+     * @regexTest Late Summer, Year 498
+     * @regexTest Early Autumn, Year 498
+     * @regexTest Autumn, Year 498
+     * @regexTest Late Autumn, Year 498
+     * @regexTest Early Winter, Year 498
+     * @regexTest Winter, Year 498
+     * @regexTest Late Winter, Year 498
      */
     private val calendarSeasonPattern by patternGroup.pattern(
         "date",
@@ -57,9 +57,9 @@ object CalendarApi {
     )
 
     /**
-     * REGEX-TEST: Day 3
-     * REGEX-TEST: Day 2
-     * REGEX-TEST: Day 1
+     * @regexTest Day 3
+     * @regexTest Day 2
+     * @regexTest Day 1
      */
     val dayHeaderPattern by patternGroup.pattern(
         "day-header",
@@ -67,14 +67,14 @@ object CalendarApi {
     )
 
     /**
-     * REGEX-TEST: All day: Traveling Zoo (40h)
-     * REGEX-TEST: All day: Bonus Fishing Festival (40h)
-     * REGEX-TEST: 12:00 am-11:59 pm: Jacob's Farming Contest (41h)
-     * REGEX-TEST: All day: Bonus Fishing Festival (30h)
-     * REGEX-TEST: 12:00 am-12:41 am: 61,711th Dark Auction (30h)
-     * REGEX-TEST: All day: Bonus Fishing Festival
-     * REGEX-TEST: 12:00 am-11:59 pm: Jacob's Farming Contest
-     * REGEX-TEST: 12:00 am-12:41 am: 61,680th Dark Auction
+     * @regexTest All day: Traveling Zoo (40h)
+     * @regexTest All day: Bonus Fishing Festival (40h)
+     * @regexTest 12:00 am-11:59 pm: Jacob's Farming Contest (41h)
+     * @regexTest All day: Bonus Fishing Festival (30h)
+     * @regexTest 12:00 am-12:41 am: 61,711th Dark Auction (30h)
+     * @regexTest All day: Bonus Fishing Festival
+     * @regexTest 12:00 am-11:59 pm: Jacob's Farming Contest
+     * @regexTest 12:00 am-12:41 am: 61,680th Dark Auction
      */
     val eventLinePattern by patternGroup.pattern(
         "event-line",
@@ -82,10 +82,10 @@ object CalendarApi {
     )
 
     /**
-     * REGEX-TEST: Starts in: 1h 58m 40s
-     * REGEX-TEST: Starts in: 58m 40s
-     * REGEX-TEST: Starts in: 40s
-     * REGEX-TEST: Starts in: 1d 2h 58m 40s
+     * @regexTest Starts in: 1h 58m 40s
+     * @regexTest Starts in: 58m 40s
+     * @regexTest Starts in: 40s
+     * @regexTest Starts in: 1d 2h 58m 40s
      */
     val mainCalendarStartsInPattern by patternGroup.pattern(
         "main.startsin",
@@ -93,8 +93,8 @@ object CalendarApi {
     )
 
     /**
-     * REGEX-TEST: Event lasts for 1h!
-     * REGEX-TEST: Event lasts for 2h 40m!
+     * @regexTest Event lasts for 1h!
+     * @regexTest Event lasts for 2h 40m!
      */
     val mainCalendarDurationPattern by patternGroup.pattern(
         "main.duration",

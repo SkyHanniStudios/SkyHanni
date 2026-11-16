@@ -20,7 +20,7 @@ object PartyOnBoop {
     private val patternGroup = RepoPattern.group("bingo")
 
     /**
-     * REGEX-TEST: Boop!
+     * @regexTest Boop!
      */
     private val boopPattern by patternGroup.pattern(
         "boop.colorless",

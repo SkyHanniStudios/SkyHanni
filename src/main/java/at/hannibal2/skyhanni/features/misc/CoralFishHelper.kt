@@ -41,9 +41,9 @@ object CoralFishHelper {
     private val patternGroup = RepoPattern.group("misc.coral.fish")
 
     /**
-     * REGEX-TEST: Nope the Fish
-     * REGEX-TEST: Cluck the Fish
-     * REGEX-TEST: Herring the Fish
+     * @regexTest Nope the Fish
+     * @regexTest Cluck the Fish
+     * @regexTest Herring the Fish
      */
     private val coralFishNamePattern by patternGroup.pattern(
         "name.colorless",
@@ -51,8 +51,8 @@ object CoralFishHelper {
     )
 
     /**
-     * REGEX-TEST: Fish Shown: 1/31
-     * REGEX-TEST: Fish Shown: 15/31
+     * @regexTest Fish Shown: 1/31
+     * @regexTest Fish Shown: 15/31
      */
     private val coralFishFoundPattern by patternGroup.pattern(
         "shown",
@@ -60,8 +60,8 @@ object CoralFishHelper {
     )
 
     /**
-     * REGEX-TEST: (1/31) Fish Family
-     * REGEX-TEST: (15/31) Fish Family
+     * @regexTest (1/31) Fish Family
+     * @regexTest (15/31) Fish Family
      */
     private val coralMenuPattern by patternGroup.pattern(
         "inventory",

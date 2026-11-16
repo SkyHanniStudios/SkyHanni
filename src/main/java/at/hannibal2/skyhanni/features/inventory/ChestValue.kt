@@ -53,9 +53,9 @@ object ChestValue {
     private val scrollValue = ScrollValue()
 
     /**
-     * REGEX-TEST: Personal Vault
-     * REGEX-TEST: Chest Storage
-     * REGEX-TEST: Wood Chest+
+     * @regexTest Personal Vault
+     * @regexTest Chest Storage
+     * @regexTest Wood Chest+
      */
     private val relevantChestValuePattern by RepoPattern.pattern(
         "inventory.chestvalue.relevant",

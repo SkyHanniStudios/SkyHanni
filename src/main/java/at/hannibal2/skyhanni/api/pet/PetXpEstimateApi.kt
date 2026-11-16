@@ -41,7 +41,7 @@ object PetXpEstimateApi {
     private val patternGroup = RepoPattern.group("misc.pet.xp-estimator")
 
     /**
-     * REGEX-TEST: Your Squid leveled up to level 19!
+     * @regexTest Your Squid leveled up to level 19!
      */
     private val petLevelUpPattern by patternGroup.pattern(
         "chat.level-up.clean",
@@ -49,7 +49,7 @@ object PetXpEstimateApi {
     )
 
     /**
-     * REGEX-TEST: Pet Exp Boost: +0.5%
+     * @regexTest Pet Exp Boost: +0.5%
      */
     private val beastmasterPetXpPattern by patternGroup.pattern(
         "inventory.beastmaster.petxp",

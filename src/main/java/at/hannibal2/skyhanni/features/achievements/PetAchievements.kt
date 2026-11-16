@@ -20,7 +20,7 @@ import at.hannibal2.skyhanni.utils.chat.TextHelper.asComponent
 object PetAchievements {
 
     /**
-     * REGEX-TEST: Your Pet Score: 435
+     * @regexTest Your Pet Score: 435
      */
     private val petScorePattern by AchievementManager.patternGroup.pattern(
         "pet-score",

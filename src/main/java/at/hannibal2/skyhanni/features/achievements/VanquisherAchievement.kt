@@ -15,7 +15,7 @@ import kotlin.time.Duration.Companion.seconds
 object VanquisherAchievement {
 
     /**
-     * REGEX-TEST: A Vanquisher is spawning nearby!
+     * @regexTest A Vanquisher is spawning nearby!
      */
     private val vanquisherSpawnPattern by AchievementManager.patternGroup.pattern(
         "vanquisher",

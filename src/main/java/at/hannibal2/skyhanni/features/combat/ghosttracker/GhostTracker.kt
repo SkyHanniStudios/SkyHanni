@@ -120,8 +120,8 @@ object GhostTracker {
     private val patternGroup = RepoPattern.group("combat.ghosttracker")
 
     /**
-     * @regexTestRARE DROP! Sorrow (+210%  Magic Find)
-     * @regexTestRARE DROP! Sorrow (+210  Magic Find)
+     * @regexTest RARE DROP! Sorrow (+210%  Magic Find)
+     * @regexTest RARE DROP! Sorrow (+210  Magic Find)
      */
     private val itemDropPattern by patternGroup.pattern(
         "itemdrop.colorless",
@@ -129,8 +129,8 @@ object GhostTracker {
     )
 
     /**
-     * @regexTestYour Kill Combo has expired! You reached a 32 Kill Combo!
-     * @regexTestYour Kill Combo has expired! You reached a 1,187 Kill Combo!
+     * @regexTest Your Kill Combo has expired! You reached a 32 Kill Combo!
+     * @regexTest Your Kill Combo has expired! You reached a 1,187 Kill Combo!
      */
     private val killComboEndPattern by patternGroup.pattern(
         "killcombo.end.colorless",
@@ -138,7 +138,7 @@ object GhostTracker {
     )
 
     /**
-     * @regexTestThe ghost's death materialized 1,000,000 coins from the mists!
+     * @regexTest The ghost's death materialized 1,000,000 coins from the mists!
      */
     private val bagOfCashPattern by patternGroup.pattern(
         "bagofcash.colorless",
