@@ -7,8 +7,12 @@ import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.events.ParticleEvent
 import at.hannibal2.skyhanni.features.dungeon.DungeonApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
+import at.hannibal2.skyhanni.utils.EntityUtils.getArmorInventory
 import at.hannibal2.skyhanni.utils.EntityUtils.getEntitiesNearby
+import at.hannibal2.skyhanni.utils.SkyBlockItemModifierUtils.getArmorDye
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
+import net.minecraft.client.player.LocalPlayer
+import net.minecraft.core.particles.ParticleType
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.world.entity.projectile.hurtingprojectile.SmallFireball
 
@@ -21,17 +25,23 @@ object ParticleHider {
         ParticleTypes.SMOKE,
         ParticleTypes.LARGE_SMOKE,
     )
+    private const val NEARBY_PARTICLE_RADIUS = 5.0
+    private const val FAR_PARTICLE_DISTANCE = 40
     private fun inM7Boss() = DungeonApi.inDungeon() && DungeonApi.dungeonFloor == "M7" && DungeonApi.inBossRoom
 
     @HandleEvent
     fun onParticle(event: ParticleEvent) {
         with(event) {
-            val hideFarCancel = (config.hideFarParticles && distanceToPlayer > 40 && !inM7Boss())
-            val hideCloseRedstoneCancel = (config.hideCloseRedstoneParticles && type == ParticleTypes.DUST && distanceToPlayer < 2)
-            val hideFireballCancel = config.hideFireballParticles && type in smokeTypes &&
-                event.location.getEntitiesNearby<SmallFireball>(5.0).isNotEmpty()
+            val conditions = setOf(
+                (config.hideFarParticles && distanceToPlayer > FAR_PARTICLE_DISTANCE && !inM7Boss()),
+                (config.hideCloseRedstoneParticles && type == ParticleTypes.DUST && distanceToPlayer < 2),
+                (config.hideFireballParticles && type in smokeTypes &&
+                    event.location.getEntitiesNearby<SmallFireball>(NEARBY_PARTICLE_RADIUS).isNotEmpty()),
+                (config.hideDyeParticles && !longDistance &&
+                    shouldHideDyeParticles(MinecraftCompat.localPlayerOrNull, type)),
+            )
 
-            if (hideFarCancel || hideCloseRedstoneCancel || hideFireballCancel) event.cancel()
+            if (conditions.any()) event.cancel()
         }
     }
 
@@ -53,6 +63,15 @@ object ParticleHider {
 
     @JvmStatic
     fun shouldHideFireballParticles() = MinecraftCompat.localWorldExists && config.hideFireballParticles
+
+    fun shouldHideDyeParticles(player: LocalPlayer?, type: ParticleType<*>): Boolean {
+        val hasCustomDyeOnArmor = player?.getArmorInventory()?.any {
+            it?.getArmorDye()?.asString() in setOf("DYE_SLUDGE", "DYE_SPIRIT", "DYE_SPOOKY")
+        } ?: false
+        if (!hasCustomDyeOnArmor) return false
+
+        return type in setOf(ParticleTypes.COPPER_FIRE_FLAME, ParticleTypes.BUBBLE, ParticleTypes.WITCH)
+    }
 
     @HandleEvent
     fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
