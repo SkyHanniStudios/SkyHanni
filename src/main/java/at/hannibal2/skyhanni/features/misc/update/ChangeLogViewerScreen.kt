@@ -28,6 +28,8 @@ class ChangeLogViewerScreen : SkyHanniChromeScreen() {
 
     private lateinit var scrollList: Renderable
     private var cacheWasReady = false
+    private var slowLoadShown = false
+    private val loadingSince = SimpleTimeMark.now()
     private var lastListWidth = 0
     private var lastListHeight = 0
 
@@ -36,8 +38,10 @@ class ChangeLogViewerScreen : SkyHanniChromeScreen() {
         if (ready && !cacheWasReady) {
             cacheWasReady = true
             rebuildDisplay()
-        }
+        } else if (!ready && !slowLoadShown && isSlowLoad()) rebuildDisplay()
     }
+
+    private fun isSlowLoad() = loadingSince.passedSince() >= 5.0.seconds
 
     private val buttonPanel = Renderable.horizontal(
         Renderable.darkRectButton(
@@ -89,9 +93,9 @@ class ChangeLogViewerScreen : SkyHanniChromeScreen() {
             scrollList = makeScrollList(buildChangelogMap(), listWidth, listHeight)
         }
 
+        slowLoadShown = !cacheContainsKey && isSlowLoad()
         val content = if (!cacheContainsKey) Renderable.text(
-            if (ChangelogViewer.openTime.passedSince() >= 5.0.seconds)
-                "§aStill Loading. §cThe Version you are looking for may not exist"
+            if (slowLoadShown) "§aStill Loading. §cThe Version you are looking for may not exist"
             else "§aStill Loading",
             horizontalAlign = RenderUtils.HorizontalAlignment.CENTER,
             verticalAlign = RenderUtils.VerticalAlignment.CENTER,

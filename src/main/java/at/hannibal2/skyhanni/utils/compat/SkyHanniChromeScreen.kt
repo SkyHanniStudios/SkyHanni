@@ -32,6 +32,8 @@ abstract class SkyHanniChromeScreen : SkyHanniBaseScreen() {
      * Call this whenever the content structure changes.
      */
     fun rebuildDisplay() {
+        lastWidth = width
+        lastHeight = height
         display = buildChrome(buildContent())
     }
 
@@ -66,11 +68,7 @@ abstract class SkyHanniChromeScreen : SkyHanniBaseScreen() {
 
     final override fun onDrawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawDefaultBackground(mouseX, mouseY, partialTicks)
-        if (lastWidth != width || lastHeight != height) {
-            lastWidth = width
-            lastHeight = height
-            rebuildDisplay()
-        }
+        if (lastWidth != width || lastHeight != height) rebuildDisplay()
         onChromeDrawScreen(mouseX, mouseY, partialTicks)
         val panel = display ?: return
         val startX = (width - panel.width) / 2

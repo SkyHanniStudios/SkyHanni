@@ -35,7 +35,6 @@ object ModifyVisualWords {
     private var finalWordsList = emptyList<VisualWordText>()
 
     fun openScreen() {
-        @Suppress("DEPRECATION")
         if (!SkyBlockUtils.onHypixel && !OutsideSBFeature.MODIFY_VISUAL_WORDS.isSelected()) {
             ChatUtils.userError("You need to join Hypixel to use this feature!")
             return

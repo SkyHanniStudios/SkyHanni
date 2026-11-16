@@ -198,11 +198,7 @@ object ChangelogViewer {
                 argCallback("untilVersion", BrigadierArguments.string()) { untilStr ->
                     val since = parseVersion(getArg(sinceArg)) ?: return@argCallback
                     val until = parseVersion(untilStr) ?: return@argCallback
-                    if (until < since) {
-                        ChatUtils.userError("until '$until' must be greater than since '$since'")
-                        return@argCallback
-                    }
-                    showChangelog(since, until)
+                    runChangelog(since, until)
                 }
                 callback {
                     val since = parseVersion(getArg(sinceArg)) ?: return@callback

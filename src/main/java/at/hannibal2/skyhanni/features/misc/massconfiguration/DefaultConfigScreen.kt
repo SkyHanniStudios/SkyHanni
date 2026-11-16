@@ -9,7 +9,7 @@ import at.hannibal2.skyhanni.utils.renderables.RenderableTooltips
 import at.hannibal2.skyhanni.utils.renderables.ScrollValue
 import at.hannibal2.skyhanni.utils.renderables.container.HorizontalContainerRenderable.Companion.horizontal
 import at.hannibal2.skyhanni.utils.renderables.container.VerticalContainerRenderable.Companion.vertical
-import at.hannibal2.skyhanni.utils.renderables.labeledCard
+import at.hannibal2.skyhanni.utils.renderables.primitives.WrappedStringRenderable.Companion.wrappedText
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
 
 class DefaultConfigScreen(
@@ -38,10 +38,12 @@ class DefaultConfigScreen(
 
     private fun buildCategoryCard(cat: Category): Renderable {
         val state = resetSuggestionState[cat] ?: ResetSuggestionState.LEAVE_DEFAULTS
-        val card = Renderable.labeledCard(
-            "§e${cat.name} ${state.label}",
-            Renderable.text("§7${cat.description}"),
-            CARD_WIDTH,
+        val card = Renderable.vertical(
+            listOf(
+                Renderable.fixedSizeLine(Renderable.text("§e${cat.name} ${state.label}"), CARD_WIDTH),
+                Renderable.fixedSizeLine(Renderable.wrappedText("§7${cat.description}", CARD_WIDTH), CARD_WIDTH),
+            ),
+            spacing = 4,
         )
 
         val normalTooltip = listOf(

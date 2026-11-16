@@ -31,14 +31,14 @@ class ChatHistoryScreen(
 ) : SkyHanniChromeScreen() {
 
     override val screenTitle = "Chat History"
-    private val scrollValue = ScrollValue()
+    private val scrollValue = ScrollValue().apply { setValue(Double.MAX_VALUE) }
 
     private val ChatManager.MessageFilteringResult.reason: String? get() = actionReason ?: modifiedReason
 
     override fun buildContent(): Renderable {
         val reasonMaxLength = history.maxOfOrNull { msg -> msg.reason?.let { mc.font.width(it) } ?: 0 } ?: 0
         val xOffset = ChatManager.ActionKind.maxLength + reasonMaxLength + 10
-        val wrapWidth = LIST_WIDTH.coerceAtMost(maxContentWidth) - xOffset - SCROLLBAR_WIDTH
+        val wrapWidth = LIST_WIDTH.coerceAtMost(maxContentWidth) - xOffset - Renderable.SCROLLBAR_WIDTH
 
         val rows = history.map { buildRow(it, wrapWidth, xOffset) }
         val listHeight = LIST_HEIGHT.coerceAtMost(maxContentHeight)
@@ -110,7 +110,6 @@ class ChatHistoryScreen(
     companion object {
         private const val LIST_WIDTH = 600
         private const val LIST_HEIGHT = 300
-        private const val SCROLLBAR_WIDTH = 7
         private val copyCoroutine = CoroutineSettings("chat history copy to clipboard")
     }
 }

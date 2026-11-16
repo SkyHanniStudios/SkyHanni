@@ -19,7 +19,6 @@ import net.minecraft.util.FormattedCharSequence
 import net.minecraft.world.item.ItemDisplayContext
 import net.minecraft.world.phys.Vec3
 import org.joml.Matrix3x2f
-import kotlin.math.min
 import kotlin.math.sqrt
 
 /**
@@ -40,16 +39,6 @@ object GuiRenderUtils {
 
     fun drawStringCentered(str: String, x: Int, y: Int) {
         drawStringCentered(str, x.toFloat(), y.toFloat(), true, -1)
-    }
-
-    fun drawStringCenteredScaledMaxWidth(text: String, x: Float, y: Float, shadow: Boolean, length: Int, color: Int) {
-        DrawContextUtils.pushPop {
-            val strLength = fr.width(text)
-            val factor = min((length / strLength.toFloat()).toDouble(), 1.0).toFloat()
-            DrawContextUtils.translate(x, y)
-            DrawContextUtils.scale(factor, factor)
-            drawString(text, -strLength / 2, -fr.lineHeight / 2, color, shadow)
-        }
     }
 
     fun drawString(str: String, x: Float, y: Float, color: Int = -1, shadow: Boolean = true) {

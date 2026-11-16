@@ -23,7 +23,6 @@ import at.hannibal2.skyhanni.utils.RenderUtils.VerticalAlignment as VA
 object VisualWordGui {
 
     private const val LIST_HEIGHT = 150
-    private const val SCROLLBAR_WIDTH = 7
     private val PLACEHOLDER_WORD = VisualWord("", "", enabled = true, caseSensitive = false)
 
     private val upSkull = ItemUtils.repoSkullProvider(
@@ -61,7 +60,6 @@ object VisualWordGui {
         if (screen.currentlyEditing) buildEditView(screen) else buildListView(screen)
 
     private fun buildListView(screen: VisualWordScreen): Renderable {
-        val header = Renderable.text("§bVisual Word Replacements", scale = 1.2, horizontalAlign = HA.CENTER)
         val subtitle = Renderable.text(
             "§7Each entry replaces §bPhrase§7 with §aReplacement",
             scale = 0.85,
@@ -83,14 +81,14 @@ object VisualWordGui {
                 bypassChecks = true,
             )
         }
-        val listWidth = buildWordRow(screen, 0, PLACEHOLDER_WORD).width + SCROLLBAR_WIDTH
+        val listWidth = buildWordRow(screen, 0, PLACEHOLDER_WORD).width + Renderable.SCROLLBAR_WIDTH
         val listArea = Renderable.fixedSizeColumn(
             Renderable.fixedSizeLine(listContent, listWidth, verticalAlign = VA.CENTER),
             LIST_HEIGHT,
         )
 
         return Renderable.vertical(
-            listOf(header, subtitle, listArea, buildListBottomRow(screen)),
+            listOf(subtitle, listArea, buildListBottomRow(screen)),
             spacing = 6,
             horizontalAlign = HA.CENTER,
         )

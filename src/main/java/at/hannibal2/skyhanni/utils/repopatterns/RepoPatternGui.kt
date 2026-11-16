@@ -9,8 +9,10 @@ import at.hannibal2.skyhanni.utils.compat.SkyHanniScreenTheme
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.RenderableTooltips
 import at.hannibal2.skyhanni.utils.renderables.container.HorizontalContainerRenderable.Companion.horizontal
+import at.hannibal2.skyhanni.utils.renderables.container.VerticalContainerRenderable.Companion.vertical
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
 import at.hannibal2.skyhanni.utils.renderables.searchableList
+import net.minecraft.client.Minecraft
 
 @SkyHanniModule
 object RepoPatternGui {
@@ -18,6 +20,8 @@ object RepoPatternGui {
     private const val LIST_HEIGHT = 280
     private const val SEARCH_FIELD_HEIGHT = 16
     private const val SEARCH_SPACING = 4
+    private const val KEY_WIDTH = 220
+    private const val REGEX_WIDTH = 180
 
     @HandleEvent
     private fun onCommandRegistration(event: CommandRegistrationEvent) {
@@ -67,12 +71,15 @@ object RepoPatternGui {
             pattern.isLoadedRemotely -> "Remote"
             else -> "Local"
         }
-        val regexDisplay = remotePatterns.firstOrNull() ?: localPatterns.firstOrNull().orEmpty()
+        val font = Minecraft.getInstance().font
+        val regexLines = remotePatterns.ifEmpty { localPatterns }.map {
+            Renderable.text(font.plainSubstrByWidth(it, REGEX_WIDTH))
+        }
 
         val row = Renderable.horizontal(
             listOf(
-                Renderable.fixedSizeLine(Renderable.text(pattern.key), width = 220),
-                Renderable.fixedSizeLine(Renderable.text(regexDisplay), width = 180),
+                Renderable.fixedSizeLine(Renderable.text(font.plainSubstrByWidth(pattern.key, KEY_WIDTH)), width = KEY_WIDTH),
+                Renderable.fixedSizeLine(Renderable.vertical(regexLines, spacing = 1), width = REGEX_WIDTH),
                 Renderable.text("$statusColor$statusLabel"),
             ),
             spacing = 8,
@@ -94,6 +101,7 @@ object RepoPatternGui {
         remotePatterns: List<String>,
         localPatterns: List<String>,
     ): List<Renderable> = buildList {
+        add(Renderable.text("§e${pattern.key}"))
         if (!pattern.isLoadedRemotely) {
             add(Renderable.text("§cLocal only"))
             localPatterns.forEach { add(Renderable.text("  §7Local: §f$it")) }
