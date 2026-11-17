@@ -25,7 +25,6 @@ import at.hannibal2.skyhanni.data.jsonobjects.local.JacobContestsJson
 import at.hannibal2.skyhanni.data.jsonobjects.local.KnownFeaturesJson
 import at.hannibal2.skyhanni.data.jsonobjects.local.VisualWordsJson
 import at.hannibal2.skyhanni.data.repo.SkyHanniRepoManager
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.utils.InitFinishedEvent
 import at.hannibal2.skyhanni.events.utils.PreInitFinishedEvent
 import at.hannibal2.skyhanni.skyhannimodule.LoadedModules
@@ -47,6 +46,9 @@ import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.io.File
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
@@ -68,6 +70,12 @@ object SkyHanniMod : CompatCoroutineManager by SkyHanniCoroutineManager(
     fun init() {
         configManager = ConfigManager()
         configManager.firstLoad()
+        CoroutineSettings("config auto save").launchRepeating(1.minutes) {
+            configManager.saveConfig(ConfigFileType.FEATURES, "auto-save-60s")
+        }
+        CoroutineSettings("config pending save").withIOContext().launchRepeating(10.seconds) {
+            configManager.savePendingConfigs()
+        }
         if (PlatformUtils.getRepoPatternDumpLocation() == null) EnoughUpdatesRepoManager.initRepo()
         MinecraftConsoleFilter.initLogging()
         try {
@@ -83,6 +91,12 @@ object SkyHanniMod : CompatCoroutineManager by SkyHanniCoroutineManager(
 
     fun CoroutineSettings.launchUnScoped(block: suspend () -> Unit): Job =
         with(SkyHanniMod) { launchUnScopedCoroutine(block) }
+
+    fun CoroutineSettings.launchRepeating(
+        period: Duration,
+        initialDelay: Duration = period,
+        block: suspend CoroutineScope.() -> Unit,
+    ): Job = with(SkyHanniMod) { launchRepeatingCoroutine(period, initialDelay, block) }
 
     fun <T> CoroutineSettings.async(block: suspend CoroutineScope.() -> T): Deferred<T?> =
         with(SkyHanniMod) { asyncCoroutine(block) }
@@ -104,13 +118,6 @@ object SkyHanniMod : CompatCoroutineManager by SkyHanniCoroutineManager(
         MinecraftCompat.screen = screenToOpen
         screenTicks = 0
         this.screenToOpen = null
-    }
-
-    @HandleEvent
-    private fun onSecondPassed(event: SecondPassedEvent) {
-        if (event.repeatSeconds(60)) configManager.saveConfig(ConfigFileType.FEATURES, "auto-save-60s")
-        if (!event.repeatSeconds(10)) return
-        CoroutineSettings("config pending save").withIOContext().launch { configManager.savePendingConfigs() }
     }
 
     @HandleEvent

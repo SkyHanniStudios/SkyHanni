@@ -2,15 +2,13 @@ package at.hannibal2.skyhanni.features.garden.farming
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
-import at.hannibal2.skyhanni.events.ProfileJoinEvent
-import at.hannibal2.skyhanni.events.garden.GardenToolChangeEvent
+import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.events.garden.farming.CropClickEvent
 import at.hannibal2.skyhanni.features.garden.CropType
 import at.hannibal2.skyhanni.features.garden.GardenApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.editCopy
-import kotlin.concurrent.fixedRateTimer
 
 @SkyHanniModule
 object GardenCropSpeed {
@@ -28,26 +26,20 @@ object GardenCropSpeed {
     private var blocksBroken = 0
     private var secondsStopped = 0
 
-    init {
-        // TODO use SecondPassedEvent + passedSince
-        fixedRateTimer(name = "skyhanni-crop-milestone-speed", daemon = true, period = 1000L) {
-            if (isEnabled()) {
-                checkSpeed()
-            }
-        }
+    @HandleEvent(onlyOnIsland = IslandType.GARDEN)
+    private fun onSecondPassed() {
+        checkSpeed()
     }
 
     @HandleEvent
-    fun onProfileJoin(event: ProfileJoinEvent) {
+    private fun onProfileJoin() {
         lastBrokenCrop = null
     }
 
-    @HandleEvent
-    fun onGardenToolChange(event: GardenToolChangeEvent) {
-        if (isEnabled()) {
-            resetSpeed()
-            update()
-        }
+    @HandleEvent(onlyOnIsland = IslandType.GARDEN)
+    private fun onGardenToolChange() {
+        resetSpeed()
+        update()
     }
 
     private fun update() {
@@ -112,8 +104,6 @@ object GardenCropSpeed {
         blocksSpeedList = emptyList()
         secondsStopped = 0
     }
-
-    fun isEnabled() = GardenApi.inGarden()
 
     fun CropType.getSpeed() = cropsPerSecond?.get(this)
 
