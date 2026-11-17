@@ -74,7 +74,6 @@ enum class ItemCategory {
     GEMSTONE,
     ORE,
     TROPHY,
-    TROPHY_FISH,
 
     // Tools
     CHISEL,
@@ -97,7 +96,6 @@ enum class ItemCategory {
     BOW,
     DEPLOYABLE,
     LONGSWORD,
-    SHORT_BOW,
     SWORD,
     VACUUM,
     WAND,
@@ -112,6 +110,10 @@ enum class ItemCategory {
     FISHING_WEAPON,
     @Legacy("No longer exists", ReplaceWith("ItemCategory.FARMING_TOOL"))
     HOE,
+    @Legacy("No longer exists", ReplaceWith("ItemCategory.BOW"))
+    SHORT_BOW,
+    @Legacy("No Longer exists", ReplaceWith("ItemCategory.TROPHY"))
+    TROPHY_FISH,
     // TODO This was previously used as a fake category for uncategorized dungeon items.
     //  Remove it after ensuring it doesn't break anything.
     @Deprecated("Legacy fake category", ReplaceWith("ItemCategory.NONE"))
