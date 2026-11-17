@@ -31,6 +31,16 @@ jobs:
                 minecraft_version:
                     - "26.1"
                     - "26.2"
+        env:
+            BUILD_STATE_PATHS: |
+                versions/${{ matrix.minecraft_version }}/build/classes
+                versions/${{ matrix.minecraft_version }}/build/generated
+                versions/${{ matrix.minecraft_version }}/build/kotlin
+                versions/${{ matrix.minecraft_version }}/build/kspCaches
+                versions/${{ matrix.minecraft_version }}/build/ksp-*-state-*.txt
+                versions/${{ matrix.minecraft_version }}/build/tmp
+                .gradle/*/executionHistory
+                .gradle/*/fileHashes
         steps:
             -   name: Checkout code
                 uses: actions/checkout@v6
@@ -41,18 +51,10 @@ jobs:
             -   uses: ./.github/actions/setup-normal-workspace
             -   name: Restore beta build state
                 id: restore_build_state
-                if: github.event_name == 'pull_request'
+                if: github.ref != 'refs/heads/beta'
                 uses: actions/cache/restore@v6
                 with:
-                    path: |
-                        versions/${{ matrix.minecraft_version }}/build/classes
-                        versions/${{ matrix.minecraft_version }}/build/generated
-                        versions/${{ matrix.minecraft_version }}/build/kotlin
-                        versions/${{ matrix.minecraft_version }}/build/kspCaches
-                        versions/${{ matrix.minecraft_version }}/build/ksp-*-state-*.txt
-                        versions/${{ matrix.minecraft_version }}/build/tmp
-                        .gradle/*/executionHistory
-                        .gradle/*/fileHashes
+                    path: ${{ env.BUILD_STATE_PATHS }}
                     key: build-state-v1-${{ matrix.minecraft_version }}-${{ github.sha }}
                     restore-keys: build-state-v1-${{ matrix.minecraft_version }}-
             -   name: Build with Gradle w/retry
@@ -69,7 +71,7 @@ jobs:
                     VERSION_BUILD_DIR: versions/${{ matrix.minecraft_version }}/build
                 run: |
                     echo "::notice::Incremental assemble failed with restored state $MATCHED_KEY, rebuilding clean"
-                    rm -rf "$VERSION_BUILD_DIR" .gradle/*/executionHistory .gradle/*/fileHashes
+                    ./gradlew --stop && rm -rf "$VERSION_BUILD_DIR" .gradle/*/executionHistory .gradle/*/fileHashes
             -   name: Build with Gradle w/retry (clean)
                 id: assemble_clean
                 if: steps.discard_build_state.outcome == 'success'
@@ -138,15 +140,7 @@ jobs:
                 if: github.event_name == 'push' && github.ref == 'refs/heads/beta' && steps.assemble.outputs.outcome == 'success'
                 uses: actions/cache/save@v6
                 with:
-                    path: |
-                        versions/${{ matrix.minecraft_version }}/build/classes
-                        versions/${{ matrix.minecraft_version }}/build/generated
-                        versions/${{ matrix.minecraft_version }}/build/kotlin
-                        versions/${{ matrix.minecraft_version }}/build/kspCaches
-                        versions/${{ matrix.minecraft_version }}/build/ksp-*-state-*.txt
-                        versions/${{ matrix.minecraft_version }}/build/tmp
-                        .gradle/*/executionHistory
-                        .gradle/*/fileHashes
+                    path: ${{ env.BUILD_STATE_PATHS }}
                     key: build-state-v1-${{ matrix.minecraft_version }}-${{ github.sha }}
             # Assemble and test are both continue-on-error, so this step is what makes either of them red.
             # A newly added continue-on-error step has to be listed here too.
