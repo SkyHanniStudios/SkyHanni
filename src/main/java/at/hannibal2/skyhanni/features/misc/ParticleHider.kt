@@ -41,7 +41,7 @@ object ParticleHider {
                     shouldHideDyeParticles(MinecraftCompat.localPlayerOrNull, type)),
             )
 
-            if (conditions.any()) event.cancel()
+            if (conditions.any { it }) event.cancel()
         }
     }
 
