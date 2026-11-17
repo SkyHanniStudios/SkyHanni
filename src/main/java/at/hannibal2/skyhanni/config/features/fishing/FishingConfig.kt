@@ -199,7 +199,7 @@ class FishingConfig {
     @Expose
     @ConfigOption(
         name = "Lootshare Range",
-        desc = "Shows the range at which you can lootshare. The range is §aGreen §7when the mob is your own or" +
+        desc = "Shows the range at which you can lootshare. The range is §aGreen §rwhen the mob is your own or" +
             " when inside the lootshare range."
     )
     @ConfigEditorBoolean
