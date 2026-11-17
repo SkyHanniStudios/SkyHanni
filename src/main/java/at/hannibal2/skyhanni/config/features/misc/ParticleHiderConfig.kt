@@ -65,7 +65,7 @@ class ParticleHiderConfig {
 
 
     @Expose
-    @ConfigOption(name = "Hide Custom Dye Particles", desc = "Hides obtrusive particles from certain armor dyes; " +
+    @ConfigOption(name = "Custom Dye Particles", desc = "Hides obtrusive particles from certain armor dyes; " +
         "other players will still see them.")
     @SearchTag("helmet chestplate leggings boots")
     @ConfigEditorBoolean
