@@ -106,14 +106,14 @@ enum class ItemCategory {
     SEA_CREATURE, // Exists for Neu Repo purposes, never existed in-game but SH throws errors without.
 
     // Legacy
-    @Legacy("No longer exists")
-    FISHING_WEAPON,
-    @Legacy("No longer exists", ReplaceWith("ItemCategory.FARMING_TOOL"))
-    HOE,
     @Legacy("No longer exists", ReplaceWith("ItemCategory.BOW"))
     SHORT_BOW,
-    @Legacy("No Longer exists", ReplaceWith("ItemCategory.TROPHY"))
+    @Legacy("No longer exists", ReplaceWith("ItemCategory.FARMING_TOOL"))
+    HOE,
+    @Legacy("No longer exists", ReplaceWith("ItemCategory.TROPHY"))
     TROPHY_FISH,
+    @Legacy("No longer exists")
+    FISHING_WEAPON,
     // TODO This was previously used as a fake category for uncategorized dungeon items.
     //  Remove it after ensuring it doesn't break anything.
     @Deprecated("Legacy fake category", ReplaceWith("ItemCategory.NONE"))
