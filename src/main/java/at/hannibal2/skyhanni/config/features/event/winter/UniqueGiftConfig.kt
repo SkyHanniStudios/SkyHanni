@@ -12,7 +12,7 @@ class UniqueGiftConfig {
     @ConfigOption(
         name = "Enabled",
         desc = "Show in a display how many unique players you have given gifts to in the Winter 2023 event.\n" +
-            "Open §e/opengenerowmenu §7to sync up!"
+            "Open §e/opengenerowmenu §rto sync up!"
     )
     @ConfigEditorBoolean
     @FeatureToggle

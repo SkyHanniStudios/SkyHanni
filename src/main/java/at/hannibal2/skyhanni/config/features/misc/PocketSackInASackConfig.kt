@@ -20,7 +20,7 @@ class PocketSackInASackConfig {
         name = "Replace in Lore",
         desc = "Replace how text is displayed in lore.\n" +
             "Show §eis stitched with 2/3...\n" +
-            "§7Instead of §eis stitched with two...",
+            "§rInstead of §eis stitched with two...",
     )
     @ConfigEditorBoolean
     @FeatureToggle

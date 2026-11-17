@@ -16,7 +16,7 @@ class TranslatorConfig {
     @ConfigOption(
         name = "Translate On Click",
         desc = "Click on a message to translate it to your language.\n" +
-            "Use §e/shcopytranslation§7 to translate from English.\n" +
+            "Use §e/shcopytranslation§r to translate from English.\n" +
             "§cTranslation is not guaranteed to be 100% accurate."
     )
     @ConfigEditorBoolean

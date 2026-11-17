@@ -13,7 +13,7 @@ class OptimalSpeedConfig {
     @ConfigOption(
         name = "Show on HUD",
         desc = "Show the optimal speed for your current tool in the hand.\n" +
-            "(Thanks §bMelonKingDE §7for the default values)."
+            "(Thanks §bMelonKingDE §rfor the default values)."
     )
     @ConfigEditorBoolean
     @FeatureToggle

@@ -32,9 +32,9 @@ class SackDisplayConfig {
     @ConfigOption(
         name = "Number Format",
         desc = "Either show Default, Formatted or Unformatted numbers.\n" +
-            "§eDefault: §72,240/2.2k\n" +
-            "§eFormatted: §72.2k/2.2k\n" +
-            "§eUnformatted: §72,240/2,200"
+            "§eDefault: §r2,240/2.2k\n" +
+            "§eFormatted: §r2.2k/2.2k\n" +
+            "§eUnformatted: §r2,240/2,200"
     )
     @ConfigEditorDropdown
     var numberFormat: NumberFormatEntry = NumberFormatEntry.FORMATTED
@@ -96,8 +96,8 @@ class SackDisplayConfig {
     @ConfigOption(
         name = "Price Format",
         desc = "Format of the price displayed.\n" +
-            "§eFormatted: §7(12k)\n" +
-            "§eUnformatted: §7(12,421)"
+            "§eFormatted: §r(12k)\n" +
+            "§eUnformatted: §r(12,421)"
     )
     @ConfigEditorDropdown
     var priceFormat: PriceFormatEntry = PriceFormatEntry.FORMATTED

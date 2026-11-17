@@ -13,7 +13,7 @@ class OdonataConfig {
     @ConfigOption(
         name = "Highlight",
         desc = "Highlight the small §cOdonatas §rflying around the trees while holding an " +
-            "§eEmpty Odonata Bottle §7in the hand."
+            "§eEmpty Odonata Bottle §rin the hand."
     )
     @ConfigEditorBoolean
     @FeatureToggle

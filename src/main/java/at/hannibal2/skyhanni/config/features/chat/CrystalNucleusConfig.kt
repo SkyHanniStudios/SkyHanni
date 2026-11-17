@@ -18,13 +18,13 @@ class CrystalNucleusConfig {
 
     enum class CrystalNucleusMessageTypes(val displayName: String) {
         RUN_COMPLETED("§5Run Completed Summary"),
-        CRYSTAL_COLLECTED("§aC§6r§dy§bs§et§aa§6l §7Collected"),
-        CRYSTAL_PLACED("§aC§6r§dy§bs§et§aa§6l §7Placed"),
-        NPC_DIVAN_KEEPERS("§e[NPC] §6Keepers §7(§2Mines of Divan§7)"),
+        CRYSTAL_COLLECTED("§aC§6r§dy§bs§et§aa§6l §rCollected"),
+        CRYSTAL_PLACED("§aC§6r§dy§bs§et§aa§6l §rPlaced"),
+        NPC_DIVAN_KEEPERS("§e[NPC] §6Keepers §r(§2Mines of Divan§r)"),
         NPC_PROF_ROBOT("§e[NPC] Professor Robot"),
         NPC_KING_YOLKAR("§e[NPC] §6King Yolkar"),
-        NPC_GOBLIN_GUARDS("§c[GUARD]§7s (§6Goblin Den§7)"),
-        NON_TOOL_SCAVENGE("§7Non-Tool §cMetal Detector §7loot"),
+        NPC_GOBLIN_GUARDS("§c[GUARD]§rs (§6Goblin Den§r)"),
+        NON_TOOL_SCAVENGE("§rNon-Tool §cMetal Detector §rloot"),
         ;
 
         override fun toString() = displayName

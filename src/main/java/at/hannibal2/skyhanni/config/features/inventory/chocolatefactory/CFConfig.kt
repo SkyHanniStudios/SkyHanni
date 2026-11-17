@@ -203,7 +203,7 @@ class CFConfig {
     @ConfigOption(
         name = "Leaderboard Change",
         desc = "Show the change of your chocolate leaderboard over time in chat.\n" +
-            "This updates every time you first open the §e/cf §7menu on a new server.",
+            "This updates every time you first open the §e/cf §rmenu on a new server.",
     )
     @ConfigEditorBoolean
     @FeatureToggle

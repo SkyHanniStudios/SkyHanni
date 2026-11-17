@@ -20,8 +20,8 @@ class PowderMiningConfig {
     @ConfigOption(
         name = "Powder",
         desc = "Hide §dGemstone §rand §aMithril §rPowder rewards under a certain amount.\n" +
-            "§a0§7: §aShow all\n" +
-            "§c60000§7: §cHide all"
+            "§a0§r: §aShow all\n" +
+            "§c60000§r: §cHide all"
     )
     @ConfigEditorSlider(minValue = 0f, maxValue = 60000f, minStep = 500f)
     var powderThreshold: Int = 1000
@@ -30,8 +30,8 @@ class PowderMiningConfig {
     @ConfigOption(
         name = "Essence",
         desc = "Hide §6Gold §rand §bDiamond §rEssence rewards under a certain amount.\n" +
-            "§a0§7: §aShow all\n" +
-            "§c20§7: §cHide all"
+            "§a0§r: §aShow all\n" +
+            "§c20§r: §cHide all"
     )
     @ConfigEditorSlider(minValue = 0f, maxValue = 20f, minStep = 1f)
     var essenceThreshold: Int = 5
@@ -73,10 +73,10 @@ class PowderMiningConfig {
     enum class GoblinEggEntry(val displayName: String) {
         SHOW_ALL("Show all"),
         HIDE_ALL("Hide all"),
-        GREEN_UP("Show §aGreen §7and up"),
-        YELLOW_UP("Show §eYellow §7and up"),
-        RED_UP("Show §cRed §7and up"),
-        BLUE_ONLY("Show §3Blue §7only"),
+        GREEN_UP("Show §aGreen §rand up"),
+        YELLOW_UP("Show §eYellow §rand up"),
+        RED_UP("Show §cRed §rand up"),
+        BLUE_ONLY("Show §3Blue §ronly"),
         ;
 
         override fun toString() = displayName

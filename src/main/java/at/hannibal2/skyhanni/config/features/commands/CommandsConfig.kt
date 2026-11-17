@@ -25,7 +25,7 @@ class CommandsConfig {
     @ConfigOption(
         name = "Party Commands",
         desc = "Shortens party commands and allows tab-completing for them. " +
-            "§eCommands: /pt, /pp, /pko, /pk, /pd §7(SkyBlock command §e/pt §7to check your play time will still work)",
+            "§eCommands: /pt, /pp, /pko, /pk, /pd §r(SkyBlock command §e/pt §rto check your play time will still work)",
     )
     @Expose
     @ConfigEditorBoolean

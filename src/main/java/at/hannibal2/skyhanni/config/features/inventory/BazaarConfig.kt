@@ -37,7 +37,7 @@ class BazaarConfig {
     @ConfigOption(
         name = "Hide Trade Partners",
         desc = "Hide the list of players that traded with your orders in the Bazaar order inventory.\n" +
-            "Buy orders show them under §eVendors§7, sell offers under §eCustomers§7.",
+            "Buy orders show them under §eVendors§r, sell offers under §eCustomers§r.",
     )
     @ConfigEditorBoolean
     @FeatureToggle
