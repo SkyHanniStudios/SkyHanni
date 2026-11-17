@@ -19,7 +19,7 @@ class HoppityLiveDisplayConfig {
 
     @ConfigOption(
         name = "Note",
-        desc = "§cNote§7: This card will mirror the stat list that is defined in the Hoppity Event Summary config.",
+        desc = "§cNote§r: This card will mirror the stat list that is defined in the Hoppity Event Summary config.",
     )
     @ConfigEditorInfoText
     val mirrorConfigNote: Boolean = false

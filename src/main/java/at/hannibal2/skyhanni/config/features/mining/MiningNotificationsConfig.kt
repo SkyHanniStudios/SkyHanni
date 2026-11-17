@@ -40,7 +40,7 @@ class MiningNotificationsConfig {
     @Expose
     @ConfigOption(
         name = "Get Ascension Rope",
-        desc = "Click on a chat message to get an Ascension Rope when you're at a certain amount of Cold and in the §bMineshaft§7. " +
+        desc = "Click on a chat message to get an Ascension Rope when you're at a certain amount of Cold and in the §bMineshaft§r. " +
             "§cOnly works if you have an Ascension Rope in your sacks."
     )
     @ConfigEditorBoolean

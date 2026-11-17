@@ -57,7 +57,7 @@ class DevConfig {
     @Expose
     @ConfigOption(
         name = "Chat History Length",
-        desc = "The number of messages to keep in memory for §e/shchathistory§7.\n" +
+        desc = "The number of messages to keep in memory for §e/shchathistory§r.\n" +
             "§cExcessively high values may cause memory allocation issues.",
     )
     @ConfigEditorSlider(minValue = 100f, maxValue = 5000f, minStep = 10f)
@@ -90,7 +90,7 @@ class DevConfig {
     @Expose
     @ConfigOption(
         name = "Fancy Contributors",
-        desc = "Marks §cSkyHanni's contributors §7fancy in the tab list. " +
+        desc = "Marks §cSkyHanni's contributors §rfancy in the tab list. " +
             "§eThose are the folks that coded the mod for you for free :)",
     )
     @ConfigEditorBoolean

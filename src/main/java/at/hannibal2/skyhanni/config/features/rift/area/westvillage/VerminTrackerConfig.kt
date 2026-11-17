@@ -11,7 +11,7 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 
 class VerminTrackerConfig {
     @Expose
-    @ConfigOption(name = "Show Counter", desc = "Count all §aSilverfish§7, §aSpiders, §7and §aFlies §7vacuumed.")
+    @ConfigOption(name = "Show Counter", desc = "Count all §aSilverfish§r, §aSpiders, §rand §aFlies §rvacuumed.")
     @ConfigEditorBoolean
     @FeatureToggle
     var enabled: Boolean = true

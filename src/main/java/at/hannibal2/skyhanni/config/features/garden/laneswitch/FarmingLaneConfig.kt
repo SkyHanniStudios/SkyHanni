@@ -14,7 +14,7 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 class FarmingLaneConfig {
     @ConfigOption(
         name = "Create Lanes",
-        desc = "In order for those features to work, you first need to create a lane with §e/shlanedetection§7!",
+        desc = "In order for those features to work, you first need to create a lane with §e/shlanedetection§r!",
     )
     @ConfigEditorInfoText(infoTitle = "Tutorial")
     val tutorial: Boolean = false

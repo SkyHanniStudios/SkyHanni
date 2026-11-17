@@ -40,7 +40,7 @@ class DarkMonolithConfig {
         var enabled: Boolean = false
 
         @Expose
-        @ConfigOption(name = "Beacon Color", desc = "What color to show the beacon.\n§cCustom alpha values won't work§7.")
+        @ConfigOption(name = "Beacon Color", desc = "What color to show the beacon.\n§cCustom alpha values won't work§r.")
         @ConfigEditorColour
         var color: ChromaColour = ChromaColour.fromStaticRGB(155, 29, 194, 255)
     }

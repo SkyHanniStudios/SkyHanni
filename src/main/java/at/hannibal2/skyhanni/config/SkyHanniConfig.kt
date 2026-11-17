@@ -70,7 +70,7 @@ class SkyHanniConfig : Config() {
 
     @JvmField
     @Expose
-    @Category(name = "GUI", desc = "Change the locations of GUI elements (§e/sh gui§7).")
+    @Category(name = "GUI", desc = "Change the locations of GUI elements (§e/sh gui§r).")
     val gui: GuiConfig = GuiConfig()
 
     // Islands

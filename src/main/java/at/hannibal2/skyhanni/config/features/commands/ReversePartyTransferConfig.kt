@@ -8,7 +8,7 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 
 class ReversePartyTransferConfig {
     @Expose
-    @ConfigOption(name = "Command", desc = "Adds §e/rpt §7to transfer a party back to its previous leader.")
+    @ConfigOption(name = "Command", desc = "Adds §e/rpt §rto transfer a party back to its previous leader.")
     @ConfigEditorBoolean
     @FeatureToggle
     var command: Boolean = true

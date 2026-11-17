@@ -12,7 +12,7 @@ class FrogMaskWarningConfig {
     @Expose
     @ConfigOption(
         name = "Enabled",
-        desc = "Displays a warning when foraging/being in a wrong region of the park while wearing a §5Frog Mask§7.",
+        desc = "Displays a warning when foraging/being in a wrong region of the park while wearing a §5Frog Mask§r.",
     )
     @ConfigEditorBoolean
     @FeatureToggle

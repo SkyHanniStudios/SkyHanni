@@ -21,7 +21,7 @@ class CoopBossHighlightConfig {
     var highlightColor: ChromaColour = ChromaColour.fromStaticRGB(0, 255, 88, 249)
 
     @Expose
-    @ConfigOption(name = "Co-op Members", desc = "Add your co-op member here.\n§eFormat: §7Name1,Name2,Name3")
+    @ConfigOption(name = "Co-op Members", desc = "Add your co-op member here.\n§eFormat: §rName1,Name2,Name3")
     @ConfigEditorText
     var coopMembers: String = ""
 

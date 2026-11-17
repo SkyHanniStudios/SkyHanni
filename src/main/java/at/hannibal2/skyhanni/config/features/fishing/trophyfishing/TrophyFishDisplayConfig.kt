@@ -112,12 +112,12 @@ class TrophyFishDisplayConfig {
     }
 
     @Expose
-    @ConfigOption(name = "Show ✖", desc = "Instead of the number 0, show §c✖ §7if not found.")
+    @ConfigOption(name = "Show ✖", desc = "Instead of the number 0, show §c✖ §rif not found.")
     @ConfigEditorBoolean
     val showCross: Property<Boolean> = Property.of(false)
 
     @Expose
-    @ConfigOption(name = "Show ✔", desc = "Instead of the exact numbers, show §e§l✔ §7if found.")
+    @ConfigOption(name = "Show ✔", desc = "Instead of the exact numbers, show §e§l✔ §rif found.")
     @ConfigEditorBoolean
     val showCheckmark: Property<Boolean> = Property.of(false)
 

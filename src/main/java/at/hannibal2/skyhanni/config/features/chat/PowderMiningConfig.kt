@@ -19,7 +19,7 @@ class PowderMiningConfig {
     @Expose
     @ConfigOption(
         name = "Powder",
-        desc = "Hide §dGemstone §7and §aMithril §7Powder rewards under a certain amount.\n" +
+        desc = "Hide §dGemstone §rand §aMithril §rPowder rewards under a certain amount.\n" +
             "§a0§7: §aShow all\n" +
             "§c60000§7: §cHide all"
     )
@@ -29,7 +29,7 @@ class PowderMiningConfig {
     @Expose
     @ConfigOption(
         name = "Essence",
-        desc = "Hide §6Gold §7and §bDiamond §7Essence rewards under a certain amount.\n" +
+        desc = "Hide §6Gold §rand §bDiamond §rEssence rewards under a certain amount.\n" +
             "§a0§7: §aShow all\n" +
             "§c20§7: §cHide all"
     )

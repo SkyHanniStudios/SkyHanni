@@ -139,7 +139,7 @@ class ChatConfig {
     @Expose
     @ConfigOption(
         name = "Arachne Hider",
-        desc = "Hide chat messages about the Arachne Fight while outside of §eArachne's Sanctuary§7.",
+        desc = "Hide chat messages about the Arachne Fight while outside of §eArachne's Sanctuary§r.",
     )
     @ConfigEditorBoolean
     @FeatureToggle

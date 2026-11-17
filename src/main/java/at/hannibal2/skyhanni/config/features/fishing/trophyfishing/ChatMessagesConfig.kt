@@ -19,7 +19,7 @@ class ChatMessagesConfig {
     @Expose
     @ConfigOption(
         name = "Trophy Counter Design",
-        desc = "§fStyle 1: §72. §6§lGOLD §5Moldfin\n" +
+        desc = "§fStyle 1: §r2. §6§lGOLD §5Moldfin\n" +
             "§fStyle 2: §bYou caught a §5Moldfin §6§lGOLD§b. §7(2)\n" +
             "§fStyle 3: §bYou caught your 2nd §6§lGOLD §5Moldfin§b."
     )

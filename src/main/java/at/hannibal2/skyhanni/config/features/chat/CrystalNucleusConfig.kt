@@ -33,7 +33,7 @@ class CrystalNucleusConfig {
     @Expose
     @ConfigOption(
         name = "Modified Messages",
-        desc = "Messages that should be hidden or compacted.\n§cImportant information will still appear§7.",
+        desc = "Messages that should be hidden or compacted.\n§cImportant information will still appear§r.",
     )
     @ConfigEditorDraggableList
     val modifiedMessages: MutableList<CrystalNucleusMessageTypes> = mutableListOf(

@@ -14,7 +14,7 @@ import io.github.notenoughupdates.moulconfig.annotations.SearchTag
 class BeachBallTrackerConfig {
 
     @Expose
-    @ConfigOption(name = "Enabled", desc = "Track the §bBeach Balls §7you use and §dFishy Treats §7you earn.")
+    @ConfigOption(name = "Enabled", desc = "Track the §bBeach Balls §ryou use and §dFishy Treats §ryou earn.")
     @ConfigEditorBoolean
     @FeatureToggle
     @SearchTag("beach")

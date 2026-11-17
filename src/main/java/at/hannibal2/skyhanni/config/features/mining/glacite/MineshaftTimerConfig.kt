@@ -21,7 +21,7 @@ class MineshaftTimerConfig {
     @Expose
     @ConfigOption(
         name = "Caution Threshold",
-        desc = "Seconds remaining at which the timer turns §eyellow§7."
+        desc = "Seconds remaining at which the timer turns §eyellow§r."
     )
     @ConfigEditorSlider(minStep = 1f, minValue = 1f, maxValue = 59f)
     var cautionThreshold: Int = 30
@@ -29,7 +29,7 @@ class MineshaftTimerConfig {
     @Expose
     @ConfigOption(
         name = "Warning Threshold",
-        desc = "Seconds remaining at which the timer turns §cred§7."
+        desc = "Seconds remaining at which the timer turns §cred§r."
     )
     @ConfigEditorSlider(minStep = 1f, minValue = 1f, maxValue = 59f)
     var warningThreshold: Int = 10
