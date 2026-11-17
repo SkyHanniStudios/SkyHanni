@@ -34,9 +34,9 @@ object TestRenderItems : RenderableTestSuite.TestRenderableFor<GameOverlayRender
     eventClass = GameOverlayRenderPostEvent::class,
 ) {
     private val scaleList = generateSequence(0.1) { it + 0.1 }.take(25).toList()
-    private val boxOfSeedsProvider = NeuItemStackProvider("BOX_OF_SEEDS".toInternalName())
+    private val skullItemProvider = NeuItemStackProvider("ESSENCE_WITHER".toInternalName())
     private val bambooProvider = NeuItemStackProvider("BAMBOO".toInternalName())
-    private val animationFrames = listOf(ItemStackAnimatedFrame(boxOfSeedsProvider, ticks = 0))
+    private val animationFrames = listOf(ItemStackAnimatedFrame(skullItemProvider, ticks = 0))
 
     private val poleBounceDef = Axis.Y to AxisBounceDefinition(25.0, 8.0)
     private val animatedBounceStorage = AnimatedBounceLocalStorage(AnimatedBounceDefinition(poleBounceDef))
