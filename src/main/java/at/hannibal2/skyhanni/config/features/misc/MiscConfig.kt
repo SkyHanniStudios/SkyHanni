@@ -400,7 +400,7 @@ class MiscConfig {
     @ConfigOption(
         name = "Boost Warning Volume",
         desc = "Always play SkyHanni warning sounds at 100% volume (unless the game is muted).\n" +
-            "§cThis may be very loud if your game is at low volume!"
+            "§cThis may be very loud if your game is at low volume!",
     )
     @ConfigEditorBoolean
     @SearchTag("beep change ding during maintain pling quiet warnings")
@@ -515,7 +515,10 @@ class MiscConfig {
         desc = "§c§lThis can break particle Coloring in parts of Skyblock where it is done properly.",
     )
     @ConfigEditorInfoText
-    @SearchTag("Fixes Hypixel not setting colored particles properly such as Slayer Specific Spawn Particles or Motes Fix Colored Particles")
+    @SearchTag(
+        "Fixes Hypixel not setting colored particles properly " +
+            "such as Slayer Specific Spawn Particles or Motes Fix Colored Particles",
+    )
     val notice: String = ""
 
     @Expose
@@ -544,6 +547,15 @@ class MiscConfig {
     @ConfigEditorBoolean
     @FeatureToggle
     var achievementMessages: Boolean = true
+
+    @Expose
+    @ConfigOption(
+        name = "Muted Narrator Warning",
+        desc = "Send a warning reminder in chat when the narrator is enabled, but in a muted state. " +
+            "§eNarrator destroys performance in SkyBlock.",
+    )
+    @ConfigEditorBoolean
+    val mutedNarratorWarning: Property<Boolean> = Property.of(true)
 
     @Expose
     @ConfigOption(
