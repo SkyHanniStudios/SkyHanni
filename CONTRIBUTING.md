@@ -382,8 +382,6 @@ debugging in IntelliJ. This is very useful for coding live on Hypixel without th
     - Click on the link in the console and verify with a Microsoft account.
     - The verification process will reappear every few days (after the session token expires).
 
-### [Live Plugin](https://plugins.jetbrains.com/plugin/7282-liveplugin)
-
 Allows project specific plugins to run. Eg: Regex Intention
 
 ### [Live Templates Sharing](https://plugins.jetbrains.com/plugin/25007-live-templates-sharing)

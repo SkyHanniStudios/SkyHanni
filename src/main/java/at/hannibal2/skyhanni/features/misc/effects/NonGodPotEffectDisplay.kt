@@ -16,7 +16,7 @@ import at.hannibal2.skyhanni.features.nether.kuudra.KuudraApi
 import at.hannibal2.skyhanni.features.rift.RiftApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
-import at.hannibal2.skyhanni.utils.RenderUtils.renderStrings
+import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderables
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.SoundUtils.playPlingSound
 import at.hannibal2.skyhanni.utils.TimeUnit
@@ -24,7 +24,10 @@ import at.hannibal2.skyhanni.utils.TimeUtils.format
 import at.hannibal2.skyhanni.utils.TimeUtils.timerColor
 import at.hannibal2.skyhanni.utils.Timer
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.sorted
+import at.hannibal2.skyhanni.utils.collection.CollectionUtils.takeIfNotEmpty
+import at.hannibal2.skyhanni.utils.collection.RenderableCollectionUtils.addString
 import at.hannibal2.skyhanni.utils.collection.TimeLimitedSet
+import at.hannibal2.skyhanni.utils.renderables.Renderable
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
@@ -34,7 +37,7 @@ object NonGodPotEffectDisplay {
     private val config get() = SkyHanniMod.feature.misc.nonGodPotEffect
     private val effectDuration = mutableMapOf<NonGodPotEffect, Timer>()
     private val setRecently: TimeLimitedSet<NonGodPotEffect> = TimeLimitedSet(5.seconds)
-    private var display = emptyList<String>()
+    private var display = emptyList<Renderable>()
 
     fun isActive(effect: NonGodPotEffect): Boolean = effectDuration.any { it.key == effect && !it.value.ended }
 
@@ -84,8 +87,7 @@ object NonGodPotEffectDisplay {
         display = drawDisplay()
     }
 
-    private fun drawDisplay(): MutableList<String> {
-        val newDisplay = mutableListOf<String>()
+    private fun drawDisplay(): List<Renderable> = buildList {
         for ((effect, time) in effectDuration.sorted()) {
             if (time.ended) continue
             if (effect == NonGodPotEffect.INVISIBILITY) continue
@@ -97,14 +99,13 @@ object NonGodPotEffectDisplay {
             val color = remaining.timerColor()
 
             val displayName = effect.displayName
-            newDisplay.add("$displayName $color$format")
+            addString("$displayName $color$format")
         }
         val diff = EffectApi.totalEffectsCount - effectDuration.size
         if (diff > 0) {
-            newDisplay.add("§eOpen the /effects inventory")
-            newDisplay.add("§eto show the missing $diff effects!")
+            addString("§eOpen the /effects inventory")
+            addString("§eto show the missing $diff effects!")
         }
-        return newDisplay
     }
 
     @HandleEvent
@@ -136,11 +137,8 @@ object NonGodPotEffectDisplay {
         if (!isEnabled() || !config.displayEnabled) return
         if (RiftApi.inRift()) return
 
-        config.position.renderStrings(
-            display,
-            extraSpace = 3,
-            posLabel = "Non God Pot Effects",
-        )
+        val display = display.takeIfNotEmpty() ?: return
+        config.position.renderRenderables(display, extraSpace = 3, posLabel = "Non God Pot Effects")
     }
 
     @HandleEvent
