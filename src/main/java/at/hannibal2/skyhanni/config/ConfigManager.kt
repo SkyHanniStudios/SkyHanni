@@ -19,7 +19,6 @@ import at.hannibal2.skyhanni.features.misc.update.UpdateManager
 import at.hannibal2.skyhanni.features.pets.PetDisplayConfigGuiManager
 import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.ConfigUtils
-import at.hannibal2.skyhanni.utils.DelayedRun
 import at.hannibal2.skyhanni.utils.IdentityCharacteristics
 import at.hannibal2.skyhanni.utils.OSUtils
 import at.hannibal2.skyhanni.utils.ReflectionUtils.makeAccessible
@@ -45,7 +44,6 @@ import java.lang.reflect.Field
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.concurrent.fixedRateTimer
 import kotlin.reflect.KMutableProperty0
 import kotlin.time.Duration.Companion.days
 
@@ -79,14 +77,6 @@ class ConfigManager {
         for (fileType in ConfigFileType.entries) {
             val clazzInstance = fileType.clazz.getDeclaredConstructor().newInstance()
             setConfigHolder(fileType, firstLoadFile(fileType.file, fileType, clazzInstance))
-        }
-
-        // TODO use SecondPassedEvent
-        fixedRateTimer(name = "skyhanni-config-auto-save", daemon = true, period = 60_000L, initialDelay = 60_000L) {
-            saveConfig(ConfigFileType.FEATURES, "auto-save-60s")
-        }
-        fixedRateTimer(name = "skyhanni-config-pending-save", daemon = true, period = 10_000L, initialDelay = 10_000L) {
-            savePendingConfigs()
         }
 
         val features = SkyHanniMod.feature
@@ -225,20 +215,27 @@ class ConfigManager {
         }
     }
 
-    private fun writeConfig(fileType: ConfigFileType, reason: String) = DelayedRun.runOrNextTick {
-        val json = jsonHolder[fileType] ?: error("Could not find json object for $fileType")
-        saveFile(fileType.file, fileType.fileName, json, reason)
-        saveFile(fileType.backupFile, fileType.fileName, json, reason)
+    @Synchronized
+    private fun writeConfig(fileType: ConfigFileType, reason: String) {
+        val data = jsonHolder[fileType] ?: error("Could not find json object for $fileType")
+        val json = lazy { gson.toJson(data) }
+        try {
+            saveFile(fileType.file, fileType.fileName, data, json, reason)
+            saveFile(fileType.backupFile, fileType.fileName, data, json, reason)
+        } catch (e: ConcurrentModificationException) {
+            logger.log("Config changed while saving ${fileType.fileName}, retrying later: ${e.message}")
+            pendingSaves.putIfAbsent(fileType, reason)
+        }
     }
 
-    private fun saveFile(file: File, fileName: String, data: Any, reason: String) {
+    private fun saveFile(file: File, fileName: String, data: Any, json: Lazy<String>, reason: String) {
         if (disableSaving) return
         if (HypixelData.hypixelAlpha && !PlatformUtils.isDevEnvironment) return
         logger.log("saveConfig: $reason")
         try {
             logger.log("Saving $fileName file")
             file.parentFile.mkdirs()
-            StringFileHandler(file).save(gson.toJson(data))
+            StringFileHandler(file).save(json.value)
             logger.log("Saved $fileName file successfully")
         } catch (e: ClassCastException) {
             ErrorManager.logErrorWithData(
