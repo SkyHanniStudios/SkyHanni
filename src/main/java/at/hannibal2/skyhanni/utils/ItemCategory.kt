@@ -8,6 +8,7 @@ import at.hannibal2.skyhanni.utils.ItemUtils.getItemCategoryOrNull
  * Deprecated entries should not be removed, they are kept to avoid errors with unupdated items.
  * Please add new Categories in alphabetical order and new entries to the Categories alphabetically.
  */
+// TODO: make sub enums for each category
 enum class ItemCategory {
 
     // Accessories
