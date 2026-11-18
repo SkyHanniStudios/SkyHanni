@@ -461,17 +461,17 @@ object EstimatedItemValueCalculator {
         val internalName = stack.getInternalNameOrNull() ?: return 0.0
         if (!internalName.isKuudraArmor()) return 0.0
         val tier = internalName.getArmorKuudraTier() ?: return 0.0
-        val tierIndex = tier.tierNumber.takeIf { it > 1 } ?: return 0.0
+        val tierNumber = tier.tierNumber.takeIf { it > 1 } ?: return 0.0
         val armorTier = tier.armorName
 
-        val allTiersCost = (1 until tierIndex).mapNotNull { index ->
-            KuudraTier.getByTierNumber(index)?.armorName?.let { tierName ->
+        val allTiersCost = (2..tierNumber).mapNotNull { number ->
+            KuudraTier.getByTierNumber(number)?.armorName?.let { tierName ->
                 EstimatedItemValue.crimsonPrestigeCosts[tierName] ?: run {
                     ErrorManager.logErrorStateWithData(
                         "Could not find crimson prestige cost for ${stack.hoverName.formattedTextCompatLeadingWhiteLessResets()}",
                         "EstimatedItemValue has no crimsonPrestigeCosts for $tierName tier",
                         "internalName" to internalName,
-                        "tierIndex" to tierIndex,
+                        "tierNumber" to tierNumber,
                         "armorTier" to armorTier,
                         "tierName" to tierName,
                         "crimsonPrestigeCosts" to EstimatedItemValue.crimsonPrestigeCosts,
