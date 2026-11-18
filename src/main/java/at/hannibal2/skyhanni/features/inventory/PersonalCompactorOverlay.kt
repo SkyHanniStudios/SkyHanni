@@ -92,26 +92,14 @@ object PersonalCompactorOverlay {
         val name = event.toolTip.firstOrNull() ?: return
         val (type, tier, skill) = getCompactorInfoByInternalName(internalName) ?: return
 
-        val prefix = when (type) {
-            COMPACTOR -> "personal_compact_"
-            DELETOR -> "personal_deletor_"
-        }
-
         val uuid = itemStack.getItemUuid() ?: return
         val enabled = getPersonalCompactorEnabled(itemStack) ?: return
 
         val slots = slotsMap[tier] ?: return
-        // TODO once https://hypixel.net/threads/october-29-accessory-bag-revamp-economy-changes.6165308/ is on main change to just check is deletor.
-        var itemList = mutableListOf<SafeItemStack?>()
-        skill?.let {
-            itemList = storage?.get(skill)?.map { compactingItem ->
-                if (compactingItem.value) compactingItem.key.getItemStack() else null
-            }?.filterNotNull().orEmpty().toMutableList()
-        } ?: {
-            for (slot in 0 until slots) {
-                val skyblockId = itemStack.getAttributeString(prefix + slot)
-                itemList.add(skyblockId?.let { getInternalNameFromHypixelIdOrNull(it) }?.getItemStack())
-            }
+
+        val itemList = when (type) {
+            COMPACTOR -> getPersonalCompactorItems(skill)
+            DELETOR -> getPersonalDeletorItems(slots, itemStack)
         }
 
         val fakeInventory = compactorRenderableMap.getOrPut(uuid) {
@@ -151,10 +139,9 @@ object PersonalCompactorOverlay {
         if (!config.showToggle) return
         val itemStack = event.stack
         val internalName = itemStack.getInternalNameOrNull() ?: return
-        val skill = getCompactorInfoByInternalName(internalName)?.third
+        val type = getCompactorInfoByInternalName(internalName)?.first ?: return
 
-        if (skill != null) return
-        // TODO once https://hypixel.net/threads/october-29-accessory-bag-revamp-economy-changes.6165308/ is on main change to just check is deletor?
+        if (type != DELETOR) return
 
         val enabled = getPersonalCompactorEnabled(itemStack) ?: return
         val text = if (enabled) "§a✔" else "§c✖"
@@ -172,6 +159,22 @@ object PersonalCompactorOverlay {
         EXCEPT_KEYBIND -> !config.keybind.isKeyHeld()
     }
 
+    private fun getPersonalCompactorItems(skill: CompactorType?): List<SafeItemStack> {
+        if (skill == null) return emptyList()
+        return storage?.get(skill)?.map { compactingItem ->
+            if (compactingItem.value) compactingItem.key.getItemStack() else null
+        }?.filterNotNull().orEmpty().toMutableList()
+    }
+
+    private fun getPersonalDeletorItems(slots: Int, itemStack: SafeItemStack): List<SafeItemStack?> {
+        val prefix = "personal_deletor_"
+        val itemList = mutableListOf<SafeItemStack?>()
+        for (slot in 0 until slots) {
+            val skyblockId = itemStack.getAttributeString(prefix + slot)
+            itemList.add(skyblockId?.let { getInternalNameFromHypixelIdOrNull(it) }?.getItemStack())
+        }
+        return itemList
+    }
     private fun getPersonalCompactorEnabled(itemStack: SafeItemStack): Boolean? {
         val uuid = itemStack.getItemUuid() ?: return null
         return compactorEnabledMap.getOrPut(uuid) { itemStack.getPersonalCompactorActive() }
