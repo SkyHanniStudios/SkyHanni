@@ -39,13 +39,7 @@ object ColorParticleFix {
         event.particleOptions = particleOptions
     }
 
-    private fun ParticleChangeEvent.anyOffsetHasRandomization(): Boolean {
-        return when {
-            (this.packet.xDist == RANDOMIZATION_OFFSET) -> true
-            (this.packet.yDist == RANDOMIZATION_OFFSET) -> true
-            (this.packet.zDist == RANDOMIZATION_OFFSET) -> true
-
-            else -> false
-        }
+    private fun ParticleChangeEvent.anyOffsetHasRandomization(): Boolean = with(packet) {
+        setOf(xDist, yDist, zDist).contains(RANDOMIZATION_OFFSET)
     }
 }
