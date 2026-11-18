@@ -99,8 +99,8 @@ enum class DiscordStatus(private val displayMessageSupplier: DiscordStatus.() ->
                 IslandType.MINESHAFT -> "Glacite Mineshafts"
 
                 IslandType.KUUDRA_ARENA -> {
-                    if (kuudraApi.kuudraTier != null)
-                        "${kuudraApi.kuudraTier.displayName} Kuudra (T${kuudraApi.kuudraTier.tierNumber})"
+                    if (KuudraApi.kuudraTier != null)
+                        "${KuudraApi.kuudraTier.displayName} Kuudra (T${KuudraApi.kuudraTier.tierNumber})"
                     else "Unknown Kuudra Tier"
                 }
 
