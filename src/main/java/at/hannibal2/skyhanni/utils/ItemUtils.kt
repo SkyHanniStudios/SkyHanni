@@ -49,6 +49,7 @@ import at.hannibal2.skyhanni.utils.collection.CollectionUtils.addOrPut
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.removeIfKey
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.sortedDesc
 import at.hannibal2.skyhanni.utils.collection.TimeLimitedCache
+import at.hannibal2.skyhanni.utils.collection.WeakIdentityCache
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.compat.NbtCompat
 import at.hannibal2.skyhanni.utils.compat.append
@@ -155,9 +156,6 @@ object ItemUtils {
         itemBaseStats = allItems
     }
 
-    // Might not contain all actual item stats, compare with getRawBaseStats()
-    fun NeuInternalName.getBaseStats(): Map<SkyblockStat, Int> = itemBaseStats[this].orEmpty()
-
     fun NeuInternalName.getRawBaseStats(): Map<String, Int> = itemBaseStatsRaw[this].orEmpty()
 
     @HandleEvent(ConfigLoadEvent::class)
@@ -175,28 +173,32 @@ object ItemUtils {
 
     fun isSack(stack: SafeItemStack) = stack.getInternalName().endsWith("_SACK") && stack.cleanName.endsWith(" Sack")
 
-    private val loreComponentCache = TimeLimitedCache<IdentityCharacteristics<DataComponentMap>, List<Component>>(
-        expireAfterWrite = 0.1.seconds,
-    )
+    private val loreComponentCache = WeakIdentityCache<DataComponentMap, List<Component>>(0.1.seconds) {
+        it.get(DataComponents.LORE)?.lines.orEmpty()
+    }
 
-    private val internalNameCache = TimeLimitedCache<IdentityCharacteristics<SafeItemStack>, NeuInternalName>(
-        expireAfterWrite = 1.seconds,
-    )
+    private val cleanLoreCache = WeakIdentityCache<DataComponentMap, List<String>>(0.1.seconds) { map ->
+        map.getLoreComponent().map { it.string.removeColor() }
+    }
+
+    private val internalNameCache = WeakIdentityCache<SafeItemStack, NeuInternalName>(1.seconds) {
+        it.grabInternalNameOrNull() ?: NeuInternalName.NONE
+    }
+
+    private val loadedItemModelCache = WeakIdentityCache<SafeItemStack, SafeItemStack>(1.seconds) { stack ->
+        stack.copy().apply { set(DataComponents.ITEM_MODEL, BuiltInRegistries.ITEM.getKey(getItem())) }
+    }
 
     /**
      * For use in [ItemUtilsTest].
      */
     internal fun SafeItemStack.cacheInternalName(internalName: NeuInternalName) {
-        internalNameCache[IdentityCharacteristics(this)] = internalName
+        internalNameCache[this] = internalName
     }
 
-    fun DataComponentMap.getLoreComponent(): List<Component> =
-        loreComponentCache.getOrPut(IdentityCharacteristics(this)) {
-            get(DataComponents.LORE)?.lines.orEmpty()
-        }
+    fun DataComponentMap.getLoreComponent(): List<Component> = loreComponentCache[this]
 
-    fun DataComponentMap.getCleanLore(): List<String> =
-        getLoreComponent().map { it.string.removeColor() }
+    fun DataComponentMap.getCleanLore(): List<String> = cleanLoreCache[this]
 
     @Deprecated("Use getLoreComponent or getCleanLore unless you really need color codes")
     fun DataComponentMap.getLore(): List<String> =
@@ -290,10 +292,7 @@ object ItemUtils {
         return list
     }
 
-    fun SafeItemStack.getInternalName(): NeuInternalName =
-        internalNameCache.getOrPut(IdentityCharacteristics(this)) {
-            grabInternalNameOrNull() ?: NeuInternalName.NONE
-        }
+    fun SafeItemStack.getInternalName(): NeuInternalName = internalNameCache[this]
 
     fun SafeItemStack.getInternalNameOrNull(): NeuInternalName? =
         getInternalName().takeUnless { it == NeuInternalName.NONE }
@@ -568,13 +567,6 @@ object ItemUtils {
     fun SafeItemStack.getItemRarityOrNull(): LorenzRarity? {
         this.updateCategoryAndRarity()
         return cachedData.itemRarity
-    }
-
-    // Taken from NEU
-    fun SafeItemStack.editItemInfo(displayName: String, lore: List<String>): SafeItemStack {
-        this.setCustomItemName(displayName)
-        this.setLoreString(lore)
-        return this
     }
 
     fun SafeItemStack.editItemInfo(displayName: Component, lore: List<Component>): SafeItemStack {
@@ -982,11 +974,6 @@ object ItemUtils {
         }
     }
 
-    fun CompoundTag.getCompoundList(key: String): List<CompoundTag> =
-        NbtCompat.getCompoundTagList(this, key).let { loreList ->
-            List(loreList.size) { loreList.getCompoundOrDefault(it) }
-        }
-
     fun CompoundTag.containsCompound(key: String): Boolean {
         return NbtCompat.containsCompound(this, key)
     }
@@ -1062,7 +1049,7 @@ object ItemUtils {
     fun SafeItemStack.withLoadedItemModel(): SafeItemStack {
         val modelId = get(DataComponents.ITEM_MODEL) ?: return this
         if (modelId in Minecraft.getInstance().modelManager.bakedItemStackModels) return this
-        return copy().apply { set(DataComponents.ITEM_MODEL, BuiltInRegistries.ITEM.getKey(getItem())) }
+        return loadedItemModelCache[this]
     }
 
     fun SafeItemStack.asTextComponent(): Component? {
