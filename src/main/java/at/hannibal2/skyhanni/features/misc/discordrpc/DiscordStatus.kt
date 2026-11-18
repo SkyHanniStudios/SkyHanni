@@ -96,8 +96,13 @@ enum class DiscordStatus(private val displayMessageSupplier: DiscordStatus.() ->
                 IslandType.DUNGEON_HUB -> "Dungeon Hub"
                 IslandType.BACKWATER_BAYOU -> "Backwater Bayou"
                 IslandType.CATACOMBS -> "The Catacombs ${DungeonApi.dungeonFloor.orEmpty()}"
-                IslandType.KUUDRA_ARENA -> "Kuudra Tier ${KuudraApi.kuudraTier ?: "Unknown"}"
                 IslandType.MINESHAFT -> "Glacite Mineshafts"
+
+                IslandType.KUUDRA_ARENA -> {
+                    if (kuudraApi.kuudraTier != null)
+                        "${kuudraApi.kuudraTier.displayName} Kuudra (T${kuudraApi.kuudraTier.tierNumber})"
+                    else "Unknown Kuudra Tier"
+                }
 
                 IslandType.GARDEN -> {
                     if (location.startsWith("Plot: ")) "Personal Garden ($location)" // Personal Garden (Plot: 8)
