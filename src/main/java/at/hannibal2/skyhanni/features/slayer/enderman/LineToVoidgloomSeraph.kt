@@ -15,7 +15,7 @@ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawLineToCrosshair
 
 @SkyHanniModule
 object LineToVoidgloomSeraph {
-    private val config get() = SlayerApi.config.endermen
+    private val config get() = SlayerApi.config.enderman
     private val bosses = mutableSetOf<Mob>()
 
     @HandleEvent(onlyOnSkyblock = true)

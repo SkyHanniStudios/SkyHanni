@@ -13,9 +13,9 @@ import net.minecraft.world.entity.monster.EnderMan
 @SkyHanniModule
 object EndermanSlayerHideParticles {
 
-    @HandleEvent
-    fun onParticle(event: ParticleEvent) {
-        if (!isEnabled()) return
+    @HandleEvent(onlyOnIsland = IslandType.THE_END)
+    private fun onParticle(event: ParticleEvent) {
+        if (!SlayerApi.config.enderman.hideParticles) return
 
         when (event.type) {
             ParticleTypes.LARGE_SMOKE,
@@ -30,8 +30,6 @@ object EndermanSlayerHideParticles {
             event.cancel()
         }
     }
-
-    fun isEnabled() = IslandType.THE_END.isInIsland() && SlayerApi.config.endermen.hideParticles
 
     @HandleEvent
     fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {

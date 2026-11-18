@@ -5,17 +5,15 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.commands.CommandCategory
 import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
 import at.hannibal2.skyhanni.config.features.garden.CropFeverTrackerConfig.CropFeverTrackerTextEntry
+import at.hannibal2.skyhanni.config.storage.ProfileSpecificStorage
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.garden.CropCollectionApi.addCollectionCounter
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.garden.farming.CropClickEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
-import at.hannibal2.skyhanni.events.minecraft.WorldChangeEvent
 import at.hannibal2.skyhanni.features.garden.CropCollectionType
 import at.hannibal2.skyhanni.features.garden.CropType
 import at.hannibal2.skyhanni.features.garden.GardenApi
-import at.hannibal2.skyhanni.features.garden.tracker.CropFeverTracker.drawDisplay
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ConditionalUtils
 import at.hannibal2.skyhanni.utils.NeuInternalName
@@ -24,6 +22,7 @@ import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 import at.hannibal2.skyhanni.utils.NumberUtil.formatInt
 import at.hannibal2.skyhanni.utils.PrimitiveItemStack.Companion.makePrimitiveStack
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
+import at.hannibal2.skyhanni.utils.RenderDisplayConfig
 import at.hannibal2.skyhanni.utils.Stopwatch
 import at.hannibal2.skyhanni.utils.TimeUtils.format
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.addOrPut
@@ -34,9 +33,9 @@ import at.hannibal2.skyhanni.utils.renderables.primitives.placeholder
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
 import at.hannibal2.skyhanni.utils.renderables.toSearchable
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
-import at.hannibal2.skyhanni.utils.tracker.BucketedItemTrackerData
 import at.hannibal2.skyhanni.utils.tracker.SessionUptime
 import at.hannibal2.skyhanni.utils.tracker.SkyHanniBucketedItemTracker
+import at.hannibal2.skyhanni.utils.tracker.data.BucketedItemTrackerData
 import com.google.gson.annotations.Expose
 import java.util.EnumMap
 import kotlin.time.Duration
@@ -44,12 +43,19 @@ import kotlin.time.Duration
 @SkyHanniModule
 object CropFeverTracker : SkyHanniBucketedItemTracker<CropType, CropFeverTracker.BucketData>(
     "Crop Fever Tracker",
-    ::BucketData,
-    { it.garden.cropFeverTracker },
-    drawDisplay = { drawDisplay(it) },
-    trackerConfig = { SkyHanniMod.feature.garden.cropFeverTracker.perTrackerConfig },
-    customUptimeControl = true
 ) {
+    override val storageAccessor: (ProfileSpecificStorage) -> BucketData = { it.garden.cropFeverTracker }
+    override val config get() = SkyHanniMod.feature.garden.cropFeverTracker
+    override val customUptimeControl: Boolean = true
+    override val renderConfig = RenderDisplayConfig(
+        condition = {
+            val holdEnabled = (!config.onlyWithTool || GardenApi.isHoldingCropFever())
+            val feverEnabled = (!config.onlyDuringFever || isCropFever)
+            config.enabled && holdEnabled && feverEnabled
+        },
+        onlyOnIsland = IslandType.GARDEN,
+    )
+
     data class BucketData(
         @Expose var blocksBrokenDuring: MutableMap<CropType, Long> = EnumMap(CropType::class.java),
         @Expose var blocksBrokenOutside: MutableMap<CropType, Long> = EnumMap(CropType::class.java),
@@ -58,7 +64,7 @@ object CropFeverTracker : SkyHanniBucketedItemTracker<CropType, CropFeverTracker
         @Expose var partialFeverAmount: MutableMap<CropType, Long> = EnumMap(CropType::class.java),
         @Expose var cropFeverDuration: MutableMap<CropType, Stopwatch> = EnumMap(CropType::class.java),
         @Expose var rngDrops: MutableMap<CropType, MutableMap<RngDropEnum, Long>> = EnumMap(CropType::class.java),
-    ) : BucketedItemTrackerData<CropType, SessionUptime.Garden>(CropType::class, SessionUptime.Garden::class) {
+    ) : BucketedItemTrackerData<CropType, SessionUptime.Garden>() {
         override fun getDescription(bucket: CropType?, timesGained: Long): List<String> {
             val blocksBroken = blocksBrokenDuring[bucket] ?: getTotalDuringCount()
             val dropRate = if (timesGained == 0L) 0 else blocksBroken.div(timesGained)
@@ -69,18 +75,13 @@ object CropFeverTracker : SkyHanniBucketedItemTracker<CropType, CropFeverTracker
         }
 
         override fun getCoinName(bucket: CropType?, item: TrackedItem) = "§6Crop Fever Coins"
-
         override fun getCoinDescription(bucket: CropType?, item: TrackedItem): List<String> {
             return listOf(
                 "§7You somehow gained coins from crop fever. Good job.",
             )
         }
 
-        override fun CropType.isBucketSelectable() = this in CropType.entries
-
-        override fun bucketName(): String {
-            return "Crop"
-        }
+        override fun bucketName(): String = "Crop"
 
         fun getTotalFeverCount(): Long = cropFeverAmount.values.sum()
         fun getTotalDuringCount(): Long = blocksBrokenDuring.values.sum()
@@ -117,7 +118,6 @@ object CropFeverTracker : SkyHanniBucketedItemTracker<CropType, CropFeverTracker
         "^GONE! Your CROP FEVER has been cured!",
     )
 
-    private val config get() = GardenApi.config.cropFeverTracker
     private val blocksBrokenCache: MutableMap<CropType, Long> = EnumMap(CropType::class.java)
     private var isCropFever = false
     private var cropFeverCurrentCrop: CropType? = null
@@ -187,28 +187,16 @@ object CropFeverTracker : SkyHanniBucketedItemTracker<CropType, CropFeverTracker
     }
 
     @HandleEvent
-    fun onWorldChange(event: WorldChangeEvent) {
+    fun onWorldChange() {
         update()
         if (!isCropFever) return
         stopCropFever()
     }
 
     @HandleEvent
-    fun onConfigLoad(event: ConfigLoadEvent) {
-        ConditionalUtils.onToggle(config.text) {
-            update()
-        }
+    fun onConfigLoad() = ConditionalUtils.onToggle(config.text) {
+        update()
     }
-
-    init {
-        initRenderer({ config.position }) { shouldShowDisplay() }
-    }
-
-    private fun shouldShowDisplay(): Boolean =
-        config.enabled &&
-            GardenApi.inGarden() &&
-            (!config.onlyWithTool || GardenApi.isHoldingCropFever()) &&
-            (!config.onlyDuringFever || isCropFever)
 
     private fun startCropFever(partialFever: Boolean = false) {
         isCropFever = true
@@ -228,25 +216,24 @@ object CropFeverTracker : SkyHanniBucketedItemTracker<CropType, CropFeverTracker
             it.cropFeverDuration.forEach { crop ->
                 crop.value.pause()
             }
-
         }
     }
 
-    private fun drawDisplay(bucketData: BucketData): List<Searchable> {
+    override fun drawDisplayF(data: BucketData): List<Searchable> {
         val lineMap: MutableMap<CropFeverTrackerTextEntry, Searchable> = EnumMap(CropFeverTrackerTextEntry::class.java)
-        val bucketName = bucketData.selectedBucket?.cropName ?: "Total"
-        val feverAmount: Long = if (bucketData.selectedBucket == null) {
-            bucketData.getTotalFeverCount()
+        val bucketName = data.selectedBucket?.cropName ?: "Total"
+        val feverAmount: Long = if (data.selectedBucket == null) {
+            data.getTotalFeverCount()
         } else {
-            val cropFeverAmount = bucketData.cropFeverAmount[bucketData.selectedBucket] ?: 0
-            val partialFeverAmount = bucketData.partialFeverAmount[bucketData.selectedBucket] ?: 0
+            val cropFeverAmount = data.cropFeverAmount[data.selectedBucket] ?: 0
+            val partialFeverAmount = data.partialFeverAmount[data.selectedBucket] ?: 0
             cropFeverAmount + partialFeverAmount
         }
 
-        val blocksOutside = if (bucketData.selectedBucket == null) {
-            bucketData.getTotalOutsideCount()
+        val blocksOutside = if (data.selectedBucket == null) {
+            data.getTotalOutsideCount()
         } else {
-            bucketData.blocksBrokenOutside[bucketData.selectedBucket]
+            data.blocksBrokenOutside[data.selectedBucket]
         }
 
         val breaksPerFever: Long = if (feverAmount == 0L) {
@@ -263,16 +250,16 @@ object CropFeverTracker : SkyHanniBucketedItemTracker<CropType, CropFeverTracker
                 ),
             ).toSearchable()
 
-        val feverUptime: Duration = bucketData.getTotalFeverDuration()
+        val feverUptime: Duration = data.getTotalFeverDuration()
         lineMap[CropFeverTrackerTextEntry.FEVER_DURATION] =
             Renderable.text("§7Crop Fever Duration: §b${feverUptime.format()}").toSearchable()
 
         val (totalDuring, totalOutside) =
-            if (bucketData.selectedBucket == null) {
-                bucketData.getTotalDuringCount() to bucketData.getTotalOutsideCount()
+            if (data.selectedBucket == null) {
+                data.getTotalDuringCount() to data.getTotalOutsideCount()
             } else {
-                val bucket = bucketData.selectedBucket
-                (bucketData.blocksBrokenDuring[bucket] ?: 0) to (bucketData.blocksBrokenOutside[bucket] ?: 0)
+                val bucket = data.selectedBucket
+                (data.blocksBrokenDuring[bucket] ?: 0) to (data.blocksBrokenOutside[bucket] ?: 0)
             }
         val totalBlocks = totalDuring + totalOutside
         lineMap[CropFeverTrackerTextEntry.TOTAL_BLOCKS] = Renderable.hoverTips(
@@ -286,7 +273,7 @@ object CropFeverTracker : SkyHanniBucketedItemTracker<CropType, CropFeverTracker
         lineMap[CropFeverTrackerTextEntry.SPACER_1] = Renderable.placeholder(10).toSearchable()
         lineMap[CropFeverTrackerTextEntry.SPACER_2] = Renderable.placeholder(10).toSearchable()
 
-        return formatDisplay(lineMap, bucketData)
+        return formatDisplay(lineMap, data)
     }
 
     private fun buildRngDropList(data: BucketData): List<Searchable> = buildList {

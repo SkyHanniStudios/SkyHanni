@@ -328,7 +328,7 @@ object ExperimentsAddonsHelper {
 
     init {
         RenderDisplayHelper(
-            inventory = ExperimentationTableApi.experimentationTableInventory,
+            inventoryDetector = ExperimentationTableApi.experimentationTableInventory,
             condition = { ExperimentationTableApi.inAddon && debugConfig.addonsDebug },
             onlyOnIsland = IslandType.PRIVATE_ISLAND,
             onRender = {

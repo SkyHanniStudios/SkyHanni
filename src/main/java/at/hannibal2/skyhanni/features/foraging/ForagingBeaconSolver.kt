@@ -339,8 +339,9 @@ object ForagingBeaconSolver {
         RenderDisplayHelper(
             outsideInventory = false,
             inOwnInventory = false,
-            inventory = colorMinigameInventory,
-            condition = { config.enabled && IslandTypeTag.FORAGING_CUSTOM_TREES.isInIsland() },
+            inventoryDetector = colorMinigameInventory,
+            condition = { config.enabled },
+            onlyOnIslandTag = IslandTypeTag.FORAGING_CUSTOM_TREES,
             onRender = {
                 config.displayPosition.renderRenderables(display, posLabel = "Moonglade Beacon")
             },
