@@ -21,7 +21,7 @@ import net.minecraft.util.ARGB
 @SkyHanniModule
 object ColorParticleFix {
     private val config get() = SkyHanniMod.feature.misc
-    private const val RANDOMIZATION_OFFSET = 0.10000000149011612
+    private const val RANDOMIZATION_OFFSET = 0.1f
 
     @HandleEvent(onlyOnSkyblock = true)
     private fun onParticleChange(event: ParticleChangeEvent) {
@@ -41,9 +41,9 @@ object ColorParticleFix {
 
     private fun ParticleChangeEvent.anyOffsetHasRandomization(): Boolean {
         return when {
-            (this.packet.xDist.toDouble() == RANDOMIZATION_OFFSET) -> true
-            (this.packet.yDist.toDouble() == RANDOMIZATION_OFFSET) -> true
-            (this.packet.zDist.toDouble() == RANDOMIZATION_OFFSET) -> true
+            (this.packet.xDist == RANDOMIZATION_OFFSET) -> true
+            (this.packet.yDist == RANDOMIZATION_OFFSET) -> true
+            (this.packet.zDist == RANDOMIZATION_OFFSET) -> true
 
             else -> false
         }
