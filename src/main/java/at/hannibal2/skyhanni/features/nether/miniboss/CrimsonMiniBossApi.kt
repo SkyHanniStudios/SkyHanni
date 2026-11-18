@@ -17,7 +17,7 @@ object CrimsonMiniBossApi {
      * REGEX-TEST: BEWARE - Bladesoul Is Spawning.
      */
     private val spawnPattern by patternGroup.pattern(
-        "spawn",
+        "spawn.nocolor",
         "BEWARE - (?<name>${getRegexNames()}) Is Spawning\\.",
     )
 
@@ -25,7 +25,7 @@ object CrimsonMiniBossApi {
      * WRAPPED-REGEX-TEST: "                            BLADESOUL DOWN!"
      */
     private val downPattern by patternGroup.pattern(
-        "down",
+        "down.nocolor",
         "\\s*(?<name>${getRegexUppercaseNames()}) DOWN!",
     )
 
