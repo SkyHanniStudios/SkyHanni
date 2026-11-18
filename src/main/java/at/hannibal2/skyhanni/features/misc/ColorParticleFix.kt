@@ -8,10 +8,11 @@ import net.minecraft.core.particles.ColorParticleOption
 import net.minecraft.util.ARGB
 
 /**
- * Minecraft 1.8.9 stores RGB values for particles with customizable colors in the
+ * Minecraft 1.8.9 stored RGB values for particles with customizable colors in the
  * `xSpeedIn`/`ySpeedIn`/`zSpeedIn` fields (`xDist`/`yDist`/`zDist` on modern).
  * Modern has dedicated color fields, but Hypixel does not use them, leading to
- * certain particles rendering with incorrect colors. We fix them here.
+ * certain particles rendering with incorrect colors. We use the 1.8.9 system
+ * that Hypixel still supports to fix them here.
  *
  * Note: The method is named `setRBGColorF` in MCP, but this is a misspelling.
  * It is clear from the source code that the colors are stored as XYZ=RGB.
