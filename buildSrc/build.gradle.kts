@@ -28,6 +28,7 @@ dependencies {
     compileOnly(libs.kotlin.compiler.embeddable) {
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-stdlib")
     }
+    compileOnly(libs.ksp.api)
     compileOnly(libs.detekt.api) {
         exclude(group = "org.jetbrains.kotlin")
     }
