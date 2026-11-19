@@ -11,15 +11,17 @@ import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.RenderUtils.renderStrings
+import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderables
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.takeIfNotEmpty
+import at.hannibal2.skyhanni.utils.collection.RenderableCollectionUtils.addString
+import at.hannibal2.skyhanni.utils.renderables.Renderable
 
 @SkyHanniModule
 object SuperpairDataDisplay {
 
     private val config get() = SkyHanniMod.feature.inventory.experimentationTable
 
-    private var display = emptyList<String>()
+    private var display = emptyList<Renderable>()
 
     @HandleEvent
     fun onInventoryClose() {
@@ -36,11 +38,11 @@ object SuperpairDataDisplay {
     fun onChestGuiRender() {
         if (!config.superpairs.display || !ExperimentationTableApi.inTable) return
 
-        display = display.takeIfNotEmpty()
+        val display = display.takeIfNotEmpty()
             ?: drawDisplay().takeIfNotEmpty()
             ?: return
 
-        config.superpairs.displayPosition.renderStrings(
+        config.superpairs.displayPosition.renderRenderables(
             display,
             posLabel = "Superpair Experimentation Data",
         )
@@ -55,11 +57,11 @@ object SuperpairDataDisplay {
         val currentExperimentType = ExperimentationTableApi.currentExperimentType
         val isValid = currentExperimentType == null || currentExperimentType !in disallowedTypes
         if (!isValid) return@buildList
-        add("§6Superpair Experimentation Data")
+        addString("§6Superpair Experimentation Data")
         if (currentExperimentType == null) return@buildList
 
         val currentTier = ExperimentationTableApi.currentExperimentTier ?: return@buildList
-        add("")
+        addString("")
 
         val normals = ExperimentationSuperpairApi.found(FoundType.NORMAL)
         val pairs = ExperimentationSuperpairApi.found(FoundType.PAIR)
@@ -78,18 +80,18 @@ object SuperpairDataDisplay {
         addDataStrings(notCollected, "§4Not Collected")
     }
 
-    private fun MutableList<String>.addDataStrings(dataList: List<String>, header: String) {
+    private fun MutableList<Renderable>.addDataStrings(dataList: List<String>, header: String) {
         if (dataList.isEmpty()) return
-        this.add("")
-        this.add(header)
+        this.addString("")
+        this.addString(header)
         val lastIndex = dataList.lastIndex
         for ((index, entry) in dataList.withIndex()) {
             val prefix = determinePrefix(index, lastIndex)
-            this.add(" $prefix $entry")
+            this.addString(" $prefix $entry")
         }
     }
 
-    private fun MutableList<String>.addFoundData(
+    private fun MutableList<Renderable>.addFoundData(
         sourceList: List<FoundData>,
         header: String,
         color: LorenzColor,
