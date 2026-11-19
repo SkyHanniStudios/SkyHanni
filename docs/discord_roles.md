@@ -2,7 +2,7 @@
 
 This is a list of all server roles on the SkyHanni Discord server.
 This explains why the roles exist and how to get them.
-**You can NOT apply to any of those roles directly.** (except ping roles)
+**You can NOT apply to any of those roles directly**, unless a role's description says otherwise.
 
 ## Full Permissions Roles
 
@@ -23,7 +23,8 @@ People who contribute code to SkyHanni on GitHub.
     - Members of the Reviewer team on GitHub who actively review pull requests.
     - Their approvals count toward the required reviews for merging.
     - They know SkyHanni very well. If you have coding questions, ask them.
-    - Any **Veteran Contributor** can get this role at any time. Just ask an Admin.
+    - Only for a few very active and trusted Contributors, so it's not given out lightly.
+    - If that's you, you can ask an Admin. **Veteran Contributors** who are active again are especially welcome to ask.
 - **Veteran Contributor**
     - Developers who helped the project a lot over a long time.
     - Recognition only, no extra permissions. Stays even when inactive.
