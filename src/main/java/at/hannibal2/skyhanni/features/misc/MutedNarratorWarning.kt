@@ -34,7 +34,8 @@ object MutedNarratorWarning {
 
     private val narratorActive
         get(): Boolean = runCatching {
-            Minecraft.getInstance().narrator.isActive
+            val minecraft = Minecraft.getInstance()
+        minecraft.options.narrator().get() != NarratorStatus.OFF && minecraft.narrator.isActive
         }.getOrDefault(false)
 
     private val isNarratorMuted: Boolean
