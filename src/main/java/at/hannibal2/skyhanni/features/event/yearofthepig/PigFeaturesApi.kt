@@ -79,7 +79,7 @@ object PigFeaturesApi {
      * @regexTest SHINY! You received a Shiny Token and +1,000 Foraging XP from the Shiny Pig's orb!
      * @regexTest SHINY! You received a Shiny Token and 16x Enchanted Potato from the Shiny Pig's orb!
      * @regexTest SHINY! You received a Shiny Token and +5,000 Combat XP from the Shiny Pig's orb!
-     * REGEX-TEST: SHINY! You received a Shiny Token, +19,500 Coins, and Harvesting VI from the Shiny Pig's orb!
+     * @regexTest SHINY! You received a Shiny Token, +19,500 Coins, and Harvesting VI from the Shiny Pig's orb!
      */
     private val orbLootedChatPattern by patternGroup.pattern(
         "chat.orb.looted",
