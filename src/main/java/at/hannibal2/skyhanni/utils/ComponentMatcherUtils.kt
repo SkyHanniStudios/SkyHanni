@@ -63,6 +63,12 @@ object ComponentMatcherUtils {
      */
     inline fun <T> Pattern.findStyledMatcher(span: ComponentSpan, consumer: ComponentMatcher.() -> T) =
         styledMatcher(span).let { if (it.find()) consumer(it) else null }
+
+    inline fun <T> Pattern.matchAllStyledComponents(list: List<Component>, consumer: ComponentMatcher.(Component) -> T) {
+        for (line in list) {
+            styledMatcher(line.intoSpan()).let { if (it.find()) consumer(it, line) }
+        }
+    }
 }
 
 /**

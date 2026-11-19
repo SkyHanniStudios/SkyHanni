@@ -7,6 +7,7 @@ import com.intellij.psi.PsiWhiteSpace
 import dev.detekt.api.Config
 import org.jetbrains.kotlin.psi.KtAnnotationEntry
 import org.jetbrains.kotlin.psi.psiUtil.nextLeaf
+import org.jetbrains.kotlin.psi.psiUtil.prevLeaf
 import org.jetbrains.kotlin.psi.psiUtil.siblings
 
 /**
@@ -43,6 +44,9 @@ class CustomAnnotationSpacing(config: Config) : SkyHanniRule(
     }
 
     private fun PsiComment.isInvalid(): Boolean {
+        // Trailing comments (on the same line as the annotation) are always allowed
+        val prev = prevLeaf()
+        if (prev is PsiWhiteSpace && !prev.text.contains('\n')) return false
         return !text.containsPreprocessingPattern()
     }
 }
