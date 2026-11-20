@@ -929,6 +929,7 @@ object EstimatedItemValueCalculator {
         return unlockedSlots
     }
 
+    // Credit to SkyblockAPI
     private fun SafeItemStack.readBoosters(): List<NeuInternalName> {
         val boosters = extraAttributes.getCompound("booster_tiers").getOrNull()?.entrySet()?.associate { (key, value) ->
             key to value.asInt().getOrElse { 0 }
