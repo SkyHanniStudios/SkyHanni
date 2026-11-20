@@ -2,6 +2,7 @@ package at.hannibal2.skyhanni.test.garden
 
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.config.SkyHanniConfig
+import at.hannibal2.skyhanni.data.jsonobjects.repo.GardenVisitorReward
 import at.hannibal2.skyhanni.features.garden.visitor.GardenVisitorTooltip
 import at.hannibal2.skyhanni.features.garden.visitor.VisitorApi
 import at.hannibal2.skyhanni.features.garden.visitor.VisitorReward
@@ -28,6 +29,14 @@ class GardenVisitorTooltipTest {
         SkyHanniMod.feature.garden.visitors.inventory.exactAmountAndTime = false
         SkyHanniMod.feature.garden.visitors.rewardWarning.notifyInChat = false
         SkyHanniMod.feature.garden.visitors.rewardWarning.drops.add(VisitorReward.VISITORS_GRATITUDE)
+        VisitorReward.loadRepoData(
+            mapOf(
+                "VISITORS_GRATITUDE" to GardenVisitorReward(
+                    "VISITOR_GRATITUDE".toInternalName(),
+                    listOf("VISITORS_GRATITUDE".toInternalName()),
+                ),
+            ),
+        )
         itemNameCache()["§9Enchanted Sugar Cane"] = "ENCHANTED_SUGAR_CANE".toInternalName()
         itemNameCache()["Visitors' Gratitude"] = "VISITOR_GRATITUDE".toInternalName()
     }
