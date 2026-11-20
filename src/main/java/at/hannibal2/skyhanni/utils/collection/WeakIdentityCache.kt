@@ -11,10 +11,10 @@ class WeakIdentityCache<K : Any, V : Any> private constructor(
     override fun get(key: K): V = cache.computeIfAbsent(key, mappingFunction)
 
     companion object {
-        fun <K: Any, V: Any> timed(expireAfterWrite: Duration, mappingFunction: (K) -> V): WeakIdentityCache<K, V> =
+        fun <K : Any, V : Any> timed(expireAfterWrite: Duration, mappingFunction: (K) -> V): WeakIdentityCache<K, V> =
             WeakIdentityCache(TimeLimitedCache(expireAfterWrite, useWeakKeys = true), mappingFunction)
 
-        fun <K: Any, V: Any> sized(maxSize: Int, mappingFunction: (K) -> V): WeakIdentityCache<K, V> =
+        fun <K : Any, V : Any> sized(maxSize: Int, mappingFunction: (K) -> V): WeakIdentityCache<K, V> =
             WeakIdentityCache(SizeLimitedCache(maxSize, useWeakKeys = true), mappingFunction)
     }
 }
