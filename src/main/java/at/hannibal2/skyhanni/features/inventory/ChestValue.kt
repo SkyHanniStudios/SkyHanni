@@ -222,7 +222,7 @@ object ChestValue {
             val total = estimateData.totalPrice
             val key = "$internalName+$total"
 
-            val list = estimateData.breakdown.toMutableList()
+            val list = estimateData.costBreakdown.toMutableList()
             list.add("§aTotal: §6§l${total.formatPrice()} coins")
             if (total == 0.0) continue
             val item = getOrPut(key) {

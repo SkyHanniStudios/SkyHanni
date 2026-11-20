@@ -101,7 +101,7 @@ object EstimatedItemValueCalculator {
     data class EstimatedItemValueResult(
         val totalPrice: Double,
         val basePrice: Double,
-        val breakdown: List<String>,
+        val costBreakdown: List<String>,
     )
 
     private val cache = SizeLimitedCache<SafeItemStack, EstimatedItemValueResult>(128, useWeakKeys = true)
@@ -198,7 +198,7 @@ object EstimatedItemValueCalculator {
             EstimatedItemValueResult(
                 totalPrice = totalPrice,
                 basePrice = basePrice,
-                breakdown = list
+                costBreakdown = list
             )
         }
 

@@ -270,7 +270,7 @@ object EstimatedItemValue {
         val list = mutableListOf<String>()
         list.add("§aEstimated Item Value:")
         val estimateData = EstimatedItemValueCalculator.calculate(stack)
-        list.addAll(estimateData.breakdown)
+        list.addAll(estimateData.costBreakdown)
         val totalPrice = estimateData.totalPrice
         val basePrice = estimateData.basePrice
 
