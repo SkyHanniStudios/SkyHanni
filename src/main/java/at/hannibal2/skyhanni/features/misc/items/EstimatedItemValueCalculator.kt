@@ -81,7 +81,7 @@ import at.hannibal2.skyhanni.utils.collection.CollectionUtils.sorted
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.sortedDesc
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.sumByKey
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.takeIfNotEmpty
-import at.hannibal2.skyhanni.utils.collection.SizeLimitedCache
+import at.hannibal2.skyhanni.utils.collection.WeakIdentityCache
 import at.hannibal2.skyhanni.utils.compat.NbtCompat
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLeadingWhiteLessResets
 import at.hannibal2.skyhanni.utils.compat.getCompoundOrDefault
@@ -104,7 +104,20 @@ object EstimatedItemValueCalculator {
         val costBreakdown: List<String>,
     )
 
-    private val cache = SizeLimitedCache<SafeItemStack, EstimatedItemValueResult>(128, useWeakKeys = true)
+    private val cache = WeakIdentityCache.sized<SafeItemStack, EstimatedItemValueResult>(128) { stack ->
+        val list = mutableListOf<String>()
+        val basePrice = addBaseItem(stack, list)
+        // The value of enchantments will already be added in ::addEnchantments, so set to 0 to avoid double counting
+        val foldValue = if (stack.getItemId() == "ENCHANTED_BOOK") 0.0
+        else basePrice
+        val totalPrice = additionalCostFunctions.fold(foldValue) { total, function -> total + function(stack, list) }
+
+        EstimatedItemValueResult(
+            totalPrice = totalPrice,
+            basePrice = basePrice,
+            costBreakdown = list
+        )
+    }
 
     private val additionalCostFunctions = listOf(
         ::addReforgeStone,
@@ -186,21 +199,7 @@ object EstimatedItemValueCalculator {
         return estimateData.totalPrice
     }
 
-    fun calculate(stack: SafeItemStack): EstimatedItemValueResult =
-        cache.getOrPut(stack) {
-            val list = mutableListOf<String>()
-            val basePrice = addBaseItem(stack, list)
-            // The value of enchantments will already be added in ::addEnchantments, so set to 0 to avoid double counting
-            val foldValue = if (stack.getItemId() == "ENCHANTED_BOOK") 0.0
-            else basePrice
-            val totalPrice = additionalCostFunctions.fold(foldValue) { total, function -> total + function(stack, list) }
-
-            EstimatedItemValueResult(
-                totalPrice = totalPrice,
-                basePrice = basePrice,
-                costBreakdown = list
-            )
-        }
+    fun calculate(stack: SafeItemStack): EstimatedItemValueResult = cache[stack]
 
     private fun addReforgeStone(stack: SafeItemStack, list: MutableList<String>): Double {
         val rawReforgeName = stack.getReforgeModifier() ?: return 0.0

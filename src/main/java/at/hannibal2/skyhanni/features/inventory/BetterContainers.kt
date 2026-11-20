@@ -16,6 +16,7 @@ import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.takeIfNotEmpty
 import at.hannibal2.skyhanni.utils.collection.SizeLimitedCache
+import at.hannibal2.skyhanni.utils.collection.WeakIdentityCache
 import at.hannibal2.skyhanni.utils.compat.ColoredBlockCompat
 import at.hannibal2.skyhanni.utils.compat.ColoredBlockCompat.Companion.isStainedGlassPane
 import at.hannibal2.skyhanni.utils.compat.DyeCompat.Companion.isDye
@@ -54,8 +55,8 @@ object BetterContainers {
 
     enum class SlotType(val isSlotType: (SafeItemStack) -> Boolean) {
         BLANK(SlotType::isBlankStack),
-        TOGGLE_ON( { stack -> isToggleCommon(stack, "disable") }),
-        TOGGLE_OFF( { stack -> isToggleCommon(stack, "enable") }),
+        TOGGLE_ON({ stack -> isToggleCommon(stack, "disable") }),
+        TOGGLE_OFF({ stack -> isToggleCommon(stack, "enable") }),
         BUTTON(SlotType::isButtonStack),
         OTHER({ _ -> true }),
         ;
@@ -83,7 +84,9 @@ object BetterContainers {
         }
     }
 
-    private val slotTypeCache = SizeLimitedCache<SafeItemStack, SlotType>(128, useWeakKeys = true)
+    private val slotTypeCache = WeakIdentityCache.sized<SafeItemStack, SlotType>(128) { stack ->
+        SlotType.entries.find { entry -> entry.isSlotType(stack) } ?: SlotType.OTHER
+    }
 
     private val toggleOff = Identifier.fromNamespaceAndPath("skyhanni", "dynamic_54/toggle_off.png")
     private val toggleOn = Identifier.fromNamespaceAndPath("skyhanni", "dynamic_54/toggle_on.png")
@@ -226,9 +229,7 @@ object BetterContainers {
         bufferedImageButton = readImageResources(buttonStyle.buttonId, dynamic54Button)
     }
 
-    private val SafeItemStack.slotType get() = slotTypeCache.getOrPut(this) {
-        SlotType.entries.find { it.isSlotType(this) } ?: OTHER
-    }
+    private val SafeItemStack.slotType get() = slotTypeCache[this]
 
     fun clickSlot(slot: Int) {
         clickedSlotAt = SimpleTimeMark.now()
