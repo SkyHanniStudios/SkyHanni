@@ -12,6 +12,7 @@ import at.hannibal2.skyhanni.utils.NumberUtil.million
 import at.hannibal2.skyhanni.utils.RegexUtils.firstMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
+import at.hannibal2.skyhanni.utils.collection.TimeLimitedSet
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import kotlin.time.Duration.Companion.seconds
@@ -47,10 +48,10 @@ object PurseApi {
         "^You collected (?<coins>[\\d,]+) coins from selling .+ in an auction!$",
     )
 
-    private data class PendingAuctionHouseGain(val coins: Double, val created: SimpleTimeMark)
+    private class PendingAuctionHouseGain(val coins: Double)
 
     private var inventoryCloseTime = SimpleTimeMark.farPast()
-    private val pendingAuctionHouseGains = mutableListOf<PendingAuctionHouseGain>()
+    private val pendingAuctionHouseGains = TimeLimitedSet<PendingAuctionHouseGain>(5.seconds)
     var currentPurse = 0.0
         private set
 
@@ -62,7 +63,7 @@ object PurseApi {
     @HandleEvent(onlyOnSkyblock = true)
     private fun onChat(event: SkyHanniChatEvent.Allow) {
         auctionHouseSaleClaimPattern.matchMatcher(event.cleanMessage) {
-            pendingAuctionHouseGains.add(PendingAuctionHouseGain(group("coins").formatDouble(), SimpleTimeMark.now()))
+            pendingAuctionHouseGains.add(PendingAuctionHouseGain(group("coins").formatDouble()))
         }
     }
 
@@ -90,13 +91,12 @@ object PurseApi {
                 return PurseChangeCause.GAIN_DICE_ROLL
             }
 
-            pendingAuctionHouseGains.removeAll { it.created.passedSince() >= 5.seconds }
-            val exactGain = pendingAuctionHouseGains.indexOfFirst { it.coins == diff }
-            if (exactGain != -1) {
-                pendingAuctionHouseGains.removeAt(exactGain)
+            val exactGain = pendingAuctionHouseGains.firstOrNull { it.coins == diff }
+            if (exactGain != null) {
+                pendingAuctionHouseGains.remove(exactGain)
                 return PurseChangeCause.GAIN_AUCTION_HOUSE
             }
-            if (pendingAuctionHouseGains.isNotEmpty() && pendingAuctionHouseGains.sumOf { it.coins } == diff) {
+            if (pendingAuctionHouseGains.sumOf { it.coins } == diff) {
                 pendingAuctionHouseGains.clear()
                 return PurseChangeCause.GAIN_AUCTION_HOUSE
             }
