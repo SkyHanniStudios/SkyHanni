@@ -14,9 +14,9 @@ import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.entity.ItemAddInInventoryEvent
 import at.hannibal2.skyhanni.events.item.ShardGainEvent
 import at.hannibal2.skyhanni.features.achievements.AchievementManager
-import at.hannibal2.skyhanni.features.inventory.SuperCraftFeatures.parseCraftedItem
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
+import at.hannibal2.skyhanni.utils.ItemUtils
 import at.hannibal2.skyhanni.utils.ItemUtils.repoItemName
 import at.hannibal2.skyhanni.utils.NeuInternalName
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
@@ -26,7 +26,7 @@ import at.hannibal2.skyhanni.utils.StringUtils.removeColor
 import at.hannibal2.skyhanni.utils.TimeUtils.format
 import at.hannibal2.skyhanni.utils.chat.TextHelper.asComponent
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.evictOldestEntry
-import at.hannibal2.skyhanni.utils.collection.TimeLimitedCache
+import at.hannibal2.skyhanni.utils.collection.TimeLimitedSet
 import at.hannibal2.skyhanni.utils.compat.append
 import at.hannibal2.skyhanni.utils.compat.componentBuilder
 import at.hannibal2.skyhanni.utils.compat.withColor
@@ -80,8 +80,7 @@ object ItemAddManager {
             val change = sackChange.delta
             val internalName = sackChange.internalName
             if (change > 0) {
-                val amount = Source.SACKS.consumeSuperCraftedAmount(internalName, change)
-                if (amount > 0) Source.SACKS.addItem(internalName, amount)
+                Source.SACKS.addItemExceptSuperCrafted(internalName, change)
             }
         }
     }
@@ -96,8 +95,7 @@ object ItemAddManager {
             }
         }
 
-        val amount = Source.ITEM_ADD.consumeSuperCraftedAmount(internalName, event.amount)
-        if (amount > 0) Source.ITEM_ADD.addItem(internalName, amount)
+        Source.ITEM_ADD.addItemExceptSuperCrafted(internalName, event.amount)
     }
 
     @HandleEvent
@@ -151,18 +149,22 @@ object ItemAddManager {
     }
 
     private var lastDiceRoll = SimpleTimeMark.farPast()
-    private val superCraftedItemAmounts = TimeLimitedCache<Pair<NeuInternalName, Source>, Int>(30.seconds)
 
-    private fun Source.consumeSuperCraftedAmount(internalName: NeuInternalName, amount: Int): Int {
-        val key = internalName to this
-        val superCraftedAmount = superCraftedItemAmounts[key] ?: return amount
-        val remainingSuperCraftedAmount = superCraftedAmount - amount
-        if (remainingSuperCraftedAmount > 0) {
-            superCraftedItemAmounts[key] = remainingSuperCraftedAmount
-            return 0
+    private class SuperCraftedItem(val internalName: NeuInternalName, val source: Source, var amount: Int)
+
+    private val superCraftedItems = TimeLimitedSet<SuperCraftedItem>(30.seconds)
+
+    private fun Source.addItemExceptSuperCrafted(internalName: NeuInternalName, amount: Int) {
+        var remaining = amount
+        for (superCrafted in superCraftedItems) {
+            if (superCrafted.internalName != internalName || superCrafted.source != this) continue
+            val skipped = minOf(superCrafted.amount, remaining)
+            superCrafted.amount -= skipped
+            remaining -= skipped
+            if (superCrafted.amount == 0) superCraftedItems.remove(superCrafted)
+            if (remaining == 0) return
         }
-        superCraftedItemAmounts.remove(key)
-        return -remainingSuperCraftedAmount
+        addItem(internalName, remaining)
     }
 
     private const val DICE_ACHIEVEMENT = "100 dice rolls"
@@ -191,11 +193,9 @@ object ItemAddManager {
             val achievement = AchievementManager.getAchievement(DICE_ACHIEVEMENT)
             AchievementManager.updateTieredAchievement(DICE_ACHIEVEMENT, achievement.data.progress + 1)
         }
-        val (internalName, amount) = parseCraftedItem(event.message) ?: return
+        val (internalName, amount) = ItemUtils.readSuperCraftedItem(event.message) ?: return
         if (!SackApi.sackListInternalNames.contains(internalName.asString())) return
-        for (source in listOf(Source.ITEM_ADD, Source.SACKS)) {
-            val key = internalName to source
-            superCraftedItemAmounts[key] = (superCraftedItemAmounts[key] ?: 0) + amount
-        }
+        superCraftedItems.add(SuperCraftedItem(internalName, Source.ITEM_ADD, amount))
+        superCraftedItems.add(SuperCraftedItem(internalName, Source.SACKS, amount))
     }
 }
