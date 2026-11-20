@@ -35,10 +35,14 @@ object ParticleHider {
             val conditions = setOf(
                 (config.hideFarParticles && distanceToPlayer > FAR_PARTICLE_DISTANCE && !inM7Boss()),
                 (config.hideCloseRedstoneParticles && type == ParticleTypes.DUST && distanceToPlayer < 2),
-                (config.hideFireballParticles && type in smokeTypes &&
-                    event.location.getEntitiesNearby<SmallFireball>(NEARBY_PARTICLE_RADIUS).isNotEmpty()),
-                (config.hideDyeParticles && !longDistance &&
-                    shouldHideDyeParticles(MinecraftCompat.localPlayerOrNull, type)),
+                (
+                    config.hideFireballParticles && type in smokeTypes &&
+                        event.location.getEntitiesNearby<SmallFireball>(NEARBY_PARTICLE_RADIUS).isNotEmpty()
+                    ),
+                (
+                    config.hideDyeParticles && !longDistance &&
+                        shouldHideDyeParticles(MinecraftCompat.localPlayerOrNull, type)
+                    ),
             )
 
             if (conditions.any { it }) event.cancel()
