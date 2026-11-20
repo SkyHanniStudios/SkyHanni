@@ -19,23 +19,23 @@ object SeaCreatureLootshareSphere {
     private val spherePositions = mutableSetOf<LootshareUtils.Sphere>()
 
     @HandleEvent
-    fun onSeaCreatureSpawn(event: SeaCreatureEvent.Spawn) = addMob(event.seaCreature)
+    private fun onSeaCreatureSpawn(event: SeaCreatureEvent.Spawn) = addMob(event.seaCreature)
 
     @HandleEvent
-    fun onSeaCreatureRemove(event: SeaCreatureEvent.Remove) = seaCreatures.remove(event.seaCreature)
+    private fun onSeaCreatureRemove(event: SeaCreatureEvent.Remove) = seaCreatures.remove(event.seaCreature)
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!config.lootshareRange) return
         for (entry in spherePositions) {
             event.drawSphereWireframeInWorld(entry.color.toColor(), entry.position, LootshareUtils.RANGE)
         }
-        spherePositions.clear()
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onTick() {
+    private fun onTick() {
         if (!config.lootshareRange) return
+        spherePositions.clear()
         for (seaCreature in seaCreatures) {
             if (!seaCreature.exists()) continue
             var otherNearbySpheres = 0
