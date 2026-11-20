@@ -52,12 +52,35 @@ object BetterContainers {
 
     private val config get() = SkyHanniMod.feature.inventory.improvedSBMenus
 
-    enum class SlotType {
-        BLANK,
-        TOGGLE_ON,
-        TOGGLE_OFF,
-        BUTTON,
-        OTHER,
+    enum class SlotType(val isSlotType: (SafeItemStack) -> Boolean) {
+        BLANK(SlotType::isBlankStack),
+        TOGGLE_ON( { stack -> isToggleCommon(stack, "disable") }),
+        TOGGLE_OFF( { stack -> isToggleCommon(stack, "enable") }),
+        BUTTON(SlotType::isButtonStack),
+        OTHER({ _ -> true }),
+        ;
+
+        companion object {
+            private fun isBlankStack(stack: SafeItemStack): Boolean = stack.isStainedGlassPane(ColoredBlockCompat.BLACK) &&
+                stack.count == 1 &&
+                stack.getTooltip().isEmpty()
+
+            private fun isToggleCommon(stack: SafeItemStack, verb: String): Boolean {
+                val hasText = stack.getLore().takeIfNotEmpty()?.last()?.endsWith("Click to $verb!") ?: false
+                return hasText && stack.isDye()
+            }
+
+            private fun isButtonStack(
+                stack: SafeItemStack?,
+            ): Boolean {
+                val realStack = stack ?: return false
+                val isGlassPane = realStack.isStainedGlassPane()
+                val isUnknownInternalName = realStack.getInternalNameOrNull() == null
+                // Toggles also count as buttons by this definition,
+                // but they are handled separately in the slotTypeCache
+                return !isGlassPane && !isUnknownInternalName
+            }
+        }
     }
 
     private val slotTypeCache = SizeLimitedCache<SafeItemStack, SlotType>(128, useWeakKeys = true)
@@ -203,30 +226,8 @@ object BetterContainers {
         bufferedImageButton = readImageResources(buttonStyle.buttonId, dynamic54Button)
     }
 
-    private fun isBlankStackInternal(stack: SafeItemStack): Boolean =
-        stack.isStainedGlassPane(ColoredBlockCompat.BLACK) &&
-            stack.count == 1 &&
-            stack.getTooltip().isEmpty()
-
-    private fun isButtonStackInternal(
-        stack: SafeItemStack?,
-    ): Boolean {
-        val realStack = stack ?: return false
-        val isGlassPane = realStack.isStainedGlassPane()
-        val isUnknownInternalName = realStack.getInternalNameOrNull() == null
-        // Toggles also count as buttons by this definition,
-        // but they are handled separately in the slotTypeCache
-        return !isGlassPane && !isUnknownInternalName
-    }
-
     private val SafeItemStack.slotType get() = slotTypeCache.getOrPut(this) {
-        when {
-            isBlankStackInternal(this) -> BLANK
-            isToggleCommon(this, "disable") -> TOGGLE_ON
-            isToggleCommon(this, "enable") -> TOGGLE_OFF
-            isButtonStackInternal(this) -> BUTTON
-            else -> OTHER
-        }
+        SlotType.entries.find { it.isSlotType(this) } ?: OTHER
     }
 
     fun clickSlot(slot: Int) {
@@ -242,10 +243,6 @@ object BetterContainers {
 
     private fun isToggleOn(stack: SafeItemStack): Boolean = stack.slotType == TOGGLE_ON
     private fun isToggleOff(stack: SafeItemStack): Boolean = stack.slotType == TOGGLE_OFF
-    private fun isToggleCommon(stack: SafeItemStack, verb: String): Boolean {
-        val hasText = stack.getLore().takeIfNotEmpty()?.last()?.endsWith("Click to $verb!") ?: false
-        return hasText && stack.isDye()
-    }
 
     fun getTextureIdentifier(original: Identifier): Identifier {
         if (!chestOpen) return original
