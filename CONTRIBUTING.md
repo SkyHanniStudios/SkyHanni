@@ -382,8 +382,6 @@ debugging in IntelliJ. This is very useful for coding live on Hypixel without th
     - Click on the link in the console and verify with a Microsoft account.
     - The verification process will reappear every few days (after the session token expires).
 
-### [Live Plugin](https://plugins.jetbrains.com/plugin/7282-liveplugin)
-
 Allows project specific plugins to run. Eg: Regex Intention
 
 ### [Live Templates Sharing](https://plugins.jetbrains.com/plugin/25007-live-templates-sharing)
@@ -458,7 +456,8 @@ The mixin method itself should ideally contain only a single call to a Kotlin fu
 
 ### KSP (Kotlin Symbol Processing)
 
-SkyHanni uses KSP via the `annotation-processors` module to generate code at compile time.
+SkyHanni uses KSP to generate code at compile time. The processors live in `buildSrc`, under the
+`at.hannibal2.skyhanni.skyhannimodule` package.
 
 - `@SkyHanniModule`: Generates `LoadedModules.kt`, which registers all event handlers and repo patterns automatically.
 - Mixin registration: Scans for `@Mixin`-annotated classes and generates the mixin configuration. There is no manual mixin list to update.
