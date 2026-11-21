@@ -4,6 +4,7 @@ import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.model.TabWidget
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
+import at.hannibal2.skyhanni.events.IslandLeaveEvent
 import at.hannibal2.skyhanni.events.ScoreboardUpdateEvent
 import at.hannibal2.skyhanni.events.WidgetUpdateEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
@@ -24,15 +25,14 @@ import at.hannibal2.skyhanni.utils.ItemPriceUtils.getPriceName
 import at.hannibal2.skyhanni.utils.NeuInternalName
 import at.hannibal2.skyhanni.utils.NumberUtil.romanToDecimalIfNecessaryOrNull
 import at.hannibal2.skyhanni.utils.PlayerUtils
+import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
-import at.hannibal2.skyhanni.utils.ServerTimeMark
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.StringUtils.removeColor
 import at.hannibal2.skyhanni.utils.collection.TimeLimitedCache
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
 import at.hannibal2.skyhanni.features.slayer.SlayerType as Type
 
 @SkyHanniModule
@@ -44,11 +44,6 @@ object SlayerApi {
     private val patternGroup = RepoPattern.group("slayer.api")
 
     private const val GRACE_UPDATE_COUNT = 3
-
-    /**
-     * Cocoons take 5 seconds to burst, but we give +1 second of grace time to account for any delays in the scoreboard update
-     */
-    private val GRACE_COCOON_TIME = 6.seconds
 
     // <editor-fold desc="Patterns">
     /**
@@ -81,6 +76,32 @@ object SlayerApi {
     private val cocoonPattern by patternGroup.pattern(
         "cocooned.colorless",
         "\\s+YOU COCOONED YOUR SLAYER BOSS",
+    )
+
+    /**
+     * REGEX-TEST: SLAYER BOSS! The Bloodfiend III spawned!
+     */
+    private val bossStartPattern by patternGroup.pattern(
+        "boss.start",
+        "SLAYER BOSS! The (?<name>.*) (?<tier>[IVX]+) spawned!"
+    )
+
+    /**
+     * WRAPPED-REGEX-TEST: "  NICE! SLAYER BOSS SLAIN!"
+     */
+    private val bossSlainPattern by patternGroup.pattern(
+        "boss.slain",
+        "\\s*NICE! SLAYER BOSS SLAIN!",
+    )
+
+    // TODO: Make the SlayerProgressChangeEvent have a sealed class for the progress types
+    /**
+     * REGEX-TEST: 38/40 Kills
+     * REGEX-TEST: (0/4.8k) Combat XP
+     */
+    private val grindingSlayerPattern by patternGroup.pattern(
+        "grinding.progress",
+        ".*Combat.*|.*Kills.*",
     )
     // </editor-fold>
 
@@ -118,11 +139,6 @@ object SlayerApi {
      * How many consecutive updates have we seen that are invalid?
      */
     private var invalidUpdates = 0
-
-    /**
-     * The last time we saw a cocoon message, used to ensure it doesn't get stuck in a state where we think we are cocooned when we are not
-     */
-    private var latestCocoonTime = ServerTimeMark.farPast()
 
     private val outsideRiftData = SlayerData()
     private val insideRiftData = SlayerData()
@@ -206,19 +222,21 @@ object SlayerApi {
                 SlayerQuestCompleteEvent.post()
             }
             questFailedPattern.matches(message) -> {
-                val data = getCurrentData()
-                ChatUtils.debug("SlayerApi: Slayer quest failed, posting SlayerStateChangeEvent")
-                data.currentState = FAILED
-                data.currentStateRaw = "no slayer"
-                SlayerStateChangeEvent(FAILED).post()
+                updateState(FAILED)
             }
             cocoonPattern.matches(message) -> {
-                val data = getCurrentData()
-                ChatUtils.debug("SlayerApi: Slayer boss cocooned, posting SlayerStateChangeEvent")
-                data.currentState = COCOONED
-                data.currentStateRaw = "cocooned"
-                latestCocoonTime = ServerTimeMark.now()
-                SlayerStateChangeEvent(COCOONED).post()
+                updateState(COCOONED)
+            }
+            bossSlainPattern.matches(message) -> {
+                updateState(SLAIN)
+            }
+            else -> {
+                bossStartPattern.matchMatcher(message) {
+                    val name = group("name")
+                    val data = getCurrentData()
+                    data.type = Type.getByName(name)
+                    updateState(BOSS_FIGHT)
+                }
             }
         }
     }
@@ -318,34 +336,21 @@ object SlayerApi {
         val data = getCurrentData()
         data.type = parsed?.type
 
-        val oldStateRaw = data.currentStateRaw ?: "no slayer"
-        if (oldStateRaw == progress) return
-
-        data.currentStateRaw = progress
-
-        var newState = detectState(progress)
-
-        val cocooned = data.currentState == COCOONED && latestCocoonTime.passedSince() <= GRACE_COCOON_TIME
-        if (cocooned && (newState == NO_ACTIVE_QUEST || newState == SLAIN)) {
-            ChatUtils.debug("SlayerApi: Cocooned state detected, overriding $newState to COCOONED")
-            newState = COCOONED
+        if (parsed == null) {
+            if (state != COCOONED) updateState(NO_ACTIVE_QUEST)
+        } else if (grindingSlayerPattern.matches(progress)) {
+            updateState(GRINDING)
         }
+    }
 
-        // If the player kills the boss immediately after the boss spawns
-        if ((data.currentState == BOSS_FIGHT || data.currentState == COCOONED) && newState == GRINDING) {
-            ChatUtils.debug("SlayerApi: Intermediate state change detected: ${data.currentState} -> SLAIN -> GRINDING")
-            SlayerStateChangeEvent(SLAIN).post()
-        }
-        if (data.currentState == GRINDING && newState == SLAIN) {
-            ChatUtils.debug("SlayerApi: Intermediate state change detected: GRINDING -> BOSS_FIGHT -> SLAIN")
-            SlayerStateChangeEvent(BOSS_FIGHT).post()
-        }
-
-        if (newState != data.currentState) {
-            ChatUtils.debug("SlayerApi: ${data.currentState} -> $newState")
-            data.currentState = newState
-            SlayerStateChangeEvent(newState).post()
-        }
+    private fun updateState(newState: ActiveQuestState) {
+        val data = getCurrentData()
+        val oldState = data.currentState
+        if (oldState == newState) return
+        ChatUtils.debug("SlayerApi: State $oldState -> $newState")
+        data.currentState = newState
+        data.currentStateRaw = newState.rawName
+        SlayerStateChangeEvent(newState).post()
     }
 
     @HandleEvent(ScoreboardUpdateEvent::class, onlyOnSkyblock = true)
@@ -359,10 +364,6 @@ object SlayerApi {
         updateSlayerState()
     }
 
-    private fun String.inGrind() = contains("Combat") || contains("Kills")
-    private fun String.inBoss() = this == "Slay the boss!"
-    private fun String?.bossSlain() = this == "Boss slain!"
-
     enum class ActiveQuestState {
         GRINDING, // spawning, collecting combat xp
         BOSS_FIGHT,
@@ -370,13 +371,12 @@ object SlayerApi {
         SLAIN,
         COCOONED,
         NO_ACTIVE_QUEST,
-    }
+        ;
 
-    private fun detectState(new: String): ActiveQuestState = when {
-        new.inGrind() -> GRINDING
-        new.inBoss() -> BOSS_FIGHT
-        new.bossSlain() -> SLAIN
-        else -> NO_ACTIVE_QUEST
+        internal val rawName: String? get() {
+            return if (this == NO_ACTIVE_QUEST) null
+            else name.lowercase().replace('_', ' ')
+        }
     }
 
     @HandleEvent(priority = HandleEvent.LOW)
@@ -396,16 +396,14 @@ object SlayerApi {
     }
 
     @HandleEvent
-    private fun onWorldChange() {
-        // Using outsideRiftData since rift does not have slayer cocoon
-        // and using getCurrentData is ambiguous while changing worlds (inside/outside rift)
-        val data = outsideRiftData
-        if (data.currentState != COCOONED) return
-        ChatUtils.debug("SlayerApi: World change detected, resetting cocooned state")
-        data.currentState = NO_ACTIVE_QUEST
-        data.currentStateRaw = null
-        latestCocoonTime = ServerTimeMark.farPast()
-        SlayerStateChangeEvent(NO_ACTIVE_QUEST).post()
+    private fun onIslandLeave(event: IslandLeaveEvent) {
+        val data = if (event.island == THE_RIFT) insideRiftData else outsideRiftData
+        when (data.currentState) {
+            BOSS_FIGHT,
+            COCOONED,
+            -> updateState(GRINDING)
+            else -> {}
+        }
     }
 
     // TODO USE SH-REPO
