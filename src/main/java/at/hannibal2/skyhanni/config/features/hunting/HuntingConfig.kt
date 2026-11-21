@@ -84,4 +84,9 @@ class HuntingConfig {
     @ConfigLink(owner = HuntingConfig::class, field = "fusionDisplay")
     val fusionDisplayPosition: Position = Position(30, 210)
 
+    @Expose
+    @ConfigOption(name = "Line to Floor Drop", desc = "")
+    @SearchTag("moonglade torrhus safari")
+    @Accordion
+    val lineToFloorDrop: LineToFloorDropConfig = LineToFloorDropConfig()
 }
