@@ -1,6 +1,7 @@
 package at.hannibal2.skyhanni.utils
 
 import at.hannibal2.skyhanni.SkyHanniMod
+import at.hannibal2.skyhanni.utils.json.SkyHanniAdaptable
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -8,12 +9,16 @@ import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
+import kotlin.text.replace
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Instant as KInstant
 
 @JvmInline
-value class SimpleTimeMark(private val millis: Long) : Comparable<SimpleTimeMark> {
+value class SimpleTimeMark(
+    private val millis: Long,
+) : Comparable<SimpleTimeMark>, SkyHanniAdaptable<SimpleTimeMark> {
+    override fun toJsonString(): String = toMillis().toString()
 
     operator fun minus(other: SimpleTimeMark) =
         (millis - other.millis).milliseconds
@@ -47,14 +52,10 @@ value class SimpleTimeMark(private val millis: Long) : Comparable<SimpleTimeMark
         else -> Instant.ofEpochMilli(millis).toString()
     }
 
-    private fun String.applyTimeFormat(): String {
-        return if (SkyHanniMod.feature.gui.timeFormat24h) {
-            replace("h", "H").replace("a", "")
-        } else this
-    }
-
     fun formattedDate(pattern: String): String {
-        val newPattern = pattern.applyTimeFormat()
+        val newPattern = if (SkyHanniMod.feature.gui.timeFormat24h) {
+            pattern.replace("h", "H").replace("a", "")
+        } else pattern
         val instant = Instant.ofEpochMilli(millis)
         val localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
         val formatter = DateTimeFormatter.ofPattern(newPattern.trim())
@@ -71,7 +72,9 @@ value class SimpleTimeMark(private val millis: Long) : Comparable<SimpleTimeMark
 
     fun toLocalDate(): LocalDate = toLocalDateTime().toLocalDate()
 
-    companion object {
+    companion object : SkyHanniAdaptable.Factory<SimpleTimeMark> {
+        override fun fromJsonString(json: String) = (json.toLongOrNull() ?: FAR_PAST_MS).asTimeMark()
+
         fun now(): SimpleTimeMark = SimpleTimeMark(timeProvider.currentTimeMillis())
 
         private const val FAR_PAST_MS = 0L
