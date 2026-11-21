@@ -24,6 +24,7 @@ import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 import at.hannibal2.skyhanni.utils.NumberUtil.formatInt
 import at.hannibal2.skyhanni.utils.PrimitiveItemStack.Companion.makePrimitiveStack
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
+import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.Stopwatch
 import at.hannibal2.skyhanni.utils.TimeUtils.format
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.addOrPut
@@ -96,7 +97,7 @@ object CropFeverTracker : SkyHanniBucketedItemTracker<CropType, CropFeverTracker
      * REGEX-TEST: RARE DROP! You dropped 48x Enchanted Melon Slice!
      * REGEX-TEST: UNCOMMON DROP! You dropped 24x Enchanted Melon Slice!
      */
-    private val rngDrop by patternGroup.pattern(
+    internal val rngDrop by patternGroup.pattern(
         "drop",
         "^(?<rarity>[\\w ]+)! You dropped (?<amount>\\d+)x (?<crop>[\\w ]+)!",
     )
@@ -116,6 +117,8 @@ object CropFeverTracker : SkyHanniBucketedItemTracker<CropType, CropFeverTracker
         "end",
         "^GONE! Your CROP FEVER has been cured!",
     )
+
+    internal fun isCropFeverStartMessage(message: String): Boolean = cropFeverStart.matches(message)
 
     private val config get() = GardenApi.config.cropFeverTracker
     private val blocksBrokenCache: MutableMap<CropType, Long> = EnumMap(CropType::class.java)

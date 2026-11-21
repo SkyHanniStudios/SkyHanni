@@ -137,6 +137,12 @@ object VisitorApi {
         val offerItem: SafeItemStack,
     )
 
+    fun getVisitorOffer(inventoryItems: Map<Int, SafeItemStack>): VisitorOffer? {
+        val offerItem = inventoryItems[ACCEPT_SLOT] ?: return null
+        if (offerItem.hoverName.string != "Accept Offer") return null
+        return VisitorOffer(offerItem)
+    }
+
     class Visitor(
         val visitorName: String,
         var entityId: Int = -1,

@@ -79,12 +79,12 @@ object RareCropTracker {
         tracker.initRenderer({ config.position }) { shouldShowDisplay() }
     }
 
-    enum class RareCropDropType(val dropName: String, val pestType: PestType? = null) {
+    enum class RareCropDropType(val dropName: String, val pestType: PestType? = null, val isItemDrop: Boolean = true) {
         CROPIE("§aCropie"),
         SQUASH("§9Squash"),
         FERMENTO("§5Fermento"),
         HELIANTHUS("§6Helianthus"),
-        SEASONING("§2Seasoning"),
+        SEASONING("§2Seasoning", isItemDrop = false),
         CORNUCOPIA("§aCornucopia", PestType.FLY),
         CARROT_ZEST("§aCarrot Zest", PestType.CRICKET),
         DEEPFRIES("§aDeepfries", PestType.LOCUST),

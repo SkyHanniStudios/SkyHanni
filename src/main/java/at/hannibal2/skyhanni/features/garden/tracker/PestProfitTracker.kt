@@ -101,6 +101,11 @@ object PestProfitTracker : SkyHanniBucketedItemTracker<PestType, PestProfitTrack
     val BITS = "SKYBLOCK_BIT".toInternalName()
     const val KILL_BITS = 5
 
+    fun getBitsPrice(): Double {
+        return if (SkyHanniMod.feature.misc.tracker.priceSource == ItemPriceSource.NPC_SELL) 0.0 else config.coinsPerBit.get()
+            .toDouble()
+    }
+
     private val noMessageDrops = setOf(
         "PESTERMINATOR;1",
         "ULTIMATE_SUNSET;1",
@@ -126,11 +131,6 @@ object PestProfitTracker : SkyHanniBucketedItemTracker<PestType, PestProfitTrack
             } else {
                 super.getCustomPricePer(internalName, tracker)
             }
-        }
-
-        private fun getBitsPrice(): Double {
-            return if (SkyHanniMod.feature.misc.tracker.priceSource == ItemPriceSource.NPC_SELL) 0.0 else config.coinsPerBit.get()
-                .toDouble()
         }
 
         override val selectedBucketItems
@@ -179,7 +179,7 @@ object PestProfitTracker : SkyHanniBucketedItemTracker<PestType, PestProfitTrack
             PestApi.hasVacuumOrLassoInHand()
         ) {
             val pest = PestType.getByItemInternalNameOrNull(event.internalName) ?: return
-            addItem(pest, event.internalName, event.amount, false)
+            addPestItem(pest, event.internalName, event.amount)
         }
     }
 
@@ -219,7 +219,7 @@ object PestProfitTracker : SkyHanniBucketedItemTracker<PestType, PestProfitTrack
 
             if (config.hideChat) blockedReason = "pest_drop"
 
-            addItem(pest, internalName, amount, command = false)
+            addPestItem(pest, internalName, amount)
 
             val shouldAddKill = when (pest) {
                 // Field Mice drop 6 separate items, but we only want to count the kill once
@@ -238,7 +238,7 @@ object PestProfitTracker : SkyHanniBucketedItemTracker<PestType, PestProfitTrack
             val pest = PestType.getByItemInternalNameOrNull(internalName) ?: return@matchMatcher
             val amount = groupOrNull("amount")?.formatInt() ?: 1
 
-            addItem(pest, internalName, amount, command = false)
+            addPestItem(pest, internalName, amount)
 
             val primitiveStack = NeuItems.getPrimitiveMultiplier(internalName)
             val rawName = primitiveStack.internalName.itemNameWithoutColor
@@ -253,14 +253,20 @@ object PestProfitTracker : SkyHanniBucketedItemTracker<PestType, PestProfitTrack
     private fun onShardGain(event: ShardGainEvent) {
         if (!event.source.isAnyOf(CHARM, HUNT)) return
         val pestType = PestType.getByItemInternalNameOrNull(event.shardInternalName) ?: return
-        addItem(pestType, event.shardInternalName, event.amount, command = false)
+        addPestItem(pestType, event.shardInternalName, event.amount)
+    }
+
+    private fun addPestItem(pest: PestType, internalName: NeuInternalName, amount: Int) {
+        addItem(pest, internalName, amount, command = false)
+        FarmingProfitTracker.addPestItem(internalName, amount, message = false)
     }
 
     private fun SkyHanniChatEvent.Allow.checkSprayChats() {
         GardenPlotApi.plotSprayedPattern.matchMatcher(cleanMessage) {
-            val spray = group("spray")
+            val spray = SprayType.getByNameOrNull(group("spray")) ?: return@matchMatcher
             val amount = groupOrNull("amount")?.formatInt() ?: 1
-            SprayType.getByNameOrNull(spray)?.addSprayUsed(amount)
+            spray.addSprayUsed(amount)
+            FarmingProfitTracker.addPestSpray(spray, amount)
         }
     }
 
@@ -358,13 +364,17 @@ object PestProfitTracker : SkyHanniBucketedItemTracker<PestType, PestProfitTrack
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
     private fun onPurseChange(event: PurseChangeEvent) {
-        if (event.reason != PurseChangeCause.GAIN_MOB_KILL || lastPestKillTimes.isEmpty()) return
-        val coins = event.coins.takeIf { it in 1000.0..10000.0 } ?: return
+        val pest = getPestFromCoinGain(event) ?: return
+        addCoins(pest, event.coins.roundToInt(), command = false)
+    }
+
+    fun getPestFromCoinGain(event: PurseChangeEvent): PestType? {
+        if (event.reason != PurseChangeCause.GAIN_MOB_KILL || lastPestKillTimes.isEmpty()) return null
+        if (event.coins !in 1000.0..10000.0) return null
 
         // Get a list of all that have been killed in the last 2 seconds, it will
         // want to be the most recent one that was killed.
-        val pest = lastPestKillTimes.minByOrNull { it.value }?.key ?: return
-        addCoins(pest, coins.roundToInt(), command = false)
+        return lastPestKillTimes.minByOrNull { it.value }?.key
     }
 
     @HandleEvent
