@@ -1,6 +1,8 @@
 package at.hannibal2.skyhanni.utils.compat
 
 import at.hannibal2.skyhanni.test.command.ErrorManager
+import at.hannibal2.skyhanni.utils.InputKeys
+import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.Screen
@@ -47,16 +49,18 @@ abstract class SkyHanniBaseScreen(title: Component = Component.empty()) : Screen
 
     private fun postMouseClicked(originalMouseX: Int, originalMouseY: Int, mouseButton: Int) {
         try {
-            onMouseClicked(originalMouseX, originalMouseY, mouseButton)
+            val key = InputKeys.mouse(mouseButton)
+            onMouseClicked(originalMouseX, originalMouseY, key)
         } catch (e: Exception) {
             ErrorManager.logErrorWithData(e, "Error while clicking mouse", "screen" to this)
         }
     }
 
-    open fun onMouseClicked(originalMouseX: Int, originalMouseY: Int, mouseButton: Int) {}
+    open fun onMouseClicked(originalMouseX: Int, originalMouseY: Int, key: InputConstants.Key) {}
 
     override fun keyPressed(input: KeyEvent): Boolean {
-        postKeyTyped(null, input.key)
+        val key = InputKeys.keyEvent(input)
+        postKeyTyped(null, key)
         return super.keyPressed(input)
     }
 
@@ -65,15 +69,15 @@ abstract class SkyHanniBaseScreen(title: Component = Component.empty()) : Screen
         return super.charTyped(input)
     }
 
-    private fun postKeyTyped(typedChar: Char?, keyCode: Int?) {
+    private fun postKeyTyped(typedChar: Char?, key: InputConstants.Key?) {
         try {
-            onKeyTyped(typedChar, keyCode)
+            onKeyTyped(typedChar, key)
         } catch (e: Exception) {
             ErrorManager.logErrorWithData(e, "Error while typing key", "screen" to this)
         }
     }
 
-    open fun onKeyTyped(typedChar: Char?, keyCode: Int?) {}
+    open fun onKeyTyped(typedChar: Char?, key: InputConstants.Key?) {}
 
     override fun mouseReleased(click: MouseButtonEvent): Boolean {
         postMouseReleased(click.x.toInt(), click.y.toInt(), click.button())
@@ -100,13 +104,14 @@ abstract class SkyHanniBaseScreen(title: Component = Component.empty()) : Screen
 
     private fun postMouseClickMove(originalMouseX: Int, originalMouseY: Int, clickedMouseButton: Int, timeSinceLastClick: Long) {
         try {
-            onMouseClickMove(originalMouseX, originalMouseY, clickedMouseButton, timeSinceLastClick)
+            val key = InputKeys.mouse(clickedMouseButton)
+            onMouseClickMove(originalMouseX, originalMouseY, key, timeSinceLastClick)
         } catch (e: Exception) {
             ErrorManager.logErrorWithData(e, "Error while clicking and moving mouse", "screen" to this)
         }
     }
 
-    open fun onMouseClickMove(originalMouseX: Int, originalMouseY: Int, clickedMouseButton: Int, timeSinceLastClick: Long) {}
+    open fun onMouseClickMove(originalMouseX: Int, originalMouseY: Int, clickedMouseKey: InputConstants.Key, timeSinceLastClick: Long) {}
 
     override fun mouseMoved(mouseX: Double, mouseY: Double) {
         postHandleMouseInput()
