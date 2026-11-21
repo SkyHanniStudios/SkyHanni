@@ -10,7 +10,7 @@ import at.hannibal2.skyhanni.config.ConfigManager
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.config.commands.CommandCategory
 import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
-import at.hannibal2.skyhanni.config.commands.brigadier.arguments.LorenzVecArgumentType
+import at.hannibal2.skyhanni.config.commands.brigadier.arguments.VectorArgumentType
 import at.hannibal2.skyhanni.config.core.config.Position
 import at.hannibal2.skyhanni.data.HypixelData
 import at.hannibal2.skyhanni.data.IslandGraphs
@@ -336,7 +336,7 @@ object SkyHanniDebugsAndTests {
             "json" -> location.asStoredString() to "json"
             "pathfind" -> "`/shtestwaypoint $localFormat pathfind`" to "pathfind"
             "navigate" -> "`/shnavigate $localFormat`" to "navigate"
-            else -> "LorenzVec(${location.x}, ${location.y}, ${location.z})" to "LorenzVec"
+            else -> "KVector(${location.x}, ${location.y}, ${location.z})" to "KVector"
         }
     }
 
@@ -581,7 +581,7 @@ object SkyHanniDebugsAndTests {
             }
         }
         event.registerBrigadier("shcopylocation") {
-            description = "Copies the player location as LorenzVec format to the clipboard"
+            description = "Copies the player location as KVector format to the clipboard"
             category = CommandCategory.DEVELOPER_DEBUG
             literalCallback("json") {
                 copyLocation("json")
@@ -613,7 +613,7 @@ object SkyHanniDebugsAndTests {
         event.registerBrigadier("shtestwaypoint") {
             description = "Set a waypoint on that location"
             category = CommandCategory.DEVELOPER_TEST
-            arg("waypoint", LorenzVecArgumentType.double()) { vec ->
+            arg("waypoint", VectorArgumentType.double()) { vec ->
                 literalCallback("pathfind") {
                     waypoint(getArg(vec), true)
                 }

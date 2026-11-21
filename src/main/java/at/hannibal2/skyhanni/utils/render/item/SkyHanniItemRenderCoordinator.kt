@@ -3,13 +3,12 @@ package at.hannibal2.skyhanni.utils.render.item
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
-import at.hannibal2.skyhanni.utils.VectorUtils.isEqualTo
 import at.hannibal2.skyhanni.utils.render.item.atlas.SkyHanniItemAtlas
+import at.hannibal2.skyhanni.utils.vector.KVector
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.ProjectionMatrixBuffer
 import net.minecraft.client.renderer.feature.FeatureRenderDispatcher
 import net.minecraft.client.renderer.state.gui.GuiRenderState
-import net.minecraft.world.phys.Vec3
 import kotlin.math.abs
 
 //? if >= 26.2 {
@@ -97,7 +96,7 @@ internal object SkyHanniItemRenderCoordinator {
                 SettleEntry(state.rotationVector, state.adjustedScale, 0, frameNumber)
             }
             settle.lastSeenFrame = frameNumber
-            val stable = settle.rotationVec.isEqualTo(state.rotationVector) &&
+            val stable = settle.rotationVec == state.rotationVector &&
                 abs(settle.lastScale - state.adjustedScale) < 0.01f
             if (stable) settle.framesStable++
             else {
@@ -180,7 +179,7 @@ internal object SkyHanniItemRenderCoordinator {
     }
 
     private data class SettleEntry(
-        var rotationVec: Vec3,
+        var rotationVec: KVector,
         var lastScale: Float,
         var framesStable: Int,
         var lastSeenFrame: Int,

@@ -10,7 +10,6 @@ import at.hannibal2.skyhanni.test.graph.GraphEditor
 import at.hannibal2.skyhanni.utils.LocationUtils
 import at.hannibal2.skyhanni.utils.LorenzColor
 import at.hannibal2.skyhanni.utils.LorenzVec
-import at.hannibal2.skyhanni.utils.LorenzVec.Companion.toLorenzVec
 import at.hannibal2.skyhanni.utils.OSUtils
 import at.hannibal2.skyhanni.utils.ParkourHelper
 import at.hannibal2.skyhanni.utils.PlayerUtils
@@ -19,6 +18,7 @@ import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawFilledBoundingBox
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.expandBlock
+import at.hannibal2.skyhanni.utils.vector.VectorConversions
 import kotlin.time.Duration.Companion.milliseconds
 
 @SkyHanniModule
@@ -70,10 +70,7 @@ object ParkourWaypointSaver {
         SkyHanniMod.launchCoroutine("parkour waypoint load clipboard") {
             val clipboard = OSUtils.readFromClipboard() ?: return@launchCoroutine
             try {
-                locations = clipboard.split("\n").map { line ->
-                    val raw = line.replace("\"", "").replace(",", "")
-                    raw.split(":").map { it.toDouble() }.toLorenzVec()
-                }.toMutableList()
+                locations = VectorConversions.parseStoredList(clipboard).toMutableList()
             } catch (e: NumberFormatException) {
                 ErrorManager.logErrorWithData(
                     e,

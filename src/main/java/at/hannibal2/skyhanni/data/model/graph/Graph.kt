@@ -5,6 +5,7 @@ import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
 import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NumberUtil.roundTo
 import at.hannibal2.skyhanni.utils.json.fromJson
+import at.hannibal2.skyhanni.utils.vector.VectorConversions
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
@@ -87,7 +88,7 @@ value class Graph(
             out.beginObject()
             for (node in value) {
                 out.name(node.id.toString()).beginObject()
-                out.name("Position").value(with(node.position) { "$x:$y:$z" })
+                out.name("Position").value(node.position.asStoredString())
                 node.name?.let { out.name("Name").value(it) }
                 node.tagNames.takeIf { it.isNotEmpty() }?.let {
                     out.name("Tags").beginArray()
@@ -158,9 +159,7 @@ value class Graph(
                     continue
                 }
                 when (reader.nextName()) {
-                    "Position" -> data.position = reader.nextString().split(":").let {
-                        LorenzVec(it[0].toDouble(), it[1].toDouble(), it[2].toDouble())
-                    }
+                    "Position" -> data.position = VectorConversions.parseStored(reader.nextString())
                     "ExtraWeight" -> data.extraWeight = reader.nextInt()
                     // JSON key intentionally kept as "Neighbours" for backward compatibility
                     "Neighbours" -> parseNeighbors(reader, data.neighbors)

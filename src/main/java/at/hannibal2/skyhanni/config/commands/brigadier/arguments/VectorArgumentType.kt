@@ -2,19 +2,19 @@ package at.hannibal2.skyhanni.config.commands.brigadier.arguments
 
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.LocationUtils
-import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.RegexUtils.findMatcher
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import at.hannibal2.skyhanni.utils.vector.KVector
 import com.mojang.brigadier.LiteralMessage
 import com.mojang.brigadier.StringReader
 import com.mojang.brigadier.arguments.ArgumentType
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType
 
-sealed class LorenzVecArgumentType : ArgumentType<LorenzVec> {
+sealed class VectorArgumentType : ArgumentType<KVector> {
 
-    protected abstract fun toVec(x: kotlin.Double, y: kotlin.Double, z: kotlin.Double): LorenzVec
+    protected abstract fun toVec(x: kotlin.Double, y: kotlin.Double, z: kotlin.Double): KVector
 
-    override fun parse(reader: StringReader): LorenzVec {
+    override fun parse(reader: StringReader): KVector {
         val input = if (reader.canRead() && reader.peek() == '"') reader.readQuotedString()
         else consumeMatch(reader)
         return parseCoords(input)
@@ -34,7 +34,7 @@ sealed class LorenzVecArgumentType : ArgumentType<LorenzVec> {
         throw invalidCoordinates.createWithContext(reader)
     }
 
-    private fun parseCoords(input: String): LorenzVec {
+    private fun parseCoords(input: String): KVector {
         val playerPos = LocationUtils.playerLocation()
         for (pattern in patterns) {
             pattern.findMatcher(input) {
@@ -47,16 +47,16 @@ sealed class LorenzVecArgumentType : ArgumentType<LorenzVec> {
         throw invalidCoordinates.create()
     }
 
-    data object Int : LorenzVecArgumentType() {
+    data object Int : VectorArgumentType() {
         override fun toVec(x: kotlin.Double, y: kotlin.Double, z: kotlin.Double) =
-            LorenzVec(x.toInt(), y.toInt(), z.toInt())
+            KVector(x.toInt(), y.toInt(), z.toInt())
 
         override fun getExamples(): Collection<String> =
             listOf("1 2 3", "-4 0 5", "~ 64 ~", "1:2:3", "-4, 0, 5", "-541,, 94,, 227", "LorenzVec(1, 2, 3)", "x: -262, y: 58, z: 117")
     }
 
-    data object Double : LorenzVecArgumentType() {
-        override fun toVec(x: kotlin.Double, y: kotlin.Double, z: kotlin.Double) = LorenzVec(x, y, z)
+    data object Double : VectorArgumentType() {
+        override fun toVec(x: kotlin.Double, y: kotlin.Double, z: kotlin.Double) = KVector(x, y, z)
 
         override fun getExamples(): Collection<String> = listOf(
             "1.0 2.5 -3",
@@ -79,10 +79,11 @@ sealed class LorenzVecArgumentType : ArgumentType<LorenzVec> {
          * REGEX-TEST: LorenzVec(1, 2, 3)
          * REGEX-TEST: LorenzVec(0.0, 0.0, 0.0)
          * REGEX-TEST: LorenzVec(-78.8, 68.0, -28.7)
+         * REGEX-TEST: KVector(1, 2, 3)
          */
         private val lorenzVecPattern by patternGroup.pattern(
             "lorenz",
-            "LorenzVec\\((?<x>-?\\d+(?:\\.\\d+)?),\\s*(?<y>-?\\d+(?:\\.\\d+)?),\\s*(?<z>-?\\d+(?:\\.\\d+)?)\\)",
+            "(?:LorenzVec|KVector)\\((?<x>-?\\d+(?:\\.\\d+)?),\\s*(?<y>-?\\d+(?:\\.\\d+)?),\\s*(?<z>-?\\d+(?:\\.\\d+)?)\\)",
         )
 
         /**
@@ -157,9 +158,9 @@ sealed class LorenzVecArgumentType : ArgumentType<LorenzVec> {
         private val invalidCoordinates = SimpleCommandExceptionType(LiteralMessage("Invalid coordinates"))
 
         /** Only accepts integers as input */
-        fun int(): LorenzVecArgumentType = Int
+        fun int(): VectorArgumentType = Int
 
         /** Accepts any number as input */
-        fun double(): LorenzVecArgumentType = Double
+        fun double(): VectorArgumentType = Double
     }
 }

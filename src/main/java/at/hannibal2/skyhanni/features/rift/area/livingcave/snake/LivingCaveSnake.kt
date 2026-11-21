@@ -20,6 +20,7 @@ import at.hannibal2.skyhanni.utils.render.LineDrawer
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawColor
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawString
 import io.github.notenoughupdates.moulconfig.ChromaColour
+import net.minecraft.core.Direction
 import net.minecraft.world.level.block.Blocks
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -57,7 +58,7 @@ class LivingCaveSnake(
 
     private fun isNotTouchingAir(): Boolean = blocks.any { it.isNotTouchingAir() }
 
-    private fun LorenzVec.isNotTouchingAir(): Boolean = LorenzVec.directions.none { plus(it).getBlockAt() == Blocks.AIR }
+    private fun LorenzVec.isNotTouchingAir(): Boolean = Direction.entries.none { plus(it.unitVec3).getBlockAt() == Blocks.AIR }
 
     private fun isSelected() = LivingCaveSnakeFeatures.selectedSnake == this
 

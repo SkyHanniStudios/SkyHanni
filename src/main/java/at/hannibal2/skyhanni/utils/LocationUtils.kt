@@ -2,6 +2,7 @@ package at.hannibal2.skyhanni.utils
 
 import at.hannibal2.skyhanni.utils.collection.TimeLimitedSet
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
+import at.hannibal2.skyhanni.utils.vector.KVector
 import net.minecraft.core.Direction
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.phys.AABB
@@ -17,7 +18,7 @@ import kotlin.math.sqrt
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-typealias PointSet = TimeLimitedSet<Pair<LorenzVec, Boolean>>
+typealias PointSet = TimeLimitedSet<Pair<KVector, Boolean>>
 typealias FacePointEntry = Map.Entry<Direction, PointSet>
 typealias FacePointSet = MutableMap<Direction, PointSet>
 
@@ -38,7 +39,7 @@ object LocationUtils {
     /**
      * Returns the player's current location, or LorenzVec(0.0, 0.0, 0.0) if the player does not exist.
      */
-    fun playerLocation(): LorenzVec = playerLocationOrNull() ?: LorenzVec()
+    fun playerLocation(): LorenzVec = playerLocationOrNull() ?: LorenzVec.ZERO
 
     // Block heights are multiples of 1/16, so we subtract 1/16 to find the right block
     fun getBlockBelowPlayer() = playerLocation().add(0.0, -1.0 / 16.0, 0.0).roundToBlock()
@@ -65,7 +66,7 @@ object LocationUtils {
         return vec.up(player.eyeHeight.toDouble())
     }
 
-    fun AABB.isInside(vec: LorenzVec) = contains(vec.toVec3())
+    fun AABB.isInside(vec: LorenzVec) = contains(vec)
 
     fun AABB.isPlayerInside() = isInside(playerLocation())
 
@@ -259,12 +260,12 @@ object LocationUtils {
 
     fun AABB.rayIntersects(origin: LorenzVec, direction: LorenzVec): Boolean {
         // Reference for Algorithm https://tavianator.com/2011/ray_box.html
-        val rayDirectionInverse = direction.inverse()
+        val rayDirectionInverse = LorenzVec(1.0 / direction.x, 1.0 / direction.y, 1.0 / direction.z)
         val t1 = (this.minBox() - origin) * rayDirectionInverse
         val t2 = (this.maxBox() - origin) * rayDirectionInverse
 
-        val tMin = max(t1.minOfEachElement(t2).max(), Double.NEGATIVE_INFINITY)
-        val tMax = min(t1.maxOfEachElement(t2).min(), Double.POSITIVE_INFINITY)
+        val tMin = maxOf(min(t1.x, t2.x), min(t1.y, t2.y), min(t1.z, t2.z))
+        val tMax = minOf(max(t1.x, t2.x), max(t1.y, t2.y), max(t1.z, t2.z))
         return tMax >= tMin && tMax >= 0.0
     }
 

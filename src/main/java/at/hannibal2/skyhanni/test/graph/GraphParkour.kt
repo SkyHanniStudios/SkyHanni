@@ -12,9 +12,9 @@ import at.hannibal2.skyhanni.test.graph.GraphEditor.isEnabled
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.LorenzColor
 import at.hannibal2.skyhanni.utils.LorenzVec
-import at.hannibal2.skyhanni.utils.LorenzVec.Companion.toLorenzVec
 import at.hannibal2.skyhanni.utils.OSUtils
 import at.hannibal2.skyhanni.utils.coroutines.CoroutineSettings
+import at.hannibal2.skyhanni.utils.vector.VectorConversions
 
 @SkyHanniModule
 object GraphParkour {
@@ -156,10 +156,7 @@ object GraphParkour {
 
     private fun readListFromClipboard(): List<LorenzVec>? {
         val clipboard = OSUtils.readFromClipboard() ?: return null
-        return clipboard.split("\n").map { line ->
-            val raw = line.replace("\"", "").replace(",", "")
-            raw.split(":").map { it.toDouble() }.toLorenzVec()
-        }
+        return VectorConversions.parseStoredList(clipboard)
     }
 
     private fun listToGraph(locations: List<LorenzVec>): Graph {

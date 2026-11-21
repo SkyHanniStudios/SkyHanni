@@ -6,6 +6,7 @@ import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.render.PoseStackUtils.mulPose
 import at.hannibal2.skyhanni.utils.render.item.atlas.SkyHanniAnimatedAtlasKey
 import at.hannibal2.skyhanni.utils.render.item.atlas.SkyHanniAtlasKey
+import at.hannibal2.skyhanni.utils.vector.KVector
 import com.mojang.blaze3d.platform.Lighting
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
@@ -15,7 +16,6 @@ import net.minecraft.client.renderer.state.gui.GuiItemRenderState
 import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.util.LightCoordsUtil.FULL_BRIGHT
-import net.minecraft.world.phys.Vec3
 import org.joml.Matrix3x2f
 
 //? if >= 26.2 {
@@ -29,8 +29,8 @@ data class SkyHanniGuiItemRenderState(
     val guiItemRenderState: GuiItemRenderState,
     val x: Float,
     val y: Float,
-    val rotationVector: Vec3,
-    private val translationVec: Vec3,
+    val rotationVector: KVector,
+    private val translationVec: KVector,
     val scale: Float = 1f,
     // Adjusted scale must account for the GUI Scale from SH editor
     val adjustedScale: Float = 1f,
@@ -52,7 +52,7 @@ data class SkyHanniGuiItemRenderState(
         // stableId intentionally NOT in modelIdentity. atlas key equality already excludes it,
         // and including it here prevents cache hits for static items across frames.
         frameNumber?.let { appendModelIdentityElement(it) }
-        if (rotationVector != Vec3.ZERO || frameNumber != null) setAnimated()
+        if (!rotationVector.isZero() || frameNumber != null) setAnimated()
     }
     val atlasKey by lazy {
         val baseKey = SkyHanniAtlasKey(
