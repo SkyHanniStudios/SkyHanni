@@ -37,7 +37,7 @@ object ProfitPerMineshaftCorpse {
         val corpseType = event.corpseType
         val name = corpseType.displayName
 
-        if (!event.keyConsumed) {
+        if (event.keyConsumed) {
             corpseType.key?.let {
                 val keyName = it.repoItemName
                 val price = it.getPrice()
