@@ -51,12 +51,12 @@ object MineshaftDetection {
     private var found = false
 
     @HandleEvent(WorldChangeEvent::class)
-    fun onWorldChange() {
+    private fun onWorldChange() {
         found = false
     }
 
     @HandleEvent(ScoreboardUpdateEvent::class, onlyOnIsland = IslandType.MINESHAFT)
-    fun onScoreboardLineChange() {
+    private fun onScoreboardLineChange() {
         if (found) return
 
         val matchingLine = ScoreboardData.sidebarLinesFormatted
@@ -75,7 +75,7 @@ object MineshaftDetection {
     }
 
     @HandleEvent
-    fun onGlaciteMineshaftDetectEvent(event: GlaciteMineshaftDetectEvent) {
+    private fun onGlaciteMineshaftDetectEvent(event: GlaciteMineshaftDetectEvent) {
         val type = event.type
         val sinceThis = getSinceMineshaftType(type)
         val timeSinceThis = getTimeSinceMineshaftType(type)
@@ -171,7 +171,7 @@ object MineshaftDetection {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.transform(108, "mining.glaciteMineshaft.mineshaftDetectionConfig.mineshaftsToTrack") { element ->
             val newList = JsonArray()
             for (entry in element.asJsonArray) {
