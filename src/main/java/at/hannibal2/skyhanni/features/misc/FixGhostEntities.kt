@@ -7,7 +7,7 @@ import at.hannibal2.skyhanni.events.CheckRenderEntityEvent
 import at.hannibal2.skyhanni.events.minecraft.packet.PacketReceivedEvent
 import at.hannibal2.skyhanni.features.nether.kuudra.KuudraApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
-import at.hannibal2.skyhanni.utils.MobUtils.isDefaultValue
+import at.hannibal2.skyhanni.utils.MobUtils.isDefaultName
 import at.hannibal2.skyhanni.utils.compat.EntityCompat.getAllEquipment
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
@@ -70,7 +70,7 @@ object FixGhostEntities {
     fun onCheckRender(event: CheckRenderEntityEvent<*>) {
         if (config.hideTemporaryArmorStands) {
             (event.entity as? ArmorStand)?.let { stand ->
-                if (stand.tickCount < 10 && stand.isDefaultValue() && stand.getAllEquipment().all { it == null }) event.cancel()
+                if (stand.tickCount < 10 && stand.isDefaultName() && stand.getAllEquipment().all { it == null }) event.cancel()
             }
         }
         if (config.fixGhostEntities && (event.entity is Monster || event.entity is Player)) {
