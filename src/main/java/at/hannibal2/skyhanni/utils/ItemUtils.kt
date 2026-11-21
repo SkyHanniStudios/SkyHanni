@@ -617,6 +617,19 @@ object ItemUtils {
         "(?:§f)?Enchanted Book \\((?<item>.+)\\)",
     )
 
+    /**
+     * REGEX-TEST: §eYou Supercrafted §r§r§r§aEnchanted Ender Pearl§r§e!
+     * REGEX-TEST: §eYou Supercrafted §r§r§r§9Enchanted Mithril §r§8x3§r§e!
+     */
+    private val superCraftedPattern by RepoPattern.pattern(
+        "inventory.supercrafting.craft.new",
+        "§eYou Supercrafted §r§r§r§.(?<item>[^§]+)(?:§r§8x(?<amount>[\\d,]+))?§r§e!",
+    )
+
+    fun readSuperCraftedItem(message: String): PrimitiveItemStack? = superCraftedPattern.matchMatcher(message) {
+        PrimitiveItemStack(NeuInternalName.fromItemName(group("item")), group("amount")?.formatInt() ?: 1)
+    }
+
     fun readBookTypeStrippedColor(input: String): String? = readBookType(input)?.removeColor()
 
     fun readBookType(input: String): String? = enchantedBookPattern.matchMatcher(input) {
