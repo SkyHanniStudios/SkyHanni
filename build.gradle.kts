@@ -38,7 +38,7 @@ plugins {
 }
 
 val target = ProjectTarget.entries.find { it.projectPath == project.path }!!
-val primaryTarget = ProjectTarget.MODERN_26200
+val primaryTarget = ProjectTarget.primary
 
 // Toolchains:
 java {

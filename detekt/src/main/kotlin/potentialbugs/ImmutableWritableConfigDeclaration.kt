@@ -3,6 +3,8 @@ package potentialbugs
 import SkyHanniRule
 import dev.detekt.api.Config
 import dev.detekt.api.RequiresAnalysisApi
+import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
+import io.github.notenoughupdates.moulconfig.observer.Property
 import org.jetbrains.kotlin.analysis.api.KaSession
 import org.jetbrains.kotlin.analysis.api.analyze
 import org.jetbrains.kotlin.analysis.api.types.KaClassType
@@ -10,48 +12,44 @@ import org.jetbrains.kotlin.analysis.api.types.KaType
 import org.jetbrains.kotlin.analysis.api.types.KaTypeArgumentWithVariance
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
-import org.jetbrains.kotlin.psi.KtAnnotated
+import org.jetbrains.kotlin.name.StandardClassIds
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtProperty
+import utils.DetektUtils.hasAnnotation
+import utils.DetektUtils.javaClassId
+import java.util.EnumMap
+import java.util.EnumSet
 
-class ImmutableTypesWithExpectedInteriorMutabilityInConfig(config: Config) : RequiresAnalysisApi, SkyHanniRule(
+class ImmutableWritableConfigDeclaration(config: Config) : RequiresAnalysisApi, SkyHanniRule(
     config,
-    "Disallow using types which may disallow MoulConfig from mutating them, due to the lack of interior mutability",
+    "Config options should use mutable collection types so MoulConfig can modify them in place.",
 ) {
     companion object {
         val configPackage = FqName("at.hannibal2.skyhanni.config")
 
-        private val propertyClassId = ClassId(
-            FqName("io.github.notenoughupdates.moulconfig.observer"),
-            FqName("Property"),
-            false,
-        )
+        private val propertyClassId = Property::class.javaClassId()
         private val immutableCollectionClassIds = setOf(
-            ClassId(FqName("kotlin.collections"), FqName("Collection"), false),
-            ClassId(FqName("kotlin.collections"), FqName("Map"), false),
-            ClassId(FqName("java.util"), FqName("Collection"), false),
-            ClassId(FqName("java.util"), FqName("Map"), false),
+            StandardClassIds.Collection,
+            StandardClassIds.Map,
+            Collection::class.javaClassId(),
+            Map::class.javaClassId(),
         )
         private val mutableCollectionClassIds = setOf(
-            ClassId(FqName("kotlin.collections"), FqName("MutableCollection"), false),
-            ClassId(FqName("kotlin.collections"), FqName("MutableMap"), false),
-            ClassId(FqName("java.util"), FqName("EnumMap"), false),
-            ClassId(FqName("java.util"), FqName("EnumSet"), false),
+            StandardClassIds.MutableCollection,
+            StandardClassIds.MutableMap,
+            EnumMap::class.javaClassId(),
+            EnumSet::class.javaClassId(),
         )
     }
 
-    override fun visit(root: KtFile) {
-        if (!root.packageFqName.startsWith(configPackage)) return
-        super.visit(root)
-    }
-
-    private fun KtAnnotated.hasConfigOptionAnnotation(): Boolean {
-        return annotationEntries.any { it.shortName?.asString() == "ConfigOption" }
+    override fun visitKtFile(file: KtFile) {
+        if (!file.packageFqName.startsWith(configPackage)) return
+        super.visitKtFile(file)
     }
 
     override fun visitProperty(property: KtProperty) {
         super.visitProperty(property)
-        if (!property.hasConfigOptionAnnotation()) return
+        if (!property.hasAnnotation<ConfigOption>()) return
 
         analyze(property) {
             val allClassIds = resolveAllClassIds(property.returnType)
@@ -62,7 +60,10 @@ class ImmutableTypesWithExpectedInteriorMutabilityInConfig(config: Config) : Req
             val mutableParentTypes = allClassIds.intersect(mutableCollectionClassIds)
             if (mutableParentTypes.isNotEmpty()) return@analyze
 
-            property.reportIssue("A @ConfigOption field must use types with interior mutability: $immutableParentTypes")
+            (property.typeReference ?: property.nameIdentifier ?: property).reportIssue(
+                "A @ConfigOption field must use types with interior mutability: $immutableParentTypes",
+                property,
+            )
         }
     }
 
