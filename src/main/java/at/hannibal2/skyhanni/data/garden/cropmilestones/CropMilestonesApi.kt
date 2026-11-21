@@ -4,6 +4,8 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.config.commands.CommandCategory
 import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
+import at.hannibal2.skyhanni.config.commands.brigadier.BrigadierArguments
+import at.hannibal2.skyhanni.config.commands.brigadier.arguments.EnumArgumentType
 import at.hannibal2.skyhanni.data.achievements.Achievement
 import at.hannibal2.skyhanni.data.garden.CropCollectionApi.addsToMilestone
 import at.hannibal2.skyhanni.data.garden.cropmilestones.CustomGoals.getCustomGoal
@@ -321,24 +323,22 @@ object CropMilestonesApi {
 
         val cropName = crop.cropName
         val levelUpLine = "§r§b§lGARDEN MILESTONE §3$cropName §8$oldLevel➜§3$newLevel§r"
-        val messages = listOf(
-            "§r§3§l---------------------------------------------§r",
-            "  $levelUpLine",
-            if (goalReached)
-                listOf(
-                    "",
-                    "  §r§d§lGOAL REACHED!",
-                    "",
-                ).joinToString("\n")
-            else
-                "",
-            "  §r§a§lREWARDS§r",
-            rewards.joinToString("\n"),
-            "§r§3§l---------------------------------------------§r",
-        )
+
+        val messages = buildList {
+            add("§r§3§l---------------------------------------------§r")
+            add("  $levelUpLine")
+            if (goalReached) {
+                add("")
+                add("  §r§d§lGOAL REACHED!")
+                add("")
+            }
+            add("  §r§a§lREWARDS§r")
+            addAll(rewards)
+            add("§r§3§l---------------------------------------------§r")
+        }
 
         clickableChat(
-            messages.joinToString("\n"),
+            messages,
             { ClipboardUtils.copyToClipboard(levelUpLine.removeColor()) },
             "Click to copy!",
             prefix = false,
@@ -388,6 +388,25 @@ object CropMilestonesApi {
             callback {
                 resetMilestones()
                 chat("§cReset Crop Milestones!")
+            }
+        }
+        event.registerBrigadier("shfakecropmilestoneoverflowmessage") {
+            description = "sends an overflow crop milestone level-up message"
+            category = CommandCategory.DEVELOPER_TEST
+            arg("crop", EnumArgumentType.custom<CropType>({ it.cropName })) { crop ->
+                arg("previouslevel", BrigadierArguments.integer()) { previousLevel ->
+                    arg("newlevel", BrigadierArguments.integer()) { newLevel ->
+                        callback {
+                            onOverflowLevelUp(
+                                getArg(crop),
+                                getArg(previousLevel),
+                                getArg(newLevel),
+                            )
+                        }
+                    }
+
+                }
+
             }
         }
     }

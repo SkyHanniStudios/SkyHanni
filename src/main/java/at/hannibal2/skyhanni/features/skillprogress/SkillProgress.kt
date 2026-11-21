@@ -8,6 +8,10 @@ import at.hannibal2.skyhanni.api.SkillApi.oldSkillInfoMap
 import at.hannibal2.skyhanni.api.SkillApi.showDisplay
 import at.hannibal2.skyhanni.api.SkillApi.skillXPInfoMap
 import at.hannibal2.skyhanni.api.event.HandleEvent
+import at.hannibal2.skyhanni.config.commands.CommandCategory
+import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
+import at.hannibal2.skyhanni.config.commands.brigadier.BrigadierArguments
+import at.hannibal2.skyhanni.config.commands.brigadier.arguments.EnumArgumentType
 import at.hannibal2.skyhanni.config.features.skillprogress.SkillProgressConfig
 import at.hannibal2.skyhanni.events.ActionBarUpdateEvent
 import at.hannibal2.skyhanni.events.SecondPassedEvent
@@ -177,10 +181,16 @@ object SkillProgress {
     @HandleEvent(onlyOnSkyblock = true)
     private fun onLevelUp(event: SkillOverflowLevelUpEvent) {
         if (!config.overflowConfig.enableInChat) return
-        val skillName = event.skill.displayName
+        val skill = event.skill
         val oldLevel = event.oldLevel
         val newLevel = event.newLevel
-        val skill = SkillApi.storage?.get(event.skill) ?: return
+        sendOverflowLevelup(skill, oldLevel, newLevel)
+
+    }
+
+    private fun sendOverflowLevelup(skillType: SkillType, oldLevel: Int, newLevel: Int) {
+        val skillName = skillType.displayName
+        val skill = SkillApi.storage?.get(skillType) ?: return
         val goalReached = newLevel == skill.customGoalLevel && customGoalConfig.enableInChat
 
         val rewards = buildList {
@@ -188,22 +198,21 @@ object SkillProgress {
             if (newLevel % 5 == 0)
                 add("  §r§7§8+§d50 SkyHanni User Luck")
         }
-        val messages = listOf(
-            "§3§l---------------------------------------------",
-            "  §r§b§lSKILL LEVEL UP §3$skillName §8$oldLevel➜§3$newLevel",
-            if (goalReached)
-                listOf(
-                    "",
-                    "  §r§d§lGOAL REACHED!",
-                    "",
-                ).joinToString("\n") else
-                "",
-            "  §r§a§lREWARDS",
-            rewards.joinToString("\n"),
-            "§3§l---------------------------------------------",
-        )
 
-        chat(messages.joinToString("\n"), false)
+        val messages = buildList {
+            add("§3§l---------------------------------------------")
+            add("  §r§b§lSKILL LEVEL UP §3$skillName §8$oldLevel➜§3$newLevel")
+            if (goalReached) {
+                add("")
+                add("  §r§d§lGOAL REACHED!")
+                add("")
+            }
+            add("  §r§a§lREWARDS")
+            addAll(rewards)
+            add("§3§l---------------------------------------------")
+        }
+
+        chat(messages, prefix = false)
 
         if (goalReached)
             chat("§lYou have reached your goal level of §b§l${skill.customGoalLevel} §e§lin the §b§l$skillName §e§lskill!")
@@ -244,6 +253,27 @@ object SkillProgress {
         msg = msg.trim()
 
         event.changeActionBar(msg)
+    }
+
+    @HandleEvent
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
+        event.registerBrigadier("shfakeoverflowskillmessage") {
+            description = "sends an overflow skill levelup message"
+            category = CommandCategory.DEVELOPER_TEST
+            arg("skill", EnumArgumentType.custom<SkillType>({ it.displayName })) { skill ->
+                arg("previouslevel", BrigadierArguments.integer()) { previousLevel ->
+                    arg("newlevel", BrigadierArguments.integer()) { newLevel ->
+                        callback {
+                            sendOverflowLevelup(
+                                getArg(skill),
+                                getArg(previousLevel),
+                                getArg(newLevel),
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 
     fun updateDisplay() {
