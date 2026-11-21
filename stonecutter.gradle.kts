@@ -118,13 +118,13 @@ allprojects {
 
 stonecutter active "26.2"
 
-stonecutter handlers {
-    configure("fsh", "vsh") {
-        commenter = line("//")
-    }
-}
-
 stonecutter parameters {
+
+    val versionedCatalog = versionCatalogs.named("libs" + current.version.replace(".", ""))
+    constants["render_chest"] = versionedCatalog.findLibrary("renderchest").isPresent
+    constants["rei_compat"] = versionedCatalog.findLibrary("rei").isPresent
+    constants["iris_compat"] = true
+
     replacements {
         string(current.parsed < "26.2") {
             replace("net.minecraft.world.entity.monster.cubemob.MagmaCube", "net.minecraft.world.entity.monster.MagmaCube")
@@ -157,6 +157,4 @@ stonecutter parameters {
             }
         }
     }
-
-    filters.include("**/*.fsh", "**/*.vsh")
 }

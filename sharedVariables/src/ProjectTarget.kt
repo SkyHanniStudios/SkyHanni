@@ -3,38 +3,16 @@ package at.skyhanni.sharedvariables
 enum class ProjectTarget(
     val projectName: String,
     val minecraftVersion: MinecraftVersion,
-    val fabricLoaderVersion: String,
-    val fabricApiVersion: String,
-    val fabricLanguageKotlinVersion: String,
-    val hypixelModApiVersion: String,
-    val hypixelModApiFabricVersion: String,
-    val modMenuVersion: String,
-    val renderChestVersion: String?,
     val modrinthInfo: ModrinthInfo,
 ) {
     MODERN_26100(
         "26.1",
         MinecraftVersion.MC26100,
-        fabricLoaderVersion = "net.fabricmc:fabric-loader:0.19.5",
-        fabricApiVersion = "net.fabricmc.fabric-api:fabric-api:0.155.2+26.1.2",
-        fabricLanguageKotlinVersion = "net.fabricmc:fabric-language-kotlin:1.14.2+kotlin.2.4.21",
-        hypixelModApiVersion = "net.hypixel:mod-api:1.0.2",
-        hypixelModApiFabricVersion = "maven.modrinth:hypixel-mod-api:1.0.2+build.1+mc26.1",
-        modMenuVersion = "18.0.0",
-        renderChestVersion = null,
         modrinthInfo = ModrinthInfo.FABRIC_26_1,
     ),
     MODERN_26200(
         "26.2",
         MinecraftVersion.MC26200,
-        fabricLoaderVersion = "net.fabricmc:fabric-loader:0.19.5",
-        fabricApiVersion = "net.fabricmc.fabric-api:fabric-api:0.155.2+26.2",
-        fabricLanguageKotlinVersion = "net.fabricmc:fabric-language-kotlin:1.14.2+kotlin.2.4.21",
-        hypixelModApiVersion = "net.hypixel:mod-api:1.0.2",
-        // There is no 26.2 version; the 26.1 version works on 26.2.
-        hypixelModApiFabricVersion = "maven.modrinth:hypixel-mod-api:1.0.2+build.1+mc26.1",
-        modMenuVersion = "20.0.0-beta.4",
-        renderChestVersion = "1.0.3+26.2",
         modrinthInfo = ModrinthInfo.FABRIC_26_2,
     ),
 
