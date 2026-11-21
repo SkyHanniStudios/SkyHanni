@@ -63,4 +63,15 @@ class ParticleHiderConfig {
     @FeatureToggle
     var hideCloseRedstoneParticles: Boolean = false
 
+
+    @Expose
+    @ConfigOption(
+        name = "Custom Dye Particles",
+        desc = "Hides obtrusive particles from certain armor dyes; " +
+            "other players will still see them."
+    )
+    @SearchTag("helmet chestplate leggings boots")
+    @ConfigEditorBoolean
+    @FeatureToggle
+    var hideDyeParticles: Boolean = false
 }
