@@ -23,7 +23,7 @@ open class IconConfig(
     @ConfigOption(
         name = "Pet Icon",
         desc = "Show an icon of your current pet.\n" +
-            "§cRequired for any options below to work§7.",
+            "§cRequired for any options below to work§r.",
     )
     @ConfigEditorBoolean
     @ConfigOrder(10)

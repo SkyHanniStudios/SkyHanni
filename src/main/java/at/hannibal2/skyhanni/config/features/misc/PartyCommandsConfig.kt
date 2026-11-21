@@ -19,31 +19,31 @@ class PartyCommandsConfig {
 
     @Expose
     @ConfigEditorBoolean
-    @ConfigOption(name = "Party Transfer", desc = "Automatically transfer the party to people who type §b!ptme§7.")
+    @ConfigOption(name = "Party Transfer", desc = "Automatically transfer the party to people who type §b!ptme§r.")
     var transferCommand: Boolean = false
 
     @Expose
     @ConfigEditorBoolean
-    @ConfigOption(name = "Party Warp", desc = "Automatically warp the party if someone types §b!warp§7.")
+    @ConfigOption(name = "Party Warp", desc = "Automatically warp the party if someone types §b!warp§r.")
     var warpCommand: Boolean = false
 
     @Expose
     @ConfigEditorBoolean
-    @ConfigOption(name = "Party All Invite", desc = "Automatically turn on allinvite if someone types §b!allinv§7.")
+    @ConfigOption(name = "Party All Invite", desc = "Automatically turn on allinvite if someone types §b!allinv§r.")
     var allInviteCommand: Boolean = false
 
     @Expose
     @ConfigEditorBoolean
     @ConfigOption(
         name = "Ping",
-        desc = "Sends current ping into Party Chat if someone types §b!ping§7.\n" +
+        desc = "Sends current ping into Party Chat if someone types §b!ping§r.\n" +
             "§cNote: Will not work correctly with the Hypixel Ping API turned off in Dev."
     )
     var pingCommand: Boolean = false
 
     @Expose
     @ConfigEditorBoolean
-    @ConfigOption(name = "TPS", desc = "Sends current TPS into Party Chat if someone types §b!tps§7.")
+    @ConfigOption(name = "TPS", desc = "Sends current TPS into Party Chat if someone types §b!tps§r.")
     var tpsCommand: Boolean = false
 
     enum class TrustedUser(private val displayName: String) {

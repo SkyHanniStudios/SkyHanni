@@ -11,7 +11,7 @@ class DreadfarmConfig {
     @ConfigOption(
         name = "Agaricus Cap",
         desc = "Count down the time until §eAgaricus Cap (Mushroom) " +
-            "§7changes color from brown to red and is breakable."
+            "§rchanges color from brown to red and is breakable."
     )
     @ConfigEditorBoolean
     @FeatureToggle

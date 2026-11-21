@@ -49,12 +49,12 @@ class CropFeverTrackerConfig {
 
     enum class CropFeverTrackerTextEntry(private val displayName: String) {
         TITLE("§6Crop Fever Tracker"),
-        RNG_DROPS("§7- §e17x §a§lUNCOMMON DROP\n§7- §e6x §9§lRARE DROP\n§7- §e1x §d§lCRAZY RARE DROP"),
-        ITEM_DROPS("§7120x §aEnchanted Melon Slice §61.8m\n§73x §9Enchanted Melon Block §6150k"),
-        FEVER_AMOUNT("§7Total Crop Fevers: §e5"),
-        FEVER_DURATION("§7Crop Fever Duration: §b4m 32s"),
-        TOTAL_BLOCKS("§7Total Blocks Broken: §e12,123"),
-        TOTAL_PROFIT("§7Total Profit: §618m"),
+        RNG_DROPS("§r- §e17x §a§lUNCOMMON DROP\n§r- §e6x §9§lRARE DROP\n§r- §e1x §d§lCRAZY RARE DROP"),
+        ITEM_DROPS("§r120x §aEnchanted Melon Slice §61.8m\n§r3x §9Enchanted Melon Block §6150k"),
+        FEVER_AMOUNT("§rTotal Crop Fevers: §e5"),
+        FEVER_DURATION("§rCrop Fever Duration: §b4m 32s"),
+        TOTAL_BLOCKS("§rTotal Blocks Broken: §e12,123"),
+        TOTAL_PROFIT("§rTotal Profit: §618m"),
         SPACER_1(" "),
         SPACER_2(" "),
         ;

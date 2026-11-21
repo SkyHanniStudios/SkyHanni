@@ -46,7 +46,7 @@ class PetConfig {
 
     class MenuHighlightConfig {
         @Expose
-        @ConfigOption(name = "Enabled", desc = "Highlight your current pet in the §e/pets §7menu.")
+        @ConfigOption(name = "Enabled", desc = "Highlight your current pet in the §e/pets §rmenu.")
         @ConfigEditorBoolean
         @FeatureToggle
         var enabled: Boolean = true

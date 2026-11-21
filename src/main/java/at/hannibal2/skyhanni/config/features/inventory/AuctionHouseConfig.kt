@@ -71,7 +71,7 @@ class AuctionHouseConfig {
     @Expose
     @ConfigOption(
         name = "Price Website",
-        desc = "Add a button to the Auction House that will open the item page in §csky.coflnet.com§7."
+        desc = "Add a button to the Auction House that will open the item page in §csky.coflnet.com§r."
     )
     @ConfigEditorBoolean
     @FeatureToggle

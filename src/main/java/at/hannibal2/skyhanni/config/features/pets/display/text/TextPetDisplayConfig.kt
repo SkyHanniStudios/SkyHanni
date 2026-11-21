@@ -26,14 +26,14 @@ interface PetTextDisplaySettings {
 
 class TextPetDisplayConfig {
     enum class TextElement(private val displayName: String, private val label: String = "") {
-        PET_NAME("§7[Lvl 100] §6Mithril Golem §5✦"),
-        NEXT_LEVEL("§b2,000§9/§b4,000 §7- §e50%", "Next Level"),
-        OVERFLOW_XP("§7+§b2,000,000", "Overflow XP"),
+        PET_NAME("§r[Lvl 100] §6Mithril Golem §5✦"),
+        NEXT_LEVEL("§b2,000§9/§b4,000 §r- §e50%", "Next Level"),
+        OVERFLOW_XP("§r+§b2,000,000", "Overflow XP"),
         TOTAL_XP("§b1,250,000", "Total XP"),
         HELD_ITEM("§9Dwarf Turtle Shelmet", "Held Item"),
         ;
 
-        fun getFormattedLabel() = label.takeIf { it.isNotEmpty() }?.let { "§e$it§7: " }.orEmpty()
+        fun getFormattedLabel() = label.takeIf { it.isNotEmpty() }?.let { "§e$it§r: " }.orEmpty()
         override fun toString() = getFormattedLabel() + displayName
     }
 
@@ -124,9 +124,9 @@ class TextPetDisplayConfig {
         @ConfigOption(
             name = "XP Format",
             desc = "Either show default, formatted, or unformatted numbers.\n" +
-                "§eDefault: §72,240/2.2k\n" +
-                "§eFormatted: §72.2k/2.2k\n" +
-                "§eUnformatted: §72,240/2,200"
+                "§eDefault: §r2,240/2.2k\n" +
+                "§eFormatted: §r2.2k/2.2k\n" +
+                "§eUnformatted: §r2,240/2,200"
         )
         @ConfigEditorDropdown
         @ConfigOrder(60)
@@ -325,9 +325,9 @@ class TextPetDisplayConfig {
         @ConfigOption(
             name = "XP Format",
             desc = "Either show default, formatted, or unformatted numbers.\n" +
-                "§eDefault: §72,240/2.2k\n" +
-                "§eFormatted: §72.2k/2.2k\n" +
-                "§eUnformatted: §72,240/2,200"
+                "§eDefault: §r2,240/2.2k\n" +
+                "§eFormatted: §r2.2k/2.2k\n" +
+                "§eUnformatted: §r2,240/2,200"
         )
         @ConfigEditorDropdown
         @ConfigOrder(110)

@@ -7,7 +7,7 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 
 class TabCompleteConfig {
     @Expose
-    @ConfigOption(name = "Warps", desc = "Tab-complete §e/warp §7warp points.")
+    @ConfigOption(name = "Warps", desc = "Tab-complete §e/warp §rwarp points.")
     @ConfigEditorBoolean
     @FeatureToggle
     var warps: Boolean = true
@@ -53,7 +53,7 @@ class TabCompleteConfig {
     var vipVisits: Boolean = true
 
     @Expose
-    @ConfigOption(name = "/gfs Sack", desc = "Tab-complete §e/gfs §7sack items.")
+    @ConfigOption(name = "/gfs Sack", desc = "Tab-complete §e/gfs §rsack items.")
     @ConfigEditorBoolean
     @FeatureToggle
     var gfsSack: Boolean = true
@@ -61,7 +61,7 @@ class TabCompleteConfig {
     @Expose
     @ConfigOption(
         name = "View Recipe",
-        desc = "Tab-complete item IDs in the Hypixel command §e/viewrecipe§7. Only items with recipes are tab completed.",
+        desc = "Tab-complete item IDs in the Hypixel command §e/viewrecipe§r. Only items with recipes are tab completed.",
     )
     @ConfigEditorBoolean
     @FeatureToggle
@@ -70,14 +70,14 @@ class TabCompleteConfig {
     @Expose
     @ConfigOption(
         name = "Show Item",
-        desc = "Tab-complete the §e/show §7command.",
+        desc = "Tab-complete the §e/show §rcommand.",
     )
     @ConfigEditorBoolean
     @FeatureToggle
     var showItem: Boolean = true
 
     @Expose
-    @ConfigOption(name = "Call", desc = "Tab-complete §e/call§7 with all contact names.")
+    @ConfigOption(name = "Call", desc = "Tab-complete §e/call§r with all contact names.")
     @ConfigEditorBoolean
     @FeatureToggle
     var call: Boolean = true

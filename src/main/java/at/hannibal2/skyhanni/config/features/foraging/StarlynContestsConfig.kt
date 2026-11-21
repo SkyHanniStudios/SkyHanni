@@ -17,14 +17,14 @@ class StarlynContestsConfig {
     var starlynCouponProfitEnabled = true
 
     @Expose
-    @ConfigOption(name = "Compact Results", desc = "Compacts the messages for your placement in a §dStarlyn Sister §7contest.")
+    @ConfigOption(name = "Compact Results", desc = "Compacts the messages for your placement in a §dStarlyn Sister §rcontest.")
     @SearchTag("Agatha Miria")
     @ConfigEditorBoolean
     @FeatureToggle
     var compactResults = false
 
     @Expose
-    @ConfigOption(name = "Compact Personal Bests", desc = "Compact messages from log collection §dpersonal bests §7during contests.")
+    @ConfigOption(name = "Compact Personal Bests", desc = "Compact messages from log collection §dpersonal bests §rduring contests.")
     @SearchTag("Agatha Miria")
     @ConfigEditorBoolean
     @FeatureToggle

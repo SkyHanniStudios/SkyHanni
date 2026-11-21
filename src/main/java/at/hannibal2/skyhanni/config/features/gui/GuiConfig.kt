@@ -106,7 +106,7 @@ class GuiConfig {
     var mayorOverlay = MayorOverlayConfig()
 
     @Expose
-    @ConfigOption(name = "Marked Players", desc = "Players that got marked with §e/shmarkplayer§7.")
+    @ConfigOption(name = "Marked Players", desc = "Players that got marked with §e/shmarkplayer§r.")
     @Accordion
     val markedPlayers: MarkedPlayerConfig = MarkedPlayerConfig()
 

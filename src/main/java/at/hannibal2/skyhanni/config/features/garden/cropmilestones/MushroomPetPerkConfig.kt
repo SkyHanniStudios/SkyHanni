@@ -36,10 +36,10 @@ class MushroomPetPerkConfig {
     // TODO Change MUSHROOM_TIER to MUSHROOM_MILESTONE
     enum class MushroomTextEntry(private val displayName: String) {
         TITLE("§6Mooshroom Cow Perk"),
-        MUSHROOM_TIER("§7Mushroom Milestone 8"),
+        MUSHROOM_TIER("§rMushroom Milestone 8"),
         NUMBER_OUT_OF_TOTAL("§e6,700§8/§e15,000"),
-        TIME("§7In §b12m 34s"),
-        PERCENTAGE("§7Percentage: §e12.34%"),
+        TIME("§rIn §b12m 34s"),
+        PERCENTAGE("§rPercentage: §e12.34%"),
         ;
 
         override fun toString() = displayName

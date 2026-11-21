@@ -14,7 +14,7 @@ class KickDurationConfig {
     @ConfigOption(
         name = "Enabled",
         desc = "Show in the Hypixel lobby since when you were last kicked from SkyBlock " +
-            "(useful if you get blocked because of '§cYou were kicked while joining that server!§7')."
+            "(useful if you get blocked because of '§cYou were kicked while joining that server!§r')."
     )
     @ConfigEditorBoolean
     @FeatureToggle

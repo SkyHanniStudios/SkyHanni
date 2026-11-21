@@ -21,7 +21,7 @@ class ItemPickupLogConfig {
     var enabled: Boolean = false
 
     @Expose
-    @ConfigOption(name = "Compact Lines", desc = "Combine the §a+ §7and §c- §7lines into a single line.")
+    @ConfigOption(name = "Compact Lines", desc = "Combine the §a+ §rand §c- §rlines into a single line.")
     @ConfigEditorBoolean
     var compactLines: Boolean = true
 

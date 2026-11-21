@@ -27,7 +27,7 @@ class PlotMenuHighlightingConfig {
     enum class PlotStatusType(private val displayName: String, val highlightColor: LorenzColor) {
         PESTS("§cPests", LorenzColor.RED),
         SPRAYS("§6Sprays", LorenzColor.GOLD),
-        LOCKED("§7Locked", LorenzColor.DARK_GRAY),
+        LOCKED("§rLocked", LorenzColor.DARK_GRAY),
         CURRENT("§aCurrent plot", LorenzColor.GREEN),
         PASTING("§ePasting", LorenzColor.YELLOW),
         ;

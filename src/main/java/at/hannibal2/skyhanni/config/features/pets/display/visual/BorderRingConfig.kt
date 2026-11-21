@@ -51,7 +51,7 @@ open class BorderRingConfig(
         @ConfigOption(
             name = "Ring Color",
             desc = "The color of the ring.\n" +
-                "§7Default: §#§8§0§8§0§8§0§/#808080"
+                "§rDefault: §#§8§0§8§0§8§0§/#808080"
         )
         @ConfigEditorColour
         @ConfigOverride
@@ -78,7 +78,7 @@ class XPRingConfig(
     @ConfigOption(
         name = "Filled Ring Color",
         desc = "The color of the filled portion of the ring.\n" +
-            "§7Default: §#§0§0§f§f§f§f§/#00FFFF",
+            "§rDefault: §#§0§0§f§f§f§f§/#00FFFF",
     )
     @ConfigEditorColour
     @ConfigOrder(21)
@@ -88,7 +88,7 @@ class XPRingConfig(
     @ConfigOption(
         name = "Unfilled Ring Color",
         desc = "The color of the unfilled portion of the ring.\n" +
-            "§7Default: §#§c§0§c§0§c§0§/#C0C0C0",
+            "§rDefault: §#§c§0§c§0§c§0§/#C0C0C0",
     )
     @ConfigEditorColour
     @ConfigOrder(22)

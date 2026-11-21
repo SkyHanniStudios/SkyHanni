@@ -34,14 +34,14 @@ class CustomWardrobeConfig {
     var onlyFavorites: Boolean = false
 
     @Expose
-    @ConfigOption(name = "Estimated Value", desc = "Show a §2$ §7sign you can hover to see the wardrobe slot value.")
+    @ConfigOption(name = "Estimated Value", desc = "Show a §2$ §rsign you can hover to see the wardrobe slot value.")
     @ConfigEditorBoolean
     var estimatedValue: Boolean = true
 
     @Expose
     @ConfigOption(
         name = "Loading text",
-        desc = "Show a \"§cLoading...§7\" text when the wardrobe page hasn't fully loaded in yet."
+        desc = "Show a \"§cLoading...§r\" text when the wardrobe page hasn't fully loaded in yet."
     )
     @ConfigEditorBoolean
     var loadingText: Boolean = true

@@ -103,14 +103,14 @@ class CropMilestonesConfig {
 
     enum class MilestoneTextEntry(private val displayName: String) {
         TITLE("§6Crop Milestones"),
-        MILESTONE_TIER("§7Pumpkin Tier 22"),
+        MILESTONE_TIER("§rPumpkin Tier 22"),
         NUMBER_OUT_OF_TOTAL("§e12,300§8/§e100,000"),
-        TIME("§7In §b12m 34s"),
-        CROPS_PER_SECOND("§7Crops/Second§8: §e205.75"),
-        CROPS_PER_MINUTE("§7Crops/Minute§8: §e12,345"),
-        CROPS_PER_HOUR("§7Crops/Hour§8: §e740,700"),
-        BLOCKS_PER_SECOND("§7Blocks/Second§8: §e19.85"),
-        PERCENTAGE("§7Percentage: §e12.34%"),
+        TIME("§rIn §b12m 34s"),
+        CROPS_PER_SECOND("§rCrops/Second§8: §e205.75"),
+        CROPS_PER_MINUTE("§rCrops/Minute§8: §e12,345"),
+        CROPS_PER_HOUR("§rCrops/Hour§8: §e740,700"),
+        BLOCKS_PER_SECOND("§rBlocks/Second§8: §e19.85"),
+        PERCENTAGE("§rPercentage: §e12.34%"),
         ;
 
         override fun toString() = displayName

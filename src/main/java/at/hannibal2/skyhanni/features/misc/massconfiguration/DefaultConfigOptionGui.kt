@@ -153,23 +153,23 @@ class DefaultConfigOptionGui(
                 GuiRenderUtils.drawRect(xSize - padding * 2 - 1, 0, xSize - padding * 2, cardHeight, 0xFF808080.toInt())
 
                 GuiRenderUtils.drawString("§e${cat.name} ${suggestionState.label}", 4, 4)
-                GuiRenderUtils.drawStrings("§7${cat.description}".splitLines(xSize - padding * 2 - 8), 4, 14, -1)
+                GuiRenderUtils.drawStrings("§r${cat.description}".splitLines(xSize - padding * 2 - 8), 4, 14, -1)
 
                 if (isMouseInScrollArea && y in 0..cardHeight) {
                     hoveringTextToDraw = listOf(
                         "§e${cat.name}",
-                        "§7${cat.description}",
-                        "§7Current plan: ${suggestionState.label}",
+                        "§r${cat.description}",
+                        "§rCurrent plan: ${suggestionState.label}",
                         "§aClick to toggle!",
-                        "§7Hold shift to show all options",
+                        "§rHold shift to show all options",
                     )
 
                     if (KeyboardManager.isShiftKeyDown()) {
                         hoveringTextToDraw = listOf(
                             "§e${cat.name}",
-                            "§7${cat.description}",
+                            "§r${cat.description}",
                         ) + orderedOptions[cat]?.let { opts ->
-                            opts.map { "§7 - §a" + it.name }
+                            opts.map { "§r - §a" + it.name }
                         }.orEmpty()
                     }
 

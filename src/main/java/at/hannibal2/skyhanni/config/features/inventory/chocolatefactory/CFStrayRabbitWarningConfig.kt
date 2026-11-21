@@ -58,10 +58,10 @@ class CFStrayRabbitWarningConfig {
 
     enum class StrayTypeEntry(private val displayName: String) {
         SPECIAL("Special Only"),
-        LEGENDARY_P("§6Legendary§7+"),
-        EPIC_P("§5Epic§7+"),
-        RARE_P("§9Rare§7+"),
-        UNCOMMON_P("§aUncommon§7+"),
+        LEGENDARY_P("§6Legendary§r+"),
+        EPIC_P("§5Epic§r+"),
+        RARE_P("§9Rare§r+"),
+        UNCOMMON_P("§aUncommon§r+"),
         ALL("All"),
         NONE("None"),
         ;

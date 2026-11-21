@@ -18,7 +18,7 @@ class StashConfig {
     @ConfigOption(
         name = "§cNotice",
         desc = "Hypixel sends undetectable empty messages wrapping the stash message. " +
-            "Enable §e§l/sh empty messages §r§7to hide them."
+            "Enable §e§l/sh empty messages §r§rto hide them."
     )
     @ConfigEditorInfoText
     val notice: String = ""

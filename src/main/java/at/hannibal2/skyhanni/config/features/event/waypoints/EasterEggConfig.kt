@@ -11,7 +11,7 @@ class EasterEggConfig {
     @ConfigOption(
         name = "Egg Waypoints",
         desc = "Show all Easter Egg waypoints.\n" +
-            "§eCoordinates may not always be up to date!§7\n" +
+            "§eCoordinates may not always be up to date!§r\n" +
             "Last updated: 2026",
     )
     @ConfigEditorBoolean

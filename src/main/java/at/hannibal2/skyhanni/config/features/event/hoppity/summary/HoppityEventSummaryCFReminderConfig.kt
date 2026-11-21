@@ -19,7 +19,7 @@ class HoppityEventSummaryCFReminderConfig {
 
     @ConfigOption(
         name = "Note",
-        desc = "§cNote§7: Reminders will only appear if you have added Leaderboard Change to your stat list.",
+        desc = "§cNote§r: Reminders will only appear if you have added Leaderboard Change to your stat list.",
     )
     @ConfigEditorInfoText
     val statListNote: Boolean = false

@@ -60,7 +60,7 @@ class ChromaConfig {
     @Expose
     @ConfigOption(
         name = "Everything Chroma",
-        desc = "Render §4§l§oALL §r§7text in chroma.",
+        desc = "Render §4§l§oALL §r§rtext in chroma.",
     )
     @ConfigEditorBoolean
     var allChroma: Boolean = false

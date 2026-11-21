@@ -203,7 +203,7 @@ class CFConfig {
     @ConfigOption(
         name = "Leaderboard Change",
         desc = "Show the change of your chocolate leaderboard over time in chat.\n" +
-            "This updates every time you first open the §e/cf §7menu on a new server.",
+            "This updates every time you first open the §e/cf §rmenu on a new server.",
     )
     @ConfigEditorBoolean
     @FeatureToggle
@@ -212,26 +212,26 @@ class CFConfig {
     @Expose
     @ConfigOption(
         name = "Hoppity Menu Shortcut",
-        desc = "Add a Chocolate Factory button in the SkyBlock Menu that runs §e/chocolatefactory §7on click.",
+        desc = "Add a Chocolate Factory button in the SkyBlock Menu that runs §e/chocolatefactory §ron click.",
     )
     @ConfigEditorBoolean
     @FeatureToggle
     var hoppityMenuShortcut: Boolean = true
 
     @Expose
-    @ConfigOption(name = "Mythic Rabbit", desc = "Blocks running /cf without a §d§lMythic Rabbit Pet §7equipped.")
+    @ConfigOption(name = "Mythic Rabbit", desc = "Blocks running /cf without a §d§lMythic Rabbit Pet §requipped.")
     @ConfigEditorBoolean
     @FeatureToggle
     var mythicRabbitRequirement: Boolean = false
 
     @Expose
-    @ConfigOption(name = "Booster Cookie", desc = "Blocks running /cf without a §6§lBooster Cookie §7active.")
+    @ConfigOption(name = "Booster Cookie", desc = "Blocks running /cf without a §6§lBooster Cookie §ractive.")
     @ConfigEditorBoolean
     @FeatureToggle
     var boosterCookieRequirement: Boolean = false
 
     @Expose
-    @ConfigOption(name = "Hot Chocolate Mixin", desc = "Blocks running /cf without §9Hot Chocolate Mixin §7active.")
+    @ConfigOption(name = "Hot Chocolate Mixin", desc = "Blocks running /cf without §9Hot Chocolate Mixin §ractive.")
     @ConfigEditorBoolean
     @FeatureToggle
     var hotChocolateMixinRequirement: Boolean = false
