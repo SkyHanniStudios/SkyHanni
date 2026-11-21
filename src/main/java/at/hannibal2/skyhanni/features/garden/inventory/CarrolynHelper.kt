@@ -34,7 +34,7 @@ object CarrolynHelper {
     )
 
     @HandleEvent(priority = HandleEvent.LOWEST)
-    fun onTooltip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!isEnabled()) return
 
         if (!event.itemStack.isCarrolynItem()) return
@@ -46,7 +46,7 @@ object CarrolynHelper {
     private fun SafeItemStack?.isCarrolynItem() = this?.getLore()?.any { lorePattern.matches(it) } ?: false
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onItemClick(event: ItemClickEvent) {
+    private fun onItemClick(event: ItemClickEvent) {
         if (!isEnabled()) return
 
         if (!event.itemInHand.isCarrolynItem()) return

@@ -10,7 +10,7 @@ import at.hannibal2.skyhanni.utils.LorenzRarity
 @SkyHanniModule
 object HoppityTextureHandler {
 
-    private var hoppityRabbitTextures = mutableMapOf<LorenzRarity, List<HoppityRabbitTextureEntry>>()
+    private var hoppityRabbitTextures: Map<LorenzRarity, List<HoppityRabbitTextureEntry>> = emptyMap()
 
     @HandleEvent
     fun onRepoReload(event: RepositoryReloadEvent) {
@@ -18,7 +18,7 @@ object HoppityTextureHandler {
         hoppityRabbitTextures = data.textures.mapNotNull { (key, entries) ->
             val rarity = LorenzRarity.getByName(key) ?: return@mapNotNull null
             rarity to entries
-        }.toMap().toMutableMap()
+        }.toMap()
     }
 
     /**

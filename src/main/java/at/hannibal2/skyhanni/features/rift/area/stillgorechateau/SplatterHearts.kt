@@ -18,7 +18,7 @@ object SplatterHearts {
     private val config get() = RiftApi.config.area.stillgoreChateau
     private var lastHearts = SimpleTimeMark.farPast()
 
-    private var shownHearts = setOf<LorenzVec>()
+    private var shownHearts = emptySet<LorenzVec>()
     private val currentHearts = mutableSetOf<LorenzVec>()
 
     @HandleEvent(receiveCancelled = true)

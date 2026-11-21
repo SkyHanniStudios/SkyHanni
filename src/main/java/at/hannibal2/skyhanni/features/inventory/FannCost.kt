@@ -163,7 +163,7 @@ object FannCost {
     )
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onFannAnvilTooltip(event: ToolTipEvent) {
+    private fun onFannAnvilTooltip(event: ToolTipEvent) {
         if (!config.coinsPerXP && !config.xpPerBit) return
         if (currentFannData.trainingType == FannTrainingType.FREE) return
 
@@ -195,7 +195,7 @@ object FannCost {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onInventoryUpdate(event: InventoryUpdatedEvent) {
+    private fun onInventoryUpdated(event: InventoryUpdatedEvent) {
         if (!trainingSlotInventoryDetector.isInside()) {
             currentFannData.reset()
             generatedTooltips.clear()

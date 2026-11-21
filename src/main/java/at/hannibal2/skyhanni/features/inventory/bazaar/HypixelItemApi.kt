@@ -22,9 +22,9 @@ class HypixelItemApi {
     companion object {
 
         // prices = george prices + npc prices
-        private var prices = mapOf<NeuInternalName, Double>()
-        private var npcPrices = mapOf<NeuInternalName, Double>()
-        private var georgePrices = mapOf<NeuInternalName, Double>()
+        private var prices = emptyMap<NeuInternalName, Double>()
+        private var npcPrices = emptyMap<NeuInternalName, Double>()
+        private var georgePrices = emptyMap<NeuInternalName, Double>()
 
         fun getNpcPrice(internalName: NeuInternalName) = prices[internalName]
 

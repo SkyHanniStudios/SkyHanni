@@ -4,9 +4,7 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.commands.CommandCategory
 import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
 import at.hannibal2.skyhanni.data.garden.cropmilestones.CropMilestonesApi.getMilestoneCounter
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.garden.farming.CropClickEvent
-import at.hannibal2.skyhanni.events.garden.farming.CropMilestoneUpdateEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
 import at.hannibal2.skyhanni.features.garden.CropType
 import at.hannibal2.skyhanni.features.garden.GardenApi
@@ -28,7 +26,7 @@ object CropSpeedMeter {
     private var snapshot = emptyList<String>()
 
     private var enabled = false
-    private var startCrops = mapOf<CropType, Long>()
+    private var startCrops = emptyMap<CropType, Long>()
 
     @HandleEvent
     fun onCropClick(event: CropClickEvent) {
@@ -77,7 +75,7 @@ object CropSpeedMeter {
     }
 
     @HandleEvent
-    fun onCropMilestoneUpdate(event: CropMilestoneUpdateEvent) {
+    fun onCropMilestoneUpdate() {
         if (!isEnabled()) return
         val counters = mutableMapOf<CropType, Long>()
         for (cropType in CropType.entries) {
@@ -118,7 +116,7 @@ object CropSpeedMeter {
     }
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    fun onGuiRenderOverlay() {
         if (!isEnabled()) return
 
         val display = display.takeIfNotEmpty() ?: return

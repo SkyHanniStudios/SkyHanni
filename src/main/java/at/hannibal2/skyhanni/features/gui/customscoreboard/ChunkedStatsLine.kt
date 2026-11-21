@@ -100,7 +100,7 @@ enum class ChunkedStatsLine(
 
     companion object {
 
-        private var currentIslandStats = listOf<ChunkedStatsLine>()
+        private var currentIslandStats = emptyList<ChunkedStatsLine>()
 
         fun getChunkedStats() = buildList {
             currentIslandStats.forEach { stat ->

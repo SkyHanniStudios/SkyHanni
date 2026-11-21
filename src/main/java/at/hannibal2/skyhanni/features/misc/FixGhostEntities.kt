@@ -30,14 +30,14 @@ object FixGhostEntities {
     private val hiddenEntityIds = mutableListOf<Int>()
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         recentlyRemovedEntities = ArrayDeque()
         recentlySpawnedEntities = ArrayDeque()
         hiddenEntityIds.clear()
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onPacketReceive(event: PacketReceivedEvent) {
+    private fun onPacketReceived(event: PacketReceivedEvent) {
         if (!config.fixGhostEntities) return
         // Disable in Kuudra for now - causes players to randomly disappear in supply phase
         // TODO: Remove once fixed
@@ -67,7 +67,7 @@ object FixGhostEntities {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onCheckRender(event: CheckRenderEntityEvent<*>) {
+    private fun onCheckRenderEntity(event: CheckRenderEntityEvent<*>) {
         if (config.hideTemporaryArmorStands) {
             (event.entity as? ArmorStand)?.let { stand ->
                 if (stand.tickCount < 10 && stand.isDefaultValue() && stand.getAllEquipment().all { it == null }) event.cancel()
@@ -79,7 +79,7 @@ object FixGhostEntities {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(95, "misc.hideTemporaryArmorstands", "misc.hideTemporaryArmorStands")
     }
 }

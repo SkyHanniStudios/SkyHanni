@@ -1,13 +1,6 @@
-/**
- * @author Linnea Gräf
- */
 package at.hannibal2.skyhanni.utils
 
-import at.hannibal2.skyhanni.utils.ComponentMatcherUtils.findStyledMatcher
 import at.hannibal2.skyhanni.utils.ComponentMatcherUtils.intoSpan
-import at.hannibal2.skyhanni.utils.ComponentMatcherUtils.matchStyledMatcher
-import at.hannibal2.skyhanni.utils.RegexUtils.findMatcher
-import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.chat.TextHelper.asComponent
 import at.hannibal2.skyhanni.utils.compat.append
 import at.hannibal2.skyhanni.utils.compat.defaultStyleConstructor
@@ -20,6 +13,9 @@ import java.util.Stack
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
+/**
+ * @author Linnea Gräf
+ */
 object ComponentMatcherUtils {
 
     /**

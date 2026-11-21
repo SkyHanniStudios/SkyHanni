@@ -8,11 +8,7 @@ import at.hannibal2.skyhanni.data.CrimsonIsleReputationApi
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.ProfileStorageData
 import at.hannibal2.skyhanni.data.jsonobjects.repo.CrimsonIsleReputationJson
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.ProfileDataReadyEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
-import at.hannibal2.skyhanni.events.SackChangeEvent
 import at.hannibal2.skyhanni.features.nether.reputationhelper.dailyquest.DailyQuestHelper
 import at.hannibal2.skyhanni.features.nether.reputationhelper.dailyquest.QuestLoader
 import at.hannibal2.skyhanni.features.nether.reputationhelper.kuudra.DailyKuudraBossHelper
@@ -64,7 +60,7 @@ object CrimsonIsleReputationHelper {
     }
 
     @HandleEvent
-    fun onProfileDataReady(event: ProfileDataReadyEvent) {
+    fun onProfileDataReady() {
         ProfileStorageData.profileSpecific?.crimsonIsle?.let {
             DailyMiniBossHelper.loadData(it)
             DailyKuudraBossHelper.loadData(it)
@@ -73,14 +69,14 @@ object CrimsonIsleReputationHelper {
     }
 
     @HandleEvent
-    fun onConfigLoad(event: ConfigLoadEvent) {
+    fun onConfigLoad() {
         config.hideComplete.afterChange {
             updateRender()
         }
     }
 
     @HandleEvent
-    fun onSackChange(event: SackChangeEvent) {
+    fun onSackChange() {
         dirty = true
     }
 
@@ -122,7 +118,7 @@ object CrimsonIsleReputationHelper {
     }
 
     @HandleEvent(priority = HandleEvent.LOWEST, onlyOnIsland = IslandType.CRIMSON_ISLE)
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    fun onGuiRenderOverlay() {
         if (!config.enabled.get()) return
 
         if (config.useHotkey && !isHotkeyHeld()) {

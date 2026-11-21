@@ -13,8 +13,6 @@ import at.hannibal2.skyhanni.events.ServerBlockChangeEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.mining.OreMinedEvent
 import at.hannibal2.skyhanni.events.player.PlayerDeathEvent
-import at.hannibal2.skyhanni.events.skyblock.GraphAreaChangeEvent
-import at.hannibal2.skyhanni.events.skyblock.ScoreboardAreaChangeEvent
 import at.hannibal2.skyhanni.features.dungeon.DungeonApi
 import at.hannibal2.skyhanni.features.mining.OreBlock
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -78,7 +76,7 @@ object MiningApi {
      */
     val heatPattern by patternGroup.pattern(
         "heat.scoreboard",
-        "^Heat: (?<scoreboard>§.(?<heat>\\d+|IMMUNE)♨?)\$",
+        "^Heat: (?<scoreboard>§.(?<heat>\\d+|IMMUNE)♨?)$",
     )
 
     // This intentionally uses the old cold icon, since Hypixel has not updated it in this location.
@@ -167,7 +165,7 @@ object MiningApi {
     var inSpidersDen = false
         private set
 
-    var currentAreaOreBlocks = setOf<OreBlock>()
+    var currentAreaOreBlocks = emptySet<OreBlock>()
         private set
 
     val blockStrengths = mutableMapOf<OreBlock, Int>()
@@ -227,7 +225,7 @@ object MiningApi {
     }
 
     @HandleEvent
-    private fun onScoreboardChange(event: ScoreboardUpdateEvent) {
+    private fun onScoreboardUpdate(event: ScoreboardUpdateEvent) {
         if (IslandType.MINESHAFT.isInIsland()) {
             DungeonApi.dungeonRoomPattern.firstMatcher(event.new) {
                 groupOrNull("roomId")?.let { mineshaftRoomId = it }
@@ -376,7 +374,7 @@ object MiningApi {
     }
 
     @HandleEvent
-    private fun onBlockChange(event: ServerBlockChangeEvent) {
+    private fun onServerBlockChange(event: ServerBlockChangeEvent) {
         if (!IslandTypeTag.CUSTOM_MINING.isInIsland()) return
         val oldState = event.oldState
         val newState = event.newState
@@ -449,14 +447,14 @@ object MiningApi {
         }
     }
 
-    @HandleEvent(ScoreboardAreaChangeEvent::class)
+    @HandleEvent
     private fun onScoreboardAreaChange() {
         if (!IslandTypeTag.CUSTOM_MINING.isInIsland()) return
         updateLocation()
     }
 
     // Resets cold the moment the player leaves a cold area, without waiting for the scoreboard to catch up.
-    @HandleEvent(GraphAreaChangeEvent::class)
+    @HandleEvent
     private fun onAreaChange() {
         if (!inColdArea()) resetCold()
     }
@@ -504,7 +502,7 @@ object MiningApi {
         surroundingMinedBlocks.clear()
         lastClickedPos = null
         pickobulusMinedBlocks.clear()
-        currentAreaOreBlocks = setOf()
+        currentAreaOreBlocks = emptySet()
         resetOreEvent()
         resetPickobulusEvent()
         lastOreMinedTime = SimpleTimeMark.farPast()

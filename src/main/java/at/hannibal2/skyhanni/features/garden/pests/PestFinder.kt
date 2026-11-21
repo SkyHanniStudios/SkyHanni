@@ -117,7 +117,7 @@ object PestFinder {
 
     @HandleEvent
     private fun onIslandChange() {
-        display = listOf()
+        display = emptyList()
         update()
     }
 

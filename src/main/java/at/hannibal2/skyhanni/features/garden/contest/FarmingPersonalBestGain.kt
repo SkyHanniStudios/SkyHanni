@@ -67,7 +67,7 @@ object FarmingPersonalBestGain {
 
     private val repoReloadCoroutine = CoroutineSettings("farming personal best gain repo reload")
 
-    private var personalBestIncrements = mapOf<CropType, Int>()
+    private var personalBestIncrements = emptyMap<CropType, Int>()
 
     var newCollected: Double? = null
     var oldCollected: Double? = null

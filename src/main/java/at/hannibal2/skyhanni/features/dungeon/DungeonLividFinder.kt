@@ -5,13 +5,9 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.jsonobjects.repo.LividSolverJson
 import at.hannibal2.skyhanni.events.CheckRenderEntityEvent
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.ServerBlockChangeEvent
-import at.hannibal2.skyhanni.events.dungeon.DungeonBossRoomEnterEvent
-import at.hannibal2.skyhanni.events.dungeon.DungeonCompleteEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.mixins.hooks.RenderLivingEntityHelper
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -59,7 +55,7 @@ object DungeonLividFinder {
     var livid: RemotePlayer? = null
         private set
 
-    private var fakeLivids = mutableSetOf<RemotePlayer>()
+    private val fakeLivids = mutableSetOf<RemotePlayer>()
 
     // This only happens when in f5/m5 bossfight, so the performance impact is minimal
     @OptIn(AllEntitiesGetter::class)
@@ -107,7 +103,7 @@ object DungeonLividFinder {
     )
 
     @HandleEvent
-    fun onRepoReload(event: RepositoryReloadEvent) {
+    private fun onRepoReload(event: RepositoryReloadEvent) {
         lividTextureToColor.clear()
         val data = event.getConstant<LividSolverJson>("dungeons/LividSolver")
         val names = mutableMapOf<String, LorenzColor>()
@@ -122,8 +118,8 @@ object DungeonLividFinder {
         }
     }
 
-    @HandleEvent(SecondPassedEvent::class)
-    fun onSecondPassed() {
+    @HandleEvent
+    private fun onSecondPassed() {
         if (!config.enabled.get()) return
         if (!inLividBossRoom()) return
         if (color == null) return
@@ -150,7 +146,7 @@ object DungeonLividFinder {
     }
 
     @HandleEvent
-    fun onBlockChange(event: ServerBlockChangeEvent) {
+    private fun onServerBlockChange(event: ServerBlockChangeEvent) {
         if (!inLividBossRoom()) return
         if (event.location != blockLocation) return
         if (!event.newState.isWool()) return
@@ -182,27 +178,27 @@ object DungeonLividFinder {
         }
     }
 
-    @HandleEvent(DungeonBossRoomEnterEvent::class)
-    fun onBossStart() {
+    @HandleEvent
+    private fun onDungeonBossRoomEnter() {
         if (DungeonApi.getCurrentBoss() != DungeonFloor.F5) return
         color = LorenzColor.RED
     }
 
-    @HandleEvent(DungeonCompleteEvent::class)
-    fun onBossEnd() {
+    @HandleEvent
+    private fun onDungeonComplete() {
         color = null
         livid = null
         fakeLivids.clear()
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         color = null
         livid = null
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CATACOMBS)
-    fun onCheckRender(event: CheckRenderEntityEvent<Entity>) {
+    private fun onCheckRenderEntity(event: CheckRenderEntityEvent<Entity>) {
         if (!inLividBossRoom() || !config.hideWrong) return
         if (livid == null) return // in case livid detection fails, don't hide anything
         if (event.entity is RemotePlayer && event.entity in fakeLivids) event.cancel()
@@ -228,7 +224,7 @@ object DungeonLividFinder {
     }
 
     @HandleEvent
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!inLividBossRoom() || !config.enabled.get()) return
         if (isBlind) return
 
@@ -264,8 +260,8 @@ object DungeonLividFinder {
         )
     }
 
-    @HandleEvent(ConfigLoadEvent::class)
-    fun onConfigLoad() {
+    @HandleEvent
+    private fun onConfigLoad() {
         config.enabled.onToggle {
             reloadHighlight()
         }
@@ -309,11 +305,10 @@ object DungeonLividFinder {
         ;
 
         override fun toString() = prettyName
-
     }
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Livid Finder")
 
         if (!inLividBossRoom()) {

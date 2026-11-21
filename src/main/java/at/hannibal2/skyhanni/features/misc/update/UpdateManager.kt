@@ -48,16 +48,9 @@ import kotlin.time.Duration
 object UpdateManager {
 
     private val logger = SkyHanniLogger("update_manager")
-
     private val repoReloadCoroutine = CoroutineSettings("update manager repo reload")
 
-    private var _activePromise: CompletableFuture<*>? = null
-    private var activePromise: CompletableFuture<*>?
-        get() = _activePromise
-        set(value) {
-            _activePromise?.cancel(true)
-            _activePromise = value
-        }
+    private var activePromise: CompletableFuture<*>? = null
 
     var updateState: UpdateState = UpdateState.NONE
         private set
@@ -102,7 +95,7 @@ object UpdateManager {
 
     fun reset() {
         updateState = UpdateState.NONE
-        _activePromise = null
+        activePromise = null
         potentialUpdate = null
         hasCheckedForUpdate = false
         logger.log("Reset update state")
@@ -124,6 +117,7 @@ object UpdateManager {
 
         logger.log("Starting update check (source: ${context.source.javaClass.simpleName}")
 
+        activePromise?.cancel(true)
         activePromise = context.checkUpdate(forcedUpdateStream.stream)
             .orTimeout(15, TimeUnit.SECONDS)
             .whenCompleteAsync(
@@ -284,7 +278,7 @@ object UpdateManager {
         }
     }
 
-    var discontinuedVersions: Map<String, DiscontinuedMinecraftVersion> = mapOf()
+    var discontinuedVersions: Map<String, DiscontinuedMinecraftVersion> = emptyMap()
         private set
     private var hasWarned = false
 
@@ -318,7 +312,7 @@ object UpdateManager {
     }
 
     @HandleEvent
-    private fun onUserLuck(event: UserLuckCalculateEvent) {
+    private fun onUserLuckCalculate(event: UserLuckCalculateEvent) {
         if (PlatformUtils.MC_VERSION in discontinuedVersions) {
             val luck = discontinuedVersions[PlatformUtils.MC_VERSION]?.luckAmount ?: -10f
             event.addLuck(luck)

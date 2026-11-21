@@ -4,7 +4,6 @@ import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.jsonobjects.repo.neu.NeuEssenceShopJson
 import at.hannibal2.skyhanni.events.GuiContainerEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
 import at.hannibal2.skyhanni.events.InventoryOpenEvent
 import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
@@ -57,7 +56,7 @@ object EssenceShopHelper {
      */
     private val SLOT_RANGE = 10..33
 
-    private var essenceShops = mutableListOf<EssenceShop>()
+    private var essenceShops = emptyList<EssenceShop>()
     private var currentProgress: EssenceShopProgress? = null
     private var currentEssenceType: String = ""
     private var currentEssenceItem: NeuInternalName? = null
@@ -129,14 +128,14 @@ object EssenceShopHelper {
     }
 
     @HandleEvent
-    fun replaceItem(event: ReplaceItemEvent) {
+    private fun onReplaceItem(event: ReplaceItemEvent) {
         if (!isEnabled() || essenceShops.isEmpty() || currentProgress == null || event.slot != CUSTOM_STACK_LOCATION) return
         if (!essenceShopPattern.matches(InventoryUtils.openInventoryName())) return
         infoItemStack?.let { event.replace(it) }
     }
 
     @HandleEvent
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         if (currentProgress == null || event.slotId != CUSTOM_STACK_LOCATION) return
         val currentEssenceItem = currentEssenceItem ?: return
         event.cancel()
@@ -147,7 +146,7 @@ object EssenceShopHelper {
     }
 
     @HandleEvent
-    fun onNeuRepoReload(event: NeuRepositoryReloadEvent) {
+    private fun onNeuRepoReload(event: NeuRepositoryReloadEvent) {
         val repoEssenceShops = event.getConstant<Map<String, Map<String, NeuEssenceShopJson>>>("essenceshops")
         essenceShops = repoEssenceShops.map { (key, value) ->
             EssenceShop(key, value.values.toMutableList())
@@ -155,7 +154,7 @@ object EssenceShopHelper {
     }
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    private fun onInventoryClose() {
         currentProgress = null
         currentEssenceType = ""
         currentEssenceItem = null
@@ -164,12 +163,12 @@ object EssenceShopHelper {
     }
 
     @HandleEvent
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         processInventoryEvent(event)
     }
 
     @HandleEvent
-    fun onInventoryUpdated(event: InventoryUpdatedEvent) {
+    private fun onInventoryUpdated(event: InventoryUpdatedEvent) {
         processInventoryEvent(event)
     }
 
@@ -246,7 +245,7 @@ object EssenceShopHelper {
                 "Could not read current Essence Count from inventory",
                 extraData = listOf(
                     "inventoryName" to event.inventoryName,
-                    "essenceHeaderStack" to essenceHeaderStack?.hoverName.formattedTextCompatLeadingWhiteLessResets().orEmpty(),
+                    "essenceHeaderStack" to essenceHeaderStack?.hoverName.formattedTextCompatLeadingWhiteLessResets(),
                     "populatedInventorySize" to event.inventoryItems.filter {
                         it.value.hoverName.formattedTextCompatLeadingWhiteLessResets().isNotEmpty()
                     }.size,

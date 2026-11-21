@@ -2,7 +2,6 @@ package at.hannibal2.skyhanni.features.gui.customscoreboard
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.model.SkyblockStat
-import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import java.util.regex.Pattern
@@ -14,8 +13,8 @@ object ScoreboardPattern {
     // Lines from the scoreboard
     private val scoreboardGroup by patternGroup.exclusiveGroup("scoreboard")
 
-    @HandleEvent(RepositoryReloadEvent::class)
-    fun onRepoReload() {
+    @HandleEvent
+    private fun onRepoReload() {
         UnknownLinesHandler.invalidateRemoteOnlyPatterns()
     }
 
@@ -680,7 +679,7 @@ object ScoreboardPattern {
      */
     val anniversaryPattern by miscSB.pattern(
         "anniversary",
-        "(?:§d\\d+(?:st|nd|rd|th) Anniversary|§bCentury Raffle)§f (?:\\d|:)+",
+        "(?:§d\\d+(?:st|nd|rd|th) Anniversary|§bCentury Raffle)§f [\\d:]+",
     )
 
     // this thirdObjectiveLinePattern includes all those weird objective lines that go into a third (and fourth) scoreboard line
@@ -993,12 +992,10 @@ object ScoreboardPattern {
         "Captured Mobs: §e(?<capturedMobs>\\d+)",
     )
 
-    /**
-     * Sometimes when the scoreboard updates, it only updates half way,
-     * causing some lines to become mixed with other lines -> broken.
-     * This should already get handled fine but sometimes these errors still occur with some lines way too often.
-     * This pattern is to catch those lines.
-     */
+    // Sometimes when the scoreboard updates, it only updates half way,
+    // causing some lines to become mixed with other lines -> broken.
+    // This should already get handled fine but sometimes these errors still occur with some lines way too often.
+    // This pattern is to catch those lines.
     /**
      * WRAPPED-REGEX-TEST: " §e§l⚡ §cRedston"
      * WRAPPED-REGEX-TEST: "      §ce: §e§b0%"

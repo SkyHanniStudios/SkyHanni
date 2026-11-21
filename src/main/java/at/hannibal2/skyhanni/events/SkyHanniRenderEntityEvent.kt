@@ -9,6 +9,7 @@ import net.minecraft.world.entity.LivingEntity
  * This is super inefficient, only use it if absolutely necessary, and then also only with heavy caching added.
  * For normal cases of "hide this entity" rather use [CheckRenderEntityEvent].
  */
+@Suppress("MissingPrimaryFunction")
 @Deprecated("use CheckRenderEntityEvent instead")
 open class SkyHanniRenderEntityEvent<T : LivingEntity>(
     val entity: T,

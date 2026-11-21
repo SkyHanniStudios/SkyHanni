@@ -5,7 +5,6 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.jsonobjects.repo.DungeonHubRacesJson
 import at.hannibal2.skyhanni.events.ActionBarUpdateEvent
-import at.hannibal2.skyhanni.events.OwnInventoryItemUpdateEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -38,12 +37,12 @@ object DungeonsRaceGuide {
     private var currentRace: String? = null
 
     @HandleEvent
-    fun onIslandChange() {
+    private fun onIslandChange() {
         reset()
     }
 
     @HandleEvent
-    fun onRepoReload(event: RepositoryReloadEvent) {
+    private fun onRepoReload(event: RepositoryReloadEvent) {
         val data = event.getConstant<DungeonHubRacesJson>("DungeonHubRaces")
         for ((key, map) in data.data) {
             val nothingNoReturn = map["nothing:no_return"]
@@ -59,14 +58,14 @@ object DungeonsRaceGuide {
     }
 
     @HandleEvent
-    fun onConfigLoad() {
+    private fun onConfigLoad() {
         ConditionalUtils.onToggle(config.rainbowColor, config.monochromeColor, config.lookAhead) {
             updateConfig()
         }
     }
 
-    @HandleEvent(OwnInventoryItemUpdateEvent::class, onlyOnIsland = IslandType.DUNGEON_HUB)
-    fun onOwnInventoryItemUpdate() {
+    @HandleEvent(onlyOnIsland = IslandType.DUNGEON_HUB)
+    private fun onOwnInventoryItemUpdate() {
         val menuStack = InventoryUtils.getItemsInOwnInventoryWithNull()?.get(8)
         val nowInRace = menuStack?.getInternalNameOrNull() == CANCEL_RACE_ITEM
         if (inRace && !nowInRace) {
@@ -76,7 +75,7 @@ object DungeonsRaceGuide {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.DUNGEON_HUB)
-    fun onActionBarUpdate(event: ActionBarUpdateEvent) {
+    private fun onActionBarUpdate(event: ActionBarUpdateEvent) {
         if (!config.enabled) return
         raceActivePattern.findMatcher(event.actionBar) {
             currentRace = group("race").replace(" ", "_").lowercase()
@@ -84,7 +83,7 @@ object DungeonsRaceGuide {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.DUNGEON_HUB)
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!config.enabled || !inRace) return
         currentRace?.let { parkourHelpers[it]?.render(event) }
     }

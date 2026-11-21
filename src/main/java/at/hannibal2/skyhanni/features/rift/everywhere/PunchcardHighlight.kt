@@ -8,8 +8,6 @@ import at.hannibal2.skyhanni.data.HypixelData
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.mob.MobData
 import at.hannibal2.skyhanni.data.model.SkyblockStat
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.IslandChangeEvent
 import at.hannibal2.skyhanni.events.MobEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
@@ -84,7 +82,7 @@ object PunchcardHighlight {
     private var display: Renderable = Renderable.text("hello")
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onPlayerSpawn(event: MobEvent.Spawn.Player) {
+    private fun onPlayerSpawn(event: MobEvent.Spawn.Player) {
         if (!config.highlight.get()) return
         if (config.reverse.get()) return
         val size = playerList.size
@@ -96,7 +94,7 @@ object PunchcardHighlight {
     }
 
     @HandleEvent
-    fun onConfigLoad(event: ConfigLoadEvent) {
+    private fun onConfigLoad() {
         ConditionalUtils.onToggle(
             config.highlight,
             config.color,
@@ -132,7 +130,7 @@ object PunchcardHighlight {
     }
 
     @HandleEvent
-    fun onIslandChange(event: IslandChangeEvent) {
+    private fun onIslandChange(event: IslandChangeEvent) {
         DelayedRun.runDelayed(1500.milliseconds) {
             if (playerList.isEmpty()) return@runDelayed
             if (event.newIsland != IslandType.THE_RIFT) return@runDelayed
@@ -170,7 +168,7 @@ object PunchcardHighlight {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onPunch(event: EntityClickEvent) {
+    private fun onEntityClick(event: EntityClickEvent) {
         val entity = event.clickedEntity
         if (entity !is AbstractClientPlayer) return
         if (entity.isNpc()) return
@@ -185,7 +183,7 @@ object PunchcardHighlight {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!listening) return
         if (playerQueue.isEmpty()) return
         val message = event.message
@@ -216,7 +214,7 @@ object PunchcardHighlight {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay() {
         if (!config.gui.get()) return
 
         config.position.renderRenderable(display, "Punchcard Overlay")
@@ -247,7 +245,7 @@ object PunchcardHighlight {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shresetpunchcard") {
             description = "Resets the Rift Punchcard Artifact player list."
             category = CommandCategory.USERS_RESET

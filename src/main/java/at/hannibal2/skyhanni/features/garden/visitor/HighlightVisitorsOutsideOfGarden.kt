@@ -5,7 +5,6 @@ import at.hannibal2.skyhanni.config.features.garden.visitor.VisitorConfig.Visito
 import at.hannibal2.skyhanni.data.jsonobjects.repo.GardenJson
 import at.hannibal2.skyhanni.data.jsonobjects.repo.GardenVisitor
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.entity.EntityClickEvent
 import at.hannibal2.skyhanni.mixins.hooks.RenderLivingEntityHelper
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -29,12 +28,12 @@ import net.minecraft.world.entity.player.Player
 @SkyHanniModule
 object HighlightVisitorsOutsideOfGarden {
 
-    private var visitorJson = mapOf<String?, List<GardenVisitor>>()
+    private var visitorJson = emptyMap<String?, List<GardenVisitor>>()
 
     private val config get() = VisitorApi.config
 
     @HandleEvent
-    fun onRepoReload(event: RepositoryReloadEvent) {
+    private fun onRepoReload(event: RepositoryReloadEvent) {
         visitorJson = event.getConstant<GardenJson>(
             "Garden",
         ).visitors.values.groupBy {
@@ -66,8 +65,8 @@ object HighlightVisitorsOutsideOfGarden {
 
     // TODO: optimize to not get entities every second
     @OptIn(AllEntitiesGetter::class)
-    @HandleEvent(SecondPassedEvent::class)
-    fun onSecondPassed() {
+    @HandleEvent
+    private fun onSecondPassed() {
         if (!config.highlightVisitors) return
         val color = LorenzColor.DARK_RED.toColor().addAlpha(50)
         EntityUtils.getEntities<LivingEntity>()
@@ -88,7 +87,7 @@ object HighlightVisitorsOutsideOfGarden {
         location.getEntitiesNearby<LivingEntity>(2.0).any { isVisitor(it) }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onClickEntity(event: EntityClickEvent) {
+    private fun onEntityClick(event: EntityClickEvent) {
         if (!shouldBlock) return
         if (PlayerUtils.isSneaking()) return
         val entity = event.clickedEntity

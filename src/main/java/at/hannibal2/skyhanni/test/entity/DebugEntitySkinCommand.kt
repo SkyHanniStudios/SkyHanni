@@ -4,7 +4,6 @@ import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.commands.CommandCategory
 import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
@@ -22,10 +21,10 @@ import net.minecraft.world.entity.decoration.ArmorStand
 object DebugEntitySkinCommand {
 
     private var skinToFind: String? = null
-    private var foundEntities = setOf<ArmorStand>()
+    private var foundEntities = emptySet<ArmorStand>()
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shdebugentityskin") {
             description = "Highlights armor stands in the world that hold or wear a skull with the given skin texture."
             category = CommandCategory.DEVELOPER_DEBUG
@@ -48,8 +47,8 @@ object DebugEntitySkinCommand {
         }
     }
 
-    @HandleEvent(SecondPassedEvent::class)
-    fun onSecondPassed() {
+    @HandleEvent
+    private fun onSecondPassed() {
         skinToFind?.let { updateSkinEntities(it) }
     }
 
@@ -60,7 +59,7 @@ object DebugEntitySkinCommand {
     }
 
     @HandleEvent
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         for (location in foundEntities.map { it.getLorenzVec() }) {
             event.drawWaypointFilled(location, LorenzColor.YELLOW.toColor())
             event.drawDynamicText(location, "Skin", 1.5)

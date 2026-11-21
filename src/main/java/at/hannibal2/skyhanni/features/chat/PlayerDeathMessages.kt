@@ -10,7 +10,6 @@ import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.EntityUtils
 import at.hannibal2.skyhanni.utils.EntityUtils.cleanName
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
-import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.compat.appendWithColor
 import at.hannibal2.skyhanni.utils.compat.componentBuilder
 import net.minecraft.ChatFormatting
@@ -22,8 +21,8 @@ object PlayerDeathMessages {
 
     private val lastTimePlayerSeen = mutableMapOf<String, SimpleTimeMark>()
 
-    @HandleEvent
-    fun onSecondPassed() {
+    @HandleEvent(onlyOnSkyblock = true)
+    private fun onSecondPassed() {
         if (!shouldHideFarDeaths()) return
 
         EntityUtils.getEntitiesNearby<RemotePlayer>(25.0).forEach { player ->
@@ -32,7 +31,7 @@ object PlayerDeathMessages {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onAllowPlayerDeath(event: PlayerDeathEvent.Allow) {
+    private fun onPlayerDeath(event: PlayerDeathEvent.Allow) {
         if (event.isSelf) return
 
         val lastTime = lastTimePlayerSeen[event.name] ?: SimpleTimeMark.farPast()
@@ -44,7 +43,7 @@ object PlayerDeathMessages {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onModifyPlayerDeath(event: PlayerDeathEvent.Modify) {
+    private fun onPlayerDeathModify(event: PlayerDeathEvent.Modify) {
         if (event.isSelf || DungeonApi.inDungeon() || KuudraApi.inKuudra) return
 
         val name = event.name
@@ -63,9 +62,6 @@ object PlayerDeathMessages {
         }
     }
 
-    private fun shouldHideFarDeaths(): Boolean =
-        SkyBlockUtils.inSkyBlock &&
-            SkyHanniMod.feature.chat.hideFarDeathMessages &&
-            !DungeonApi.inDungeon() &&
-            !KuudraApi.inKuudra
+    private fun shouldHideFarDeaths(): Boolean = SkyHanniMod.feature.chat.hideFarDeathMessages &&
+        !DungeonApi.inDungeon() && !KuudraApi.inKuudra
 }

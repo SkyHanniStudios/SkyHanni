@@ -45,7 +45,7 @@ object CFInventory {
     }
 
     @HandleEvent
-    fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
+    fun onBackgroundDrawn() {
         if (!CFApi.inChocolateFactory) return
         if (!CFApi.isEnabled()) return
         if (!config.highlightUpgrades) return

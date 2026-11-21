@@ -54,7 +54,7 @@ object SkillProgress {
     private var etaDisplay = emptyList<Renderable>()
     private var lastGainUpdate = SimpleTimeMark.farPast()
     private var maxWidth = 182
-    var hideInActionBar = listOf<String>()
+    var hideInActionBar = emptyList<String>()
 
     @HandleEvent
     private fun onGuiRenderOverlay() {
@@ -175,7 +175,7 @@ object SkillProgress {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    private fun onLevelUp(event: SkillOverflowLevelUpEvent) {
+    private fun onSkillOverflowLevelUp(event: SkillOverflowLevelUpEvent) {
         if (!config.overflowConfig.enableInChat) return
         val skillName = event.skill.displayName
         val oldLevel = event.oldLevel
@@ -235,7 +235,7 @@ object SkillProgress {
     }
 
     @HandleEvent(priority = HandleEvent.LOW)
-    private fun onActionBar(event: ActionBarUpdateEvent) {
+    private fun onActionBarUpdate(event: ActionBarUpdateEvent) {
         if (!config.hideInActionBar || !isDisplayEnabled()) return
         var msg = event.actionBar
         for (line in hideInActionBar) {

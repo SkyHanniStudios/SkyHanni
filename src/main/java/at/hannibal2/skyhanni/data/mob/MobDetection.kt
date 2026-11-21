@@ -11,7 +11,6 @@ import at.hannibal2.skyhanni.events.minecraft.packet.PacketReceivedEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.DevApi
 import at.hannibal2.skyhanni.utils.AllEntitiesGetter
-import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.EntityUtils
 import at.hannibal2.skyhanni.utils.LocationUtils
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
@@ -19,7 +18,6 @@ import at.hannibal2.skyhanni.utils.collection.CollectionUtils.drainForEach
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.drainTo
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.put
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.refreshReference
-import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLessResets
 import at.hannibal2.skyhanni.utils.getLorenzVec
 import net.minecraft.client.player.LocalPlayer
@@ -32,7 +30,6 @@ import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.entity.monster.Creeper
 import net.minecraft.world.entity.npc.villager.Villager
 import net.minecraft.world.entity.player.Player
-import net.minecraft.world.level.Level
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicBoolean
 import at.hannibal2.skyhanni.events.MobEvent.DeSpawn as DeSpawnEvent
@@ -70,43 +67,9 @@ object MobDetection {
         MobData.retries.clear()
     }
 
-    // TODO this is a unused debug function. maybe connect with a debug command or remove
-    private fun watchdog() {
-        val world = MinecraftCompat.localWorldOrNull ?: return
-        if (MobData.retries.any { it.value.entity.level() != world }) {
-            ChatUtils.chat("Watchdog: Retires")
-        }
-        if (MobData.currentMobs.any { it.watchdogCheck(world) }) {
-            ChatUtils.chat("Watchdog: Current Mobs")
-        }
-        if (MobData.players.any { it.watchdogCheck(world) }) {
-            ChatUtils.chat("Watchdog: Players")
-        }
-        if (MobData.displayNpcs.any { it.watchdogCheck(world) }) {
-            ChatUtils.chat("Watchdog: Display NPCs")
-        }
-        if (MobData.skyblockMobs.any { it.watchdogCheck(world) }) {
-            ChatUtils.chat("Watchdog: SkyBlockMobs")
-        }
-        if (MobData.summoningMobs.any { it.watchdogCheck(world) }) {
-            ChatUtils.chat("Watchdog: Summoning")
-        }
-        if (MobData.special.any { it.watchdogCheck(world) }) {
-            ChatUtils.chat("Watchdog: Special")
-        }
-        if (MobData.notSeenMobs.any { it.watchdogCheck(world) }) {
-            ChatUtils.chat("Watchdog: Not Seen Mobs")
-        }
-    }
-
-    private fun Mob.watchdogCheck(world: Level): Boolean =
-        this.baseEntity.level() != world || (
-            this.armorStand?.let { it.level() != world } ?: false
-            ) || this.extraEntities.any { it.level() != world }
-
     @OptIn(AllEntitiesGetter::class)
     @HandleEvent
-    fun onTick() {
+    private fun onTick() {
         if (shouldClear.get()) { // Needs to work outside skyblock since it needs clearing when leaving skyblock and joining limbo
             mobDetectionReset()
             shouldClear.set(false)
@@ -255,18 +218,17 @@ object MobDetection {
     }
 
     @HandleEvent
-    fun onEntityHealthUpdateEvent(event: EntityHealthUpdateEvent) {
-        when {
+    private fun onEntityHealthUpdateEvent(event: EntityHealthUpdateEvent) {
+        when (event.entity) {
             // Very high false positive rate
-            /*event.entity is Bat && event.health == 6 -> {
+            /*is Bat && event.health == 6 -> {
                 entityFromPacket.add(EntityPacketType.SPIRIT_BAT to event.entity.id)
             }*/
-
-            event.entity is Villager && event.health != 20 -> {
+            is Villager if event.health != 20 -> {
                 entityFromPacket.add(EntityPacketType.VILLAGER to event.entity.id)
             }
 
-            event.entity is Creeper && event.health == 20 -> {
+            is Creeper if event.health == 20 -> {
                 entityFromPacket.add(EntityPacketType.CREEPER_VAIL to event.entity.id)
             }
         }
@@ -362,7 +324,7 @@ object MobDetection {
     }
 
     @HandleEvent
-    fun onEntitySpawnPacket(event: PacketReceivedEvent) {
+    private fun onPacketReceived(event: PacketReceivedEvent) {
         when (val packet = event.packet) {
             is ClientboundAddEntityPacket -> addEntityUpdate(packet.id)
             is ClientboundLoginPacket -> {
@@ -383,12 +345,12 @@ object MobDetection {
     }
 
     @HandleEvent
-    fun onDisconnect() {
+    private fun onDisconnect() {
         shouldClear.set(true)
     }
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Mob Detection")
         if (!mainToggle) {
             event.addData("Mob Detection is manually disabled!")

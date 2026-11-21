@@ -9,10 +9,10 @@ object NeuAbiphoneJson {
 }
 
 data class AbiphoneContactInfo(
-    @Expose val requirement: List<String>? = listOf(),
+    @Expose val requirement: List<String>? = emptyList(),
     @Expose val island: String?,
     @Expose val x: Int? = 0,
     @Expose val y: Int? = 0,
     @Expose val z: Int? = 0,
-    @Expose val callNames: List<String>? = listOf(),
+    @Expose val callNames: List<String>? = emptyList(),
 )

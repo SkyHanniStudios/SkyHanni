@@ -53,7 +53,7 @@ object GemstoneMoneyPerHour {
 
     private val config get() = SkyHanniMod.feature.mining.gemstoneMoneyPerHour
 
-    private var display: List<Renderable> = listOf()
+    private var display: List<Renderable> = emptyList()
     private var start = SimpleTimeMark.farPast()
     private var lastMined = SimpleTimeMark.farPast()
     private var coins = 0
@@ -188,7 +188,7 @@ object GemstoneMoneyPerHour {
 
     @HandleEvent
     fun onSecondPassed() {
-        if (!isEnabled() || lastMined.isFarPast()) display = listOf()
+        if (!isEnabled() || lastMined.isFarPast()) display = emptyList()
         else if (lastMined.passedSince() > config.timeoutTime.toInt().seconds) {
             if (config.shouldPause) paused = true
             else reset()
@@ -210,7 +210,7 @@ object GemstoneMoneyPerHour {
         coins = 0
         paused = false
         lastGemstone = ""
-        display = listOf()
+        display = emptyList()
     }
 
     @HandleEvent

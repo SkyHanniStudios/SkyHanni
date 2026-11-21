@@ -62,10 +62,10 @@ object EstimatedItemValue {
     private var hoverStart = SimpleTimeMark.farPast()
     private var hoverDelayOver = false
 
-    var gemstoneUnlockCosts = NeuGemstoneCostJson()
+    var gemstoneUnlockCosts: Map<NeuInternalName, Map<String, List<String>>> = emptyMap()
     var hasLegacyGemstoneSlots = emptyList<NeuInternalName>()
-    var bookBundleAmount = mapOf<String, Int>()
-    var crimsonPrestigeCosts = mapOf<String, Map<NeuInternalName, Int>>()
+    var bookBundleAmount = emptyMap<String, Int>()
+    var crimsonPrestigeCosts = emptyMap<String, Map<NeuInternalName, Int>>()
     private var currentlyShowing = false
 
     var itemValueCalculationData: ItemValueCalculationDataJson? = null
@@ -234,7 +234,7 @@ object EstimatedItemValue {
                 "internal name" to item.getInternalNameOrNull(),
                 "lore" to item.getLore(),
             )
-            listOf()
+            emptyList()
         }
 
         cache[item] = newDisplay
@@ -265,14 +265,14 @@ object EstimatedItemValue {
     }
 
     private fun draw(stack: SafeItemStack): List<Renderable> {
-        if (stack.shouldIgnoreDraw()) return listOf()
+        if (stack.shouldIgnoreDraw()) return emptyList()
 
         val list = mutableListOf<String>()
         list.add("§aEstimated Item Value:")
         val pair = EstimatedItemValueCalculator.calculate(stack, list)
         val (totalPrice, basePrice) = pair
 
-        if (basePrice == totalPrice) return listOf()
+        if (basePrice == totalPrice) return emptyList()
 
         val numberFormat = if (config.exactPrice.get()) {
             totalPrice.roundToLong().addSeparators()

@@ -15,7 +15,7 @@ import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import at.hannibal2.skyhanni.features.gui.customscoreboard.ScoreboardPattern as SBPattern
 
-internal var allUnknownLines = listOf<UnknownLine>()
+internal var allUnknownLines = emptyList<UnknownLine>()
 internal var lastRecentAlarmWarning = SimpleTimeMark.farPast()
 
 internal fun recentUnknownLines() = allUnknownLines.filter { it.lastFound.passedSince() < 3.seconds }

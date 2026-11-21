@@ -5,10 +5,7 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.features.combat.QuiverDisplayConfig.ShowWhen
 import at.hannibal2.skyhanni.data.ArrowType
 import at.hannibal2.skyhanni.data.QuiverApi
-import at.hannibal2.skyhanni.data.QuiverApi.NONE_ARROW_TYPE
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.ProfileJoinEvent
+import at.hannibal2.skyhanni.data.QuiverApi.noneArrowType
 import at.hannibal2.skyhanni.events.QuiverUpdateEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ConditionalUtils
@@ -37,7 +34,7 @@ object QuiverDisplay {
     private var hideAmount = false
 
     @HandleEvent
-    fun onProfileJoin(event: ProfileJoinEvent) {
+    fun onProfileJoin() {
         display = emptyList()
         arrow = QuiverApi.currentArrow
         amount = QuiverApi.currentAmount
@@ -54,7 +51,7 @@ object QuiverDisplay {
 
         val rarity = itemStack.getItemRarityOrNull()?.chatColorCode ?: "§f"
         val arrowDisplayName =
-            if (hideAmount || arrow == NONE_ARROW_TYPE) arrow.arrow else StringUtils.pluralize(amount, arrow.arrow)
+            if (hideAmount || arrow == noneArrowType) arrow.arrow else StringUtils.pluralize(amount, arrow.arrow)
 
         if (config.showIcon.get()) {
             addItemStack(itemStack, scale = 1.0)
@@ -73,7 +70,7 @@ object QuiverDisplay {
     }
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    fun onGuiRenderOverlay() {
         if (!isEnabled()) return
         if (display.isEmpty()) updateDisplay()
         val whenToShow = config.whenToShow.get()
@@ -93,7 +90,7 @@ object QuiverDisplay {
     }
 
     @HandleEvent
-    fun onConfigLoad(event: ConfigLoadEvent) {
+    fun onConfigLoad() {
         ConditionalUtils.onToggle(
             config.whenToShow,
             config.showIcon,

@@ -64,7 +64,7 @@ data class CFUpgrade(
     }
 
     companion object {
-        var ignoredSlotIndexes = listOf<Int>()
+        var ignoredSlotIndexes = emptyList<Int>()
 
         fun updateIgnoredSlots() {
             ignoredSlotIndexes = listOf(

@@ -5,10 +5,7 @@ import at.hannibal2.skyhanni.config.features.garden.visitor.VisitorConfig
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.model.TabWidget
 import at.hannibal2.skyhanni.events.CheckRenderEntityEvent
-import at.hannibal2.skyhanni.events.GuiKeyPressEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
-import at.hannibal2.skyhanni.events.ProfileJoinEvent
 import at.hannibal2.skyhanni.events.WidgetUpdateEvent
 import at.hannibal2.skyhanni.events.garden.visitor.VisitorOpenEvent
 import at.hannibal2.skyhanni.events.garden.visitor.VisitorRenderEvent
@@ -35,6 +32,7 @@ import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import net.minecraft.network.protocol.game.ServerboundAttackPacket
 import net.minecraft.network.protocol.game.ServerboundInteractPacket
 import net.minecraft.world.entity.decoration.ArmorStand
+import org.jetbrains.annotations.VisibleForTesting
 import kotlin.time.Duration.Companion.seconds
 
 @SkyHanniModule
@@ -48,14 +46,14 @@ object VisitorListener {
 
     private val logger = SkyHanniLogger("garden/visitors/listener")
 
-    @HandleEvent(ProfileJoinEvent::class)
-    fun onProfileJoin() {
+    @HandleEvent
+    private fun onProfileJoin() {
         VisitorApi.reset()
     }
 
     // TODO make event
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onSendEvent(event: PacketSentEvent) {
+    private fun onPacketSent(event: PacketSentEvent) {
         val packetEntityId = when (val packet = event.packet) {
             is ServerboundInteractPacket -> packet.entityId
             is ServerboundAttackPacket -> packet.entityId
@@ -69,6 +67,8 @@ object VisitorListener {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
+    @VisibleForTesting
+    @Suppress("PrivateEventListener")
     fun onWidgetUpdate(event: WidgetUpdateEvent) {
         if (!event.isWidget(TabWidget.VISITORS)) return
 
@@ -93,7 +93,7 @@ object VisitorListener {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         val npcItem = event.inventoryItems[INFO_SLOT] ?: return
         val lore = npcItem.getLore()
         if (!VisitorApi.isVisitorInfo(lore)) return
@@ -118,20 +118,20 @@ object VisitorListener {
         VisitorOpenEvent(visitor).post()
     }
 
-    @HandleEvent(InventoryCloseEvent::class)
-    fun onInventoryClose() {
+    @HandleEvent
+    private fun onInventoryClose() {
         VisitorApi.inInventory = false
     }
 
-    @HandleEvent(GuiKeyPressEvent::class)
-    fun onKeybind() {
+    @HandleEvent
+    private fun onGuiKeyPress() {
         if (!VisitorApi.inInventory) return
         if (!config.acceptHotkey.isKeyHeld()) return
         InventoryUtils.mouseClickSlot(29)
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onTooltip(event: ToolTipEvent) {
+    private fun onTooltip(event: ToolTipEvent) {
         if (!GardenApi.onBarnPlot) return
         if (!VisitorApi.inInventory) return
         val visitor = VisitorApi.getVisitor(lastClickedNpc) ?: return
@@ -140,7 +140,7 @@ object VisitorListener {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onCheckRender(event: CheckRenderEntityEvent<ArmorStand>) {
+    private fun onCheckRenderEntity(event: CheckRenderEntityEvent<ArmorStand>) {
         if (!GardenApi.onBarnPlot) return
         if (config.highlightStatus != VisitorConfig.HighlightMode.NAME && config.highlightStatus != VisitorConfig.HighlightMode.BOTH) return
 
@@ -151,7 +151,7 @@ object VisitorListener {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!GardenApi.onBarnPlot) return
         if (config.highlightStatus != VisitorConfig.HighlightMode.NAME && config.highlightStatus != VisitorConfig.HighlightMode.BOTH) return
 

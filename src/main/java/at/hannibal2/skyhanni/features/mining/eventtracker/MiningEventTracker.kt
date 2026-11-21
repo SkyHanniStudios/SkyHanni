@@ -8,8 +8,6 @@ import at.hannibal2.skyhanni.data.BossbarData
 import at.hannibal2.skyhanni.data.HypixelData
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.events.BossbarUpdateEvent
-import at.hannibal2.skyhanni.events.IslandChangeEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.command.ErrorManager
@@ -85,14 +83,13 @@ object MiningEventTracker {
     val apiError get() = apiErrorCount > 0
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         eventEndTime = SimpleTimeMark.farPast()
         lastSentEvent = null
     }
 
-    @HandleEvent
-    fun onBossbarChange(event: BossbarUpdateEvent) {
-        if (!isMiningIsland()) return
+    @HandleEvent(onlyOnIslands = [IslandType.DWARVEN_MINES, IslandType.CRYSTAL_HOLLOWS])
+    private fun onBossbarUpdate(event: BossbarUpdateEvent) {
         if (SkyBlockUtils.lastWorldSwitch.passedSince() < 5.seconds) return
         if (!eventEndTime.isInPast()) {
             return
@@ -106,10 +103,8 @@ object MiningEventTracker {
         }
     }
 
-    @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
-        if (!isMiningIsland()) return
-
+    @HandleEvent(onlyOnIslands = [IslandType.DWARVEN_MINES, IslandType.CRYSTAL_HOLLOWS])
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         eventStartedPattern.matchMatcher(event.message) {
             sendData(group("event"), null)
         }
@@ -119,7 +114,7 @@ object MiningEventTracker {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed() {
         if (!config.enabled) return
         if (!config.outsideMining && !isMiningIsland()) return
         if (!canRequestAt.isInPast()) return
@@ -197,7 +192,7 @@ object MiningEventTracker {
     }
 
     @HandleEvent
-    fun onIslandChange(event: IslandChangeEvent) {
+    private fun onIslandChange() {
         if (apiError) canRequestAt = SimpleTimeMark.now()
     }
 
@@ -242,7 +237,7 @@ object MiningEventTracker {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.transform(29, "mining.miningEvent.showType") { element ->
             if (element.asString == "BOTH") JsonPrimitive("ALL") else element
         }

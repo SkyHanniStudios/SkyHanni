@@ -7,8 +7,6 @@ import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.model.SkyblockStat
 import at.hannibal2.skyhanni.data.model.TabWidget
 import at.hannibal2.skyhanni.data.title.TitleManager
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.IslandChangeEvent
 import at.hannibal2.skyhanni.events.ScoreboardUpdateEvent
 import at.hannibal2.skyhanni.events.WidgetUpdateEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
@@ -232,7 +230,7 @@ object DragonFeatures {
     private fun displayIsEnabled() = config.display && dragonSpawned
 
     @HandleEvent(onlyOnIsland = IslandType.THE_END)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         val message = event.message
 
         if (!config.chat && !config.display && !config.superiorNotify && !configProtector) return
@@ -387,7 +385,7 @@ object DragonFeatures {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_END)
-    fun onScoreBoard(event: ScoreboardUpdateEvent) {
+    private fun onScoreboardUpdate(event: ScoreboardUpdateEvent) {
         val index = event.new.indexOfFirstOrNull { scoreDragonPattern.matches(it) } ?: return
         if (eggSpawned) {
             dragonSpawned = true
@@ -398,7 +396,7 @@ object DragonFeatures {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_END)
-    fun onTabList(event: WidgetUpdateEvent) {
+    private fun onWidgetUpdate(event: WidgetUpdateEvent) {
         if (!event.isWidget(TabWidget.DRAGON)) return
         if (!displayIsEnabled()) return
         widgetActive = true
@@ -416,10 +414,10 @@ object DragonFeatures {
 
     private val widgetErrorMessage = listOf(Renderable.text("§cDragon Widget is disabled!"))
 
-    private var display = listOf<Renderable>()
+    private var display = emptyList<Renderable>()
 
     @HandleEvent(onlyOnIsland = IslandType.THE_END)
-    fun onRender(event: GuiRenderEvent) {
+    private fun onGuiRender() {
         if (!displayIsEnabled()) return
         if (dirty) {
             display = if (widgetActive) display() else widgetErrorMessage
@@ -442,13 +440,13 @@ object DragonFeatures {
     )
 
     @HandleEvent
-    fun onIslandChange(event: IslandChangeEvent) {
+    private fun onIslandChange() {
         reset()
         eggSpawned = true
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(78, "combat.dragon", "combat.endIsland.dragon")
         event.move(78, "combat.endstoneProtectorChat", "combat.endIsland.endstoneProtectorChat")
     }

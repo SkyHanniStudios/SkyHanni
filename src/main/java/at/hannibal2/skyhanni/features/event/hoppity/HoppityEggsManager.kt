@@ -5,8 +5,6 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.data.ProfileStorageData
 import at.hannibal2.skyhanni.data.title.TitleManager
-import at.hannibal2.skyhanni.events.ProfileJoinEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.hoppity.EggFoundEvent
 import at.hannibal2.skyhanni.events.hoppity.EggSpawnedEvent
@@ -150,8 +148,8 @@ object HoppityEggsManager {
     private var latestWaypointOnclick: () -> Unit = {}
     private var syncedFromConfig: Boolean = false
 
-    @HandleEvent(ProfileJoinEvent::class)
-    fun onProfileJoin() {
+    @HandleEvent
+    private fun onProfileJoin() {
         warningActive = false
         lastWarnTime = SimpleTimeMark.farPast()
         observedSpawnedEggs.clear()
@@ -166,12 +164,12 @@ object HoppityEggsManager {
     }
 
     @HandleEvent
-    fun onEggSpawned(event: EggSpawnedEvent) {
+    private fun onEggSpawned(event: EggSpawnedEvent) {
         markObservedSpawned(event.eggType, setLastReset = true)
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         lastMeal = null
         lastNote = null
         syncFromConfig()
@@ -195,7 +193,7 @@ object HoppityEggsManager {
     }
 
     @HandleEvent
-    fun onEggFound(event: EggFoundEvent) {
+    private fun onEggFound(event: EggFoundEvent) {
         if (!HoppityApi.isHoppityEvent() || !event.type.isResetting) return
         HoppityEggLocations.saveNearestEgg()
         event.type.markClaimed()
@@ -224,7 +222,7 @@ object HoppityEggsManager {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         hoppityEventNotOn.matchMatcher(event.message) {
             if (!chatConfig.eggLocatorTimeInChat) return@matchMatcher
             return event.sendNextHuntIn()
@@ -278,8 +276,8 @@ object HoppityEggsManager {
         }
     }
 
-    @HandleEvent(SecondPassedEvent::class)
-    fun onSecondPassed() {
+    @HandleEvent
+    private fun onSecondPassed() {
         checkSpawned()
         if (!isActive()) return
         checkWarn()
@@ -367,7 +365,7 @@ object HoppityEggsManager {
     // </editor-fold>
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(
             44,
             "event.chocolateFactory.highlightHoppityShop",

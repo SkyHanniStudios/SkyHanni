@@ -26,12 +26,12 @@ object DragNDrop {
     }
 
     @HandleEvent
-    fun onGuiContainerBeforeDraw(event: GuiContainerEvent.PreDraw) {
+    private fun onPreDraw() {
         isInvalidDrop = false
     }
 
     @HandleEvent
-    fun onGuiContainerAfterDraw(event: GuiContainerEvent.PostDraw) {
+    private fun onPostDraw(event: GuiContainerEvent.PostDraw) {
         val item = currentDrag ?: return
         if (!BUTTON_MAPPED.isKeyHeld()) {
             currentDrag = null

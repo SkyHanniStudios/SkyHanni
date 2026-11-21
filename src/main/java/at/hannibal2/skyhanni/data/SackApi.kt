@@ -170,7 +170,7 @@ object SackApi {
 
     private var uniqueSackItems: Set<NeuInternalName> = emptySet()
 
-    var sacks = mapOf<String, List<NeuInternalName>>()
+    var sacks = emptyMap<String, List<NeuInternalName>>()
         private set
 
     @HandleEvent
@@ -339,7 +339,7 @@ object SackApi {
         if (savingSacks) saveSackData()
     }
 
-    var sackData = mapOf<NeuInternalName, SackItem>()
+    var sackData = emptyMap<NeuInternalName, SackItem>()
         private set
 
     data class SackChange(val delta: Int, val internalName: NeuInternalName, val sacks: List<String>)

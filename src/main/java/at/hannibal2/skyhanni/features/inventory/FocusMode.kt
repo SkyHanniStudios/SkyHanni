@@ -13,7 +13,6 @@ import at.hannibal2.skyhanni.utils.InventoryUtils.isTopInventory
 import at.hannibal2.skyhanni.utils.ItemUtils.getInternalNameOrNull
 import at.hannibal2.skyhanni.utils.KeyboardManager
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
-import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.chat.TextHelper.asComponent
 
 @SkyHanniModule
@@ -24,8 +23,8 @@ object FocusMode {
     private var active = false
     private var inAuctionHouse = false
 
-    @HandleEvent(priority = HandleEvent.LOWEST)
-    fun onTooltip(event: ToolTipTextEvent) {
+    @HandleEvent(onlyOnSkyblock = true, priority = HandleEvent.LOWEST)
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!isEnabled()) return
         if (event.toolTip.isEmpty()) return
         if (config.hideMenuItems) {
@@ -70,18 +69,18 @@ object FocusMode {
         }
     }
 
-    @HandleEvent
-    fun onKeyDown(event: KeyDownEvent) {
+    @HandleEvent(onlyOnSkyblock = true)
+    private fun onKeyDown(event: KeyDownEvent) {
         if (!isEnabled()) return
         if (config.alwaysEnabled) return
         if (event.keyCode != config.toggleKey) return
         active = !active
     }
 
-    @HandleEvent
-    fun onInventoryOpen(event: InventoryOpenEvent) {
+    @HandleEvent(onlyOnSkyblock = true)
+    private fun onInventoryOpen(event: InventoryOpenEvent) {
         inAuctionHouse = event.inventoryName.startsWith("Auctions")
     }
 
-    fun isEnabled() = SkyBlockUtils.inSkyBlock && InventoryUtils.inContainer() && config.enabled
+    fun isEnabled() = InventoryUtils.inContainer() && config.enabled
 }

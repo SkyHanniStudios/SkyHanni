@@ -3,6 +3,8 @@ package at.hannibal2.skyhanni.events
 import at.hannibal2.skyhanni.api.event.SkyHanniEvent
 import at.hannibal2.skyhanni.utils.SafeItemStack
 
+// TODO Disambiguate with [RenderInventoryItemTipEvent]
+@Suppress("MissingPrimaryFunction")
 class RenderItemTipEvent(
     val stack: SafeItemStack,
     var renderObjects: MutableList<RenderObject>,

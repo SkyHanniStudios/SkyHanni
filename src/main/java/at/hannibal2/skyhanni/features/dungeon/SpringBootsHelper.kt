@@ -20,10 +20,10 @@ object SpringBootsHelper {
 
     private val SPRING_BOOTS = "SPRING_BOOTS".toInternalName()
 
-    private const val startSound = "entity.firework_rocket.launch"
-    private const val streakSound = "block.note_block.pling"
-    private const val endSound = "entity.generic.eat"
-    private val springBootsSounds = setOf(startSound, streakSound, endSound)
+    private const val START_SOUND = "entity.firework_rocket.launch"
+    private const val STREAK_SOUND = "block.note_block.pling"
+    private const val END_SOUND = "entity.generic.eat"
+    private val springBootsSounds = setOf(START_SOUND, STREAK_SOUND, END_SOUND)
 
     /**
      * Two [PlaySoundEvent] get created roughly every 100ms. This tracks the amount of times
@@ -37,7 +37,7 @@ object SpringBootsHelper {
         if (InventoryUtils.getBoots()?.getInternalName() != SPRING_BOOTS) return
         if (event.soundName !in springBootsSounds) return
 
-        if (event.soundName != streakSound) {
+        if (event.soundName != STREAK_SOUND) {
             soundStreak = 0
             return
         }

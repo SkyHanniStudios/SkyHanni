@@ -8,10 +8,8 @@ import at.hannibal2.skyhanni.config.features.garden.MoneyPerHourConfig.CustomFor
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.jsonobjects.repo.GardenJson
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.events.SecondPassedEvent
-import at.hannibal2.skyhanni.events.pets.PetChangeEvent
 import at.hannibal2.skyhanni.features.garden.CropType
 import at.hannibal2.skyhanni.features.garden.GardenApi
 import at.hannibal2.skyhanni.features.garden.GardenNextJacobContest
@@ -50,14 +48,14 @@ import at.hannibal2.skyhanni.utils.renderables.primitives.text
 @SkyHanniModule
 object CropMoneyDisplay {
 
-    var multipliers = mapOf<NeuInternalName, Int>()
+    var multipliers = emptyMap<NeuInternalName, Int>()
 
     private var display: Renderable? = null
     private val config get() = GardenApi.config.moneyPerHours
     private var loaded = false
     private var ready = false
     private val cropNames = mutableMapOf<NeuInternalName, CropType>()
-    private var ignoredItems = listOf<NeuInternalName>()
+    private var ignoredItems = emptyList<NeuInternalName>()
     private val toolHasBountiful get() = GardenApi.storage?.toolWithBountiful
 
     private var moneyPerHour: Map<NeuInternalName, CropMoneyData> = mutableMapOf()
@@ -68,17 +66,17 @@ object CropMoneyDisplay {
     private val ENCHANTED_SEEDS = "ENCHANTED_SEEDS".toInternalName()
 
     @HandleEvent
-    fun onProfileJoin() {
+    private fun onProfileJoin() {
         display = null
     }
 
-    @HandleEvent(PetChangeEvent::class, onlyOnIsland = IslandType.GARDEN)
-    fun onPetChange() {
+    @HandleEvent(onlyOnIsland = IslandType.GARDEN)
+    private fun onPetChange() {
         update()
     }
 
-    @HandleEvent(GuiRenderEvent.GuiOverlayRenderEvent::class)
-    fun onGuiRenderOverlay() {
+    @HandleEvent
+    private fun onGuiRenderOverlay() {
         if (!isEnabled()) return
 
         if (!GardenApi.hideExtraGuis()) {
@@ -89,14 +87,14 @@ object CropMoneyDisplay {
     }
 
     @HandleEvent
-    fun onGardenToolChange() {
+    private fun onGardenToolChange() {
         DelayedRun.runOrNextTick {
             update()
         }
     }
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         if (!isEnabled()) return
         if (!event.repeatSeconds(5)) return
 
@@ -106,7 +104,7 @@ object CropMoneyDisplay {
     }
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Crop Money - Extra")
         event.addIrrelevant(extraMoneyPerHour.toString())
         event.title("Crop Money - Crop")
@@ -366,7 +364,7 @@ object CropMoneyDisplay {
     private fun isEnabled() = GardenApi.inGarden() && config.display
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(3, "garden.moneyPerHourDisplay", "garden.moneyPerHours.display")
         event.move(3, "garden.moneyPerHourShowOnlyBest", "garden.moneyPerHours.showOnlyBest")
         event.move(3, "garden.moneyPerHourShowCurrent", "garden.moneyPerHours.showCurrent")
@@ -436,7 +434,7 @@ object CropMoneyDisplay {
     }
 
     @HandleEvent
-    fun onRepoReload(event: RepositoryReloadEvent) {
+    private fun onRepoReload(event: RepositoryReloadEvent) {
         val data = event.getConstant<GardenJson>("Garden")
         ignoredItems = data.moneyPerHourIgnoredItems
     }

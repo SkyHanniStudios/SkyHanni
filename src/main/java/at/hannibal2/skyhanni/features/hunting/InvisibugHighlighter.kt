@@ -29,10 +29,10 @@ object InvisibugHighlighter {
     private const val DISTANCE = 5.0
 
     private val invisibugEntities = mutableSetOf<LivingEntity>()
-    private var locationsToRender = listOf<LorenzVec>()
+    private var locationsToRender = emptyList<LorenzVec>()
 
     @HandleEvent(onlyOnIsland = IslandType.GALATEA, receiveCancelled = true)
-    fun onParticle(event: ParticleEvent) {
+    private fun onParticle(event: ParticleEvent) {
         if (!config.enabled) return
 
         val particle = event.type
@@ -51,7 +51,7 @@ object InvisibugHighlighter {
     private val renderOffset = LorenzVec(0.4, -0.2, 0.4)
 
     @HandleEvent(onlyOnIsland = IslandType.GALATEA)
-    fun onTick(event: SkyHanniTickEvent) {
+    private fun onTick(event: SkyHanniTickEvent) {
         if (!event.isMod(5)) return
         if (!config.enabled) return
         locationsToRender = invisibugEntities.mapNotNull {
@@ -60,7 +60,7 @@ object InvisibugHighlighter {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GALATEA)
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!config.enabled) return
         if (locationsToRender.isEmpty()) return
         val color = config.color.toColor()
@@ -80,12 +80,12 @@ object InvisibugHighlighter {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         invisibugEntities.clear()
     }
 
     @HandleEvent
-    fun onConfigFixEvent(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(100, "foraging.mobHighlight.invisibug", "hunting.mobHighlight.invisibug")
     }
 }

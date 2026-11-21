@@ -6,7 +6,6 @@ import at.hannibal2.skyhanni.data.ProfileStorageData
 import at.hannibal2.skyhanni.data.jsonobjects.repo.EnchantedClockJson
 import at.hannibal2.skyhanni.events.InventoryOpenEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.features.misc.EnchantedClockHelper.BoostType.Companion.filterStatusSlots
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -106,7 +105,7 @@ object EnchantedClockHelper {
         fun toSimple(): SimpleBoostType? = SimpleBoostType.entries.find { it.name == name }
 
         companion object {
-            private var entries = listOf<BoostType>()
+            private var entries = emptyList<BoostType>()
 
             fun byUsageStringOrNull(usageString: String) = entries.firstOrNull { it.usageString == usageString }
             fun bySimpleBoostType(simple: SimpleBoostType) = entries.firstOrNull { it.name == simple.name }
@@ -137,7 +136,7 @@ object EnchantedClockHelper {
     }
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    fun onSecondPassed() {
         if (!isEnabled()) return
         val readyNowBoosts = loadBoostsReadyNow().takeIf { it.isNotEmpty() } ?: return
 

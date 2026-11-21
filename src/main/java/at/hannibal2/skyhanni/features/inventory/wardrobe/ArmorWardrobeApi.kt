@@ -3,7 +3,6 @@ package at.hannibal2.skyhanni.features.inventory.wardrobe
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.ProfileStorageData
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.InventoryOpenEvent
 import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -33,7 +32,7 @@ object ArmorWardrobeApi : AbstractWardrobeApi() {
     private fun onInventoryUpdated(event: InventoryUpdatedEvent) = handleInventoryUpdated(event)
 
     @HandleEvent
-    private fun onInventoryClose(event: InventoryCloseEvent) = handleInventoryClose()
+    private fun onInventoryClose() = handleInventoryClose()
 
     @HandleEvent
     private fun onDebugDataCollect(event: DebugDataCollectEvent) = handleDebugDataCollect(event)

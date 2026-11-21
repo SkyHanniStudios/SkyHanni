@@ -3,11 +3,9 @@ package at.hannibal2.skyhanni.features.inventory
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.PurseChangeEvent
 import at.hannibal2.skyhanni.events.SackChangeEvent
 import at.hannibal2.skyhanni.events.item.ShardEvent
-import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.InventoryUtils
@@ -109,14 +107,14 @@ object ItemPickupLog {
         "^(?<itemName>.+?)(?: x\\d+)?\$",
     )
 
-    @HandleEvent(GuiRenderEvent.GuiOverlayRenderEvent::class)
-    fun onGuiRenderOverlay() {
+    @HandleEvent
+    private fun onGuiRenderOverlay() {
         if (!isEnabled()) return
         display?.let { config.position.renderRenderable(it, posLabel = "Item Pickup Log Display") }
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         if (!isEnabled()) return
         itemList.clear()
         itemsAddedToInventory.clear()
@@ -124,7 +122,7 @@ object ItemPickupLog {
     }
 
     @HandleEvent
-    fun onSackChange(event: SackChangeEvent) {
+    private fun onSackChange(event: SackChangeEvent) {
         if (!isEnabled() || !config.sack) return
 
         event.sackChanges.forEach {
@@ -136,7 +134,7 @@ object ItemPickupLog {
     }
 
     @HandleEvent
-    fun onShardGain(event: ShardEvent) {
+    private fun onShardGain(event: ShardEvent) {
         if (!isEnabled() || !config.shards) return
 
         val itemStack = event.shardInternalName.getItemStack()
@@ -146,14 +144,14 @@ object ItemPickupLog {
     }
 
     @HandleEvent
-    fun onPurseChange(event: PurseChangeEvent) {
+    private fun onPurseChange(event: PurseChangeEvent) {
         if (!isEnabled() || !config.coins || !worldChangeCooldown()) return
 
         updateItem(0, PickupEntry("§6Coins", event.coins.absoluteValue.toLong(), coinIcon), event.coins < 0)
     }
 
-    @HandleEvent(SkyHanniTickEvent::class)
-    fun onTick() {
+    @HandleEvent
+    private fun onTick() {
         if (!isEnabled()) return
         val oldItemList = mutableMapOf<Int, Pair<SafeItemStack, Int>>()
 
@@ -371,7 +369,7 @@ object ItemPickupLog {
     private fun isEnabled() = SkyBlockUtils.inSkyBlock && config.enabled
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(97, "inventory.itemPickupLogConfig", "inventory.itemPickupLog")
         event.move(97, "inventory.itemPickupLog.pos", "inventory.itemPickupLog.position")
     }

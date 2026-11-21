@@ -12,7 +12,7 @@ import kotlin.time.Duration.Companion.minutes
 
 object ComposterApi {
 
-    var tabListData = mapOf<ComposterDisplay.DataType, Component>()
+    var tabListData = emptyMap<ComposterDisplay.DataType, Component>()
     val composterUpgrades: MutableMap<ComposterUpgrade, Int>? get() = GardenApi.storage?.composterUpgrades
 
     fun ComposterUpgrade.getLevel(addOne: ComposterUpgrade?) =

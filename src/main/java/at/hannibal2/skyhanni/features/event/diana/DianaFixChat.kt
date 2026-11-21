@@ -5,8 +5,6 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.InteractClickType
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.events.ItemClickEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
-import at.hannibal2.skyhanni.events.diana.BurrowGuessEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.ChatUtils
@@ -31,7 +29,7 @@ object DianaFixChat {
     private var foundGuess = false
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    fun onSecondPassed() {
         if (!isEnabled()) return
         if (lastSpadeUse.passedSince() > 1.minutes) return
 
@@ -95,7 +93,7 @@ object DianaFixChat {
     }
 
     @HandleEvent
-    fun onBurrowGuess(event: BurrowGuessEvent) {
+    fun onBurrowGuess() {
         foundGuess = true
 
         if (hasSetParticleQuality) {

@@ -3,8 +3,8 @@ package at.hannibal2.skyhanni.features.misc.items.enchants
 import net.minecraft.network.chat.Component
 
 class EnchantCache {
-    var cachedLoreBefore: List<Component> = listOf()
-    var cachedLoreAfter: List<Component> = listOf()
+    var cachedLoreBefore: List<Component> = emptyList()
+    var cachedLoreAfter: List<Component> = emptyList()
 
     // So tooltip gets changed on the same item if the config was changed in the interim
     var configChanged = false

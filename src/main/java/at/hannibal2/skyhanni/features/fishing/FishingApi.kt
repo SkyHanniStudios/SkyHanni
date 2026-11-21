@@ -8,7 +8,6 @@ import at.hannibal2.skyhanni.data.jsonobjects.repo.ItemsJson
 import at.hannibal2.skyhanni.events.ItemInHandChangeEvent
 import at.hannibal2.skyhanni.events.OwnInventoryMenuUpdateEvent
 import at.hannibal2.skyhanni.events.PlaySoundEvent
-import at.hannibal2.skyhanni.events.ProfileJoinEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.events.WorldClickEvent
 import at.hannibal2.skyhanni.events.entity.EntityEnterWorldEvent
@@ -116,7 +115,7 @@ object FishingApi {
         "OBFUSCATED_FISH_2_DIAMOND",
     ).toInternalNames()
 
-    const val babySlugName = "Baby Magma Slug"
+    const val BABY_SLUG_NAME = "Baby Magma Slug"
 
     val lavaBlocks = buildList { addLavas() }
     private val waterBlocks = buildList { addWaters() }
@@ -142,8 +141,8 @@ object FishingApi {
     var hasTrophyLine = false
         private set
 
-    private var lavaRods = listOf<NeuInternalName>()
-    private var waterRods = listOf<NeuInternalName>()
+    private var lavaRods = emptyList<NeuInternalName>()
+    private var waterRods = emptyList<NeuInternalName>()
     private val TREASURE_HOOK = "TREASURE_HOOK".toInternalName()
     private val TROPHY_LINE = "TROPHY_LINE".toInternalName()
     private val HOT_BAIT = "HOT_BAIT".toInternalName()
@@ -223,7 +222,7 @@ object FishingApi {
     }
 
     @HandleEvent
-    private fun onProfileJoin(event: ProfileJoinEvent) {
+    private fun onProfileJoin() {
         checkAndUpdateBaitFromInventory()
     }
 
@@ -296,7 +295,7 @@ object FishingApi {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    private fun onClick(event: WorldClickEvent) {
+    private fun onWorldClick(event: WorldClickEvent) {
         if (event.clickType != InteractClickType.RIGHT_CLICK || !holdingRod || !bobberHasTouchedLiquid) return
         if (lastReelTime.passedSince() < .3.seconds) return
         lastReelTime = SimpleTimeMark.now()

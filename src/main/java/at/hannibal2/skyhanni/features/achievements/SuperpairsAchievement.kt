@@ -4,7 +4,6 @@ import at.hannibal2.skyhanni.api.ExperimentationTableApi
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.achievements.Achievement
-import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
 import at.hannibal2.skyhanni.events.achievements.AchievementRegistrationEvent
 import at.hannibal2.skyhanni.features.inventory.experimentationtable.ExperimentsAddonsHelper
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -15,7 +14,7 @@ object SuperpairsAchievement {
     private const val CHRONOMATRON_ACHIEVEMENT = "20 Chronomatron"
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "\"Memorisation\" Professional",
             description = "Wow! You have such good memory",
@@ -25,7 +24,7 @@ object SuperpairsAchievement {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onInventoryFullyOpened(event: InventoryUpdatedEvent) {
+    private fun onInventoryUpdated() {
         if (AchievementManager.isCompleted(CHRONOMATRON_ACHIEVEMENT)) return
         if (!ExperimentationTableApi.inChronomatron) return
         if (ExperimentsAddonsHelper.currentChronomatronRound >= 20) {

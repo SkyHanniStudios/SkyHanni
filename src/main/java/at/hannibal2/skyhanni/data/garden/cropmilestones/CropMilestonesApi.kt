@@ -82,7 +82,7 @@ object CropMilestonesApi {
     }
 
     @HandleEvent
-    private fun onCollectionAdd(event: CropCollectionAddEvent) {
+    private fun onCropCollectionAdd(event: CropCollectionAddEvent) {
         val cropType = event.crop
         val collectionType = event.cropCollectionType
         val amount = event.amount
@@ -396,11 +396,11 @@ object CropMilestonesApi {
     private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Crop Milestones API")
         event.addIrrelevant {
-            for (crop in cropMilestoneTierCache) {
-                add("Crop: ${crop.key}, Tier: ${crop.value}")
+            for ((crop, tier) in cropMilestoneTierCache) {
+                add("Crop: $crop, Tier: $tier")
             }
-            for (crop in amountToNextTierCache) {
-                add("Crop: ${crop.key}, Progress: ${crop.value}")
+            for ((crop, progress) in amountToNextTierCache) {
+                add("Crop: $crop, Progress: $progress")
             }
         }
     }
@@ -408,7 +408,7 @@ object CropMilestonesApi {
     private const val CROP_MILESTONE_ACHIEVEMENT = "Expert Gardener"
 
     @HandleEvent
-    private fun onAchievementRegistered(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "Expert Gardener",
             description = "Get a crop milestone to level 500",

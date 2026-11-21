@@ -4,5 +4,5 @@ import com.google.gson.annotations.Expose
 
 class KnownFeaturesJson {
     @Expose
-    var knownFeatures: MutableMap<String, List<String>> = mutableMapOf()
+    val knownFeatures: MutableMap<String, List<String>> = mutableMapOf()
 }

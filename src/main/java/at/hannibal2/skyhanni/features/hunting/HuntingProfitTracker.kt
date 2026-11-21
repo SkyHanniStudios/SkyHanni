@@ -61,14 +61,14 @@ object HuntingProfitTracker {
             )
         }
 
-        override fun getDescription(timesGained: Long) = listOf<String>()
+        override fun getDescription(timesGained: Long) = emptyList<String>()
 
         override fun getCoinName(item: TrackedItem) = ""
 
-        override fun getCoinDescription(item: TrackedItem) = listOf<String>()
+        override fun getCoinDescription(item: TrackedItem) = emptyList<String>()
     }
 
-    private var huntingTools = listOf<NeuInternalName>()
+    private var huntingTools = emptyList<NeuInternalName>()
 
     private val ItemTrackerData.TrackedItem.timesCaught get() = timesGained
 

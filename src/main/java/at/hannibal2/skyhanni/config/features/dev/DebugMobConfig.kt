@@ -11,7 +11,7 @@ class DebugMobConfig {
     @Expose
     @ConfigOption(name = "Mob Detection", desc = "Debug feature to check the Mob Detection.")
     @Accordion
-    val mobDetection: MobDetection = MobDetection()
+    val mobDetection: MobDetectionConfig = MobDetectionConfig()
 
     enum class HowToShow(val displayName: String) {
         OFF("Off"),
@@ -23,7 +23,7 @@ class DebugMobConfig {
         override fun toString() = displayName
     }
 
-    class MobDetection {
+    class MobDetectionConfig {
         @Expose
         @ConfigOption(name = "Log Events", desc = "Logs the spawn and despawn event with full mob info.")
         @ConfigEditorBoolean

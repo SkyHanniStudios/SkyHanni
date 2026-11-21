@@ -8,7 +8,6 @@ import at.hannibal2.skyhanni.data.garden.cropmilestones.CropMilestonesApi.getCur
 import at.hannibal2.skyhanni.data.garden.cropmilestones.CropMilestonesApi.getMilestoneCounter
 import at.hannibal2.skyhanni.data.garden.cropmilestones.CropMilestonesApi.milestoneTotalCropsForTier
 import at.hannibal2.skyhanni.events.RenderInventoryItemTipEvent
-import at.hannibal2.skyhanni.events.garden.farming.CropMilestoneUpdateEvent
 import at.hannibal2.skyhanni.events.minecraft.ToolTipTextEvent
 import at.hannibal2.skyhanni.events.minecraft.add
 import at.hannibal2.skyhanni.features.garden.CropType
@@ -28,14 +27,14 @@ object GardenCropMilestoneInventory {
     private val config get() = GardenApi.config
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onMilestoneUpdate(event: CropMilestoneUpdateEvent) {
+    private fun onCropMilestoneUpdate() {
         // This should only render in the crop milestones menu, so no point updating it outside of that
         if (InventoryUtils.openInventoryName() != "Crop Milestones") return
         updateAverage()
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onRenderItemTip(event: RenderInventoryItemTipEvent) {
+    private fun onRenderItemTip(event: RenderInventoryItemTipEvent) {
         if (InventoryUtils.openInventoryName() != "Crop Milestones" || !config.number.averageCropMilestone) return
         if (average == null) updateAverage()
 
@@ -48,7 +47,7 @@ object GardenCropMilestoneInventory {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun addMaxMilestoneProgress(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!config.tooltipTweak.cropMilestoneTotalProgress || InventoryUtils.openInventoryName() != "Crop Milestones") return
 
         val crop = CropMilestonesApi.getCropTypeByLore(event.itemStack) ?: return
@@ -88,7 +87,7 @@ object GardenCropMilestoneInventory {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(3, "garden.numberAverageCropMilestone", "garden.number.averageCropMilestone")
         event.move(3, "garden.cropMilestoneTotalProgress", "garden.tooltipTweak.cropMilestoneTotalProgress")
     }

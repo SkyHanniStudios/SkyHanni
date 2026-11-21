@@ -17,7 +17,7 @@ import net.minecraft.world.inventory.ChestMenu
 object BazaarOrderHelper {
     private val config get() = SkyHanniMod.feature.inventory.bazaar
 
-    private var highlightedSlots = mapOf<Int, LorenzColor>()
+    private var highlightedSlots = emptyMap<Int, LorenzColor>()
 
     @HandleEvent
     private fun onBazaarOrdersLoaded(event: BazaarOrdersLoadedEvent) {

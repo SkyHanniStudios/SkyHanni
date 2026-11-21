@@ -27,7 +27,7 @@ import kotlin.time.Duration.Companion.seconds
 object HideNotClickableItems {
     private val config get() = SkyHanniMod.feature.inventory.hideNotClickable
 
-    var hideReasons = listOf<String>()
+    var hideReasons = emptyList<String>()
     var showGreenLine = false
     var allowBypass = true
 
@@ -50,7 +50,7 @@ object HideNotClickableItems {
     }
 
     @HandleEvent(onlyOnSkyblock = true, priority = HandleEvent.LOWEST)
-    private fun onTooltip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (bypassActive()) return
 
         val guiChest = MinecraftCompat.screen

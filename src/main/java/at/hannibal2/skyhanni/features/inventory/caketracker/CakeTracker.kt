@@ -126,10 +126,10 @@ object CakeTracker {
     private var inCakeInventory = false
     private var timeOpenedCakeInventory = SimpleTimeMark.farPast()
     private var inAuctionHouse = false
-    private var slotHighlightCache = mapOf<Int, ChromaColour>()
+    private var slotHighlightCache = emptyMap<Int, ChromaColour>()
     private var searchingForCakes = false
-    private var knownCakesInCurrentInventory = listOf<Int>()
-    private var cakeRenderables = listOf<Renderable>()
+    private var knownCakesInCurrentInventory = emptyList<Int>()
+    private var cakeRenderables = emptyList<Renderable>()
     private var lastKnownCakeDataHash = 0
 
     private fun invalidateCakeCache() {
@@ -213,7 +213,7 @@ object CakeTracker {
     @HandleEvent(onlyOnSkyblock = true)
     fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         if (!config.enabled) return
-        knownCakesInCurrentInventory = listOf()
+        knownCakesInCurrentInventory = emptyList()
         checkCakeContainer(event)
         inAuctionHouse = checkAuctionCakes(event)
     }
@@ -254,9 +254,9 @@ object CakeTracker {
     @HandleEvent
     fun onInventoryClose() {
         inCakeInventory = false
-        knownCakesInCurrentInventory = listOf()
+        knownCakesInCurrentInventory = emptyList()
         inAuctionHouse = false
-        slotHighlightCache = mapOf()
+        slotHighlightCache = emptyMap()
         searchingForCakes = false
     }
 

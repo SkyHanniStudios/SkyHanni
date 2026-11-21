@@ -18,7 +18,7 @@ object CFTooltipCompact {
 
     private var lastClick = SimpleTimeMark.farPast()
     private var lastHover = SimpleTimeMark.farPast()
-    private var tooltipToHover = listOf<Component>()
+    private var tooltipToHover = emptyList<Component>()
 
     @HandleEvent
     fun onToolTip(event: ToolTipTextEvent) {

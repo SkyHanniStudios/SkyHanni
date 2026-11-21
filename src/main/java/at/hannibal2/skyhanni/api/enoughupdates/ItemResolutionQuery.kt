@@ -84,8 +84,8 @@ class ItemResolutionQuery {
             "ENCHANTMENT_(?<name>\\D*)_(?<tier>\\d+)",
         )
 
-        private var renamedEnchantments: Map<String, String> = mapOf()
-        private var shardNameOverrides: Map<String, String> = mapOf()
+        private var renamedEnchantments: Map<String, String> = emptyMap()
+        private var shardNameOverrides: Map<String, String> = emptyMap()
 
         @HandleEvent
         fun onRepoReload(event: RepositoryReloadEvent) {

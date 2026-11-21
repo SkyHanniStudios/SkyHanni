@@ -58,8 +58,9 @@ object CorpseLoot {
         pendingKeyConsumed = true
     }
 
+    @Suppress("Kdoc")
     @HandleEvent(onlyOnIsland = IslandType.MINESHAFT)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         val message = event.message
 
         startPattern.matchMatcher(message) {
@@ -89,14 +90,16 @@ object CorpseLoot {
             inLoot = false
             return
         }
+        /**
+         * TODO fix the bug that readItemAmount produces two different outputs:
+         * See also [at.hannibal2.skyhanni.features.mining.fossilexcavator.FossilExcavatorApi.onChat]
+         *
+         * §r§fEnchanted Book -> §fEnchanted
+         * §fEnchanted Book §r§8x -> §fEnchanted Book
+         *
+         * also maybe this is no bug, as enchanted book is no real item?
+         */
         var pair = itemPattern.matchMatcher(message) {
-            /**
-             * TODO fix the bug that readItemAmount produces two different outputs:
-             * §r§fEnchanted Book -> §fEnchanted
-             * §fEnchanted Book §r§8x -> §fEnchanted Book
-             *
-             * also maybe this is no bug, as enchanted book is no real item?
-             */
             ItemUtils.readItemAmount(group("item"))
         } ?: return
 

@@ -4,7 +4,6 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.events.InventoryOpenEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
-import at.hannibal2.skyhanni.events.garden.visitor.VisitorOpenEvent
 import at.hannibal2.skyhanni.features.garden.GardenApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
@@ -38,7 +37,7 @@ object NpcVisitorFix {
     )
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onInventoryOpen(event: InventoryOpenEvent) {
+    private fun onInventoryOpen(event: InventoryOpenEvent) {
         val name = staticVisitors.firstOrNull { event.inventoryName.contains(it) } ?: return
         val nearest = findNametags(name).firstOrNull { it.distanceToPlayer() < 3 } ?: return
         DelayedRun.runDelayed(200.milliseconds) {
@@ -62,13 +61,13 @@ object NpcVisitorFix {
 
     private var lastVisitorOpen = SimpleTimeMark.farPast()
 
-    @HandleEvent(VisitorOpenEvent::class)
-    fun onVisitorOpen() {
+    @HandleEvent
+    private fun onVisitorOpen() {
         lastVisitorOpen = SimpleTimeMark.now()
     }
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         barnSkinChangePattern.matchMatcher(event.message) {
             GardenApi.storage?.npcVisitorLocations?.clear()
         }

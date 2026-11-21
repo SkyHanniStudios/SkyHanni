@@ -49,7 +49,7 @@ object SkillAchievements {
     )
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val skill100Achievement = Achievement(
             name = "Expert Skiller".asComponent(),
             description = "Get a skill to level 70/80/90/100".asComponent(),
@@ -72,14 +72,14 @@ object SkillAchievements {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSkillOverflowLevel(event: SkillOverflowLevelUpEvent) {
+    private fun onSkillOverflowLevelUp(event: SkillOverflowLevelUpEvent) {
         val achievement = AchievementManager.getAchievement(SKILL_ACHIEVEMENT)
         if (achievement.data.progress >= event.newLevel) return
         AchievementManager.updateTieredAchievement(SKILL_ACHIEVEMENT, event.newLevel)
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         val petSlot = 51
         val lore = event.inventoryItems[petSlot]?.getLoreComponent()
         if (SkillApi.skillMenuDetector.isInside()) {

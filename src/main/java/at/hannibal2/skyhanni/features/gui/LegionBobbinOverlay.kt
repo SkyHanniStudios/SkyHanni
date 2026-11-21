@@ -30,13 +30,13 @@ object LegionBobbinOverlay {
 
     private val config get() = SkyHanniMod.feature.gui.legionBobbinOverlay
 
-    private var BOBBERS_DISTANCE = 30.0
-    private var BOBBERS_LIMIT = 5
-    private var BOBBIN_MULT = 0.2
+    private var bobberDistance = 30.0
+    private var bobberLimit = 5
+    private var bobbinTimeMult = 0.2
 
-    private var LEGION_DISTANCE = 30.0
-    private var LEGION_LIMIT = 20
-    private var LEGION_MULT = 0.07
+    private var legionDistance = 30.0
+    private var legionLimit = 20
+    private var legionMult = 0.07
 
     @Suppress("VarCouldBeVal")
     private var nearbyBobbers: Int = 0
@@ -66,14 +66,14 @@ object LegionBobbinOverlay {
     fun onRepoReload(event: RepositoryReloadEvent) {
         val data = event.getConstant<ItemsJson>("Items").distanceEnchantData
         val legion = data["LEGION"]
-        LEGION_DISTANCE = legion?.distance ?: 30.0
-        LEGION_LIMIT = legion?.maxAmount ?: 20
-        LEGION_MULT = legion?.perStackMultiplier ?: 0.07
+        legionDistance = legion?.distance ?: 30.0
+        legionLimit = legion?.maxAmount ?: 20
+        legionMult = legion?.perStackMultiplier ?: 0.07
 
         val bobbin = data["BOBBIN"]
-        BOBBERS_DISTANCE = bobbin?.distance ?: 30.0
-        BOBBERS_LIMIT = bobbin?.maxAmount ?: 5
-        BOBBIN_MULT = bobbin?.perStackMultiplier ?: 0.2
+        bobberDistance = bobbin?.distance ?: 30.0
+        bobberLimit = bobbin?.maxAmount ?: 5
+        bobbinTimeMult = bobbin?.perStackMultiplier ?: 0.2
 
         display = null
     }
@@ -81,12 +81,12 @@ object LegionBobbinOverlay {
     @HandleEvent(onlyOnSkyblock = true)
     fun onTick() {
         if (!isEnabled()) return
-        val bobbers = EntityUtils.getEntitiesNearby<FishingHook>(BOBBERS_DISTANCE).size
-        val players = EntityUtils.getEntitiesNearby<Player>(LEGION_DISTANCE).count {
+        val bobbers = EntityUtils.getEntitiesNearby<FishingHook>(bobberDistance).size
+        val players = EntityUtils.getEntitiesNearby<Player>(legionDistance).count {
             !it.isLocalPlayer && it.isRealPlayer()
         }
-        nearbyBobbers = modifyValue(nearbyBobbers, bobbers.coerceAtMost(BOBBERS_LIMIT))
-        nearbyPlayers = modifyValue(nearbyPlayers, players.coerceAtMost(LEGION_LIMIT))
+        nearbyBobbers = modifyValue(nearbyBobbers, bobbers.coerceAtMost(bobberLimit))
+        nearbyPlayers = modifyValue(nearbyPlayers, players.coerceAtMost(legionLimit))
     }
 
     @HandleEvent(onlyOnSkyblock = true)
@@ -104,8 +104,8 @@ object LegionBobbinOverlay {
                 val bobbin = enchants["ultimate_bobbin_time"] ?: 0
                 ArmorData(legion, bobbin)
             }
-            newLegionBuff += data.legion * LEGION_MULT
-            newBobbinBuff += data.bobbin * BOBBIN_MULT
+            newLegionBuff += data.legion * legionMult
+            newBobbinBuff += data.bobbin * bobbinTimeMult
         }
         armorLegionBuff = modifyValue(armorLegionBuff, newLegionBuff)
         armorBobbinBuff = modifyValue(armorBobbinBuff, newBobbinBuff)

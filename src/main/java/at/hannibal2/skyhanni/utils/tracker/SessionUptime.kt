@@ -17,6 +17,7 @@ sealed class SessionUptime {
 enum class NormalSession(val displayName: String) {
     NORMAL("All"),
     ;
+
     override fun toString() = displayName
 }
 

@@ -12,9 +12,8 @@ import net.minecraft.network.protocol.game.ClientboundSectionBlocksUpdatePacket
 object BlockData {
 
     @HandleEvent(priority = HandleEvent.LOW, receiveCancelled = true)
-    fun onBlockReceivePacket(event: PacketReceivedEvent) {
-        // The server can send us block update packets while the [ClientLevel] doesn't exist,
-        // apparently
+    private fun onPacketReceived(event: PacketReceivedEvent) {
+        // The server can send us block update packets while the [ClientLevel] doesn't exist, apparently
         if (!MinecraftCompat.localWorldExists) return
 
         if (event.packet is ClientboundBlockUpdatePacket) {

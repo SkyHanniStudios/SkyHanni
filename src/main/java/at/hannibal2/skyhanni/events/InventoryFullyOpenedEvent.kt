@@ -18,6 +18,7 @@ import at.hannibal2.skyhanni.utils.compat.InventoryCompat.isNotEmpty
  * @see InventoryFullyOpenedEvent
  * @see InventoryUpdatedEvent
  */
+@PrimaryFunction("onInventoryOpen")
 sealed class InventoryOpenEvent(private val inventory: OtherInventoryData.Inventory) : SkyHanniEvent() {
 
     val inventoryId: Int get() = inventory.windowId

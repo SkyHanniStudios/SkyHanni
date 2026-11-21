@@ -423,7 +423,7 @@ object ForagingBeaconSolver {
     private open class DataPair<T : Any>(initRef: T, initOurs: T) : NullableDataPair<T>(initRef, initOurs) {
         constructor(initialValue: T) : this(initialValue, initialValue)
 
-        override operator fun get(target: BeaconPieceTarget): T = super.get(target)
+        override operator fun get(target: BeaconPieceTarget): T = super[target]
             ?: throw IllegalStateException("BeaconPieceTarget '$target' has not been set in DataPair.")
 
         override val asMap: Map<BeaconPieceTarget, T>

@@ -21,7 +21,7 @@ object MoveInsertIntoSackButton {
     private var swapTargetSlot = -1
 
     @HandleEvent
-    fun onSackOpen(event: SackOpenEvent) {
+    private fun onSackOpen(event: SackOpenEvent) {
         if (!config) return
         val openEvent = event.inventoryOpenEvent
         val items = openEvent.inventoryItems
@@ -43,7 +43,7 @@ object MoveInsertIntoSackButton {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun replaceItem(event: ReplaceItemEvent) {
+    private fun onReplaceItem(event: ReplaceItemEvent) {
         if (!isEnabled()) return
 
         val newSlotItem = when (event.slot) {
@@ -56,7 +56,7 @@ object MoveInsertIntoSackButton {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         if (!isEnabled()) return
 
         val newSlotId = when (event.slotId) {
@@ -68,7 +68,7 @@ object MoveInsertIntoSackButton {
     }
 
     @HandleEvent
-    fun onInventoryClose() {
+    private fun onInventoryClose() {
         inSackMenu = false
         insertIntoSackItem = null
         originalSlotItem = null

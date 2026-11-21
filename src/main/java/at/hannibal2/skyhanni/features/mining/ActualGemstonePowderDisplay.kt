@@ -219,7 +219,7 @@ object ActualGemstonePowderDisplay {
     }
 
     @HandleEvent(priority = HandleEvent.LOW)
-    fun onChat(event: SkyHanniChatEvent.Modify) {
+    private fun onChatModify(event: SkyHanniChatEvent.Modify) {
         if (!isEnabled()) return
 
         PowderChestReward.GEMSTONE_POWDER.chatPattern.matchMatcher(event.cleanMessage) {
@@ -228,28 +228,25 @@ object ActualGemstonePowderDisplay {
 
             val factors = getFactors()
             val totalMultiplier = factors.fold(1.0) { acc, factor -> acc * factor.multiplier }
+            if (totalMultiplier <= 1.0) return
 
             val actualAmount = (originalAmount * totalMultiplier).toInt()
-
-            if (totalMultiplier > 1.0) {
-
-                val hoverText = buildList {
-                    add("§7Base Powder: §e${originalAmount.addSeparators()}")
-                    add("")
-                    add("§7Total Multiplier: §6${totalMultiplier.toMultiplier()}")
-                    factors.forEach { factor ->
-                        addAll(factor.getTooltipLines(level = 1))
-                    }
-                    add("")
-                    add("§7Actual Powder: §d${actualAmount.addSeparators()}")
+            val hoverText = buildList {
+                add("§7Base Powder: §e${originalAmount.addSeparators()}")
+                add("")
+                add("§7Total Multiplier: §6${totalMultiplier.toMultiplier()}")
+                factors.forEach { factor ->
+                    addAll(factor.getTooltipLines(level = 1))
                 }
-                val newComponent = TextHelper.text(
-                    text = "    §r§dGemstone Powder §r§8x${originalAmount.addSeparators()} §7(x${actualAmount.addSeparators()})"
-                ) {
-                    this.hover = TextHelper.multiline(hoverText)
-                }
-                event.replaceComponent(newComponent, "actual_powder")
+                add("")
+                add("§7Actual Powder: §d${actualAmount.addSeparators()}")
             }
+            val newComponent = TextHelper.text(
+                text = "    §r§dGemstone Powder §r§8x${originalAmount.addSeparators()} §7(x${actualAmount.addSeparators()})"
+            ) {
+                this.hover = TextHelper.multiline(hoverText)
+            }
+            event.replaceComponent(newComponent, "actual_powder")
         }
     }
 

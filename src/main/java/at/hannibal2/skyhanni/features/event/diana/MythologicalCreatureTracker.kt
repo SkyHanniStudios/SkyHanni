@@ -50,7 +50,7 @@ object MythologicalCreatureTracker {
     ) { drawDisplay(it) }
 
     // TODO create a draggable list from repo one that can be done
-    private val shardMobs = listOf<String>(
+    private val shardMobs = listOf(
         "Cretan Bull",
         "Harpy",
         "Minotaur",
@@ -64,7 +64,7 @@ object MythologicalCreatureTracker {
     var lastSinceAmount: Int? = null
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         val creatureMatch = genericMythologicalSpawnPattern.matchGroups(event.message, "creatureType")?.getOrNull(0) ?: return
 
         if (config.shardWarn) {
@@ -99,7 +99,7 @@ object MythologicalCreatureTracker {
     }
 
     @HandleEvent
-    fun onChatModify(event: SkyHanniChatEvent.Modify) {
+    private fun onChatModify(event: SkyHanniChatEvent.Modify) {
         if (lastSinceAmount == null) return
         val creatureMatch = genericMythologicalSpawnPattern.matchGroups(event.message, "creatureType")?.getOrNull(0) ?: return
 
@@ -160,14 +160,14 @@ object MythologicalCreatureTracker {
     }
 
     @HandleEvent
-    fun onConfigLoad() {
+    private fun onConfigLoad() {
         ConditionalUtils.onToggle(config.showPercentage) {
             tracker.update()
         }
     }
 
     @HandleEvent
-    fun onRepoLoaded(event: RepositoryReloadEvent) {
+    private fun onRepoReload(event: RepositoryReloadEvent) {
         val dianaJson = event.getConstant<DianaJson>("events/Diana")
 
         tracker.modify {
@@ -190,7 +190,7 @@ object MythologicalCreatureTracker {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shresetmythologicalcreaturetracker") {
             description = "Resets the Mythological Creature Tracker"
             category = CommandCategory.USERS_RESET
@@ -199,7 +199,7 @@ object MythologicalCreatureTracker {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.transform(110, "#profile.diana.mythologicalMobTracker", ::fixData)
         event.transform(110, "#profile.diana.mythologicalMobTrackerPerElection", ::fixPastData)
     }

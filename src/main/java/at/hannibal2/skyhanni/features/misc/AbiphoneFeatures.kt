@@ -67,7 +67,7 @@ object AbiphoneFeatures {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    private fun onTabCompletion(event: TabCompletionEvent) {
+    private fun onTabComplete(event: TabCompletionEvent) {
         if (!config.commands.tabComplete.call) return
         if (event.command != "call") return
         abiphoneContacts?.let { event.addSuggestions(it) }

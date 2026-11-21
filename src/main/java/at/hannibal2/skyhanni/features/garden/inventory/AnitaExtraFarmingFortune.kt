@@ -72,7 +72,7 @@ object AnitaExtraFarmingFortune {
         "Click to trade!",
     )
 
-    private var levelPrice = mapOf<Int, AnitaUpgradePrice>()
+    private var levelPrice = emptyMap<Int, AnitaUpgradePrice>()
 
     @HandleEvent
     private fun onToolTip(event: ToolTipTextEvent) {

@@ -6,11 +6,7 @@ import at.hannibal2.skyhanni.data.IslandGraphs
 import at.hannibal2.skyhanni.data.IslandGraphs.pathFind
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.model.graph.GraphNodeTag
-import at.hannibal2.skyhanni.events.GuiContainerEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
-import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
 import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.features.fame.ReminderUtils
 import at.hannibal2.skyhanni.features.inventory.chocolatefactory.CFApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -41,7 +37,7 @@ object HoppityNpc {
     private var inShop = false
 
     @HandleEvent
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    fun onInventoryFullyOpened() {
         if (!HoppityApi.hoppityDetector.isInside()) return
         // TODO maybe we could add an annoying chat message that tells you how many years you have skipped
         //  or the last year you have opened the shop before.
@@ -51,7 +47,7 @@ object HoppityNpc {
     }
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    fun onSecondPassed() {
         if (!isReminderEnabled()) return
         if (ReminderUtils.isBusy()) return
         if (SkyBlockUtils.isStrandedProfile) return
@@ -79,7 +75,7 @@ object HoppityNpc {
     }
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    fun onInventoryClose() {
         clear()
     }
 
@@ -100,7 +96,7 @@ object HoppityNpc {
     }
 
     @HandleEvent
-    fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
+    fun onBackgroundDrawn() {
         if (!isHighlightEnabled()) return
         if (!inShop) return
         for (slot in InventoryUtils.getItemsInOpenChest()) {

@@ -2,10 +2,8 @@ package at.hannibal2.skyhanni.api
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.ItemAddManager
-import at.hannibal2.skyhanni.events.CollectionUpdateEvent
 import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
 import at.hannibal2.skyhanni.events.ItemAddEvent
-import at.hannibal2.skyhanni.events.ProfileJoinEvent
 import at.hannibal2.skyhanni.features.dungeon.DungeonApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
@@ -92,7 +90,7 @@ object CollectionApi {
     )
 
     @HandleEvent
-    fun onProfileJoin(event: ProfileJoinEvent) {
+    fun onProfileJoin() {
         collectionValue.clear()
     }
 
@@ -110,8 +108,6 @@ object CollectionApi {
                 val internalName = stack.getInternalName().getCorrectedName()
                 collectionValue[internalName] = counter
             }
-
-            CollectionUpdateEvent.post()
         }
 
         if (inventoryName.endsWith("s") && !DungeonApi.bossCollectionsInventoryPattern.matches(event.inventoryName)) {
@@ -148,7 +144,6 @@ object CollectionApi {
                     collectionValue[internalName] = totalCollected
                 }
             }
-            CollectionUpdateEvent.post()
         }
     }
 

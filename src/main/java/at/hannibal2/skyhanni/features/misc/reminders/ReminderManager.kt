@@ -5,7 +5,6 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
 import at.hannibal2.skyhanni.config.commands.brigadier.BrigadierArguments
 import at.hannibal2.skyhanni.data.title.TitleManager
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
@@ -153,7 +152,7 @@ object ReminderManager {
     }
 
     @HandleEvent
-    private fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed() {
         val remindersToSend = mutableListOf<Component>()
         val firedReasons = mutableListOf<String>()
 

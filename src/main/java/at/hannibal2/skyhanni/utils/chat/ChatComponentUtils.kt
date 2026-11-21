@@ -33,7 +33,7 @@ object ChatComponentUtils {
 
     private fun doLookTheSame(left: Component, right: Component): Boolean {
         class ChatIterator(var component: Component) {
-            var queue = mutableListOf<Component>()
+            val queue = mutableListOf<Component>()
             var idx = 0
             var colorOverride = defaultStyleConstructor
             fun next(): Pair<Char, Style>? {

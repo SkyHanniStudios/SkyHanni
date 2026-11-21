@@ -563,7 +563,7 @@ object HoppityEventSummary {
 
     fun getSpawnedEggCounts(year: Int): Map<HoppityEggType, Int> = when {
         (year in yearSpawnCache.keys) -> yearSpawnCache[year].orEmpty()
-        (year > SkyBlockTime.now().year) -> mapOf()
+        (year > SkyBlockTime.now().year) -> emptyMap()
         // Hoppity Event #41 was the first event with the new egg types
         (getHoppityEventNumber(year) < 41) -> mapOf(
             HoppityEggType.BREAKFAST to 93,

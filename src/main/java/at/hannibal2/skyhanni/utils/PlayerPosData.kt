@@ -2,7 +2,6 @@ package at.hannibal2.skyhanni.utils
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.entity.EntityMoveEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import net.minecraft.client.player.LocalPlayer
@@ -22,20 +21,18 @@ object PlayerPosData {
 
     private val positions = ArrayDeque<TimedPos>()
 
-    val positionHistory: List<TimedPos> get() = positions
-
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         positions.clear()
     }
 
     @HandleEvent
-    fun onEntityMove(event: EntityMoveEvent<LocalPlayer>) {
+    private fun onEntityMove(event: EntityMoveEvent<LocalPlayer>) {
         positions.addFirst(TimedPos(event.newLocation))
     }
 
-    @HandleEvent(SecondPassedEvent::class)
-    fun onSecondPassed() {
+    @HandleEvent
+    private fun onSecondPassed() {
         while (positions.lastOrNull()?.time?.passedSince()?.let { it > maxAge } == true) {
             positions.removeLast()
         }
@@ -50,12 +47,8 @@ object PlayerPosData {
         return timedPos.time.passedSince()
     }
 
-    /** Returns how long ago the player was last within [distance] of [pos], or null if never tracked. */
-    fun timeSinceLastAt(pos: LorenzVec, distance: Double): Duration? =
-        positions.firstOrNull { it.pos.distance(pos) <= distance }?.time?.passedSince()
-
     @HandleEvent
-    fun debug(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("PlayerPosData")
         event.addIrrelevant {
             add("Tracked positions: ${positions.size}")

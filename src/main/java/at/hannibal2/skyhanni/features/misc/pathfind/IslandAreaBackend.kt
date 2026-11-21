@@ -7,8 +7,6 @@ import at.hannibal2.skyhanni.data.IslandGraphs
 import at.hannibal2.skyhanni.data.model.graph.GraphNode
 import at.hannibal2.skyhanni.data.model.graph.GraphNodeTag
 import at.hannibal2.skyhanni.events.AreaNodesUpdatedEvent
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
-import at.hannibal2.skyhanni.events.IslandGraphReloadEvent
 import at.hannibal2.skyhanni.events.entity.EntityMoveEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
 import at.hannibal2.skyhanni.events.skyblock.GraphAreaChangeEvent
@@ -28,7 +26,7 @@ object IslandAreaBackend {
 
     private val areaListConfig get() = config.areasList
 
-    var areaNodes = listOf<AreaNode>()
+    var areaNodes = emptyList<AreaNode>()
     private var nodeUpdateJob: Job? = null
     private val nodeSaveMutex = Mutex()
 
@@ -36,7 +34,7 @@ object IslandAreaBackend {
         private set
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         areaNodes = emptyList()
         hasMoved = true
         updateArea(AreaNode.NO_AREA, onlyInternal = true)
@@ -70,7 +68,7 @@ object IslandAreaBackend {
     private var lastDrawnTarget: GraphNode? = null
 
     @HandleEvent
-    fun onTick(event: SkyHanniTickEvent) {
+    private fun onTick(event: SkyHanniTickEvent) {
         if (!isEnabled() || !event.isMod(2)) return
         val target = IslandGraphs.currentTargetNode
         if (!hasMoved && target == lastDrawnTarget) return
@@ -80,14 +78,14 @@ object IslandAreaBackend {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onPlayerMove(event: EntityMoveEvent<LocalPlayer>) {
+    private fun onPlayerMove(event: EntityMoveEvent<LocalPlayer>) {
         if (isEnabled()) {
             hasMoved = true
         }
     }
 
-    @HandleEvent(IslandGraphReloadEvent::class)
-    fun onIslandGraphReload() {
+    @HandleEvent
+    private fun onIslandGraphReload() {
         nodeMoved()
 
         DelayedRun.runDelayed(150.milliseconds) {
@@ -112,8 +110,8 @@ object IslandAreaBackend {
         }
     }
 
-    @HandleEvent(ConfigLoadEvent::class)
-    fun onConfigLoad() {
+    @HandleEvent
+    private fun onConfigLoad() {
         with(areaListConfig) {
             ConditionalUtils.onToggle(color, includeCurrentArea, enabled) {
                 updateNodes()
@@ -132,7 +130,7 @@ object IslandAreaBackend {
     private fun isEnabled() = IslandGraphs.currentIslandGraph != null
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(114, "misc.areaNavigation", "misc.navigation")
         event.move(115, "misc.navigation.pathfinder", "misc.navigation.areasList")
         event.move(115, "misc.navigation.inWorld", "misc.navigation.showInWorld")

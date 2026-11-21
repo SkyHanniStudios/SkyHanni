@@ -5,7 +5,6 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.MiningApi.inCrystalHollows
 import at.hannibal2.skyhanni.data.MiningApi.inDwarvenMines
 import at.hannibal2.skyhanni.data.MiningApi.inGlacite
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
 import at.hannibal2.skyhanni.events.TabListUpdateEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
@@ -57,7 +56,7 @@ object MiningCommissionsBlocksColor {
 
     private var oldSneakState = false
     private var dirty = false
-    private var replaceBlocksMapCache = mutableMapOf<BlockState, BlockState>()
+    private val replaceBlocksMapCache = mutableMapOf<BlockState, BlockState>()
 
     // TODO Commission API
     @HandleEvent
@@ -117,14 +116,14 @@ object MiningCommissionsBlocksColor {
         }
 
         if (reload) {
-            replaceBlocksMapCache = mutableMapOf()
+            replaceBlocksMapCache.clear()
             MinecraftCompat.reloadChunks()
             dirty = false
         }
     }
 
     @HandleEvent
-    fun onConfigLoad(event: ConfigLoadEvent) {
+    fun onConfigLoad() {
         color = config.color.get().toDyeColor()
         config.sneakQuickToggle.onToggle {
             oldSneakState = false
@@ -142,7 +141,7 @@ object MiningCommissionsBlocksColor {
     @HandleEvent
     fun onWorldChange() {
         enabled = false
-        replaceBlocksMapCache = mutableMapOf()
+        replaceBlocksMapCache.clear()
     }
 
     @HandleEvent

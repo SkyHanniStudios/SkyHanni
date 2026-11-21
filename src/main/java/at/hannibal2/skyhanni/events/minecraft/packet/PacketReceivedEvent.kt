@@ -1,8 +1,10 @@
 package at.hannibal2.skyhanni.events.minecraft.packet
 
 import at.hannibal2.skyhanni.api.event.SkyHanniEvent
+import at.hannibal2.skyhanni.skyhannimodule.PrimaryFunction
 import net.minecraft.network.protocol.Packet
 
+// TODO migrate to `PacketEvents.kt` with subevents by type, since receivers do not agree on type or name.
 /**
  * Fired when a packet is received from the server.
  *
@@ -13,4 +15,5 @@ import net.minecraft.network.protocol.Packet
  *
  * @param packet the received packet
  */
+@PrimaryFunction("onPacketReceived")
 class PacketReceivedEvent(val packet: Packet<*>) : SkyHanniEvent()

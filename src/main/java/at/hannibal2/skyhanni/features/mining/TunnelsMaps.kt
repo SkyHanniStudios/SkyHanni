@@ -78,7 +78,7 @@ object TunnelsMaps {
     private var closestNode: GraphNode? = null
     private var path: Pair<Graph, Double>? = null
 
-    private var possibleLocations = mapOf<String, List<GraphNode>>()
+    private var possibleLocations = emptyMap<String, List<GraphNode>>()
     private val cooldowns = mutableMapOf<GraphNode, SimpleTimeMark>()
     private var active: String = ""
     private var lastBaseCampWarp: SimpleTimeMark = SimpleTimeMark.farPast()
@@ -161,15 +161,15 @@ object TunnelsMaps {
         possibleLocations.keys.firstOrNull { it.uppercase().removeColor().contains(input.uppercase()) }.orEmpty()
     }
 
-    private var clickTranslate = mapOf<Int, String>()
+    private var clickTranslate = emptyMap<Int, String>()
     private var isCommission = false
     private var lastDisplayHash: Int = 0
-    private var display: List<Renderable> = listOf()
+    private var display: List<Renderable> = emptyList()
 
     @HandleEvent
     private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         if (!isEnabled()) return
-        clickTranslate = mapOf()
+        clickTranslate = emptyMap()
         if (!commissionInvPattern.matches(event.inventoryName)) return
         clickTranslate = event.inventoryItems.mapNotNull { (slotId, item) ->
             val lore = item.getCleanLore()
@@ -208,11 +208,11 @@ object TunnelsMaps {
 
     @HandleEvent
     private fun onInventoryClose() {
-        clickTranslate = mapOf()
+        clickTranslate = emptyMap()
     }
 
     @HandleEvent
-    private fun onTooltip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!isEnabled()) return
         event.slot ?: return
         clickTranslate[event.slot.containerSlot]?.let {

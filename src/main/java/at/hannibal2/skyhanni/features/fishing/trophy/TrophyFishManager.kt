@@ -184,7 +184,7 @@ object TrophyFishManager {
         ChatUtils.chat(message)
     }
 
-    private var trophyFishInfo = mapOf<String, TrophyFishInfo>()
+    private var trophyFishInfo = emptyMap<String, TrophyFishInfo>()
 
     fun getInfo(internalName: String): TrophyFishInfo? = trophyFishInfo[internalName]
 

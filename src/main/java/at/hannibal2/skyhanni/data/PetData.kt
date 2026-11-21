@@ -62,8 +62,12 @@ data class PetData(
     val cleanName: String get() = PetUtils.getCleanPetName(fauxInternalName, colored = false)
     val coloredName: String get() = "${rarity.chatColorCode}$cleanName"
     val level: Int get() = PetUtils.xpToLevel(exp ?: 0.0, fauxInternalName)
-    val skinTag: String? get() = skinInternalName?.getItemStack()?.getItemRarityOrNull()?.let { it.chatColorCode + "✦" }
-    val rarity: LorenzRarity get() = if (tierBoosted) { specifiedRarity.oneAbove() ?: specifiedRarity } else specifiedRarity
+    val skinTag: String? get() = skinInternalName?.getItemStack()?.getItemRarityOrNull()?.let {
+        it.chatColorCode + "✦"
+    }
+    val rarity: LorenzRarity get() = if (tierBoosted) {
+        specifiedRarity.oneAbove() ?: specifiedRarity
+    } else specifiedRarity
     val levelProgressionPercentage: Double get() = when {
         exp == null || exp == 0.0 -> 0.0
         PetUtils.getMaxLevel(fauxInternalName) <= level -> 100.0

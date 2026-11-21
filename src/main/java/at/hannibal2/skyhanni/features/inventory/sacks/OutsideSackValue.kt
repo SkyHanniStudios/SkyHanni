@@ -3,9 +3,6 @@ package at.hannibal2.skyhanni.features.inventory.sacks
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.SackApi
-import at.hannibal2.skyhanni.events.InventoryOpenEvent
-import at.hannibal2.skyhanni.events.ProfileJoinEvent
-import at.hannibal2.skyhanni.events.SackChangeEvent
 import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.features.inventory.bazaar.BazaarApi.isBazaarItem
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -39,7 +36,7 @@ object OutsideSackValue {
     private val textInput = SearchTextInput()
     private val scrollValue = ScrollValue()
 
-    private var display = listOf<Renderable>()
+    private var display = emptyList<Renderable>()
     private var advanced = false
 
     init {
@@ -54,19 +51,19 @@ object OutsideSackValue {
     }
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         if (event.repeatSeconds(5)) {
             update()
         }
     }
 
-    @HandleEvent(SackChangeEvent::class)
-    fun onSackChange() {
+    @HandleEvent
+    private fun onSackChange() {
         update()
     }
 
-    @HandleEvent(InventoryOpenEvent::class)
-    fun onInventoryOpen() {
+    @HandleEvent
+    private fun onInventoryOpen() {
         if (advanced) {
             advanced = false
             reset()
@@ -78,8 +75,8 @@ object OutsideSackValue {
         update()
     }
 
-    @HandleEvent(ProfileJoinEvent::class)
-    fun onProfileJoin() {
+    @HandleEvent
+    private fun onProfileJoin() {
         advanced = false
         reset()
     }

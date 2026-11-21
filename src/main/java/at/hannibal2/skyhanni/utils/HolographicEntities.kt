@@ -137,8 +137,8 @@ object HolographicEntities {
         }
     }
 
-    private var _internalEntityHoloBases: Map<KClass<out LivingEntity>, HolographicBase<out LivingEntity>>? = null
-    val entityHoloBases: Map<KClass<out LivingEntity>, HolographicBase<out LivingEntity>> get() = _internalEntityHoloBases ?: run {
+    private var _entityHoloBases: Map<KClass<out LivingEntity>, HolographicBase<out LivingEntity>>? = null
+    val entityHoloBases: Map<KClass<out LivingEntity>, HolographicBase<out LivingEntity>> get() = _entityHoloBases ?: run {
         val level = Minecraft.getInstance().level ?: return@run emptyMap()
         BuiltInRegistries.ENTITY_TYPE.associateNotNull type@{ entityType ->
             // Create a throwaway instance only to determine the KClass key.
@@ -150,7 +150,7 @@ object HolographicEntities {
             }.getOrNull() as? LivingEntity ?: return@type null
             @Suppress("UNCHECKED_CAST")
             testEntity::class to HolographicBase(entityType as EntityType<LivingEntity>)
-        }.also { _internalEntityHoloBases = it }
+        }.also { _entityHoloBases = it }
     }
 
     fun <T : LivingEntity> getFilteredEntityHoloBases(

@@ -15,6 +15,7 @@ object SkyHanniChatEvent {
         var chatLineId: Int = 0,
     ) : AbstractChatEvent.Allow(message.asComponent().intoSpan(), chatComponent, blockedReason)
 
+    @PrimaryFunction("onChatModify")
     class Modify(
         message: String,
         chatComponent: Component,

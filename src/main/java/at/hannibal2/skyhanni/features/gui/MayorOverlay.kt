@@ -7,8 +7,6 @@ import at.hannibal2.skyhanni.data.ElectionApi
 import at.hannibal2.skyhanni.data.Perk
 import at.hannibal2.skyhanni.data.Perk.Companion.toPerk
 import at.hannibal2.skyhanni.data.model.SkyblockStat.MAGIC_FIND
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderable
 import at.hannibal2.skyhanni.utils.TimeUtils.format
@@ -78,7 +76,7 @@ enum class MayorOverlay(private val configLine: String, private val createLines:
         var display: Renderable? = null
 
         @HandleEvent(onlyOnSkyblockOrFeatures = [OutsideSBFeature.MAYOR_OVERLAY])
-        fun onSecondPassed(event: SecondPassedEvent) {
+        fun onSecondPassed() {
             if (!config.enabled) return
             with(config) {
                 display = Renderable.vertical(mayorOverlay.map { it.createLines() }, spacing = spacing)
@@ -86,7 +84,7 @@ enum class MayorOverlay(private val configLine: String, private val createLines:
         }
 
         @HandleEvent(onlyOnSkyblockOrFeatures = [OutsideSBFeature.MAYOR_OVERLAY])
-        fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+        fun onGuiRenderOverlay() {
             if (!config.enabled) return
             display?.let { config.position.renderRenderable(it, posLabel = "Mayor Overlay") }
         }

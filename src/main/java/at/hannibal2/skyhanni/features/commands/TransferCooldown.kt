@@ -19,7 +19,7 @@ object TransferCooldown {
     private var action: (() -> Unit)? = null
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         if (!config.transferCooldown || lastRunCompleted.isInFuture()) return
         lastRunCompleted = DelayedRun.runDelayed(3.seconds) {
             if (config.transferCooldownMessage && SkyBlockUtils.inSkyBlock) {
@@ -31,7 +31,7 @@ object TransferCooldown {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onCommand(event: MessageSendToServerEvent) {
+    private fun onMessageSendToServer(event: MessageSendToServerEvent) {
         if (!config.transferCooldown || lastRunCompleted.isInPast()) return
         when (event.splitMessage[0]) {
             "/is" -> {

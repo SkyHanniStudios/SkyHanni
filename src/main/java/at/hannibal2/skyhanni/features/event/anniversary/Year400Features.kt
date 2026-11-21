@@ -57,12 +57,12 @@ object Year400Features {
     )
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         playerColors.clear()
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onItemInHandChange(event: ItemInHandChangeEvent) {
+    private fun onItemInHandChange(event: ItemInHandChangeEvent) {
         if (!config.teamFinder) return
         val new = CakeColor.entries.find { event.newItem == it.internalName }
         if (colorInHand == new) return
@@ -78,7 +78,7 @@ object Year400Features {
     }
 
     @HandleEvent
-    fun onConfigLoad() {
+    private fun onConfigLoad() {
         with(config.colors) {
             ConditionalUtils.onToggle(wrong, pink, blue, yellow, green, red) {
                 colorInHand?.let {
@@ -101,7 +101,7 @@ object Year400Features {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onTick() {
+    private fun onTick() {
         if (!config.teamFinder) return
         for (mob in MobData.players) {
             if (mob !in playerColors) {
@@ -148,12 +148,12 @@ object Year400Features {
     }
 
     @HandleEvent
-    fun onRealPlayerDeSpawnEvent(event: MobEvent.DeSpawn.Player) {
+    private fun onPlayerDeSpawn(event: MobEvent.DeSpawn.Player) {
         playerColors.remove(event.mob)
     }
 
     @HandleEvent
-    fun onPunch(event: EntityClickEvent) {
+    private fun onEntityClick(event: EntityClickEvent) {
         if (!config.teamFinder) return
         val entity = event.clickedEntity
         if (colorInHand == null) return
@@ -166,7 +166,7 @@ object Year400Features {
     }
 
     @HandleEvent
-    fun onSystemMessage(event: SystemMessageEvent.Allow) {
+    private fun onSystemMessage(event: SystemMessageEvent.Allow) {
         if (!config.teamFinder) return
         if (!fatPlayerMessagePattern.matches(event.cleanMessage)) return
         if (lastClickedPlayerTime.passedSince() >= 500.milliseconds) return

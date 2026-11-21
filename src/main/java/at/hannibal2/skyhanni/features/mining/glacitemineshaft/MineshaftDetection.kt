@@ -8,8 +8,6 @@ import at.hannibal2.skyhanni.data.PartyApi
 import at.hannibal2.skyhanni.data.ProfileStorageData
 import at.hannibal2.skyhanni.data.ScoreboardData
 import at.hannibal2.skyhanni.data.title.TitleManager
-import at.hannibal2.skyhanni.events.ScoreboardUpdateEvent
-import at.hannibal2.skyhanni.events.minecraft.WorldChangeEvent
 import at.hannibal2.skyhanni.events.mining.GlaciteMineshaftDetectEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
@@ -28,6 +26,7 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import net.minecraft.ChatFormatting
+import kotlin.enums.enumEntries
 
 @SkyHanniModule
 object MineshaftDetection {
@@ -50,13 +49,13 @@ object MineshaftDetection {
 
     private var found = false
 
-    @HandleEvent(WorldChangeEvent::class)
-    fun onWorldChange() {
+    @HandleEvent
+    private fun onWorldChange() {
         found = false
     }
 
-    @HandleEvent(ScoreboardUpdateEvent::class, onlyOnIsland = IslandType.MINESHAFT)
-    fun onScoreboardLineChange() {
+    @HandleEvent(onlyOnIsland = IslandType.MINESHAFT)
+    private fun onScoreboardUpdate() {
         if (found) return
 
         val matchingLine = ScoreboardData.sidebarLinesFormatted
@@ -75,7 +74,7 @@ object MineshaftDetection {
     }
 
     @HandleEvent
-    fun onGlaciteMineshaftDetectEvent(event: GlaciteMineshaftDetectEvent) {
+    private fun onGlaciteMineshaftDetect(event: GlaciteMineshaftDetectEvent) {
         val type = event.type
         val sinceThis = getSinceMineshaftType(type)
         val timeSinceThis = getTimeSinceMineshaftType(type)
@@ -171,7 +170,7 @@ object MineshaftDetection {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.transform(108, "mining.glaciteMineshaft.mineshaftDetectionConfig.mineshaftsToTrack") { element ->
             val newList = JsonArray()
             for (entry in element.asJsonArray) {
@@ -211,14 +210,14 @@ object MineshaftDetection {
         return when (original.last()) {
             '1' -> {
                 newList.add("${type}_1")
-                enumValues<MineshaftType>().find { it.name == "${type}_2" }?.let {
+                enumEntries<MineshaftType>().find { it.name == "${type}_2" }?.let {
                     newList.add(it.name)
                 }
                 newList
             }
 
             '2' -> listOf("${type}_C")
-            else -> listOf()
+            else -> emptyList()
         }
     }
 }

@@ -5,11 +5,8 @@ import at.hannibal2.skyhanni.data.Perk
 import at.hannibal2.skyhanni.data.PetData
 import at.hannibal2.skyhanni.data.ProfileStorageData
 import at.hannibal2.skyhanni.events.AccessoryBagUpdateEvent
-import at.hannibal2.skyhanni.events.OwnInventoryItemUpdateEvent
-import at.hannibal2.skyhanni.events.ProfileJoinEvent
 import at.hannibal2.skyhanni.events.SkillExpGainEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
-import at.hannibal2.skyhanni.events.skyblock.SkyblockEquipmentDataUpdateEvent
 import at.hannibal2.skyhanni.features.inventory.CurrentEquipmentApi
 import at.hannibal2.skyhanni.features.inventory.attribute.AttributeShardsData
 import at.hannibal2.skyhanni.features.skillprogress.SkillType
@@ -82,7 +79,7 @@ object PetXpEstimateApi {
     private var pendingSpawnAutopetSwap: SpawnAutopetContext? = null
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSkillExpGain(event: SkillExpGainEvent) {
+    private fun onSkillExpGain(event: SkillExpGainEvent) {
         val currentPet = CurrentPetApi.currentPet
         val skillReads = readSkillGains(event, currentPet?.uuid)
         skillReads.forEach { updatePetExp(event, it, currentPet) }
@@ -106,7 +103,7 @@ object PetXpEstimateApi {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         val cleanMessage = event.message.removeColor().removeResets()
         petLevelUpPattern.matchMatcher(cleanMessage) {
             val currentPet = CurrentPetApi.currentPet ?: return
@@ -135,7 +132,7 @@ object PetXpEstimateApi {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onAccessoryBagUpdate(event: AccessoryBagUpdateEvent) {
+    private fun onAccessoryBagUpdate(event: AccessoryBagUpdateEvent) {
         val currentBeastmasterMultiplier = event.inventoryItems.values
             .mapNotNull { it.readBeastmasterMultiplierOrNull() }
             .maxOrNull()
@@ -148,23 +145,23 @@ object PetXpEstimateApi {
         PetStorageApi.markDirty()
     }
 
-    @HandleEvent(OwnInventoryItemUpdateEvent::class)
-    fun onOwnInventoryItemUpdate() {
+    @HandleEvent
+    private fun onOwnInventoryItemUpdate() {
         clearBeastmasterMultiplierCache()
     }
 
-    @HandleEvent(SkyblockEquipmentDataUpdateEvent::class)
-    fun onSkyblockEquipmentDataUpdate() {
+    @HandleEvent
+    private fun onSkyblockEquipmentDataUpdate() {
         clearBeastmasterMultiplierCache()
     }
 
-    @HandleEvent(ProfileJoinEvent::class)
-    fun onProfileJoin() {
+    @HandleEvent
+    private fun onProfileJoin() {
         resetProfileState()
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         resetWorldState()
     }
 

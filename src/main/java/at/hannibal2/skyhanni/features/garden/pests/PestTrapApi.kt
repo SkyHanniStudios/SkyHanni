@@ -17,7 +17,6 @@ import at.hannibal2.skyhanni.utils.collection.CollectionUtils.addOrPut
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.enumMapOf
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.takeIfNotEmpty
 import at.hannibal2.skyhanni.utils.collection.TimeLimitedCache
-import com.google.common.cache.RemovalCause.EXPIRED
 import net.minecraft.network.chat.Component
 import java.util.regex.Matcher
 import kotlin.time.Duration.Companion.seconds
@@ -34,17 +33,20 @@ object PestTrapApi {
 
     private val delayEvent: MutableMap<TabWidget, Boolean> = enumMapOf()
     private val lastHashes: TimeLimitedCache<TabWidget, Int> = TimeLimitedCache(10.seconds)
+    private val inventoryNames = setOf("Pest Trap", "Mouse Trap", "Vermin Trap")
+
+    val inInventory get() = InventoryUtils.openInventoryName() in inventoryNames
+
     var trapsPlaced: Int? = null
         private set
     var fullTraps: Set<Int>? = null
         private set
     var noBaitTraps: Set<Int>? = null
         private set
-    private var timeEnteredGarden: SimpleTimeMark? = null
-    var MAX_TRAPS = 3
+    var maximumPlaceableTraps = 3
         private set
-    private val inventoryNames = setOf("Pest Trap", "Mouse Trap", "Vermin Trap")
-    val inInventory get() = InventoryUtils.openInventoryName() in inventoryNames
+
+    private var timeEnteredGarden: SimpleTimeMark? = null
 
     @HandleEvent
     fun onWidgetUpdate(event: WidgetUpdateEvent) {
@@ -84,7 +86,7 @@ object PestTrapApi {
         }
 
         PestTrapDataEvent(
-            trapsPlaced = trapsPlaced ?: MAX_TRAPS,
+            trapsPlaced = trapsPlaced ?: maximumPlaceableTraps,
             fullTraps = fullTraps.orEmpty(),
             noBaitTraps = noBaitTraps.orEmpty(),
         ).post()
@@ -107,7 +109,7 @@ object PestTrapApi {
 
     private fun Component.getTrapsPlacedOrNull(): Int? = tabListPestTrapsPattern.matchMatcher(this) {
         widgetEnabledAndVisible[TabWidget.PEST_TRAPS] = true
-        MAX_TRAPS = groupOrNull("max")?.toIntOrNull() ?: MAX_TRAPS
+        maximumPlaceableTraps = groupOrNull("max")?.toIntOrNull() ?: maximumPlaceableTraps
         lastHashes[TabWidget.PEST_TRAPS] = TabWidget.PEST_TRAPS.getNewHashOrNull(this@getTrapsPlacedOrNull)
             ?: return@matchMatcher trapsPlaced
         return groupOrNull("count")?.toIntOrNull()

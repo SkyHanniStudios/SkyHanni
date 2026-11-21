@@ -8,9 +8,6 @@ import at.hannibal2.skyhanni.data.model.graph.GraphNode
 import at.hannibal2.skyhanni.data.model.graph.GraphNodeTag
 import at.hannibal2.skyhanni.data.title.TitleContext
 import at.hannibal2.skyhanni.data.title.TitleManager
-import at.hannibal2.skyhanni.events.AreaNodesUpdatedEvent
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
 import at.hannibal2.skyhanni.events.skyblock.GraphAreaChangeEvent
@@ -41,10 +38,10 @@ object IslandAreaFeatures {
     private val areaListConfig get() = config.areasList
 
     var display: Renderable? = null
-    private var smallAreas = setOf<String>()
+    private var smallAreas = emptySet<String>()
     private val textInput = SearchTextInput()
     private val areaNodes get() = IslandAreaBackend.areaNodes
-    private var visibleAreaNodes = listOf<AreaNode>()
+    private var visibleAreaNodes = emptyList<AreaNode>()
     private var currentTitle: TitleContext? = null
     private var lastTitleTime = SimpleTimeMark.farPast()
 
@@ -63,7 +60,7 @@ object IslandAreaFeatures {
     }
 
     @HandleEvent
-    fun onAreaChange(event: GraphAreaChangeEvent) {
+    private fun onAreaChange(event: GraphAreaChangeEvent) {
         val name = event.area
         val inAnArea = name != AreaNode.NO_AREA
         // when this is a small area move and small areas are disabled via config
@@ -79,7 +76,7 @@ object IslandAreaFeatures {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onTick(event: SkyHanniTickEvent) {
+    private fun onTick(event: SkyHanniTickEvent) {
         if (!isEnabled()) return
         if (!event.isMod(5)) return
 
@@ -93,7 +90,7 @@ object IslandAreaFeatures {
     }
 
     @HandleEvent
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!isEnabled()) return
         if (!config.showInWorld) return
         for (area in visibleAreaNodes) {
@@ -101,8 +98,8 @@ object IslandAreaFeatures {
         }
     }
 
-    @HandleEvent(GuiRenderEvent.GuiOverlayRenderEvent::class)
-    fun onGuiRenderOverlay() {
+    @HandleEvent
+    private fun onGuiRenderOverlay() {
         if (!isAreaListEnabled()) return
         if (!areaListConfig.showAlways) return
         val isInOwnInventory = MinecraftCompat.screen is InventoryScreen
@@ -112,7 +109,7 @@ object IslandAreaFeatures {
     }
 
     @HandleEvent
-    fun onChestGuiRender() {
+    private fun onChestGuiRender() {
         if (!isAreaListEnabled()) return
         val isInOwnInventory = MinecraftCompat.screen is InventoryScreen
         if (isInOwnInventory) {
@@ -126,8 +123,8 @@ object IslandAreaFeatures {
         }
     }
 
-    @HandleEvent(ConfigLoadEvent::class)
-    fun onConfigLoad() {
+    @HandleEvent
+    private fun onConfigLoad() {
         with(areaListConfig) {
             ConditionalUtils.onToggle(color) {
                 IslandGraphs.currentTargetNode?.let { setTarget(it) }
@@ -136,7 +133,7 @@ object IslandAreaFeatures {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         display = null
         currentTitle?.stop()
     }
@@ -145,8 +142,8 @@ object IslandAreaFeatures {
 
     private fun isEnabled() = SkyBlockUtils.inSkyBlock && IslandGraphs.currentIslandGraph != null
 
-    @HandleEvent(AreaNodesUpdatedEvent::class)
-    fun onAreaNodesUpdated() {
+    @HandleEvent
+    private fun onAreaNodesUpdated() {
         smallAreas = areaNodes
             .filter { GraphNodeTag.SMALL_AREA in it.node.tags }
             .map { it.name }

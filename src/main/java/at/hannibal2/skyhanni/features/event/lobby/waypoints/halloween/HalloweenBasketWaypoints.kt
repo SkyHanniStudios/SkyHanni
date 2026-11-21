@@ -8,7 +8,6 @@ import at.hannibal2.skyhanni.data.IslandGraphs
 import at.hannibal2.skyhanni.data.ScoreboardData
 import at.hannibal2.skyhanni.data.model.graph.GraphNode
 import at.hannibal2.skyhanni.data.model.graph.GraphNodeTag
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
 import at.hannibal2.skyhanni.events.ScoreboardUpdateEvent
 import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
@@ -34,7 +33,7 @@ object HalloweenBasketWaypoints {
     private var isActive = false
     private var isNavigating = false
 
-    private var basketList = setOf<EventWaypoint>()
+    private var basketList = emptySet<EventWaypoint>()
     private var closestBasket: EventWaypoint? = null
 
     private val patternGroup = RepoPattern.group("event.lobby-waypoints")
@@ -48,15 +47,16 @@ object HalloweenBasketWaypoints {
         "main.scoreboard.halloween",
         "^§6Halloween \\d+$",
     )
+    @Suppress("RepoPatternRegexTestMissing")
     private val scoreboardBasketPattern by patternGroup.pattern(
         "main.scoreboard.basket",
-        "^Baskets Found: §a\\d+§f/§a\\d+\$",
+        "^Baskets Found: §a\\d+§f/§a\\d+$",
     )
 
-    @Suppress("MaxLineLength")
+    @Suppress("MaxLineLength", "RepoPatternRegexTestMissing")
     private val basketPattern by patternGroup.pattern(
         "basket",
-        "^(?:(?:§.)+You found a Candy Basket! (?:(?:§.)+\\((?:§.)+(?<current>\\d+)(?:§.)+/(?:§.)+(?<max>\\d+)(?:§.)+\\))?|(?:§.)+You already found this Candy Basket!)\$",
+        "^(?:(?:§.)+You found a Candy Basket! (?:(?:§.)+\\((?:§.)+(?<current>\\d+)(?:§.)+/(?:§.)+(?<max>\\d+)(?:§.)+\\))?|(?:§.)+You already found this Candy Basket!)$",
     )
     private val basketAllFoundPattern by patternGroup.pattern(
         "basket.all-found",
@@ -64,7 +64,7 @@ object HalloweenBasketWaypoints {
     )
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed(event: SecondPassedEvent) {
         if (!event.repeatSeconds(2)) return
         if (!isActive || !isEnabled()) return
 
@@ -83,7 +83,7 @@ object HalloweenBasketWaypoints {
     }
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!config.enabled.get()) return
         if (!isActive) return
         if (!isEnabled()) return
@@ -104,7 +104,7 @@ object HalloweenBasketWaypoints {
     }
 
     @HandleEvent
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!isEnabled()) return
         if (!isActive) return
         if (!config.enabled.get()) return
@@ -124,7 +124,7 @@ object HalloweenBasketWaypoints {
     }
 
     @HandleEvent
-    fun onScoreboardChange(event: ScoreboardUpdateEvent) {
+    private fun onScoreboardUpdate(event: ScoreboardUpdateEvent) {
         if (SkyBlockUtils.inSkyBlock) {
             isActive = false
             return
@@ -161,8 +161,8 @@ object HalloweenBasketWaypoints {
         isActive = newIsActive && basketList.isNotEmpty()
     }
 
-    @HandleEvent(ConfigLoadEvent::class)
-    fun onConfigLoad() {
+    @HandleEvent
+    private fun onConfigLoad() {
         ConditionalUtils.onToggle(config.enabled, config.pathfind) {
             if (config.pathfind.get() && isActive && isEnabled()) startPathfinding()
         }
@@ -199,7 +199,7 @@ object HalloweenBasketWaypoints {
     private fun isEnabled() = HypixelData.hypixelLive && !SkyBlockUtils.inSkyBlock
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(13, "event.halloweenBasket", "event.lobbyWaypoints.halloweenBasket")
         event.move(108, "event.lobbyWaypoints.halloweenBasket.allWaypoints", "event.lobbyWaypoints.halloweenBasket.enabled")
     }

@@ -3,8 +3,6 @@ package at.hannibal2.skyhanni.features.inventory.craft
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.SackApi
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.InventoryOpenEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.DelayedRun
@@ -41,7 +39,7 @@ import kotlin.math.floor
 object CraftableItemList {
     private val config get() = SkyHanniMod.feature.inventory.craftableItemList
 
-    private var display = listOf<Renderable>()
+    private var display = emptyList<Renderable>()
     private var inInventory = false
     private val textInput = SearchTextInput()
     private val craftItemPattern by RepoPattern.pattern(
@@ -137,7 +135,7 @@ object CraftableItemList {
     }
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    fun onInventoryClose() {
         inInventory = false
     }
 
@@ -173,7 +171,7 @@ object CraftableItemList {
     }
 
     @HandleEvent
-    fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
+    fun onChestGuiRender() {
         if (!isEnabled()) return
         if (!inInventory) return
 

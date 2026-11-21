@@ -8,24 +8,13 @@ import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.jsonobjects.repo.HoppityEggLocationsJson
 import at.hannibal2.skyhanni.events.DialogueResponseSentEvent
 import at.hannibal2.skyhanni.events.GuiContainerEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
-import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
 import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
-import at.hannibal2.skyhanni.events.IslandChangeEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.hoppity.EggFoundEvent
 import at.hannibal2.skyhanni.events.hoppity.RabbitFoundEvent
-import at.hannibal2.skyhanni.features.event.hoppity.HoppityEggType.BOUGHT
-import at.hannibal2.skyhanni.features.event.hoppity.HoppityEggType.BOUGHT_ABIPHONE
-import at.hannibal2.skyhanni.features.event.hoppity.HoppityEggType.CHOCOLATE_FACTORY_MILESTONE
-import at.hannibal2.skyhanni.features.event.hoppity.HoppityEggType.CHOCOLATE_SHOP_MILESTONE
 import at.hannibal2.skyhanni.features.event.hoppity.HoppityEggType.Companion.getEggType
 import at.hannibal2.skyhanni.features.event.hoppity.HoppityEggType.Companion.resettingEntries
-import at.hannibal2.skyhanni.features.event.hoppity.HoppityEggType.HITMAN
-import at.hannibal2.skyhanni.features.event.hoppity.HoppityEggType.SIDE_DISH
-import at.hannibal2.skyhanni.features.event.hoppity.HoppityEggType.STRAY
-import at.hannibal2.skyhanni.features.event.hoppity.HoppityEggType.VISITOR
 import at.hannibal2.skyhanni.features.inventory.chocolatefactory.CFApi
 import at.hannibal2.skyhanni.features.inventory.chocolatefactory.CFBarnManager
 import at.hannibal2.skyhanni.features.inventory.chocolatefactory.stray.CFStrayTracker
@@ -38,9 +27,6 @@ import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.ItemUtils.getLore
 import at.hannibal2.skyhanni.utils.ItemUtils.toSingleLineLore
 import at.hannibal2.skyhanni.utils.LorenzRarity
-import at.hannibal2.skyhanni.utils.LorenzRarity.DIVINE
-import at.hannibal2.skyhanni.utils.LorenzRarity.LEGENDARY
-import at.hannibal2.skyhanni.utils.LorenzRarity.RARE
 import at.hannibal2.skyhanni.utils.RegexUtils.anyMatches
 import at.hannibal2.skyhanni.utils.RegexUtils.groupOrNull
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
@@ -177,7 +163,7 @@ object HoppityApi {
 
     private var checkNextInvOpen = false
     private var lastHoppityCallAccept: SimpleTimeMark? = null
-    private var allowedHoppityIslands: Set<IslandType> = setOf()
+    private var allowedHoppityIslands: Set<IslandType> = emptySet()
     private var onHoppityIsland: Boolean = false
 
     // If there is a time since lastHoppityCallAccept, we can assume this is an abiphone call
@@ -233,33 +219,31 @@ object HoppityApi {
         (item.`is`(Items.PLAYER_HEAD) || item.isStainedGlassPane()) &&
             item.hoverName.string.isNotEmpty() && item.getLore().isNotEmpty()
 
-    private fun postApiEggFoundEvent(type: HoppityEggType, event: SkyHanniChatEvent.Allow, note: String? = null) {
-        EggFoundEvent(
-            type,
-            chatEvent = event,
-            note = note,
-        ).post()
-    }
+    private fun postApiEggFoundEvent(
+        type: HoppityEggType,
+        event: SkyHanniChatEvent.Allow,
+        note: String? = null,
+    ) = EggFoundEvent(type, chatEvent = event, note = note).post()
 
     @HandleEvent
     private fun onRepoReload(event: RepositoryReloadEvent) {
         allowedHoppityIslands = event.getConstant<HoppityEggLocationsJson>("HoppityEggLocations").apiEggLocations.keys.toSet()
     }
 
-    @HandleEvent(IslandChangeEvent::class)
+    @HandleEvent
     private fun onIslandChange() {
         onHoppityIsland = SkyBlockUtils.inSkyBlock && allowedHoppityIslands.any { it.isInIsland() }
     }
 
     @HandleEvent
-    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened() {
         if (!checkNextInvOpen) return
         checkNextInvOpen = false
         if (!hoppityDetector.isInside()) return
         lastHoppityCallAccept = SimpleTimeMark.now()
     }
 
-    @HandleEvent(InventoryCloseEvent::class)
+    @HandleEvent
     private fun onInventoryClose() {
         processedStraySlots.clear()
         if (lastHoppityCallAccept == null) return

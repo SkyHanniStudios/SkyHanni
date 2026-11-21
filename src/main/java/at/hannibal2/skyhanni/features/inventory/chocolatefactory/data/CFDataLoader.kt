@@ -3,8 +3,6 @@ package at.hannibal2.skyhanni.features.inventory.chocolatefactory.data
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.config.storage.ProfileSpecificStorage
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
 import at.hannibal2.skyhanni.features.inventory.chocolatefactory.CFApi
 import at.hannibal2.skyhanni.features.inventory.chocolatefactory.CFBarnManager
@@ -249,7 +247,7 @@ object CFDataLoader {
     }
 
     @HandleEvent
-    private fun onInventoryClose(event: InventoryCloseEvent) {
+    private fun onInventoryClose() {
         clearData()
     }
 
@@ -263,7 +261,7 @@ object CFDataLoader {
     }
 
     @HandleEvent
-    private fun onConfigLoad(event: ConfigLoadEvent) {
+    private fun onConfigLoad() {
         val soundProperty = config.rabbitWarning.specialRabbitSound
         ConditionalUtils.onToggle(soundProperty) {
             CFApi.warningSound = SoundUtils.createSound(soundProperty.get(), 1f, isWarning = true)

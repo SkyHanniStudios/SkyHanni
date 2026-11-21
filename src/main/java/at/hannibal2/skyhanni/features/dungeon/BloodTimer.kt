@@ -42,7 +42,7 @@ object BloodTimer {
     )
 
     @HandleEvent
-    fun onChatReceived(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!isEnabled()) return
         if (bloodOpenMessages.anyMatches(event.cleanMessage)) {
             bloodOpenTime = SimpleTimeMark.now()

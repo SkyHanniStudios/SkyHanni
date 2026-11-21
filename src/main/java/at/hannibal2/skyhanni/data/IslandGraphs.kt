@@ -132,7 +132,7 @@ object IslandGraphs {
     var closestNode: GraphNode? = null
         private set
 
-    private var cachedNearbyNodes = listOf<GraphNode>()
+    private var cachedNearbyNodes = emptyList<GraphNode>()
     private var lastCacheUpdate = SimpleTimeMark.farPast()
 
     private var currentTarget: LorenzVec? = null
@@ -157,7 +157,7 @@ object IslandGraphs {
     private var pathRenderer: PathRenderer? = null
     private var activeCondition: () -> Boolean = { true }
     private var inGlaciteTunnels: Boolean? = null
-    private var ignoredIslandTypes = setOf<IslandType>()
+    private var ignoredIslandTypes = emptySet<IslandType>()
 
     private val patternGroup = RepoPattern.group("data.island.navigation")
 

@@ -4,7 +4,7 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 data class DiscontinuedMinecraftVersionsJson(
-    @Expose val versions: Map<String, DiscontinuedMinecraftVersion>? = mapOf(),
+    @Expose val versions: Map<String, DiscontinuedMinecraftVersion>? = emptyMap(),
 )
 
 data class DiscontinuedMinecraftVersion(

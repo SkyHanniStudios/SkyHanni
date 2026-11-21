@@ -259,14 +259,16 @@ enum class SkyblockStat(
         }
 
         private fun assignEntry(lines: List<String>, type: StatSourceType, pattern: (SkyblockStat) -> Pattern) {
-            for (line in lines) for (entry in entries) {
-                val matchResult = pattern(entry).matchMatcher(line) {
-                    groupOrNull("value")?.replace("[,%]".toRegex(), "")?.toDouble()
-                } ?: continue
-                entry.lastKnownValue = matchResult
-                entry.lastSource = type
-                entry.lastAssignment = SimpleTimeMark.now()
-                break // Exit the inner loop once a match is found
+            for (line in lines) {
+                for (entry in entries) {
+                    val matchResult = pattern(entry).matchMatcher(line) {
+                        groupOrNull("value")?.replace("[,%]".toRegex(), "")?.toDouble()
+                    } ?: continue
+                    entry.lastKnownValue = matchResult
+                    entry.lastSource = type
+                    entry.lastAssignment = SimpleTimeMark.now()
+                    break // Exit the inner loop once a match is found
+                }
             }
         }
 

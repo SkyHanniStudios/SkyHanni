@@ -1,6 +1,7 @@
 package at.hannibal2.skyhanni.events
 
 import at.hannibal2.skyhanni.api.event.RenderingSkyHanniEvent
+import at.hannibal2.skyhanni.skyhannimodule.PrimaryFunction
 import at.hannibal2.skyhanni.utils.SafeItemStack
 import net.minecraft.client.gui.GuiGraphicsExtractor
 
@@ -13,6 +14,7 @@ abstract class GuiRenderItemEvent(context: GuiGraphicsExtractor) : RenderingSkyH
         open val text: String?,
     ) : GuiRenderItemEvent(context) {
 
+        @PrimaryFunction("onRenderItemOverlayPost")
         data class GuiRenderItemPost(
             override val context: GuiGraphicsExtractor,
             override val stack: SafeItemStack?,

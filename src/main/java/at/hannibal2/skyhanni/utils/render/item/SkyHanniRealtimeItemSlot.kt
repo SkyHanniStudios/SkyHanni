@@ -18,7 +18,9 @@ internal class SkyHanniRealtimeItemSlot(val slotSize: Int) : SkyHanniAbstractIte
     // Frame the pool last handed this slot out; used for idle eviction
     var lastUsedFrame = -1
 
-    init { allocate(slotSize) }
+    init {
+        allocate(slotSize)
+    }
 
     private fun allocate(size: Int) {
         allocateTextures(

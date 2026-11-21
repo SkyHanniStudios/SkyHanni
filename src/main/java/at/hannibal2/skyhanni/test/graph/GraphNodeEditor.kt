@@ -255,7 +255,7 @@ object GraphNodeEditor {
         },
     ).toSearchable(name)
 
-    private var disabledLocations = setOf<LorenzVec>()
+    private var disabledLocations = emptySet<LorenzVec>()
 
     fun handleDisabled(graph: Graph) {
         val newDisabled = mutableSetOf<LorenzVec>()

@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
 
 data class ParkourJson(
     @Expose val locations: List<LorenzVec>,
-    @Expose @SerializedName(value = "short_cuts", alternate = ["shortCuts"]) val shortCuts: List<ParkourShortCut> = listOf(),
+    @Expose @SerializedName(value = "short_cuts", alternate = ["shortCuts"]) val shortCuts: List<ParkourShortCut> = emptyList(),
 )
 
 data class ParkourShortCut(

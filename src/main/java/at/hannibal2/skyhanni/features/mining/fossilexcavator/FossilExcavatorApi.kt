@@ -69,8 +69,9 @@ object FossilExcavatorApi {
         inExcavatorMenu = false
     }
 
+    @Suppress("Kdoc")
     @HandleEvent(onlyOnIsland = IslandType.DWARVEN_MINES)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         val message = event.message
         if (emptyPattern.matches(message)) FossilExcavationEvent(emptyList()).post()
 
@@ -87,14 +88,17 @@ object FossilExcavatorApi {
             inLoot = false
             return
         }
+
+        /**
+         * TODO fix the bug that readItemAmount produces two different outputs:
+         * See also, [at.hannibal2.skyhanni.features.mining.glacitemineshaft.corpse.CorpseLoot.onChat]
+         *
+         * §r§fEnchanted Book -> §fEnchanted
+         * §fEnchanted Book §r§8x -> §fEnchanted Book
+         *
+         * also maybe this is no bug, as enchanted book is no real item?
+         */
         var pair = itemPattern.matchMatcher(message) {
-            /**
-             * TODO fix the bug that readItemAmount produces two different outputs:
-             * §r§fEnchanted Book -> §fEnchanted
-             * §fEnchanted Book §r§8x -> §fEnchanted Book
-             *
-             * also maybe this is no bug, as enchanted book is no real item?
-             */
             ItemUtils.readItemAmount(group("item"))
         } ?: return
 

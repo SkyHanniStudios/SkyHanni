@@ -5,8 +5,6 @@ import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.config.core.config.Position
 import at.hannibal2.skyhanni.data.hypixel.chat.event.SystemMessageEvent
 import at.hannibal2.skyhanni.events.GuiContainerEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.features.fame.ReminderUtils
 import at.hannibal2.skyhanni.features.inventory.chocolatefactory.data.CFDataLoader
 import at.hannibal2.skyhanni.features.inventory.chocolatefactory.data.ChocolateAmount
@@ -78,7 +76,7 @@ object CFCustomReminder {
     )
 
     @HandleEvent
-    fun onChat(event: SystemMessageEvent.Allow) {
+    private fun onSystemMessage(event: SystemMessageEvent.Allow) {
         if (!isEnabled()) return
         if (!CFApi.inChocolateFactory) return
         if (configReminder.hideChat) {
@@ -89,13 +87,13 @@ object CFCustomReminder {
     }
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed() {
         if (!isEnabled()) return
         update()
     }
 
     @HandleEvent(receiveCancelled = true)
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         if (!isEnabled() || !inChocolateMenu()) return
         val item = event.item ?: return
         CFDataLoader.upgradeTierPattern.matchMatcher(item.cleanName) {
@@ -132,7 +130,7 @@ object CFCustomReminder {
     }
 
     @HandleEvent
-    fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
+    private fun onChestGuiRender() {
         if (!isEnabled()) return
         if (!inChocolateMenu()) return
         if (ReminderUtils.isBusy()) return
@@ -141,7 +139,7 @@ object CFCustomReminder {
     }
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay() {
         if (!isEnabled()) return
         if (!configReminder.always) return
         if (MinecraftCompat.screen is ContainerScreen) return
@@ -151,7 +149,7 @@ object CFCustomReminder {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.transform(72, "inventory.chocolateFactory.customReminder.position", Position::migrate)
     }
 

@@ -8,7 +8,6 @@ import at.hannibal2.skyhanni.config.commands.brigadier.BrigadierArguments
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.achievements.Achievement
 import at.hannibal2.skyhanni.data.jsonobjects.repo.GardenJson
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.events.UserLuckCalculateEvent
 import at.hannibal2.skyhanni.events.achievements.AchievementRegistrationEvent
@@ -64,7 +63,7 @@ object HoeLevelDisplay {
     )
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onTick() {
+    private fun onTick() {
         if (!isEnabled()) return
         display = getDisplay()?.map(Renderable::text)
     }
@@ -102,7 +101,7 @@ object HoeLevelDisplay {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onChat(event: SkyHanniChatEvent.Modify) {
+    private fun onChatModify(event: SkyHanniChatEvent.Modify) {
         val heldItem = InventoryUtils.getItemInHand() ?: return
         val leveledUpTool = levelUpPattern.matchMatcher(event.cleanMessage) {
             group("tool")
@@ -138,15 +137,15 @@ object HoeLevelDisplay {
         return newLevel
     }
 
-    @HandleEvent(GuiRenderEvent.GuiOverlayRenderEvent::class, onlyOnIsland = IslandType.GARDEN)
-    fun onRender() {
+    @HandleEvent(onlyOnIsland = IslandType.GARDEN)
+    private fun onGuiRenderOverlay() {
         if (!isEnabled()) return
         val renderable = display ?: return
         config.position.renderRenderables(renderable, posLabel = "Hoe Level Display")
     }
 
     @HandleEvent
-    fun onUserLuck(event: UserLuckCalculateEvent) {
+    private fun onUserLuckCalculate(event: UserLuckCalculateEvent) {
         if (!config.overflow) return
         val luck = calculateLuck()
         if (luck < 1) return
@@ -191,7 +190,7 @@ object HoeLevelDisplay {
     private const val HOE_ACHIEVEMENT = "Hoe Level 1000"
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "Hoe Expert".asComponent(),
             description = componentBuilder {
@@ -215,7 +214,7 @@ object HoeLevelDisplay {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shsethoelevel") {
             category = CommandCategory.USERS_BUG_FIX
             description = "Manually sets your overflow hoe level"
@@ -256,7 +255,7 @@ object HoeLevelDisplay {
     }
 
     @HandleEvent
-    fun onRepoReload(event: RepositoryReloadEvent) {
+    private fun onRepoReload(event: RepositoryReloadEvent) {
         val data = event.getConstant<GardenJson>("Garden")
         hoeLevels = data.hoeExpLevels
         hoeOverflow = data.hoeExpOverflow

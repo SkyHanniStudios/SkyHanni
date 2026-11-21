@@ -3,7 +3,6 @@ package at.hannibal2.skyhanni.test
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.commands.CommandCategory
 import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
-import at.hannibal2.skyhanni.config.commands.brigadier.BrigadierArguments
 import at.hannibal2.skyhanni.data.InteractClickType
 import at.hannibal2.skyhanni.events.BlockClickEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
@@ -43,23 +42,20 @@ object WorldEdit {
             }
         }
 
-    fun copyToClipboard(useModern: Boolean) {
-        ClipboardUtils.copyToClipboard(generateCodeSnippet(useModern))
+    fun copyToClipboard() {
+        ClipboardUtils.copyToClipboard(generateCodeSnippet())
         ChatUtils.chat("Copied text to clipboard.")
     }
 
-    private const val legacyBlockPos = "net.minecraft.util.BlockPos"
-    private const val modernBlockPos = "net.minecraft.util.math.BlockPos"
-    private const val legacyAABB = "net.minecraft.util.AxisAlignedBB"
-    private const val modernAABB = "net.minecraft.util.math.Box"
+    private val modernBlockPos = BlockPos::class.qualifiedName!!
+    private val modernAABB = AABB::class.qualifiedName!!
 
-    private fun generateCodeSnippet(useModern: Boolean): String {
-        val blockPosText = if (useModern) modernBlockPos else legacyBlockPos
-        val aabbText = if (useModern) modernAABB else legacyAABB
+    private fun generateCodeSnippet(): String {
+
         var text = ""
-        leftPos?.run { text += "val redLeft = $blockPosText($x, $y, $z)\n" }
-        rightPos?.run { text += "val blueRight = $blockPosText($x, $y, $z)\n" }
-        aabb?.run { text += "val aabb = $aabbText($minX, $minY, $minZ, $maxX, $maxY, $maxZ)\n" }
+        leftPos?.run { text += "val redLeft = $modernBlockPos($x, $y, $z)\n" }
+        rightPos?.run { text += "val blueRight = $modernAABB($x, $y, $z)\n" }
+        aabb?.run { text += "val aabb = $modernAABB($minX, $minY, $minZ, $maxX, $maxY, $maxZ)\n" }
         return text
     }
 
@@ -117,11 +113,8 @@ object WorldEdit {
                 )
             }
             literal("copy") {
-                argCallback("useModern", BrigadierArguments.bool()) { modern ->
-                    copyToClipboard(modern)
-                }
                 simpleCallback {
-                    copyToClipboard(false)
+                    copyToClipboard()
                 }
             }
             literalCallback("reset") {

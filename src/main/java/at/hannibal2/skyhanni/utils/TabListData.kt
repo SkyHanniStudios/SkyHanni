@@ -79,7 +79,7 @@ object TabListData {
     }
 
     @HandleEvent(receiveCancelled = true)
-    private fun onPacketReceive(event: PacketReceivedEvent) {
+    private fun onPacketReceived(event: PacketReceivedEvent) {
         if (event.packet is ClientboundPlayerInfoUpdatePacket) dirty = true
     }
 

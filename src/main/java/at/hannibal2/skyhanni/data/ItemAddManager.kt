@@ -58,14 +58,14 @@ object ItemAddManager {
     private var lastSackInventoryLeave = SimpleTimeMark.farPast()
 
     @HandleEvent
-    fun onInventoryOpen(event: InventoryOpenEvent) {
+    private fun onInventoryOpen(event: InventoryOpenEvent) {
         if (event.inventoryName.contains("Sack")) {
             inSackInventory = true
         }
     }
 
     @HandleEvent
-    fun onInventoryClose() {
+    private fun onInventoryClose() {
         if (inSackInventory) {
             inSackInventory = false
             lastSackInventoryLeave = SimpleTimeMark.now()
@@ -73,13 +73,11 @@ object ItemAddManager {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSackChange(event: SackChangeEvent) {
+    private fun onSackChange(event: SackChangeEvent) {
 
         if (inSackInventory || lastSackInventoryLeave.passedSince() < 10.seconds) return
 
-        for (sackChange in event.sackChanges) {
-            val change = sackChange.delta
-            val internalName = sackChange.internalName
+        for ((change, internalName) in event.sackChanges) {
             if (change > 0 && internalName !in superCraftedItems) {
                 Source.SACKS.addItem(internalName, change)
             }
@@ -88,7 +86,7 @@ object ItemAddManager {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onItemAdd(event: ItemAddInInventoryEvent) {
+    private fun onItemAddInInventory(event: ItemAddInInventoryEvent) {
 
         val internalName = event.internalName
         if (internalName == ARCHFIEND_DICE || internalName == HIGH_CLASS_ARCHFIEND_DICE) {
@@ -101,7 +99,7 @@ object ItemAddManager {
     }
 
     @HandleEvent
-    fun onShardGain(event: ShardGainEvent) {
+    private fun onShardGain(event: ShardGainEvent) {
         if (event.amount < 0) return
         Source.SHARD.addItem(event.shardInternalName, event.amount)
     }
@@ -113,13 +111,13 @@ object ItemAddManager {
     private val recentItems = mutableMapOf<ItemAddEvent, SimpleTimeMark>()
 
     @HandleEvent
-    fun onItemAdd(event: ItemAddEvent) {
+    private fun onItemAdd(event: ItemAddEvent) {
         recentItems[event] = SimpleTimeMark.now()
         recentItems.evictOldestEntry(15)
     }
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Recent Item Adds")
         if (recentItems.isEmpty()) return event.addIrrelevant("no items added")
 
@@ -132,7 +130,7 @@ object ItemAddManager {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shdebugrecentitemadds") {
             description = "Shows recent item additions."
             category = CommandCategory.DEVELOPER_DEBUG
@@ -156,7 +154,7 @@ object ItemAddManager {
     private const val DICE_ACHIEVEMENT = "100 dice rolls"
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             "Professional Gambler".asComponent(),
             componentBuilder {
@@ -173,7 +171,7 @@ object ItemAddManager {
     }
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (diceRollChatPattern.matches(event.message)) {
             lastDiceRoll = SimpleTimeMark.now()
             val achievement = AchievementManager.getAchievement(DICE_ACHIEVEMENT)

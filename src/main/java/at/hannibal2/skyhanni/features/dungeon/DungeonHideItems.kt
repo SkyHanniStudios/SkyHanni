@@ -26,6 +26,7 @@ import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.entity.item.ItemEntity
 import kotlin.time.Duration.Companion.milliseconds
 
+
 @SkyHanniModule
 object DungeonHideItems {
 
@@ -47,8 +48,9 @@ object DungeonHideItems {
 
     private fun isSkeletonSkull(entity: ArmorStand): Boolean = entity.getStandHelmet()?.cleanName == "Skeleton Skull"
 
+    @Suppress("CyclomaticComplexMethod")
     @HandleEvent(onlyOnIsland = IslandType.CATACOMBS)
-    fun onCheckRender(event: CheckRenderEntityEvent<Entity>) {
+    private fun onCheckRenderEntity(event: CheckRenderEntityEvent<Entity>) {
         val entity = event.entity
 
         if (entity is ItemEntity) {
@@ -152,7 +154,7 @@ object DungeonHideItems {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CATACOMBS)
-    fun onParticle(event: ParticleEvent) {
+    private fun onParticle(event: ParticleEvent) {
         if (!config.hideSuperboomTNT && !config.hideReviveStone) return
 
         val packetLocation = event.location
@@ -170,7 +172,7 @@ object DungeonHideItems {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CATACOMBS)
-    fun onArmorStandMove(event: EntityMoveEvent<ArmorStand>) {
+    private fun onArmorStandMove(event: EntityMoveEvent<ArmorStand>) {
         val entity = event.entity
 
         if (isSkeletonSkull(entity)) {
@@ -189,13 +191,13 @@ object DungeonHideItems {
             } ?: false
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         hideParticles.clear()
         movingSkeletonSkulls.clear()
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(3, "dungeon.hideSuperboomTNT", "dungeon.objectHider.hideSuperboomTNT")
         event.move(3, "dungeon.hideBlessing", "dungeon.objectHider.hideBlessing")
         event.move(3, "dungeon.hideReviveStone", "dungeon.objectHider.hideReviveStone")

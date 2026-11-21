@@ -7,7 +7,6 @@ import at.hannibal2.skyhanni.data.title.TitleContext
 import at.hannibal2.skyhanni.data.title.TitleManager
 import at.hannibal2.skyhanni.data.title.TitleManager.TitleAddType
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
-import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
 import at.hannibal2.skyhanni.features.rift.RiftApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
@@ -43,7 +42,7 @@ object KillZoneWarning {
     private var title: TitleContext? = null
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onChatMessage(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!isEnabled()) return
         killZonePattern.matchMatcher(event.message) {
             sound.playSound()
@@ -53,8 +52,8 @@ object KillZoneWarning {
         }
     }
 
-    @HandleEvent(SkyHanniTickEvent::class, onlyOnIsland = IslandType.THE_RIFT)
-    fun onTick() {
+    @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
+    private fun onTick() {
         if (!isEnabled()) return
         if (lastMessageTime.passedSince() > 250.milliseconds) return
         if (killDeadline.isInPast()) return

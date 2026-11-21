@@ -1,5 +1,6 @@
 package at.hannibal2.skyhanni.data.hypixel.chat.event
 
+import at.hannibal2.skyhanni.skyhannimodule.PrimaryFunction
 import at.hannibal2.skyhanni.utils.ComponentSpan
 import at.hannibal2.skyhanni.utils.StringUtils.cleanPlayerName
 import at.hannibal2.skyhanni.utils.StringUtils.removeColor
@@ -21,6 +22,7 @@ object PartyChatEvent {
      * @param chatComponent The entire original chat component.
      * @param blockedReason The reason if the message should be blocked. null means not blocked.
      */
+    @PrimaryFunction("onPartyChat")
     class Allow(
         authorComponent: ComponentSpan,
         messageComponent: ComponentSpan,
@@ -44,6 +46,7 @@ object PartyChatEvent {
      * @param messageComponent The content of the actual message.
      * @param chatComponent The entire original chat component.
      */
+    @PrimaryFunction("onPartyChatModify")
     class Modify(
         authorComponent: ComponentSpan,
         messageComponent: ComponentSpan,

@@ -3,4 +3,5 @@ package at.hannibal2.skyhanni.events.hypixel
 import at.hannibal2.skyhanni.api.event.SkyHanniEvent
 
 // TODO: replace with [HypixelAPIJoinEvent](at.hannibal2.skyhanni.events.hypixel.modapi.HypixelAPIJoinEvent)
+@Suppress("MissingPrimaryFunction")
 object HypixelJoinEvent : SkyHanniEvent()

@@ -25,6 +25,7 @@ abstract class GuiContainerEvent(
         val partialTicks: Float,
     ) : GuiContainerEvent(gui, container), Rendering
 
+    @PrimaryFunction("onPreDraw")
     class PreDraw(
         override val context: GuiGraphicsExtractor,
         override val gui: SkyHanniGuiContainer,
@@ -34,6 +35,7 @@ abstract class GuiContainerEvent(
         val partialTicks: Float,
     ) : GuiContainerEvent(gui, container), Cancellable, Rendering
 
+    @PrimaryFunction("onPostDraw")
     class PostDraw(
         override val context: GuiGraphicsExtractor,
         override val gui: SkyHanniGuiContainer,
@@ -43,6 +45,7 @@ abstract class GuiContainerEvent(
         val partialTicks: Float,
     ) : GuiContainerEvent(gui, container), Rendering
 
+    @PrimaryFunction("onCloseWindow")
     class CloseWindowEvent(
         override val gui: SkyHanniGuiContainer,
         override val container: AbstractContainerMenu,
@@ -54,12 +57,14 @@ abstract class GuiContainerEvent(
         open val slot: Slot,
     ) : GuiContainerEvent(gui, container) {
 
+        @PrimaryFunction("onGuiContainerDrawSlotPre")
         class GuiContainerDrawSlotPre(
             override val gui: SkyHanniGuiContainer,
             override val container: AbstractContainerMenu,
             override val slot: Slot,
         ) : DrawSlotEvent(gui, container, slot), Cancellable
 
+        @PrimaryFunction("onGuiContainerDrawSlotPost")
         class GuiContainerDrawSlotPost(
             override val gui: SkyHanniGuiContainer,
             override val container: AbstractContainerMenu,
@@ -67,6 +72,7 @@ abstract class GuiContainerEvent(
         ) : DrawSlotEvent(gui, container, slot)
     }
 
+    @PrimaryFunction("onForegroundDrawn")
     class ForegroundDrawnEvent(
         override val context: GuiGraphicsExtractor,
         override val gui: SkyHanniGuiContainer,
@@ -76,6 +82,7 @@ abstract class GuiContainerEvent(
         val partialTicks: Float,
     ) : GuiContainerEvent(gui, container), Rendering
 
+    @PrimaryFunction("onSlotClick")
     class SlotClickEvent private constructor(
         override val gui: SkyHanniGuiContainer,
         override val container: AbstractContainerMenu,
@@ -86,10 +93,6 @@ abstract class GuiContainerEvent(
 
         val mouseType: MouseClickType get() = MouseClickType.of(clickedButtonRaw, clickType)
         fun rawButton(): Int = clickedButtonRaw
-
-        // TODO remove in october 2026
-        @Deprecated("use mouseType, or rawButton() when the raw value is needed")
-        val clickedButton get() = clickedButtonRaw
 
         val slot: Slot?
             get() = slotId.takeIf { it > -1 }?.let(container::getSlot)

@@ -54,7 +54,7 @@ object HoppityEggLocator {
     private var warningPending = false
 
     var sharedEggLocation: LorenzVec? = null
-    var possibleEggLocations = listOf<LorenzVec>()
+    var possibleEggLocations = emptyList<LorenzVec>()
     var currentEggType: HoppityEggType? = null
     var currentEggNote: String? = null
 

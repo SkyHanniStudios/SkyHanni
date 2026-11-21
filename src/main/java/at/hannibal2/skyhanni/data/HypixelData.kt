@@ -7,12 +7,10 @@ import at.hannibal2.skyhanni.api.hypixelapi.HypixelLocationApi
 import at.hannibal2.skyhanni.data.model.TabWidget
 import at.hannibal2.skyhanni.data.repo.ChatProgressUpdates
 import at.hannibal2.skyhanni.data.repo.SkyHanniRepoManager
-import at.hannibal2.skyhanni.events.IslandJoinEvent
 import at.hannibal2.skyhanni.events.ProfileJoinEvent
 import at.hannibal2.skyhanni.events.WidgetUpdateEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.hypixel.HypixelJoinEvent
-import at.hannibal2.skyhanni.events.minecraft.ClientDisconnectEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
 import at.hannibal2.skyhanni.events.skyblock.ScoreboardAreaChangeEvent
 import at.hannibal2.skyhanni.features.bingo.BingoApi
@@ -94,7 +92,6 @@ object HypixelData {
     private val progressCategory = ChatProgressUpdates.category("Hypixel Data")
 
     val server get() = HypixelLocationApi.serverName
-    val gameType get() = HypixelLocationApi.serverType?.name().orEmpty()
     val lobbyName get() = HypixelLocationApi.lobbyName.orEmpty()
     val lobbyType get() = HypixelLocationApi.lobbyType.orEmpty()
     val mode get() = HypixelLocationApi.mode.orEmpty()
@@ -138,20 +135,20 @@ object HypixelData {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         joinedWorld = SimpleTimeMark.now()
         skyBlockArea = null
         skyBlockAreaWithSymbol = null
     }
 
-    @HandleEvent(ClientDisconnectEvent::class)
-    fun onDisconnect() {
+    @HandleEvent
+    private fun onDisconnect() {
         skyBlockArea = null
         skyBlockAreaWithSymbol = null
     }
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!SkyBlockUtils.onHypixel) return
 
         val message = event.cleanMessage.lowercase()
@@ -183,7 +180,7 @@ object HypixelData {
 
     // TODO rewrite everything in here
     @HandleEvent
-    fun onTick(event: SkyHanniTickEvent) {
+    private fun onTick(event: SkyHanniTickEvent) {
         if (SkyBlockUtils.onHypixel && SkyBlockUtils.inSkyBlock) {
             loop@ for (line in ScoreboardData.sidebarLinesFormatted) {
                 skyblockAreaPattern.matchMatcher(line) {
@@ -212,7 +209,7 @@ object HypixelData {
     }
 
     @HandleEvent
-    fun onWidgetUpdate(event: WidgetUpdateEvent) {
+    private fun onWidgetUpdate(event: WidgetUpdateEvent) {
         when (event.widget) {
             TabWidget.AREA -> checkIsland(event)
             TabWidget.PROFILE -> checkProfile()
@@ -265,8 +262,8 @@ object HypixelData {
 
     private var tabListDataDirty = false
 
-    @HandleEvent(IslandJoinEvent::class)
-    fun onIslandJoin() {
+    @HandleEvent
+    private fun onIslandJoin() {
         tabListDataDirty = true
     }
 
@@ -295,7 +292,7 @@ object HypixelData {
     }
 
     @HandleEvent(HypixelJoinEvent::class)
-    fun onHypixelJoin() {
+    private fun onHypixelJoin() {
         CoroutineSettings("hypixel join repo update").launchCoroutine {
             val progress = progressCategory.start("hypixel join repo update check")
             SkyHanniRepoManager.displayRepoStatus(progress, joinEvent = true)

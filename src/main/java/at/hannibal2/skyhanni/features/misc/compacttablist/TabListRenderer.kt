@@ -33,7 +33,7 @@ object TabListRenderer {
     private const val COLUMN_SPACING = 6
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onRenderOverlayPre(event: GameOverlayRenderPreEvent) {
+    private fun onRenderOverlayPre(event: GameOverlayRenderPreEvent) {
         if (GlobalRender.renderDisabled || event.type != RenderLayer.PLAYER_LIST || !config.enabled.get()) return
         event.cancel()
 
@@ -45,7 +45,7 @@ object TabListRenderer {
     private var isTabToggled = false
 
     @HandleEvent(onlyOnSkyblock = true, priority = HandleEvent.LOWEST)
-    fun onGuiRenderOverlay() {
+    private fun onGuiRenderOverlay() {
         if (GlobalRender.renderDisabled || !config.enabled.get() || !config.toggleTab) return
         if (MinecraftCompat.screen != null) return
 
@@ -196,14 +196,14 @@ object TabListRenderer {
     )
 
     @HandleEvent
-    fun onSkipTablistLine(event: SkipTabListLineEvent) {
+    private fun onSkipTabListLine(event: SkipTabListLineEvent) {
         if (config.hideFiresales && event.lastSubTitle != null && fireSalePattern.matches(event.lastSubTitle.component)) {
             event.cancel()
         }
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(31, "misc.compactTabList", "gui.compactTabList")
     }
 }

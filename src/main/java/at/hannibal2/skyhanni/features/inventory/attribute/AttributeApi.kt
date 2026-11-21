@@ -16,7 +16,7 @@ import java.util.regex.Pattern
 @SkyHanniModule
 object AttributeApi {
 
-    private var goodRolls = listOf<GoodRollItem>()
+    private var goodRolls = emptyList<GoodRollItem>()
 
     enum class AttributeType(val displayName: String, val internalName: String, val shortName: String) {
         ARACHNO("Arachno", "arachno", "AR"),

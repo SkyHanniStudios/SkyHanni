@@ -1,12 +1,9 @@
 package at.hannibal2.skyhanni.utils
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.events.NeuRepositoryReloadEvent
-import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.NeuItems.getItemStack
-import at.hannibal2.skyhanni.utils.SafeItemStack
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 import kotlin.time.Duration
@@ -109,13 +106,13 @@ class AutoUpdatingItemStack(internalName: NeuInternalName) : ReadOnlyProperty<An
 
         val list = mutableListOf<ResettableValue<SafeItemStack>>()
 
-        @HandleEvent(RepositoryReloadEvent::class)
-        fun onRepoReload() {
+        @HandleEvent
+        private fun onRepoReload() {
             list.forEach { it.reset() }
         }
 
-        @HandleEvent(NeuRepositoryReloadEvent::class)
-        fun onNeuRepoReload() {
+        @HandleEvent
+        private fun onNeuRepoReload() {
             list.forEach { it.reset() }
         }
     }

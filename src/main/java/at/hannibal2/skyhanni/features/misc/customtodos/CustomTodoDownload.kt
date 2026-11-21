@@ -18,7 +18,7 @@ import io.github.notenoughupdates.moulconfig.observer.ObservableList
 @SkyHanniModule
 object CustomTodoDownload {
 
-    var todos: List<CommunityTodo> = listOf()
+    var todos: List<CommunityTodo> = emptyList()
         private set
 
     @HandleEvent

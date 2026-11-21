@@ -1,0 +1,85 @@
+GrammarRules:
+  AvoidBritishSpelling:
+    active: true
+    autoCorrect: true
+
+CompatRules:
+  MinecraftCompat:
+    active: true
+  VanillaItemStackImport:
+    active: true
+    autoCorrect: true
+
+FormattingRules:
+  CustomCommentSpacing:
+    active: false
+    autoCorrect: true
+  CustomAnnotationSpacing:
+    active: true
+    autoCorrect: true
+  StorageVarOrVal:
+    active: true
+    autoCorrect: true
+
+RepoRules:
+  SkullTexturesUseRepo:
+    active: true
+  RepoPatternRegexTestMissing:
+    active: true
+  RepoPatternRegexTestFailed:
+    active: true
+  RepoPatternUnnamedGroup:
+    active: true
+    autoCorrect: true
+  RepoPatternPassesShapeRequirement:
+    active: true
+
+ImportRules:
+  CustomImportOrdering:
+    active: true
+    autoCorrect: true
+
+SkyHanniStyle:
+  InSkyBlockEarlyReturn:
+    active: true
+    autoCorrect: true
+  IsInIslandEarlyReturn:
+    active: true
+    autoCorrect: true
+  OnlyOnIslandSpecificity:
+    active: true
+    autoCorrect: true
+
+EventRules:
+  PrivateEventListener:
+    active: true
+    autoCorrect: true
+  MissingHandleEvent:
+    active: true
+    autoCorrect: true
+  RedundantHandleEvent:
+    active: true
+    autoCorrect: true
+  MissingPrimaryFunction:
+    active: true
+    autoCorrect: true
+  DuplicatePrimaryFunction:
+    active: true
+    autoCorrect: true
+  MismatchedPrimaryFunction:
+    active: true
+    autoCorrect: true
+  UnusedEventParameter:
+    active: true
+    autoCorrect: true
+  RedundantEventType:
+    active: true
+    autoCorrect: true
+
+ModuleRules:
+  MissingSkyHanniModule:
+    active: true
+    autoCorrect: true
+  SkyHanniModuleOnlyOnObjects:
+    active: true
+    autoCorrect: true

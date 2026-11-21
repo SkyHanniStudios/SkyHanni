@@ -44,14 +44,14 @@ abstract class ItemTrackerData<T : SessionUptime>(clazz: KClass<T>) : TrackerDat
         command: Boolean,
         removalRunner: (NeuInternalName) -> Unit? = { removeItem(internalName) },
     ) = apply {
-        if (!command) { timesGained++ }
+        if (!command) timesGained++
         totalAmount += amount
         lastTimeUpdated = SimpleTimeMark.now()
-        if (command && totalAmount <= 0) { removalRunner(internalName) }
+        if (command && totalAmount <= 0) removalRunner(internalName)
     }
 
     @Expose
-    var items: MutableMap<NeuInternalName, TrackedItem> = HashMap()
+    val items: MutableMap<NeuInternalName, TrackedItem> = HashMap()
 
     data class TrackedItem(
         @Expose var timesGained: Long = 0,

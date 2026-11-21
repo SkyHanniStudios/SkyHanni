@@ -5,9 +5,7 @@ import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
 import at.hannibal2.skyhanni.events.IslandJoinEvent
 import at.hannibal2.skyhanni.events.IslandLeaveEvent
-import at.hannibal2.skyhanni.events.ProfileJoinEvent
 import at.hannibal2.skyhanni.events.hypixel.HypixelJoinEvent
-import at.hannibal2.skyhanni.events.minecraft.WorldChangeEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
@@ -30,7 +28,7 @@ object IslandDetectionWatcher {
     private val logger = SkyHanniLogger("debug/island_change")
 
     @HandleEvent
-    fun onIslandJoin(event: IslandJoinEvent) {
+    private fun onIslandJoin(event: IslandJoinEvent) {
         val newIsland = event.island
         val oldIsland = event.previousIsland
         log("IslandJoinEvent $oldIsland -> $newIsland")
@@ -38,22 +36,22 @@ object IslandDetectionWatcher {
     }
 
     @HandleEvent
-    fun onIslandLeave(event: IslandLeaveEvent) {
+    private fun onIslandLeave(event: IslandLeaveEvent) {
         log("IslandLeaveEvent ${event.island}")
     }
 
-    @HandleEvent(WorldChangeEvent::class)
-    fun onWorldChange() {
+    @HandleEvent
+    private fun onWorldChange() {
         log("WorldChangeEvent")
     }
 
-    @HandleEvent(ProfileJoinEvent::class)
-    fun onProfileJoin() {
+    @HandleEvent
+    private fun onProfileJoin() {
         log("ProfileJoinEvent")
     }
 
     @HandleEvent(HypixelJoinEvent::class)
-    fun onHypixelJoin() {
+    private fun onOldHypixelJoin() {
         log("HypixelJoinEvent")
     }
 
@@ -68,7 +66,7 @@ object IslandDetectionWatcher {
     }
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Island Detection Watcher")
 
         val currentEventType = latestEventType

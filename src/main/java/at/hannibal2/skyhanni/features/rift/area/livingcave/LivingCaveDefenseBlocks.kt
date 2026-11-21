@@ -3,7 +3,6 @@ package at.hannibal2.skyhanni.features.rift.area.livingcave
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.events.ParticleEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.ServerBlockChangeEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.features.rift.RiftApi
@@ -30,19 +29,19 @@ import net.minecraft.core.particles.ParticleTypes
 object LivingCaveDefenseBlocks {
 
     private val config get() = RiftApi.config.area.livingCave.defenseBlock
-    private var movingBlocks = mapOf<DefenseBlock, Long>()
+    private var movingBlocks = emptyMap<DefenseBlock, Long>()
     private var staticBlocks = emptyList<DefenseBlock>()
 
     class DefenseBlock(val entity: RemotePlayer, val location: LorenzVec, var hidden: Boolean = false)
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed() {
         if (!isEnabled()) return
         staticBlocks = staticBlocks.editCopy { removeIf { it.entity.deceased } }
     }
 
     @HandleEvent(receiveCancelled = true)
-    fun onParticle(event: ParticleEvent) {
+    private fun onParticle(event: ParticleEvent) {
         if (!isEnabled()) return
 
         movingBlocks = movingBlocks.editCopy {
@@ -107,7 +106,7 @@ object LivingCaveDefenseBlocks {
     }
 
     @HandleEvent
-    fun onBlockChange(event: ServerBlockChangeEvent) {
+    private fun onServerBlockChange(event: ServerBlockChangeEvent) {
         if (!isEnabled()) return
         val location = event.location
         val old = event.old
@@ -140,7 +139,7 @@ object LivingCaveDefenseBlocks {
         staticBlocks.filter { it.location.distance(location) < 15 }.minByOrNull { it.location.distance(location) }
 
     @HandleEvent
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!isEnabled()) return
 
         for ((block, time) in movingBlocks) {
@@ -176,7 +175,7 @@ object LivingCaveDefenseBlocks {
     fun isEnabled() = RiftApi.inRift() && config.enabled && RiftApi.inLivingCave()
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(9, "rift.area.livingCaveConfig", "rift.area.livingCave")
 
         val basePath = "rift.area.livingCave"

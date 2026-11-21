@@ -8,7 +8,6 @@ import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.jsonobjects.repo.MinionDropsJson
 import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
 import at.hannibal2.skyhanni.events.ItemAddEvent
-import at.hannibal2.skyhanni.events.MinionCloseEvent
 import at.hannibal2.skyhanni.events.MinionOpenEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
@@ -45,8 +44,8 @@ object InfernoMinionProfitTracker {
     private val eyedropsItem = "CAPSAICIN_EYEDROPS_NO_CHARGES".toInternalName()
 
     private val infernoMinionInventory = InventoryDetector { InfernoMinionFeatures.infernoMinionTitlePattern }
-    private var fuelDropMap = mapOf<NeuInternalName, Set<NeuInternalName>>()
-    private var minionDropMap = mapOf<String, Set<NeuInternalName>>()
+    private var fuelDropMap = emptyMap<NeuInternalName, Set<NeuInternalName>>()
+    private var minionDropMap = emptyMap<String, Set<NeuInternalName>>()
 
     private var isInfernoMinion = false
     private var lastFuelItem: NeuInternalName? = null
@@ -124,21 +123,21 @@ object InfernoMinionProfitTracker {
     }
 
     @HandleEvent
-    fun onRepoReload(event: RepositoryReloadEvent) {
+    private fun onRepoReload(event: RepositoryReloadEvent) {
         val data = event.getConstant<MinionDropsJson>("MinionDrops")
         fuelDropMap = data.fuelDrops
         minionDropMap = data.minions
     }
 
     @HandleEvent
-    fun onMinionOpen(event: MinionOpenEvent) {
+    private fun onMinionOpen(event: MinionOpenEvent) {
         isInfernoMinion = InfernoMinionFeatures.infernoMinionTitlePattern.matches(event.inventoryName)
         if (!isInfernoMinion) return
         lastFuelItem = getFuelFromInventory(event.inventoryItems)
     }
 
     @HandleEvent
-    fun onInventoryUpdated(event: InventoryUpdatedEvent) {
+    private fun onInventoryUpdated(event: InventoryUpdatedEvent) {
         if (!config.enabled) return
         if (!isInfernoMinion) return
         val newFuel = getFuelFromInventory(event.inventoryItems)
@@ -149,7 +148,7 @@ object InfernoMinionProfitTracker {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onItemAdd(event: ItemAddEvent) {
+    private fun onItemAdd(event: ItemAddEvent) {
         if (!config.enabled) return
         if (lastCollectionTime.passedSince() > 1.minutes) return
         val isKnownDrop = minionDropMap.values.any { event.internalName in it } ||
@@ -158,8 +157,8 @@ object InfernoMinionProfitTracker {
         tracker.addItem(event.internalName, event.amount, command = false)
     }
 
-    @HandleEvent(MinionCloseEvent::class)
-    fun onMinionClose() {
+    @HandleEvent
+    private fun onMinionClose() {
         if (!isInfernoMinion) return
         if (!config.enabled) return
         lastCollectionTime = SimpleTimeMark.now()
@@ -168,7 +167,7 @@ object InfernoMinionProfitTracker {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!config.enabled) return
         if (MinionFeatures.eyedropsRanOutPattern.matches(event.cleanMessage)) {
             tracker.modify { it.totalFuelCost += eyedropsItem.getPrice() }
@@ -184,7 +183,7 @@ object InfernoMinionProfitTracker {
     private fun isRecentCollection() = config.showAfterCollection && lastCollectionTime.passedSince() < 10.seconds
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shresetinfernominiontracker") {
             description = "Resets the Inferno Minion Profit Tracker"
             category = CommandCategory.USERS_RESET

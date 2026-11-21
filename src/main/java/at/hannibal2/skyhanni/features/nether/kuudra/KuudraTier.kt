@@ -19,19 +19,24 @@ enum class KuudraTier(val displayName: String) {
 
     var doneToday: Boolean = false
 
-    private var intLocation: LorenzVec? = null
-    private var intTierNumber: Int = ordinal + 1
-    private var intDisplayItem: NeuInternalName = "KUUDRA_${name}_TIER_KEY".toInternalName()
+    var location: LorenzVec? = null
+        private set
+    var tierNumber: Int = ordinal + 1
+        private set
+    var displayItem: NeuInternalName = "KUUDRA_${name}_TIER_KEY".toInternalName()
+        private set
 
-    val location: LorenzVec? get() = intLocation
-    val tierNumber: Int get() = intTierNumber
-    val displayItem: NeuInternalName get() = intDisplayItem
+    private fun setTierNumber(tierNumber: Int) {
+        this.tierNumber = tierNumber
+    }
+    private fun setLocation(location: LorenzVec?) {
+        this.location = location
+    }
+    private fun setDisplayItem(displayItem: NeuInternalName) {
+        this.displayItem = displayItem
+    }
 
-    private fun setTierNumber(tierNumber: Int) { this.intTierNumber = tierNumber }
-    private fun setLocation(location: LorenzVec?) { this.intLocation = location }
-    private fun setDisplayItem(displayItem: NeuInternalName) { this.intDisplayItem = displayItem }
-
-    fun getTieredDisplayName() = "Tier $intTierNumber ($displayName)"
+    fun getTieredDisplayName() = "Tier $tierNumber ($displayName)"
 
     @SkyHanniModule
     companion object {

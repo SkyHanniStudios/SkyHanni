@@ -36,7 +36,7 @@ object OdgerTotalCaught {
 
     // Not island-gated because Odger has an Abiphone contact
     @HandleEvent(onlyOnSkyblock = true)
-    fun onToolTipEvent(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!TrophyFishManager.odgerInventory.isInside()) return
         if (!config.totalFishCaught) return
 
