@@ -151,7 +151,7 @@ object VampireSlayerFeatures {
     }
 
     @HandleEvent(onlyOnIsland = THE_RIFT)
-    private fun onPlayerMove(event: EntityMoveEvent<LocalPlayer>) {
+    private fun onEntityMove(event: EntityMoveEvent<LocalPlayer>) {
         if (!isEnabled()) return
         val removed = trackedBosses.filter { it.entity.distanceToPlayer() > MAX_SLAYER_DISTANCE }
         trackedBosses.removeAll(removed)

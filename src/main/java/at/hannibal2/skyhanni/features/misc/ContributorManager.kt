@@ -15,7 +15,7 @@ import at.hannibal2.skyhanni.data.hypixel.chat.event.PlayerAllChatEvent
 import at.hannibal2.skyhanni.data.jsonobjects.repo.ContributorJsonEntry
 import at.hannibal2.skyhanni.data.jsonobjects.repo.ContributorsJson
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
-import at.hannibal2.skyhanni.events.entity.EntityDisplayNameEvent
+import at.hannibal2.skyhanni.events.entity.EntityNameTagRenderEvent
 import at.hannibal2.skyhanni.features.achievements.ContributorAchievement
 import at.hannibal2.skyhanni.features.commands.tabcomplete.PlayerNameSource
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -324,7 +324,7 @@ object ContributorManager {
     }
 
     @HandleEvent
-    private fun onRenderNametag(event: EntityDisplayNameEvent<Player>) {
+    private fun onEntityNameTagRender(event: EntityNameTagRenderEvent<Player>) {
         val gameProfile = event.entity.gameProfile
         getSuffix(gameProfile.id)?.let {
             recordSeenContributor(gameProfile)

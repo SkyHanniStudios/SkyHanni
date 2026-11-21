@@ -155,7 +155,7 @@ object Year400Features {
     @HandleEvent
     fun onPunch(event: EntityClickEvent) {
         if (!config.teamFinder) return
-        val entity = event.clickedEntity
+        val entity = event.entity
         if (colorInHand == null) return
         if (entity !is RemotePlayer) return
         if (entity.isNpc()) return
