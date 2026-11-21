@@ -12,8 +12,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinRenderSystem {
 
     @Inject(method = "flipFrame", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/DynamicUniforms;reset()V"))
-    private static void clearChromaUniforms(CallbackInfo ci) {
-        GuiRendererHook.clearChromaUniforms();
+    private static void endSkyHanniFrame(CallbackInfo ci) {
+        GuiRendererHook.endFrame();
     }
 }
 *///?}
