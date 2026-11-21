@@ -40,7 +40,10 @@ object MouseCompat {
 
     private val mouse by lazy { Minecraft.getInstance().mouseHandler }
 
-    fun isButtonDown(button: Int): Boolean {
+    /**
+     * internal function, use [at.hannibal2.skyhanni.utils.KeyboardManager.isKeyHeld]
+     */
+    internal fun isButtonDown(button: Int): Boolean {
         return buttonStates[button]
     }
 

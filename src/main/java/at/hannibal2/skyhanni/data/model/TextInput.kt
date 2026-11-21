@@ -91,6 +91,7 @@ open class TextInput {
         @JvmStatic
         fun onMinecraftInput() = activeInstance != null
 
+        @JvmStatic
         fun onGuiInput(ci: CallbackInfoReturnable<Boolean>) {
             if (activeInstance != null) {
                 if (InputKeys.KEY_ESCAPE.isKeyHeld()) {

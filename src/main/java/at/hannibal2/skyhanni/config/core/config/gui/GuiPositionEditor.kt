@@ -73,7 +73,7 @@ class GuiPositionEditor(
     override fun onDrawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         width = getEditorScaledWidth()
         height = getEditorScaledHeight()
-        drawDefaultBackground(mouseX, mouseY, partialTicks)
+        drawDefaultBackground()
         oldScreenRenderContext.render(mouseX, mouseY, partialTicks)
 
         val hoveredPos = renderRectangles()
@@ -267,7 +267,7 @@ class GuiPositionEditor(
         }
     }
 
-    override fun onMouseClickMove(originalMouseX: Int, originalMouseY: Int, clickedMouseButton: Int, timeSinceLastClick: Long) {
+    override fun onMouseClickMove(originalMouseX: Int, originalMouseY: Int, clickedMouseKey: InputConstants.Key, timeSinceLastClick: Long) {
         for (position in positions) {
             if (!position.clicked) continue
 

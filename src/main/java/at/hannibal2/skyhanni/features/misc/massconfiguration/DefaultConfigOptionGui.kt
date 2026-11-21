@@ -47,7 +47,7 @@ class DefaultConfigOptionGui(
 
     @Suppress("CyclomaticComplexMethod", "LongMethod")
     override fun onDrawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        drawDefaultBackground(mouseX, mouseY, partialTicks)
+        drawDefaultBackground()
         GuiRenderUtils.drawFloatingRectDark((width - xSize) / 2, (height - ySize) / 2, xSize, ySize)
         var hoveringTextToDraw: List<String>? = null
         val x = mouseX - ((width - xSize) / 2) - padding
