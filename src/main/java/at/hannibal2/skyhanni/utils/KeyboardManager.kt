@@ -142,6 +142,12 @@ object KeyboardManager {
         else -> InputConstants.isKeyDown(Minecraft.getInstance().window, this)
     }
 
+    fun Int.toInputType(): InputConstants.Type =
+        if (this in 0 until MouseCompat.NUMBER_OF_MOUSE_BUTTONS) InputConstants.Type.MOUSE else InputConstants.Type.KEYSYM
+
+    fun Int.toInputKey(): InputConstants.Key =
+        if (this == InputConstants.UNKNOWN.value) InputConstants.UNKNOWN else toInputType().getOrCreate(this)
+
     private val lockedKeys = mutableSetOf<Int>()
 
     /**
