@@ -4,6 +4,7 @@ import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.ConditionalUtils.transformIf
 import at.hannibal2.skyhanni.utils.DelayedRun
 import at.hannibal2.skyhanni.utils.GuiRenderUtils
+import at.hannibal2.skyhanni.utils.InputKeys
 import at.hannibal2.skyhanni.utils.RenderUtils
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.containsKeys
@@ -65,7 +66,7 @@ class ChangeLogViewerScreen : SkyHanniBaseScreen() {
         val xTranslate = this.width / 10
         val yTranslate = this.height / 10
 
-        drawDefaultBackground(mouseX, mouseY, partialTicks)
+        drawDefaultBackground()
         DrawContextUtils.translate(xTranslate - 2.0, yTranslate - 2.0)
         GuiRenderUtils.drawFloatingRectDark(0, 0, width, height)
         DrawContextUtils.translate(-(xTranslate - 2.0), -(yTranslate - 2.0))
@@ -155,7 +156,7 @@ class ChangeLogViewerScreen : SkyHanniBaseScreen() {
         velocity = 12.0,
         horizontalAlign = RenderUtils.HorizontalAlignment.CENTER,
         scrollValue = changelogScroll,
-        button = 0,
+        button = InputKeys.MOUSE_BUTTON_LEFT
     )
 
     private fun makeChangeLogToRenderable(

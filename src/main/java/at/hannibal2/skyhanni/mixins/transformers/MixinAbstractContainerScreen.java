@@ -11,6 +11,7 @@ import at.hannibal2.skyhanni.features.inventory.BetterContainers;
 import at.hannibal2.skyhanni.features.inventory.MiddleClickFix;
 import at.hannibal2.skyhanni.mixins.hooks.GuiContainerHook;
 import at.hannibal2.skyhanni.utils.DelayedRun;
+import at.hannibal2.skyhanni.utils.InputKeys;
 import at.hannibal2.skyhanni.utils.KeyboardManager;
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
@@ -75,16 +76,24 @@ public abstract class MixinAbstractContainerScreen extends Screen {
         }
     }
 
-    @ModifyArg(method = "extractTooltip", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;setTooltipForNextFrame(Lnet/minecraft/client/gui/Font;Ljava/util/List;Ljava/util/Optional;IILnet/minecraft/resources/Identifier;)V"), index = 1)
-    private List<Component> renderBackground(List<Component> textTooltip, @Local ItemStack itemStack, @Local(argsOnly = true) GuiGraphicsExtractor drawContext) {
-        return ToolTipData.processModernTooltip(drawContext, itemStack, textTooltip);
+    @ModifyArg(
+        method = "extractTooltip",
+        at = @At(
+            value = "INVOKE",
+            //~ if < 26.3 'Z)' -> ')'
+            target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;setTooltipForNextFrame(Lnet/minecraft/client/gui/Font;Ljava/util/List;Ljava/util/Optional;IILnet/minecraft/resources/Identifier;Z)V"
+        ),
+        index = 1
+    )
+    private List<Component> renderBackground(List<Component> textTooltip, @Local ItemStack itemStack, @Local(argsOnly = true) GuiGraphicsExtractor graphics) {
+        return ToolTipData.processModernTooltip(graphics, itemStack, textTooltip);
     }
 
     @Inject(method = "keyPressed", at = @At(value = "HEAD"), cancellable = true)
     private void keyPressed(KeyEvent input, CallbackInfoReturnable<Boolean> cir) {
-        int keyCode = input.input();
-        TextInput.Companion.onGuiInput(cir);
-        boolean shouldCancelInventoryClose = KeyboardManager.checkIsInventoryClosure(keyCode);
+        TextInput.onGuiInput(cir);
+        var key = InputKeys.keyEvent(input);
+        boolean shouldCancelInventoryClose = KeyboardManager.checkIsInventoryClosure(key);
         if (new GuiKeyPressEvent.GuiKeyboardKeyPressEvent((AbstractContainerScreen<?>) (Object) this).post().isCancelled() || shouldCancelInventoryClose) {
             cir.setReturnValue(false);
         }
