@@ -81,6 +81,8 @@ interface Renderable {
         val logger = SkyHanniLogger("debug/renderable")
         var currentRenderPassMousePosition: Pair<Int, Int>? = null
 
+        const val SCROLLBAR_WIDTH = 7
+
         private val scrollbarTrackColor: ChromaColour = ChromaColour.fromStaticRGB(40, 40, 60, 200)
         private val scrollbarThumbColor: ChromaColour = ChromaColour.fromStaticRGB(100, 100, 200, 200)
 
@@ -771,7 +773,7 @@ interface Renderable {
             override val verticalAlign = verticalAlign
             private val virtualHeight = list.sumOf { it.height }
             override val width = maxOf(list.maxOfOrNull { it.width } ?: 0, scrollDownTip.width, scrollUpTip.width) +
-                if (showScrollbar && virtualHeight > height) 7 else 0
+                if (showScrollbar && virtualHeight > height) SCROLLBAR_WIDTH else 0
 
             private val scroll = ScrollInput.Companion.Vertical(
                 scrollValue,
@@ -831,7 +833,7 @@ interface Renderable {
             private val virtualHeight get() = list.sumOf { it.height }
             override val width
                 get() = maxOf(list.maxOfOrNull { it.width } ?: 0, scrollDownTip.width, scrollUpTip.width) +
-                    if (showScrollbar && virtualHeight > height) 7 else 0
+                    if (showScrollbar && virtualHeight > height) SCROLLBAR_WIDTH else 0
 
             private var scroll = createScroll()
 
@@ -930,6 +932,15 @@ interface Renderable {
                     .toFloat()
                 val thumbRatio = height.toFloat() / virtualHeight
                 val thumbHeight = (thumbRatio * height).toInt().coerceAtLeast(8)
+                val localMouse = currentRenderPassMousePosition?.let { (x, y) -> x - mouseOffsetX to y - mouseOffsetY }
+                val overTrack = localMouse?.let { (x, y) -> x in (width - SCROLLBAR_WIDTH) until width && y in 0 until height } ?: false
+                scroll.updateThumbDrag(
+                    localMouse?.second,
+                    overTrack,
+                    ((scroll.asDouble() / maxScroll) * (height - thumbHeight)).toInt(),
+                    thumbHeight,
+                    height,
+                )
                 val thumbY = ((scroll.asDouble() / maxScroll) * (height - thumbHeight)).toInt()
                 val trackRgb = scrollbarTrackColor.toColor().rgb
                 val thumbRgb = scrollbarThumbColor.toColor().rgb
