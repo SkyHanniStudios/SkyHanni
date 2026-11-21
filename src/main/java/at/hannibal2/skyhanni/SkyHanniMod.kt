@@ -47,6 +47,9 @@ import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.io.File
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
@@ -68,6 +71,12 @@ object SkyHanniMod : CompatCoroutineManager by SkyHanniCoroutineManager(
     fun init() {
         configManager = ConfigManager()
         configManager.firstLoad()
+        CoroutineSettings("config auto save").launchRepeating(1.minutes) {
+            configManager.saveConfig(ConfigFileType.FEATURES, "auto-save-60s")
+        }
+        CoroutineSettings("config pending save").withIOContext().launchRepeating(10.seconds) {
+            configManager.savePendingConfigs()
+        }
         if (PlatformUtils.getRepoPatternDumpLocation() == null) EnoughUpdatesRepoManager.initRepo()
         MinecraftConsoleFilter.initLogging()
         try {
@@ -83,6 +92,12 @@ object SkyHanniMod : CompatCoroutineManager by SkyHanniCoroutineManager(
 
     fun CoroutineSettings.launchUnScoped(block: suspend () -> Unit): Job =
         with(SkyHanniMod) { launchUnScopedCoroutine(block) }
+
+    fun CoroutineSettings.launchRepeating(
+        period: Duration,
+        initialDelay: Duration = period,
+        block: suspend CoroutineScope.() -> Unit,
+    ): Job = with(SkyHanniMod) { launchRepeatingCoroutine(period, initialDelay, block) }
 
     fun <T> CoroutineSettings.async(block: suspend CoroutineScope.() -> T): Deferred<T?> =
         with(SkyHanniMod) { asyncCoroutine(block) }
