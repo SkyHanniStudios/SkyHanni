@@ -89,6 +89,7 @@ open class TextInput {
             }
         }
 
+        @JvmStatic
         fun onGuiInput(ci: CallbackInfoReturnable<Boolean>) {
             if (activeInstance != null) {
                 if (InputKeys.KEY_ESCAPE.isKeyHeld()) {

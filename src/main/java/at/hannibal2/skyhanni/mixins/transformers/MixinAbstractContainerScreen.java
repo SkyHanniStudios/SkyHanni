@@ -11,6 +11,7 @@ import at.hannibal2.skyhanni.features.inventory.BetterContainers;
 import at.hannibal2.skyhanni.features.inventory.MiddleClickFix;
 import at.hannibal2.skyhanni.mixins.hooks.GuiContainerHook;
 import at.hannibal2.skyhanni.utils.DelayedRun;
+import at.hannibal2.skyhanni.utils.InputKeys;
 import at.hannibal2.skyhanni.utils.KeyboardManager;
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
@@ -82,9 +83,9 @@ public abstract class MixinAbstractContainerScreen extends Screen {
 
     @Inject(method = "keyPressed", at = @At(value = "HEAD"), cancellable = true)
     private void keyPressed(KeyEvent input, CallbackInfoReturnable<Boolean> cir) {
-        int keyCode = input.input();
-        TextInput.Companion.onGuiInput(cir);
-        boolean shouldCancelInventoryClose = KeyboardManager.checkIsInventoryClosure(keyCode);
+        TextInput.onGuiInput(cir);
+        var key = InputKeys.keyEvent(input);
+        boolean shouldCancelInventoryClose = KeyboardManager.checkIsInventoryClosure(key);
         if (new GuiKeyPressEvent.GuiKeyboardKeyPressEvent((AbstractContainerScreen<?>) (Object) this).post().isCancelled() || shouldCancelInventoryClose) {
             cir.setReturnValue(false);
         }

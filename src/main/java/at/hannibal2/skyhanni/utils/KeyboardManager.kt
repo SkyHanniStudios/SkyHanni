@@ -15,7 +15,6 @@ import io.github.notenoughupdates.moulconfig.processor.MoulConfigProcessor
 import net.minecraft.client.KeyMapping
 import net.minecraft.client.Minecraft
 import net.minecraft.client.input.InputQuirks
-import net.minecraft.client.input.KeyEvent
 import org.apache.commons.lang3.SystemUtils
 
 @SkyHanniModule
@@ -92,21 +91,19 @@ object KeyboardManager {
     fun isPastingKeysDown() =
         isModifierKeyDown() && InputKeys.KEY_V.isKeyHeld()
 
-    private fun Int.matchesClosureKey() =
-        Minecraft.getInstance().options.keyInventory.matches(KeyEvent(this, this, 0))
+    private fun InputConstants.Key.matchesClosureKey() =
+        Minecraft.getInstance().options.keyInventory.key == this
 
     @JvmStatic
-    fun checkIsInventoryClosure(keycode: Int): Boolean {
+    fun checkIsInventoryClosure(key: InputConstants.Key): Boolean {
         // Holding shift bypasses closure checks
         if (isShiftKeyDown()) return false
 
-        val isClose = keycode.matchesClosureKey() || keycode == InputKeys.KEY_ESCAPE.value
+        val isClose = key.matchesClosureKey() || key == InputKeys.KEY_ESCAPE
         if (!isClose) return false
 
         return AttemptedInventoryCloseEvent().post().isCancelled
     }
-
-    fun checkIsInventoryClosure(keycode: InputConstants.Key): Boolean = checkIsInventoryClosure(keycode.value)
 
     fun getModifierKeyName(short: Boolean = false): String =
         if (InputQuirks.REPLACE_CTRL_KEY_WITH_CMD_KEY) {
