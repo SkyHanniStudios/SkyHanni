@@ -105,7 +105,7 @@ object SkyBlockItemModifierUtils {
     ) {
         val ownedUuid: UUID? get() = uniqueId ?: uuid
         val properSkinItem get() = skin?.let { "PET_SKIN_$skin".toInternalName() }
-        fun getSkinVariantIndex() = extraData?.let { PetUtils.getVariantIndexOrNull(it) }
+        fun getSkinVariantIndex() = extraData?.let { AnimatedSkinUtils.getVariantIndexOrNull(it) }
     }
 
     fun SafeItemStack.getPetCandyUsed(): Int? {

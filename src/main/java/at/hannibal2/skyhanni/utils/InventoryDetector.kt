@@ -56,7 +56,7 @@ class InventoryDetector(
         }
 
         @HandleEvent(priority = HandleEvent.HIGHEST)
-        fun onInventoryOpen(event: InventoryFullyOpenedEvent) {
+        private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
             detectors.forEach { it.updateInventoryState(event) }
         }
     }

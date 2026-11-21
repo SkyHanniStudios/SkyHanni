@@ -4,8 +4,10 @@ import at.hannibal2.skyhanni.config.storage.ProfileSpecificStorage
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
 import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
 import at.hannibal2.skyhanni.features.misc.items.EstimatedItemValueCalculator
+import at.hannibal2.skyhanni.utils.AnimatedSkinUtils
 import at.hannibal2.skyhanni.utils.DelayedRun
 import at.hannibal2.skyhanni.utils.InventoryUtils
+import at.hannibal2.skyhanni.utils.ItemUtils
 import at.hannibal2.skyhanni.utils.ItemUtils.cleanName
 import at.hannibal2.skyhanni.utils.ItemUtils.getInternalNameOrNull
 import at.hannibal2.skyhanni.utils.NumberUtil.formatInt
@@ -13,12 +15,18 @@ import at.hannibal2.skyhanni.utils.NumberUtil.shortFormat
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.SafeItemStack
+import at.hannibal2.skyhanni.utils.SkyBlockItemModifierUtils.getArmorDye
+import at.hannibal2.skyhanni.utils.SkyBlockItemModifierUtils.getExtraAttributes
+import at.hannibal2.skyhanni.utils.SkyBlockItemModifierUtils.getHelmetSkin
 import at.hannibal2.skyhanni.utils.compat.ColoredBlockCompat.Companion.isStainedGlassPane
 import at.hannibal2.skyhanni.utils.compat.DyeCompat
 import at.hannibal2.skyhanni.utils.compat.DyeCompat.Companion.isDye
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLeadingWhiteLessResets
+import at.hannibal2.skyhanni.utils.renderables.animated.framed.ItemStackAnimatedFrame
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import com.google.gson.annotations.Expose
+import net.minecraft.core.component.DataComponents
+import net.minecraft.world.item.component.DyedItemColor
 import java.util.regex.Pattern
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -83,6 +91,52 @@ abstract class AbstractWardrobeApi {
             }
         }
         slots = list
+    }
+
+    private fun String.buildTextureItemStack(): SafeItemStack {
+        val (uuid, texture) = this.split(":")
+        return ItemUtils.createSkull("Animated Armor", uuid, texture)
+    }
+
+    // TODO at some point fix this idk
+    private val skinsNoAnimation = setOf(
+        "FERMENTO_ULTIMATE",
+    )
+
+    private val armorFrameCache: MutableMap<String, List<ItemStackAnimatedFrame>> = mutableMapOf()
+
+    protected fun handleNeuRepoReload() {
+        armorFrameCache.clear()
+    }
+
+    fun getArmorAnimatedFrames(stack: SafeItemStack): List<ItemStackAnimatedFrame>? {
+        val skinInternalName = stack.getHelmetSkin()?.asString() ?: return null
+        if (skinInternalName in skinsNoAnimation) return null
+        val animJson = AnimatedSkinUtils.armorSkins[skinInternalName] ?: return null
+        // Variant skins have multiple textures but no animation tick rate.
+        // Pick the single texture that matches the item's stored variant index.
+        if (animJson.ticks <= 0 && animJson.textures.size > 1) {
+            val variantIndex = stack.getExtraAttributes()?.let { AnimatedSkinUtils.getVariantIndexOrNull(it) } ?: 0
+            val cacheKey = "$skinInternalName:$variantIndex"
+            return armorFrameCache.getOrPut(cacheKey) {
+                val texture = animJson.textures.getOrElse(variantIndex) { animJson.textures.first() }
+                listOf(ItemStackAnimatedFrame(texture.buildTextureItemStack(), 0))
+            }
+        }
+        return armorFrameCache.getOrPut(skinInternalName) {
+            animJson.textures.map { ItemStackAnimatedFrame(it.buildTextureItemStack(), animJson.ticks) }
+        }
+    }
+
+    fun getArmorDyeAnimatedFrames(stack: SafeItemStack): List<ItemStackAnimatedFrame>? {
+        val dyeInternalName = stack.getArmorDye() ?: return null
+        val dyeColors = AnimatedSkinUtils.animatedDyes[dyeInternalName] ?: return null
+        if (dyeColors.size <= 1) return null
+        return dyeColors.map { colorInt ->
+            val dyedStack = stack.copy()
+            dyedStack.set(DataComponents.DYED_COLOR, DyedItemColor(colorInt))
+            ItemStackAnimatedFrame(dyedStack, 1)
+        }
     }
 
     private fun getWardrobeItem(itemStack: SafeItemStack?) =
@@ -189,11 +243,9 @@ abstract class AbstractWardrobeApi {
                     append("Slot ${slot.id}")
                     if (slot.favorite) append(" - Favorite: true")
                 }
-                if (slot.locked) {
-                    add("$slotInfo is locked")
-                } else if (slot.isEmpty()) {
-                    add("$slotInfo is empty")
-                } else {
+                if (slot.locked) add("$slotInfo is locked")
+                else if (slot.isEmpty()) add("$slotInfo is empty")
+                else {
                     add(slotInfo)
                     setOf("Item1", "Item2", "Item3", "Item4").forEachIndexed { id, armorName ->
                         slot.getData()?.armor?.get(id)?.hoverName?.formattedTextCompatLeadingWhiteLessResets()?.let { name ->

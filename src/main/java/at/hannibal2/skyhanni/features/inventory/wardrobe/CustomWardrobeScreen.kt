@@ -21,7 +21,7 @@ class CustomWardrobeScreen(
         CustomWardrobe.renderableDimensions.second,
     )
 
-    override fun shouldShowItemList(): Boolean = CustomWardrobe.config.showReiItems
+    override fun shouldShowItemList(): Boolean = CustomWardrobe.config.showReiItems.get()
 
     override fun isSwitchingScreens(): Boolean = CustomWardrobe.switchingScreens
 

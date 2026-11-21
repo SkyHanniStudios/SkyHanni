@@ -1,13 +1,10 @@
 package at.hannibal2.skyhanni.features.inventory.wardrobe
 
 import at.hannibal2.skyhanni.config.core.config.Position
-import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.ColorUtils.darker
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderable
-import at.hannibal2.skyhanni.utils.compat.DrawContextUtils
+import at.hannibal2.skyhanni.utils.compat.SkyHanniContainerScreen
 import at.hannibal2.skyhanni.utils.renderables.Renderable
-import net.minecraft.client.gui.GuiGraphicsExtractor
-import net.minecraft.client.gui.screens.inventory.ContainerScreen
 import net.minecraft.network.chat.Component
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.inventory.ChestMenu
@@ -17,7 +14,7 @@ class CustomWardrobeEditScreen(
     menu: ChestMenu,
     inventory: Inventory,
     title: Component,
-) : ContainerScreen(menu, inventory, title) {
+) : SkyHanniContainerScreen(menu, inventory, title) {
     private val inventoryButtonPosition: Position = Position().ignoreScale()
     private var inventoryButton: Renderable? = null
 
@@ -32,24 +29,7 @@ class CustomWardrobeEditScreen(
         }
     }
 
-    override fun extractRenderState(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, partialTick: Float) {
-        super.extractRenderState(graphics, mouseX, mouseY, partialTick)
-        DrawContextUtils.setContext(graphics)
-        try {
-            onDrawScreen()
-        } catch (e: Exception) {
-            ErrorManager.logErrorWithData(
-                e,
-                "Error while drawing editable custom wardrobe screen",
-                "screen" to this,
-            )
-        } finally {
-            DrawContextUtils.clearContext()
-        }
-    }
-
-    // TODO: use SkyhanniBaseScreen.onDrawScreen() instead of this method
-    private fun onDrawScreen() {
+    override fun onDrawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         val renderable = inventoryButton ?: addReEnableButton().also { inventoryButton = it }
         val posX = this.leftPos + (1.05 * this.imageWidth).toInt()
         val posY = this.topPos + (this.imageHeight - renderable.height) / 2
