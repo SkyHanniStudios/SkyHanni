@@ -73,7 +73,7 @@ class GuiPositionEditor(
     override fun onDrawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         width = getEditorScaledWidth()
         height = getEditorScaledHeight()
-        drawDefaultBackground()
+        drawDefaultBackground(mouseX, mouseY, partialTicks)
         oldScreenRenderContext.render(mouseX, mouseY, partialTicks)
 
         val hoveredPos = renderRectangles()
