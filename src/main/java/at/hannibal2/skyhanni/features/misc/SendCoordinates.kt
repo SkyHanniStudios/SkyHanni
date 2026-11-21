@@ -14,11 +14,13 @@ import at.hannibal2.skyhanni.utils.LorenzColor
 import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
+import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SkyHanniLogger
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawColor
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawString
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import kotlin.time.Duration.Companion.seconds
 
 @SkyHanniModule
 object SendCoordinates {
@@ -55,7 +57,7 @@ object SendCoordinates {
 
                 split.first().toFloat()
             } else end.toFloat()
-            waypoints.add(SharedWaypoint(LorenzVec(x, y, z), description, System.currentTimeMillis() / 1000))
+            waypoints.add(SharedWaypoint(LorenzVec(x, y, z), description, SimpleTimeMark.now()))
             logger.log("got waypoint coords and username")
         }
     }
@@ -82,10 +84,10 @@ object SendCoordinates {
 
         val location = LocationUtils.playerLocation()
         // removed beacon!
-        waypoints.removeIf { System.currentTimeMillis() / 1000 > it.time + 5 && location.distanceIgnoreY(it.location) < 5 }
+        waypoints.removeIf { it.time.passedSince() > 5.seconds && location.distanceIgnoreY(it.location) < 5 }
 
         // removed beacon after time!
-        waypoints.removeIf { System.currentTimeMillis() / 1000 > it.time + config.duration }
+        waypoints.removeIf { it.time.passedSince() > config.duration.seconds }
     }
 
     @HandleEvent
@@ -94,7 +96,7 @@ object SendCoordinates {
         logger.log("Reset everything (world change)")
     }
 
-    data class SharedWaypoint(val location: LorenzVec, val name: String, val time: Long)
+    data class SharedWaypoint(val location: LorenzVec, val name: String, val time: SimpleTimeMark)
 
     @HandleEvent
     fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {

@@ -338,7 +338,7 @@ object OrderedWaypoints {
             return ChatUtils.userError("$number is not between 1 and ${orderedWaypointsList.size}.")
         }
 
-        for (i in number - 1 until orderedWaypointsList.size) {
+        for (i in number - 1..<orderedWaypointsList.size) {
             orderedWaypointsList[i].options["name"] = orderedWaypointsList[i].number.dec().toString()
             orderedWaypointsList[i].number--
         }
@@ -359,7 +359,7 @@ object OrderedWaypoints {
         if (number == orderedWaypointsList.size + 1) {
             orderedWaypointsList.add(newWaypoint)
         } else {
-            for (i in number - 1 until orderedWaypointsList.size) {
+            for (i in number - 1..<orderedWaypointsList.size) {
                 orderedWaypointsList[i].options["name"] = orderedWaypointsList[i].number.inc().toString()
                 orderedWaypointsList[i].number++
             }

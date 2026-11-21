@@ -40,7 +40,7 @@ import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.item.Items
 import java.awt.Color
-import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.concurrent.atomics.AtomicBoolean
 
 @SkyHanniModule
 object ReforgeHelper {
@@ -154,9 +154,9 @@ object ReforgeHelper {
         if (reforgeToSearch == null) return false
         if (currentReforge == reforgeToSearch) {
             event.cancel()
-            waitForChat.set(false)
+            waitForChat.store(false)
             SoundUtils.playBeepSound()
-        } else if (waitForChat.get()) {
+        } else if (waitForChat.load()) {
             waitDelay = true
             event.cancel()
         } else {
@@ -164,7 +164,7 @@ object ReforgeHelper {
             if (waitDelay) {
                 waitDelay = false
             } else {
-                waitForChat.set(true)
+                waitForChat.store(true)
             }
         }
         return false
@@ -190,7 +190,7 @@ object ReforgeHelper {
             reforgeChatSuccessPattern.matches(message) -> {
                 DelayedRun.runDelayed(2.ticks) {
                     itemUpdate()
-                    waitForChat.set(false)
+                    waitForChat.store(false)
                 }
                 if (config.hideChat) {
                     event.blockedReason = "reforge_hide"
@@ -199,7 +199,7 @@ object ReforgeHelper {
 
             reforgeChatFailPattern.matches(message) -> {
                 DelayedRun.runDelayed(2.ticks) {
-                    waitForChat.set(false)
+                    waitForChat.store(false)
                 }
                 if (config.hideChat) {
                     event.blockedReason = "reforge_hide"
@@ -226,7 +226,7 @@ object ReforgeHelper {
             else -> return
         }
         isInReforgeMenu = true
-        waitForChat.set(false)
+        waitForChat.store(false)
         DelayedRun.runNextTick {
             inventoryContainer = MinecraftCompat.localPlayerOrThrow.containerMenu
         }

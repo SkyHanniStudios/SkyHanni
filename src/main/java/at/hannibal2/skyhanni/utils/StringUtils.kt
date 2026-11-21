@@ -10,13 +10,16 @@ import at.hannibal2.skyhanni.utils.chat.ChatComponentUtils
 import at.hannibal2.skyhanni.utils.chat.TextHelper
 import net.minecraft.network.chat.Component
 import java.net.URLEncoder
-import java.util.Base64
 import java.util.Locale
 import java.util.NavigableMap
 import java.util.NavigableSet
 import java.util.UUID
 import java.util.regex.Matcher
 import java.util.regex.Pattern
+import kotlin.io.encoding.Base64
+import kotlin.uuid.Uuid
+import kotlin.uuid.toJavaUuid
+import kotlin.uuid.toKotlinUuid
 
 // TODO refactor
 @Suppress("MemberVisibilityCanBePrivate", "TooManyFunctions")
@@ -138,18 +141,12 @@ object StringUtils {
         return inputWithoutLastChar + incrementedLastChar
     }
 
-    fun UUID.toUnDashedUUID(): String = toString().replace("-", "")
+    fun UUID.toUnDashedUUID(): String = toKotlinUuid().toHexString()
 
     @Throws(IllegalArgumentException::class)
-    fun parseUUID(uuidString: String): UUID = if (uuidString.isValidUuid()) UUID.fromString(uuidString)
-    else {
-        require(uuidString.length == 32) { "UUID string must either have dashes, or be 32 characters long" }
-        val builder = StringBuilder(uuidString)
-        builder.insert(8, '-').insert(13, '-').insert(18, '-').insert(23, '-')
-        UUID.fromString(builder.toString())
-    }
+    fun parseUUID(uuidString: String): UUID = Uuid.parse(uuidString).toJavaUuid()
 
-    fun parseUUIDOrNull(uuidString: String): UUID? = runCatching { parseUUID(uuidString) }.getOrNull()
+    fun parseUUIDOrNull(uuidString: String): UUID? = Uuid.parseOrNull(uuidString)?.toJavaUuid()
 
     private fun String.internalCleanPlayerName(): String {
         val split = trim().split(" ")
@@ -180,9 +177,11 @@ object StringUtils {
         return substring(0, index)
     }
 
-    fun encodeBase64(input: String): String = Base64.getEncoder().encodeToString(input.toByteArray())
+    val lenientBase64 = Base64.withPadding(Base64.PaddingOption.PRESENT_OPTIONAL)
 
-    fun decodeBase64(input: String) = Base64.getDecoder().decode(input).decodeToString()
+    fun encodeBase64(input: String): String = Base64.encode(input.toByteArray())
+
+    fun decodeBase64(input: String) = lenientBase64.decode(input).decodeToString()
 
     fun String.removeWordsAtEnd(i: Int) = split(" ").dropLast(i).joinToString(" ")
     fun Double.removeUnusedDecimal() = if (this % 1 == 0.0) toInt().toString() else toString()
@@ -295,7 +294,7 @@ object StringUtils {
     fun isEmpty(message: String): Boolean =
         message.removeColor().trimWhiteSpaceAndResets().isEmpty()
 
-    fun generateRandomId() = UUID.randomUUID().toString()
+    fun generateRandomId() = Uuid.random().toString()
 
     fun String.insert(pos: Int, chars: CharSequence): String =
         substring(0, pos) + chars + substring(pos)
@@ -417,7 +416,7 @@ object StringUtils {
 
     fun String.splitCamelCase() = replace("([a-z])([A-Z])".toRegex(), "$1 $2")
 
-    fun String.isValidUuid(): Boolean = runCatching(UUID::fromString).isSuccess
+    fun String.isValidUuid(): Boolean = Uuid.parseOrNull(this) != null
 
     fun optionalAn(string: String): String = when {
         string.isEmpty() -> ""

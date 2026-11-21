@@ -395,7 +395,7 @@ object WorldRenderUtils {
 
         val segments = 64
         LineDrawer.draw3D(this, 5, false) {
-            for (i in 0 until segments) {
+            for (i in 0..<segments) {
                 val theta1 = 2.0 * Math.PI * i / segments
                 val theta2 = 2.0 * Math.PI * (i + 1) / segments
 
@@ -428,7 +428,7 @@ object WorldRenderUtils {
             val y = locY - viewerPos.y
             val z = locZ - viewerPos.z
 
-            for (i in 0 until segments) {
+            for (i in 0..<segments) {
                 val theta1 = 2.0 * Math.PI * i / segments
                 val theta2 = 2.0 * Math.PI * (i + 1) / segments
 
@@ -477,7 +477,7 @@ object WorldRenderUtils {
             val y = locY - viewerY
             val z = locZ - viewerZ
 
-            for (i in 0 until segments) {
+            for (i in 0..<segments) {
                 val angle = 2.0 * Math.PI * i / segments
 
                 val xOffset = radius * cos(angle)
@@ -572,8 +572,8 @@ object WorldRenderUtils {
             val y = locY - viewerY
             val z = locZ - viewerZ
 
-            for (phi in 0 until segments) {
-                for (theta in 0 until segments * 2) {
+            for (phi in 0..<segments) {
+                for (theta in 0..<segments * 2) {
                     val x1 = x + radius * sin(Math.PI * phi / segments) * cos(2.0 * Math.PI * theta / (segments * 2))
                     val y1 = y + radius * cos(Math.PI * phi / segments)
                     val z1 = z + radius * sin(Math.PI * phi / segments) * sin(2.0 * Math.PI * theta / (segments * 2))
@@ -622,9 +622,9 @@ object WorldRenderUtils {
         radius: Float,
         segments: Int = 32,
     ) {
-        for (phi in 0 until segments) {
+        for (phi in 0..<segments) {
             LineDrawer.draw3D(this, 2, true) {
-                for (theta in 0 until segments * 2) {
+                for (theta in 0..<segments * 2) {
                     val x1 = x + radius * sin(Math.PI * phi / segments) * cos(2.0 * Math.PI * theta / (segments * 2))
                     val y1 = y + radius * cos(Math.PI * phi / segments)
                     val z1 = z + radius * sin(Math.PI * phi / segments) * sin(2.0 * Math.PI * theta / (segments * 2))

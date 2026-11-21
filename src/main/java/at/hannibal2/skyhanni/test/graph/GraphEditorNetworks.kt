@@ -124,7 +124,7 @@ object GraphEditorNetworks {
             var bestIndexB = -1
 
             for (i in clusters.indices) {
-                for (j in i + 1 until clusters.size) {
+                for (j in i + 1..<clusters.size) {
                     for (nodeA in clusters[i]) {
                         for (nodeB in clusters[j]) {
                             val distSq = nodeA.position.distanceSq(nodeB.position)

@@ -10,6 +10,7 @@ import at.hannibal2.skyhanni.utils.NeuItems.getItemStackOrNull
 import at.hannibal2.skyhanni.utils.RenderUtils.HorizontalAlignment
 import at.hannibal2.skyhanni.utils.RenderUtils.VerticalAlignment
 import at.hannibal2.skyhanni.utils.SafeItemStack
+import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SoundUtils
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.putAt
 import at.hannibal2.skyhanni.utils.collection.RenderableCollectionUtils.addString
@@ -24,9 +25,11 @@ import at.hannibal2.skyhanni.utils.renderables.primitives.ItemStackRenderable.Co
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
 import net.minecraft.network.chat.Component
 import java.awt.Color
+import kotlin.enums.enumEntries
 import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.reflect.KMutableProperty0
+import kotlin.time.Duration.Companion.milliseconds
 
 @Suppress("TooManyFunctions", "unused", "MemberVisibilityCanBePrivate")
 internal object RenderableUtils {
@@ -301,7 +304,7 @@ internal object RenderableUtils {
         current: T?,
         crossinline getName: (T) -> String = { it.toString() },
         crossinline onChange: (T) -> Unit,
-        universe: List<T> = enumValues<T>().toList(),
+        universe: List<T> = enumEntries<T>(),
         enableUniverseScroll: Boolean = true,
         scrollValue: ScrollValue = ScrollValue(),
     ) {
@@ -322,7 +325,7 @@ internal object RenderableUtils {
         label: String,
         current: T?,
         crossinline onChange: (T?) -> Unit,
-        universe: List<T?> = enumValues<T>().toList(),
+        universe: List<T?> = enumEntries<T>(),
         nullLabel: String? = null,
         enableUniverseScroll: Boolean = true,
     ) {
@@ -387,7 +390,7 @@ internal object RenderableUtils {
         }
 
         val onClick: (Int) -> Unit = onClick@{ keyCode ->
-            if ((System.currentTimeMillis() - ChatUtils.lastButtonClicked) < 150) return@onClick
+            if (ChatUtils.lastButtonClicked.passedSince() < 150.milliseconds) return@onClick
             val next = when (keyCode) {
                 LEFT_MOUSE -> universe.circle(current)
                 RIGHT_MOUSE -> universe.circleBackwards(current)
@@ -395,7 +398,7 @@ internal object RenderableUtils {
             }
             onChange(next)
             SoundUtils.playClickSound()
-            ChatUtils.lastButtonClicked = System.currentTimeMillis()
+            ChatUtils.lastButtonClicked = SimpleTimeMark.now()
         }
 
         val clickMap = mapOf(

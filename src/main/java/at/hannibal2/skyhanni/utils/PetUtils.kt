@@ -250,7 +250,7 @@ object PetUtils {
 
         var level = 1
         val maxLevel = getMaxLevel(petInternalName)
-        for (i in 0 + rarityOffset until xpList.size) {
+        for (i in 0 + rarityOffset..<xpList.size) {
             val xpReq = xpList[i]
             if (xp >= xpReq) {
                 xp -= xpReq

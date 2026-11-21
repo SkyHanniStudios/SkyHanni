@@ -34,7 +34,7 @@ import net.minecraft.world.entity.npc.villager.Villager
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.Level
 import java.util.concurrent.ConcurrentLinkedQueue
-import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.concurrent.atomics.AtomicBoolean
 import at.hannibal2.skyhanni.events.MobEvent.DeSpawn as DeSpawnEvent
 import at.hannibal2.skyhanni.events.MobEvent.FirstSeen as FirstSeenEvent
 import at.hannibal2.skyhanni.events.MobEvent.Hurt as HurtEvent
@@ -107,9 +107,9 @@ object MobDetection {
     @OptIn(AllEntitiesGetter::class)
     @HandleEvent
     fun onTick() {
-        if (shouldClear.get()) { // Needs to work outside skyblock since it needs clearing when leaving skyblock and joining limbo
+        if (shouldClear.load()) { // Needs to work outside skyblock since it needs clearing when leaving skyblock and joining limbo
             mobDetectionReset()
-            shouldClear.set(false)
+            shouldClear.store(false)
         }
         @Suppress("InSkyBlockEarlyReturn")
         if (!SkyBlockUtils.inSkyBlock) return
@@ -368,7 +368,7 @@ object MobDetection {
             is ClientboundLoginPacket -> {
                 // one of the first packets that is sent when switching servers inside the BungeeCord Network
                 // (please some prove this, I just found it out via Testing)
-                shouldClear.set(true)
+                shouldClear.store(true)
                 allEntitiesViaPacketId.clear()
             }
         }
@@ -384,7 +384,7 @@ object MobDetection {
 
     @HandleEvent
     fun onDisconnect() {
-        shouldClear.set(true)
+        shouldClear.store(true)
     }
 
     @HandleEvent

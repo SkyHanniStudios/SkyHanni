@@ -101,7 +101,7 @@ class LineDrawer @PublishedApi internal constructor(
         color: Color,
         segments: Int = 30,
     ) {
-        for (i in 0 until segments) {
+        for (i in 0..<segments) {
             val t1 = i.toFloat() / segments
             val t2 = (i + 1).toFloat() / segments
 

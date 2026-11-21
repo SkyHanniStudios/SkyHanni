@@ -173,7 +173,7 @@ object TabListReader {
                 add(it)
             }
 
-            for (columnEntry in (entry + 1) until fullTabComponents.size.coerceAtMost(entry + 20)) {
+            for (columnEntry in (entry + 1)..<fullTabComponents.size.coerceAtMost(entry + 20)) {
                 column.addComponent(fullTabComponents[columnEntry])
             }
         }

@@ -14,7 +14,8 @@ import at.hannibal2.skyhanni.utils.collection.CollectionUtils.removeIfKey
 import at.hannibal2.skyhanni.utils.system.ModVersion
 import at.hannibal2.skyhanni.utils.system.PlatformUtils
 import java.lang.reflect.Method
-import java.util.concurrent.atomic.AtomicInteger
+import kotlin.concurrent.atomics.AtomicInt
+import kotlin.concurrent.atomics.incrementAndFetch
 
 @SkyHanniModule
 object SkyHanniEvents {
@@ -133,29 +134,29 @@ object SkyHanniEvents {
         handlers.removeIfKey { it.isAssignableFrom(clazz) }
     }
 
-    private val listenerCacheGeneration = AtomicInteger(0)
-    private val currentStateIndex = AtomicInteger(ListenerCollection.OUTSIDE)
+    private val listenerCacheGeneration = AtomicInt(0)
+    private val currentStateIndex = AtomicInt(ListenerCollection.OUTSIDE)
 
     fun markEventCacheDirty(type: DirtyReason) {
         when (type) {
             REPO_RELOAD,
             OUTSIDE_SB_FEATURE_CHANGED,
-            -> listenerCacheGeneration.incrementAndGet()
+            -> listenerCacheGeneration.incrementAndFetch()
 
             LOCATION_CHANGED -> {
-                listenerCacheGeneration.incrementAndGet()
-                currentStateIndex.set(ListenerCollection.getCurrentStateIndex())
+                listenerCacheGeneration.incrementAndFetch()
+                currentStateIndex.store(ListenerCollection.getCurrentStateIndex())
             }
 
             SERVER_DISCONNECTED -> {
-                listenerCacheGeneration.incrementAndGet()
-                currentStateIndex.set(ListenerCollection.OUTSIDE)
+                listenerCacheGeneration.incrementAndFetch()
+                currentStateIndex.store(ListenerCollection.OUTSIDE)
             }
         }
     }
 
-    fun getListenerCacheGeneration(): Int = listenerCacheGeneration.get()
-    fun getCurrentStateIndex(): Int = currentStateIndex.get()
+    fun getListenerCacheGeneration(): Int = listenerCacheGeneration.load()
+    fun getCurrentStateIndex(): Int = currentStateIndex.load()
 
     enum class DirtyReason {
         LOCATION_CHANGED,

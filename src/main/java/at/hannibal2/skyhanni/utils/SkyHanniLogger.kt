@@ -9,6 +9,7 @@ import java.util.logging.FileHandler
 import java.util.logging.Formatter
 import java.util.logging.LogRecord
 import java.util.logging.Logger
+import kotlin.io.path.createParentDirectories
 import kotlin.io.path.pathString
 import kotlin.time.Duration.Companion.days
 
@@ -33,7 +34,7 @@ open class SkyHanniLogger(private val filePath: String) {
     private val logger: Logger by lazy {
         Logger.getLogger("SkyHanni-Logger-" + System.nanoTime()).apply {
             try {
-                logFilePath.toFile().parentFile?.takeIf { !it.isDirectory }?.mkdirs()
+                logFilePath.createParentDirectories()
                 FileHandler(logFilePath.pathString).apply {
                     encoding = Charsets.UTF_8.name()
                     formatter = object : Formatter() {

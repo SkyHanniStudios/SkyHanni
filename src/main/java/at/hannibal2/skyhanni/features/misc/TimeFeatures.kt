@@ -12,6 +12,7 @@ import at.hannibal2.skyhanni.utils.RecalculatingValue
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderable
 import at.hannibal2.skyhanni.utils.SkyBlockTime
 import at.hannibal2.skyhanni.utils.TimeUtils.format
+import at.hannibal2.skyhanni.utils.TimeUtils.formatCurrentTime
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
 import java.text.SimpleDateFormat
@@ -41,7 +42,7 @@ object TimeFeatures {
                 // 24 h format
                 SimpleDateFormat("HH:mm${if (config.realTimeShowSeconds) ":ss" else ""}")
             }
-            val currentTime = Renderable.text(timeFormat.format(System.currentTimeMillis()))
+            val currentTime = Renderable.text(timeFormat.formatCurrentTime())
             config.realTimePosition.renderRenderable(currentTime, posLabel = "Real Time")
         }
 

@@ -4,10 +4,10 @@ import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SimpleTimeMark.Companion.asTimeMark
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import java.time.Instant
+import kotlin.time.Instant
 
 data class ShortCommitAuthor(
     @Expose @field:SerializedName("date") private val dateString: String,
 ) {
-    val date: SimpleTimeMark get() = Instant.parse(dateString).toEpochMilli().asTimeMark()
+    val date: SimpleTimeMark get() = Instant.parse(dateString).toEpochMilliseconds().asTimeMark()
 }

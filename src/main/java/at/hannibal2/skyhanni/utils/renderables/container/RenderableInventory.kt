@@ -52,7 +52,7 @@ object RenderableInventory {
 
         val rows = ceil(size.toDouble() / maxSize).toInt()
 
-        for (i in 0 until rows + 2) {
+        for (i in 0..<rows + 2) {
             val row = mutableListOf<SlotsUv>()
             if (i == 0) { // top border
                 row.add(SlotsUv.TOP_LEFT_CORNER)

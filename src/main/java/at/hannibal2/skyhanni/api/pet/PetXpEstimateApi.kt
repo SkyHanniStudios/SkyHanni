@@ -211,7 +211,7 @@ object PetXpEstimateApi {
             if (candidateTenths.size > 1) return
             if (sum > displayedGain - 1.0) candidateTenths.add((sum * 10.0).roundToLong())
             if (parts >= MAX_QUANTA_PARTS || sum + minQuantum >= displayedGain + 1.0) return
-            for (index in startIndex until quanta.size) {
+            for (index in startIndex..<quanta.size) {
                 val next = sum + quanta[index]
                 if (next >= displayedGain + 1.0) continue
                 search(index, next, parts + 1)

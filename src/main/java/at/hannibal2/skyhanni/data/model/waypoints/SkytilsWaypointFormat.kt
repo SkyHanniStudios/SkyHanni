@@ -3,11 +3,11 @@ package at.hannibal2.skyhanni.data.model.waypoints
 import at.hannibal2.skyhanni.config.ConfigManager
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.LorenzVec
+import at.hannibal2.skyhanni.utils.StringUtils
 import com.google.auto.service.AutoService
 import com.google.gson.annotations.Expose
 import com.google.gson.reflect.TypeToken
 import java.io.ByteArrayInputStream
-import java.util.Base64
 import java.util.zip.GZIPInputStream
 
 @AutoService(WaypointFormat::class)
@@ -54,7 +54,7 @@ class SkytilsWaypointFormat : WaypointFormat {
     }
 
     private fun decodeV1(data: String): String? = try {
-        val bytes = Base64.getDecoder().decode(data)
+        val bytes = StringUtils.lenientBase64.decode(data)
         GZIPInputStream(ByteArrayInputStream(bytes)).bufferedReader().use { it.readText() }
     } catch (e: Exception) {
         ChatUtils.debug(e.stackTraceToString())

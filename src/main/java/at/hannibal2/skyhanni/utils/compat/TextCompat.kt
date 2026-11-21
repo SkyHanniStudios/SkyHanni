@@ -291,7 +291,7 @@ fun idToMessageSignature(id: Int): MessageSignature {
     val bytes = ByteArray(256)
     val div = newId / 128
     val mod = newId % 128
-    for (i in 0 until div) {
+    for (i in 0..<div) {
         bytes[i] = 127
     }
     bytes[div] = mod.toByte()

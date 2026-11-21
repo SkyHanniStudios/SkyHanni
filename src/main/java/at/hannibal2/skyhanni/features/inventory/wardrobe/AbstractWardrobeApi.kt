@@ -73,7 +73,7 @@ abstract class AbstractWardrobeApi {
         var id = 0
 
         for (page in 1..MAX_PAGES) {
-            for (slot in 0 until MAX_SLOT_PER_PAGE) {
+            for (slot in 0..<MAX_SLOT_PER_PAGE) {
                 val inventorySlot = FIRST_SLOT + slot
                 val item1Slot = FIRST_ITEM_SLOT + slot
                 val item2Slot = SECOND_ITEM_SLOT + slot

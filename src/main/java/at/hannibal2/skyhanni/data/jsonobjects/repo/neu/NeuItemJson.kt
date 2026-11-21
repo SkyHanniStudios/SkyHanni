@@ -7,6 +7,7 @@ import at.hannibal2.skyhanni.data.jsonobjects.repo.neu.recipe.NeuCraftingRecipeJ
 import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.KSerializable
 import at.hannibal2.skyhanni.utils.NeuInternalName
+import at.hannibal2.skyhanni.utils.StringUtils
 import at.hannibal2.skyhanni.utils.json.fromJson
 import com.google.gson.JsonObject
 import com.google.gson.annotations.Expose
@@ -16,7 +17,6 @@ import net.minecraft.nbt.CompoundTag
 import net.minecraft.nbt.NbtAccounter
 import net.minecraft.nbt.NbtIo
 import java.io.ByteArrayInputStream
-import java.util.Base64
 
 @KSerializable
 data class NeuItemJson(
@@ -66,7 +66,7 @@ data class NeuItemJson(
 
     private fun getParsedNBT(): CompoundTag {
         return try {
-            val decodedBytes = Base64.getDecoder().decode(fixedNbtTagString.toByteArray(Charsets.UTF_8))
+            val decodedBytes = StringUtils.lenientBase64.decode(fixedNbtTagString)
             val inputStream = ByteArrayInputStream(decodedBytes)
             NbtIo.readCompressed(inputStream, NbtAccounter.unlimitedHeap())
         } catch (e: Exception) {

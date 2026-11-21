@@ -139,11 +139,11 @@ object BetterContainers {
 
         val inventory = (event.container as ChestMenu).container
         lastInvHashcode = inventory.hashCode()
-        hasItem = (0 until inventory.containerSize).any { slotIndex ->
+        hasItem = (0..<inventory.containerSize).any { slotIndex ->
             val stack = inventory.getItem(slotIndex)
             stack.isNotEmpty()
         }
-        hasNullPane = (0 until inventory.containerSize).any { slotIndex ->
+        hasNullPane = (0..<inventory.containerSize).any { slotIndex ->
             val stack = inventory.getItem(slotIndex)
             isBlankStack(stack)
         }
@@ -171,11 +171,13 @@ object BetterContainers {
         val w = mask.width
         val h = mask.height
         val out = BufferedImage(mask.colorModel, mask.copyData(null), mask.isAlphaPremultiplied, null)
-        for (y in 0 until h) for (x in 0 until w) {
-            val p = mask.getRGB(x, y)
-            val a = p ushr 24 and 0xFF
-            if (a < 10) continue
-            out.setRGB(x, y, (a shl 24) or (colour and 0xFFFFFF))
+        for (y in 0..<h) {
+            for (x in 0..<w) {
+                val p = mask.getRGB(x, y)
+                val a = p ushr 24 and 0xFF
+                if (a < 10) continue
+                out.setRGB(x, y, (a shl 24) or (colour and 0xFFFFFF))
+            }
         }
         return out
     }
@@ -253,8 +255,8 @@ object BetterContainers {
 
     private fun uploadDynamicTexture(bImg: BufferedImage) {
         val native = NativeImage(NativeImage.Format.RGBA, bImg.width, bImg.height, false)
-        for (y in 0 until bImg.height) {
-            for (x in 0 until bImg.width) {
+        for (y in 0..<bImg.height) {
+            for (x in 0..<bImg.width) {
                 native.setPixel(x, y, bImg.getRGB(x, y))
             }
         }
@@ -267,8 +269,8 @@ object BetterContainers {
     private fun updateDynamicTexture(bImg: BufferedImage) {
         val native = gpuNative ?: return uploadDynamicTexture(bImg)
         val backed = gpuTex ?: return uploadDynamicTexture(bImg)
-        for (y in 0 until bImg.height) {
-            for (x in 0 until bImg.width) {
+        for (y in 0..<bImg.height) {
+            for (x in 0..<bImg.width) {
                 native.setPixel(x, y, bImg.getRGB(x, y))
             }
         }
