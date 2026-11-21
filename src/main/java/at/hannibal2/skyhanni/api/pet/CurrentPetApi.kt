@@ -17,17 +17,23 @@ import at.hannibal2.skyhanni.utils.collection.CollectionUtils.enumMapOf
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import kotlin.time.Duration.Companion.seconds
 
+@Suppress("MaxLineLength")
 @SkyHanniModule
 object CurrentPetApi {
     val patternGroup = RepoPattern.group("misc.pet")
 
+    // TODO remove non alpha tests (missing level in message) when https://hypixel.net/threads/november-10-0-27-3-release-candidate.6171140/ hits main.
     /**
      * REGEX-TEST: §aYou summoned your §r§dRabbit§r§9 ✦§r§a!
      * REGEX-TEST: §aYou summoned your §r§6Golden Dragon§r§a!
+     * REGEX-TEST: §aYou summoned your §r§7[Lvl 100] §r§dBlack Cat§r§4 ✦§r§a!
+     * REGEX-TEST: §aYou summoned your §r§7[Lvl 163] §r§6Golden Dragon§r§a!
+     * REGEX-TEST: §aYou summoned your §r§7[Lvl 73] §r§aWitch§r§a!
+     * REGEX-TEST: §aYou summoned your §r§7[Lvl 200] §r§8[§r§6274§r§8§r§4✦§r§8] §r§6Golden Dragon§r§a!
      */
     private val chatSummonPattern by patternGroup.pattern(
         "chat.summon",
-        "§aYou summoned your §r§(?<rarity>.)(?<pet>[^§]+)(?:§r(?<skin>§. ✦))?§r§a!",
+        "§aYou summoned your (?<level>§r§7\\[Lvl \\d+\\] (?:§.§.\\[§.§.\\d+§.§.§.(?<altskin>§.✦)§.§.\\] )?)?§r§(?<rarity>.)(?<pet>[^§]+)(?:§r(?<skin>§. ✦))?§r§a!",
     )
 
     fun isCurrentPet(petInternalName: NeuInternalName) = currentPet?.fauxInternalName == petInternalName
@@ -95,7 +101,7 @@ object CurrentPetApi {
         lastAssertion[source]?.passedSince()?.let { it <= 5.seconds } ?: false
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         val petData = pendingTabPetData ?: return
         if (shouldDelayTabAssertion()) return
         pendingTabPetData = null
@@ -109,12 +115,13 @@ object CurrentPetApi {
     }
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         chatSummonPattern.matchMatcher(event.message) {
+            val skinTag = groupOrNull("skin")?.replace(" ", "") ?: groupOrNull("altskin")?.replace(" ", "")
             val resolvedPet = PetStorageApi.resolvePetDataOrNull(
                 name = group("pet"),
                 rarity = LorenzRarity.getByColorCode(group("rarity")[0]) ?: return,
-                skinTag = groupOrNull("skin")?.replace(" ", ""),
+                skinTag = skinTag,
                 skinTagKnown = true,
             ) ?: return
 
@@ -123,7 +130,7 @@ object CurrentPetApi {
     }
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         fun PetData.formatForCurrentDebug() = buildString {
             append(getUserFriendlyName())
             append(" uuid=$uuid")
