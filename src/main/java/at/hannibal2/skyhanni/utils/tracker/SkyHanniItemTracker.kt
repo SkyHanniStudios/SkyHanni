@@ -72,6 +72,7 @@ SkyHanniItemTracker<Data : ItemTrackerData<*>>(
     private val config: ItemTrackerGenericConfig get() =
         if (trackerSpecificConfig.useUniversalConfig) universalTracker else trackerSpecificConfig.trackerConfig
 
+    @get:JvmName("getItemTrackerConfig")
     internal val itemTrackerConfig: ItemTrackerGenericConfig.ItemTrackerConfig get() = config.itemTracker
 
     private var scrollValue = ScrollValue()
