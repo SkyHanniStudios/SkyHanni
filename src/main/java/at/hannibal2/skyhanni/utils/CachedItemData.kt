@@ -36,7 +36,7 @@ data class CachedItemData(
     var identifier: String? = null,
 ) {
     companion object {
-        private val cache = WeakIdentityCache<SafeItemStack, CachedItemData>(2.minutes) { CachedItemData() }
+        private val cache = WeakIdentityCache.timed<SafeItemStack, CachedItemData>(2.minutes) { CachedItemData() }
         val SafeItemStack.cachedData: CachedItemData get() = cache[this]
 
         fun forEachValue(action: (CachedItemData) -> Unit) = cache.values.forEach(action)

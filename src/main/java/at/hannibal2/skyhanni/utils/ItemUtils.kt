@@ -173,19 +173,19 @@ object ItemUtils {
 
     fun isSack(stack: SafeItemStack) = stack.getInternalName().endsWith("_SACK") && stack.cleanName.endsWith(" Sack")
 
-    private val loreComponentCache = WeakIdentityCache<DataComponentMap, List<Component>>(0.1.seconds) {
+    private val loreComponentCache = WeakIdentityCache.timed<DataComponentMap, List<Component>>(0.1.seconds) {
         it.get(DataComponents.LORE)?.lines.orEmpty()
     }
 
-    private val cleanLoreCache = WeakIdentityCache<DataComponentMap, List<String>>(0.1.seconds) { map ->
+    private val cleanLoreCache = WeakIdentityCache.timed<DataComponentMap, List<String>>(0.1.seconds) { map ->
         map.getLoreComponent().map { it.string.removeColor() }
     }
 
-    private val internalNameCache = WeakIdentityCache<SafeItemStack, NeuInternalName>(1.seconds) {
+    private val internalNameCache = WeakIdentityCache.timed<SafeItemStack, NeuInternalName>(1.seconds) {
         it.grabInternalNameOrNull() ?: NeuInternalName.NONE
     }
 
-    private val loadedItemModelCache = WeakIdentityCache<SafeItemStack, SafeItemStack>(1.seconds) { stack ->
+    private val loadedItemModelCache = WeakIdentityCache.timed<SafeItemStack, SafeItemStack>(1.seconds) { stack ->
         stack.copy().apply { set(DataComponents.ITEM_MODEL, BuiltInRegistries.ITEM.getKey(getItem())) }
     }
 
