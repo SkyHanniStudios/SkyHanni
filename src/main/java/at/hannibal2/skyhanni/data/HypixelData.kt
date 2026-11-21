@@ -42,7 +42,7 @@ object HypixelData {
     private val patternGroup = RepoPattern.group("data.hypixeldata")
 
     /**
-     * REGEX-TEST: [441] Throwpo ♲
+     * @regexTest [441] Throwpo ♲
      */
     private val playerAmountOnIslandPattern by patternGroup.pattern(
         "playeramount.onisland-nocolor",
@@ -50,8 +50,8 @@ object HypixelData {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: " §a✌ §7(§a11§7/20)"
-     * WRAPPED-REGEX-TEST: " §a✌ §7(§e1/1§7)"
+     * @regexTestWrapped " §a✌ §7(§a11§7/20)"
+     * @regexTestWrapped " §a✌ §7(§e1/1§7)"
      */
     private val scoreboardVisitingAmountPattern by patternGroup.pattern(
         "scoreboard.visiting.amount",
@@ -59,8 +59,8 @@ object HypixelData {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: " §7⏣ §bVillage"
-     * WRAPPED-REGEX-TEST: " §5ф §dWizard Tower"
+     * @regexTestWrapped " §7⏣ §bVillage"
+     * @regexTestWrapped " §5ф §dWizard Tower"
      */
     private val skyblockAreaPattern by patternGroup.pattern(
         "skyblock.area",

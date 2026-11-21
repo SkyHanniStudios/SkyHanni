@@ -57,7 +57,7 @@ object SkillApi {
     private val patternGroup = RepoPattern.group("api.skilldisplay")
 
     /**
-     * REGEX-TEST: +1.1 Mining (48.39%)
+     * @regexTest +1.1 Mining (48.39%)
      */
     private val skillPercentPattern by patternGroup.pattern(
         "skill.percent",
@@ -65,8 +65,8 @@ object SkillApi {
     )
 
     /**
-     * REGEX-TEST: +6.3 Foraging (24/750)
-     * REGEX-TEST: +207.2 Hunting (5,183,244/0)
+     * @regexTest +6.3 Foraging (24/750)
+     * @regexTest +207.2 Hunting (5,183,244/0)
      */
     private val skillMultiplierPattern by patternGroup.pattern(
         "skill.multiplier",
@@ -74,7 +74,7 @@ object SkillApi {
     )
 
     /**
-     * REGEX-TEST: ☺ You claimed 2,500 Foraging XP from the Jerry Box!
+     * @regexTest ☺ You claimed 2,500 Foraging XP from the Jerry Box!
      */
     private val jerryBoxSkillXpPattern by patternGroup.pattern(
         "chat.jerry-box.skillxp",
@@ -82,7 +82,7 @@ object SkillApi {
     )
 
     /**
-     * REGEX-TEST: COMMON! +500 Combat XP gift with [VIP] sn0wfxll!
+     * @regexTest COMMON! +500 Combat XP gift with [VIP] sn0wfxll!
      */
     private val giftSkillXpPattern by patternGroup.pattern(
         "chat.gift.skillxp",
@@ -90,8 +90,8 @@ object SkillApi {
     )
 
     /**
-     * REGEX-TEST: LILY-SPLOSION!
-     * REGEX-TEST: LILI-SPLOSION!
+     * @regexTest LILY-SPLOSION!
+     * @regexTest LILI-SPLOSION!
      */
     private val lilySplosionStartPattern by patternGroup.pattern(
         "chat.lily-splosion.start",
@@ -99,7 +99,7 @@ object SkillApi {
     )
 
     /**
-     * REGEX-TEST: +120 Fishing Experience
+     * @regexTest +120 Fishing Experience
      */
     private val lilySplosionSkillXpPattern by patternGroup.pattern(
         "chat.lily-splosion.skillxp",
@@ -108,7 +108,7 @@ object SkillApi {
 
     // TODO find out whats going on here
     /**
-     * WRAPPED-REGEX-TEST: " Farming 35: 12.4%"
+     * @regexTestWrapped " Farming 35: 12.4%"
      */
     private val skillTabPattern by patternGroup.pattern(
         "skill.tab.colorless",
@@ -116,8 +116,8 @@ object SkillApi {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: " Farming 60: MAX"
-     * WRAPPED-REGEX-TEST: " Mining 60: MAX"
+     * @regexTestWrapped " Farming 60: MAX"
+     * @regexTestWrapped " Mining 60: MAX"
      */
     private val maxSkillTabPattern by patternGroup.pattern(
         "skill.tab.max.colorless",
@@ -125,8 +125,8 @@ object SkillApi {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: " Mining 14: 22,922/75k"
-     * WRAPPED-REGEX-TEST: " Combat 49: 7,678/4M"
+     * @regexTestWrapped " Mining 14: 22,922/75k"
+     * @regexTestWrapped " Combat 49: 7,678/4M"
      */
     private val skillTabNoPercentPattern by patternGroup.pattern(
         "skill.tab.nopercent.colorless",
@@ -134,7 +134,7 @@ object SkillApi {
     )
 
     /**
-     * REGEX-TEST: Max Skill level reached!
+     * @regexTest Max Skill level reached!
      */
     private val skillMaxLevelMenuPattern by patternGroup.pattern(
         "skill.menu.maxreached",
@@ -142,7 +142,7 @@ object SkillApi {
     )
 
     /**
-     * REGEX-TEST: Your Skills
+     * @regexTest Your Skills
      */
     private val skillMenuNamePattern by patternGroup.pattern(
         "skill.menu.name",

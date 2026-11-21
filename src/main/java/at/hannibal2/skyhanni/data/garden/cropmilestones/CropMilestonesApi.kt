@@ -34,8 +34,8 @@ object CropMilestonesApi {
     private val patternGroup = RepoPattern.group("data.garden.milestone")
 
     /**
-     * REGEX-TEST: §7Harvest §fWheat §7on your Garden to
-     * REGEX-TEST: §7Harvest §fCocoa Beans §7on your
+     * @regexTest §7Harvest §fWheat §7on your Garden to
+     * @regexTest §7Harvest §fCocoa Beans §7on your
      */
     private val cropPattern by patternGroup.pattern(
         "crop",
@@ -43,7 +43,7 @@ object CropMilestonesApi {
     )
 
     /**
-     * REGEX-TEST: §7Total: §a36,967,397
+     * @regexTest §7Total: §a36,967,397
      */
     val totalPattern by patternGroup.pattern(
         "total",
@@ -51,8 +51,8 @@ object CropMilestonesApi {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: " Cocoa Beans 31: 68%"
-     * WRAPPED-REGEX-TEST: " Potato 32: 97.7%"
+     * @regexTestWrapped " Cocoa Beans 31: 68%"
+     * @regexTestWrapped " Potato 32: 97.7%"
      */
     val tabListPercentPattern by patternGroup.pattern(
         "tablist.percent-no-color",
@@ -60,8 +60,8 @@ object CropMilestonesApi {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: " Potato 46: MAX"
-     * WRAPPED-REGEX-TEST: " Cocoa Beans 46: MAX"
+     * @regexTestWrapped " Potato 46: MAX"
+     * @regexTestWrapped " Cocoa Beans 46: MAX"
      */
     val tabListMaxPattern by patternGroup.pattern(
         "tablist.max-no-color",
@@ -69,7 +69,7 @@ object CropMilestonesApi {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: "  §r§b§lGARDEN MILESTONE §3Melon §845➜§346"
+     * @regexTestWrapped "  §r§b§lGARDEN MILESTONE §3Melon §845➜§346"
      */
     val levelUpPattern by patternGroup.pattern(
         "levelup",

@@ -30,9 +30,9 @@ object AvoriusHelper {
     private val cupOfBloodPrimitiveStack by lazy { CUP_OF_BLOOD.makePrimitiveStack() }
 
     /**
-     * REGEX-TEST: [NPC] Avorius: I am quite thirsty all the time, it's a rare condition.
-     * REGEX-TEST: [NPC] Avorius: There is no sunlight either, it would be quite accommodating for a Vampire.
-     * REGEX-TEST: [NPC] Avorius: Why are you looking at me that way? I am not a Vampire, you are!
+     * @regexTest [NPC] Avorius: I am quite thirsty all the time, it's a rare condition.
+     * @regexTest [NPC] Avorius: There is no sunlight either, it would be quite accommodating for a Vampire.
+     * @regexTest [NPC] Avorius: Why are you looking at me that way? I am not a Vampire, you are!
      */
     private val avoriusLines by RepoPattern.list(
         "crimson.avorius.helper",

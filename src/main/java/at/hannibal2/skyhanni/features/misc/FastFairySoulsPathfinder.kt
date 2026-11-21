@@ -56,7 +56,7 @@ object FastFairySoulsPathfinder {
     private val patternGroup = RepoPattern.group("misc.fairy-souls")
 
     /**
-     * REGEX-TEST: You have already found that Fairy Soul!
+     * @regexTest You have already found that Fairy Soul!
      */
     private val duplicatePattern by patternGroup.pattern(
         "chat.duplicate.colorless",
@@ -64,7 +64,7 @@ object FastFairySoulsPathfinder {
     )
 
     /**
-     * REGEX-TEST: SOUL! You found a Fairy Soul!
+     * @regexTest SOUL! You found a Fairy Soul!
      */
     private val newPattern by patternGroup.pattern(
         "chat.new.colorless",
@@ -72,7 +72,7 @@ object FastFairySoulsPathfinder {
     )
 
     /**
-     * REGEX-TEST: Fairy Souls: 11/11
+     * @regexTest Fairy Souls: 11/11
      */
     private val loreSoulPattern by patternGroup.pattern(
         "new.colorless",

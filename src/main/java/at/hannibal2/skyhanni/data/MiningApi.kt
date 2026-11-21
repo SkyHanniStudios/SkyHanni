@@ -47,22 +47,22 @@ object MiningApi {
     private val patternGroup = RepoPattern.group("data.miningapi")
 
     /**
-     * REGEX-TEST: Glacite Tunnels
-     * REGEX-TEST: Great Glacite Lake
+     * @regexTest Glacite Tunnels
+     * @regexTest Great Glacite Lake
      */
     private val glaciteAreaPattern by patternGroup.pattern("area.glacite", "Glacite Tunnels|Great Glacite Lake")
     private val dwarvenBaseCampPattern by patternGroup.pattern("area.basecamp", "Dwarven Base Camp")
 
     /**
-     * REGEX-TEST: Mines of Divan
+     * @regexTest Mines of Divan
      */
     private val minesOfDivanPattern by patternGroup.pattern("area.minesofdivan", "Mines of Divan")
 
     private val icyBiomePattern by patternGroup.pattern("area.icybiome", "Icy Biome")
 
     /**
-     * REGEX-TEST: §6The warmth of the campfire reduced your §r§b Cold §r§6to §r§a0§r§6!
-     * REGEX-TEST: §c ☠ §r§7You froze to death§r§7.
+     * @regexTest §6The warmth of the campfire reduced your §r§b Cold §r§6to §r§a0§r§6!
+     * @regexTest §c ☠ §r§7You froze to death§r§7.
      */
     @Suppress("MaxLineLength")
     private val coldResetPattern by patternGroup.pattern(
@@ -72,9 +72,9 @@ object MiningApi {
 
     // This intentionally uses the old heat icon, since Hypixel has not updated it in this location.
     /**
-     * REGEX-TEST: Heat: §6IMMUNE
-     * REGEX-TEST: Heat: §c14♨
-     * REGEX-TEST: Heat: §c0♨
+     * @regexTest Heat: §6IMMUNE
+     * @regexTest Heat: §c14♨
+     * @regexTest Heat: §c0♨
      */
     val heatPattern by patternGroup.pattern(
         "heat.scoreboard",
@@ -83,8 +83,8 @@ object MiningApi {
 
     // This intentionally uses the old cold icon, since Hypixel has not updated it in this location.
     /**
-     * REGEX-TEST: Cold: §b-1❄
-     * REGEX-TEST: Cold: §b-3❄
+     * @regexTest Cold: §b-1❄
+     * @regexTest Cold: §b-3❄
      */
     val coldPattern by patternGroup.pattern(
         "cold",
@@ -94,7 +94,7 @@ object MiningApi {
     private val pickobulusGroup = patternGroup.group("pickobulus")
 
     /**
-     * REGEX-TEST: §aYou used your §r§6Pickobulus §r§aPickaxe Ability!
+     * @regexTest §aYou used your §r§6Pickobulus §r§aPickaxe Ability!
      */
 
     private val pickobulusUsePattern by pickobulusGroup.pattern(
@@ -103,7 +103,7 @@ object MiningApi {
     )
 
     /**
-     * REGEX-TEST: §7Your §r§aPickobulus §r§7destroyed §r§e140 §r§7blocks!
+     * @regexTest §7Your §r§aPickobulus §r§7destroyed §r§e140 §r§7blocks!
      */
     private val pickobulusEndPattern by pickobulusGroup.pattern(
         "end",
@@ -111,7 +111,7 @@ object MiningApi {
     )
 
     /**
-     * REGEX-TEST: §7Your §r§aPickobulus §r§7didn't destroy any blocks!
+     * @regexTest §7Your §r§aPickobulus §r§7didn't destroy any blocks!
      */
     private val pickobulusFailPattern by pickobulusGroup.pattern(
         "fail",

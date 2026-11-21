@@ -312,8 +312,8 @@ enum class HotfData(
 
         // <editor-fold desc="Patterns">
         /**
-         * REGEX-TEST: SELECTED
-         * REGEX-TEST: ENABLED
+         * @regexTest SELECTED
+         * @regexTest ENABLED
          */
         override val enabledPattern: Pattern by patternGroup.pattern(
             "perk.enable",
@@ -321,7 +321,7 @@ enum class HotfData(
         )
 
         /**
-         * REGEX-TEST: Heart of the Forest
+         * @regexTest Heart of the Forest
          */
         override val inventoryPattern: Pattern by patternGroup.pattern(
             "inventory",
@@ -329,7 +329,7 @@ enum class HotfData(
         )
 
         /**
-         * REGEX-TEST: §7Level 21§8/50
+         * @regexTest §7Level 21§8/50
          */
         override val levelPattern: Pattern by patternGroup.pattern(
             "perk.level",
@@ -337,11 +337,11 @@ enum class HotfData(
         )
 
         /**
-         * REGEX-TEST: Forest!
-         * REGEX-TEST: Requires Strength Boost
-         * REGEX-TEST: Requires Damage Boost
-         * REGEX-TEST: Requires Tier 5
-         * REGEX-TEST: Click to unlock!
+         * @regexTest Forest!
+         * @regexTest Requires Strength Boost
+         * @regexTest Requires Damage Boost
+         * @regexTest Requires Tier 5
+         * @regexTest Click to unlock!
          */
         override val notUnlockedPattern: Pattern by patternGroup.pattern(
             "perk.notunlocked",
@@ -349,7 +349,7 @@ enum class HotfData(
         )
 
         /**
-         * REGEX-TEST: Heart of the Forest
+         * @regexTest Heart of the Forest
          */
         override val heartItemPattern: Pattern by patternGroup.pattern(
             "inventory.heart",
@@ -357,7 +357,7 @@ enum class HotfData(
         )
 
         /**
-         * REGEX-TEST: Reset Heart of the Forest
+         * @regexTest Reset Heart of the Forest
          */
         override val resetItemPattern: Pattern by patternGroup.pattern(
             "inventory.reset",
@@ -365,7 +365,7 @@ enum class HotfData(
         )
 
         /**
-         * REGEX-TEST: Tokens of the Forest: 0
+         * @regexTest Tokens of the Forest: 0
          */
         override val heartTokensPattern: Pattern by patternGroup.pattern(
             "inventory.heart.token",
@@ -373,7 +373,7 @@ enum class HotfData(
         )
 
         /**
-         * WRAPPED-REGEX-TEST: "  - 5 Token of the Forest"
+         * @regexTestWrapped "  - 5 Token of the Forest"
          */
         override val resetTokensPattern: Pattern by patternGroup.pattern(
             "inventory.reset.token",
@@ -381,7 +381,7 @@ enum class HotfData(
         )
 
         /**
-         * WRAPPED-REGEX-TEST: " You have reset your Heart of the Forest! Your Perks and Abilities have been reset."
+         * @regexTestWrapped " You have reset your Heart of the Forest! Your Perks and Abilities have been reset."
          */
         override val resetChatPattern by patternGroup.pattern(
             "reset.chat",
@@ -389,7 +389,7 @@ enum class HotfData(
         )
 
         /**
-         * REGEX-TEST: Forest Whispers: 25,271
+         * @regexTest Forest Whispers: 25,271
          */
         private val whisperHeartPattern by patternGroup.pattern(
             "whisper.heart",
@@ -397,7 +397,7 @@ enum class HotfData(
         )
 
         /**
-         * WRAPPED-REGEX-TEST: " - 114,060 Forest Whispers"
+         * @regexTestWrapped " - 114,060 Forest Whispers"
          */
         private val whisperResetPattern by patternGroup.pattern(
             "whisper.reset",

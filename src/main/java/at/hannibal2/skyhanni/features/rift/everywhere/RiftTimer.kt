@@ -35,7 +35,7 @@ object RiftTimer {
     private val patternGroup = RepoPattern.group("rift.everywhere")
 
     /**
-     * REGEX-TEST: 3150 
+     * @regexTest 3150 
      */
     private val nametagPattern by patternGroup.pattern(
         "nametag.timer",

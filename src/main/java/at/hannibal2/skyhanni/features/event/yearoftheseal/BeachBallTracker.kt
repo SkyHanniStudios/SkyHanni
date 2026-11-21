@@ -49,8 +49,8 @@ object BeachBallTracker {
     private val patternGroup = RepoPattern.group("event.year-of-the-seal.beach-ball-tracker")
 
     /**
-     * REGEX-TEST: AW MAN! You kept the Bouncy Beach Ball in the air for 0 bounces and earned 1 Fishy Treat!
-     * REGEX-TEST: INSANE! You kept the Bouncy Beach Ball in the air for 187 bounces and earned 20 Fishy Treats!
+     * @regexTest AW MAN! You kept the Bouncy Beach Ball in the air for 0 bounces and earned 1 Fishy Treat!
+     * @regexTest INSANE! You kept the Bouncy Beach Ball in the air for 187 bounces and earned 20 Fishy Treats!
      */
     private val normalResultPattern by patternGroup.pattern(
         "result.normal",
@@ -58,7 +58,7 @@ object BeachBallTracker {
     )
 
     /**
-     * REGEX-TEST: AW MAN! The Giant Bouncy Beach Ball was kept in the air for 0 bounces and 0 unique players have participated, rewarding you with 5 extra Fishy Treats!
+     * @regexTest AW MAN! The Giant Bouncy Beach Ball was kept in the air for 0 bounces and 0 unique players have participated, rewarding you with 5 extra Fishy Treats!
      */
     private val giantResultPattern by patternGroup.pattern(
         "result.giant",
@@ -67,8 +67,8 @@ object BeachBallTracker {
     )
 
     /**
-     * REGEX-TEST: BOUNCE BONANZA! Keep the Bouncy Beach Ball in the air for as long as you can by bouncing it on your head!
-     * REGEX-TEST: BOUNCE BONANZA EX! Keep the Giant Bouncy Beach Ball in the air for 60 seconds by bouncing it on your and other players heads!
+     * @regexTest BOUNCE BONANZA! Keep the Bouncy Beach Ball in the air for as long as you can by bouncing it on your head!
+     * @regexTest BOUNCE BONANZA EX! Keep the Giant Bouncy Beach Ball in the air for 60 seconds by bouncing it on your and other players heads!
      */
     private val startPattern by patternGroup.pattern(
         "start",

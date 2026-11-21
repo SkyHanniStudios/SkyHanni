@@ -27,14 +27,14 @@ object CorpseFinder {
     private const val MARK_AS_FOUND_TICKS_THRESHOLD = 10
 
     /**
-     * WRAPPED-REGEX-TEST: " Lapis: NOT LOOTED"
-     * WRAPPED-REGEX-TEST: " Tungsten: NOT LOOTED"
-     * WRAPPED-REGEX-TEST: " Umber: NOT LOOTED"
-     * WRAPPED-REGEX-TEST: " Vanguard: NOT LOOTED"
-     * WRAPPED-REGEX-TEST: " Lapis: LOOTED"
-     * WRAPPED-REGEX-TEST: " Tungsten: LOOTED"
-     * WRAPPED-REGEX-TEST: " Umber: LOOTED"
-     * WRAPPED-REGEX-TEST: " Vanguard: LOOTED"
+     * @regexTestWrapped " Lapis: NOT LOOTED"
+     * @regexTestWrapped " Tungsten: NOT LOOTED"
+     * @regexTestWrapped " Umber: NOT LOOTED"
+     * @regexTestWrapped " Vanguard: NOT LOOTED"
+     * @regexTestWrapped " Lapis: LOOTED"
+     * @regexTestWrapped " Tungsten: LOOTED"
+     * @regexTestWrapped " Umber: LOOTED"
+     * @regexTestWrapped " Vanguard: LOOTED"
      */
     private val tabWidgetCorpsePattern by RepoPattern.pattern(
         "mining.glacitemineshaft.tabwidgetcorpse",

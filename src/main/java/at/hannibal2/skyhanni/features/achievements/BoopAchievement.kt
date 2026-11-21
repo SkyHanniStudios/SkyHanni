@@ -17,8 +17,8 @@ import net.minecraft.ChatFormatting
 object BoopAchievement {
 
     /**
-     * REGEX-TEST: To [MVP+] Bloxigus: Boop!
-     * REGEX-TEST: To qtLuna: Boop!
+     * @regexTest To [MVP+] Bloxigus: Boop!
+     * @regexTest To qtLuna: Boop!
      */
     private val boopPattern by AchievementManager.patternGroup.pattern(
         "boop",

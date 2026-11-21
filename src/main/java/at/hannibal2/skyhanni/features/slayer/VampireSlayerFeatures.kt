@@ -95,7 +95,7 @@ object VampireSlayerFeatures {
     private val patternGroup = RepoPattern.group("slayer.vampire-features")
 
     /**
-     * WRAPPED-REGEX-TEST: "Bloodfiend "
+     *   @regexTestWrapped "Bloodfiend "
      */
     private val bossNamePattern by patternGroup.pattern(
         "boss-name",
@@ -103,7 +103,7 @@ object VampireSlayerFeatures {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: "TWINCLAWS 1.2s"
+     *   @regexTestWrapped "TWINCLAWS 1.2s"
      */
     private val twinClawsPattern by patternGroup.pattern(
         "twinclaws-name",
@@ -111,7 +111,7 @@ object VampireSlayerFeatures {
     )
 
     /**
-     * REGEX-TEST: Bloodfiend III 312/1,800❤ ҉
+     * @regexTest Bloodfiend III 312/1,800❤ ҉
      */
     private val steakHealthPattern by patternGroup.pattern(
         "steak-health",

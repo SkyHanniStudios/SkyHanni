@@ -22,7 +22,7 @@ import kotlin.time.Duration.Companion.seconds
 object HoppityCallWarning {
     // <editor-fold desc="Patterns">
     /**
-     * WRAPPED-REGEX-TEST: "✆ Hoppity ✆ "
+     * @regexTestWrapped "✆ Hoppity ✆ "
      */
     private val initHoppityCallPattern by CFApi.patternGroup.pattern(
         "hoppity.call.init.colorless",
@@ -30,7 +30,7 @@ object HoppityCallWarning {
     )
 
     /**
-     * REGEX-TEST: [NPC] Hoppity: ✆ What's up, oBlazin?
+     * @regexTest [NPC] Hoppity: ✆ What's up, oBlazin?
      */
     private val pickupHoppityCallPattern by CFApi.patternGroup.pattern(
         "hoppity.call.pickup.colorless",

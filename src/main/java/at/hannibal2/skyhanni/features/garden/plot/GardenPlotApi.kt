@@ -52,7 +52,7 @@ object GardenPlotApi {
     private val config get() = PestApi.config.spray
 
     /**
-     * REGEX-TEST: §aPlot §7- §b4
+     * @regexTest §aPlot §7- §b4
      */
     private val plotNamePattern by patternGroup.pattern(
         "name",
@@ -60,7 +60,7 @@ object GardenPlotApi {
     )
 
     /**
-     * REGEX-TEST: §aThe Barn
+     * @regexTest §aThe Barn
      */
     private val barnNamePattern by patternGroup.pattern(
         "barnname",
@@ -68,7 +68,7 @@ object GardenPlotApi {
     )
 
     /**
-     * REGEX-TEST: §7Greenhouse Plot
+     * @regexTest §7Greenhouse Plot
      */
     private val greenhousePlotPattern by patternGroup.pattern(
         "greenhouse",
@@ -76,7 +76,7 @@ object GardenPlotApi {
     )
 
     /**
-     * REGEX-TEST: §7Cleanup: §b0% Completed
+     * @regexTest §7Cleanup: §b0% Completed
      */
     private val uncleanedPlotPattern by patternGroup.pattern(
         "uncleaned",
@@ -84,7 +84,7 @@ object GardenPlotApi {
     )
 
     /**
-     * REGEX-TEST: §aUnlocked Garden §r§aPlot §r§7- §r§b10§r§a!
+     * @regexTest §aUnlocked Garden §r§aPlot §r§7- §r§b10§r§a!
      */
     private val unlockPlotChatPattern by patternGroup.pattern(
         "chat.unlock",
@@ -92,7 +92,7 @@ object GardenPlotApi {
     )
 
     /**
-     * REGEX-TEST: §aPlot §r§7- §r§b10 §r§ais now clean!
+     * @regexTest §aPlot §r§7- §r§b10 §r§ais now clean!
      */
     private val cleanPlotChatPattern by patternGroup.pattern(
         "chat.clean",
@@ -100,9 +100,9 @@ object GardenPlotApi {
     )
 
     /**
-     * REGEX-TEST: SPRAYONATOR! You sprayed Plot - 6 with Compost!
-     * REGEX-TEST: SPRAYONATOR! You sprayed Plot - 7 with 3 Plant Matter!
-     * REGEX-TEST: SPRAYONATOR! You sprayed Plot - 8 with 5 Jelly!
+     * @regexTest SPRAYONATOR! You sprayed Plot - 6 with Compost!
+     * @regexTest SPRAYONATOR! You sprayed Plot - 7 with 3 Plant Matter!
+     * @regexTest SPRAYONATOR! You sprayed Plot - 8 with 5 Jelly!
      */
     val plotSprayedPattern by patternGroup.pattern(
         "spray.target.colorless",
@@ -110,7 +110,7 @@ object GardenPlotApi {
     )
 
     /**
-     * REGEX-TEST: SPLASH! Your Garden was cleared of all active Sprayonator effects!
+     * @regexTest SPLASH! Your Garden was cleared of all active Sprayonator effects!
      */
     private val portableWasherPattern by patternGroup.pattern(
         "spray.cleared.portablewasher-nocolor",
@@ -118,11 +118,11 @@ object GardenPlotApi {
     )
 
     /**
-     * REGEX-TEST: Spray: None
-     * REGEX-TEST: Spray: Compost (12m)
-     * REGEX-TEST: Spray: Compost (1m 3s)
-     * REGEX-TEST: Spray: Compost (53s)
-     * REGEX-TEST: Spray: Honey Jar (53s)
+     * @regexTest Spray: None
+     * @regexTest Spray: Compost (12m)
+     * @regexTest Spray: Compost (1m 3s)
+     * @regexTest Spray: Compost (53s)
+     * @regexTest Spray: Honey Jar (53s)
      */
     private val plotSprayedTablistPattern by patternGroup.pattern(
         "tablist.spraytime-nocolor",

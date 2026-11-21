@@ -32,12 +32,12 @@ object FishingHookDisplay {
     private var timerDisplay: TimerDisplay? = null
 
     /**
-     * REGEX-TEST: §e§l3.0
-     * REGEX-TEST: §e§l1.2
-     * REGEX-TEST: §c§l!!!
-     * REGEX-TEST: !!!
-     * REGEX-FAIL: §736
-     * REGEX-FAIL: §772
+     * @regexTest §e§l3.0
+     * @regexTest §e§l1.2
+     * @regexTest §c§l!!!
+     * @regexTest !!!
+     * @regexFail §736
+     * @regexFail §772
      */
     private val timerPattern by RepoPattern.pattern(
         "fishing.hook.timer",

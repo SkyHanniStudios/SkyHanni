@@ -21,8 +21,8 @@ object SkillExperience {
     private val patternGroup = RepoPattern.group("data.skill")
 
     /**
-     * REGEX-TEST: §3+6.3 Foraging (24/750)
-     * REGEX-TEST: §3+207.2 Hunting (5,183,244/0)
+     * @regexTest §3+6.3 Foraging (24/750)
+     * @regexTest §3+207.2 Hunting (5,183,244/0)
      */
     private val actionBarPattern by patternGroup.pattern(
         "actionbar",

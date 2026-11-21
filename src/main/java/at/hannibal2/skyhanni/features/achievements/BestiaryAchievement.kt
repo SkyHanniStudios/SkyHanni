@@ -14,8 +14,8 @@ import at.hannibal2.skyhanni.utils.chat.TextHelper.asComponent
 object BestiaryAchievement {
 
     /**
-     * REGEX-TEST: Bestiary Milestone CCCXX
-     * REGEX-TEST: Bestiary Milestone 320
+     * @regexTest Bestiary Milestone CCCXX
+     * @regexTest Bestiary Milestone 320
      */
     private val bestiaryPattern by AchievementManager.patternGroup.pattern(
         "bestiary",

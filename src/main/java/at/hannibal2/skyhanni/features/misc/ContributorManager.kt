@@ -65,11 +65,11 @@ object ContributorManager {
     private val patternGroup = RepoPattern.group("contributor")
 
     /**
-     * REGEX-TEST: skyhanni dev
-     * REGEX-TEST: skyhani contributor
-     * REGEX-TEST: skyhanni devs are the best
-     * REGEX-TEST: sh dev in the house
-     * REGEX-TEST: who is the skyhannu contrubiter?
+     * @regexTest skyhanni dev
+     * @regexTest skyhani contributor
+     * @regexTest skyhanni devs are the best
+     * @regexTest sh dev in the house
+     * @regexTest who is the skyhannu contrubiter?
      */
     private val contribMentionPattern by patternGroup.pattern(
         "mention",
@@ -77,10 +77,10 @@ object ContributorManager {
     )
 
     /**
-     * REGEX-TEST: [MVP+] hannibal2
-     * REGEX-TEST: [MVP+] hannibal2 [✪DK✪]
-     * REGEX-TEST: [450] hannibal2
-     * REGEX-FAIL: [450] hannibal2 ⛃
+     * @regexTest [MVP+] hannibal2
+     * @regexTest [MVP+] hannibal2 [✪DK✪]
+     * @regexTest [450] hannibal2
+     * @regexFail [450] hannibal2 ⛃
      */
     private val contribNametagAppendSpacePattern by patternGroup.pattern(
         "nametag.appendspace",

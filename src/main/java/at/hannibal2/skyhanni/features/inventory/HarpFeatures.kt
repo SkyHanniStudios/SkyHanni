@@ -43,8 +43,8 @@ object HarpFeatures {
     private val patternGroup = RepoPattern.group("harp")
 
     /**
-     * REGEX-TEST: Harp - Amazing Grace
-     * REGEX-FAIL: Harpy ➜ Instant Buy
+     * @regexTest Harp - Amazing Grace
+     * @regexFail Harpy ➜ Instant Buy
      */
     private val inventoryTitlePattern by patternGroup.pattern(
         "inventory",

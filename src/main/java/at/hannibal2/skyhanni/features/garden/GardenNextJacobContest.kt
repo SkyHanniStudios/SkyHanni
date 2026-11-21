@@ -103,8 +103,8 @@ object GardenNextJacobContest {
     }
 
     /**
-     * REGEX-TEST: §aDay 1
-     * REGEX-TEST: §aDay 31
+     * @regexTest §aDay 1
+     * @regexTest §aDay 31
      */
     val dayPattern by patternGroup.pattern(
         "day",
@@ -112,9 +112,9 @@ object GardenNextJacobContest {
     )
 
     /**
-     * REGEX-TEST: Early Spring, Year 351
-     * REGEX-TEST: Late Summer, Year 351
-     * REGEX-TEST: Autumn, Year 351
+     * @regexTest Early Spring, Year 351
+     * @regexTest Late Summer, Year 351
+     * @regexTest Autumn, Year 351
      */
     val monthPattern by patternGroup.pattern(
         "month",
@@ -123,12 +123,12 @@ object GardenNextJacobContest {
 
     // This pattern covers both the tab list widget, and calendar item lore.
     /**
-     * REGEX-TEST: ○ Cactus
-     * REGEX-TEST:  Carrot
-     * REGEX-TEST: ○ Melon
-     * WRAPPED-REGEX-TEST: "  Mushroom"
-     * WRAPPED-REGEX-TEST: " ○ Pumpkin"
-     * WRAPPED-REGEX-TEST: " ○ Wheat"
+     * @regexTest ○ Cactus
+     * @regexTest  Carrot
+     * @regexTest ○ Melon
+     * @regexTestWrapped "  Mushroom"
+     * @regexTestWrapped " ○ Pumpkin"
+     * @regexTestWrapped " ○ Wheat"
      */
     private val cropPattern by patternGroup.pattern(
         "crop-no-color",
@@ -136,8 +136,8 @@ object GardenNextJacobContest {
     )
 
     /**
-     * REGEX-TEST: Jacob's Contest: 19m left
-     * REGEX-TEST: Jacob's Contest: 8m left
+     * @regexTest Jacob's Contest: 19m left
+     * @regexTest Jacob's Contest: 8m left
      */
     private val timeLeftPattern by patternGroup.pattern(
         "time-left-no-color",

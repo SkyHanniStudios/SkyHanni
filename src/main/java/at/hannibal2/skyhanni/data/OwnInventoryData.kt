@@ -41,7 +41,7 @@ object OwnInventoryData {
     private var dirty = false
 
     /**
-     * REGEX-TEST: §aMoved §r§e10 Wheat§r§a from your Sacks to your inventory.
+     * @regexTest §aMoved §r§e10 Wheat§r§a from your Sacks to your inventory.
      */
     private val sackToInventoryChatPattern by RepoPattern.pattern(
         "data.owninventory.chat.movedsacktoinventory",

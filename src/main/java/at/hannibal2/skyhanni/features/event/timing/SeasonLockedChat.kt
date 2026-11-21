@@ -18,7 +18,7 @@ object SeasonLockedChat {
     private val config get() = SkyHanniMod.feature.event.timing
 
     /**
-     * REGEX-TEST: Jerry's Workshop is only available during the season of Late Winter!
+     * @regexTest Jerry's Workshop is only available during the season of Late Winter!
      */
     private val seasonLockedPattern by RepoPattern.pattern(
         "event.timing.season.locked",

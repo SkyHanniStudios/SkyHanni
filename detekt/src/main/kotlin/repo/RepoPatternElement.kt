@@ -34,8 +34,15 @@ class RepoPatternElement private constructor(
         // Must be internal so that it can be accessed from RepoPatternContext.
         internal val SENTINEL_VALUE = RepoPatternElement("SENTINEL", null, "", emptyList(), emptyList(), emptyList())
 
-        private val wrappedRegexTestPattern = "WRAPPED-REGEX-TEST: \"(?<test>.*)\"".toPattern()
-        private val wrappedRegexFailPattern = "WRAPPED-REGEX-FAIL: \"(?<test>.*)\"".toPattern()
+        private val wrappedRegexTestPattern = "@regexTestWrapped \"(?<test>.*)\"".toPattern()
+        private val wrappedRegexFailPattern = "@regexFailWrapped \"(?<test>.*)\"".toPattern()
+        private val kDocLinePrefixPattern = "^\\s*\\* ?".toPattern()
+
+        private fun kDocLines(text: String): List<String> {
+            val body = text.removePrefix("/**").removeSuffix("*/")
+            if ('\n' !in body) return listOf(body.trim())
+            return body.lines().map { kDocLinePrefixPattern.matcher(it).replaceFirst("") }
+        }
 
         internal fun KtPropertyDelegate.asRepoPatternElement(): RepoPatternElement? {
             val expression = this.expression as? KtDotQualifiedExpression ?: return null
@@ -77,7 +84,7 @@ class RepoPatternElement private constructor(
             val failingRegexTests = mutableListOf<String>()
             val kDocErrors = mutableListOf<String>()
 
-            kDoc.getDefaultSection().getContent().lines().forEach { line ->
+            kDocLines(kDoc.text).forEach { line ->
                 wrappedRegexTestPattern.matcher(line).let { matcher ->
                     if (!matcher.find()) return@let
                     val test = matcher.group("test") ?: return@let
@@ -90,24 +97,24 @@ class RepoPatternElement private constructor(
                     failingRegexTests.add(test)
                     return@forEach
                 }
-                if (line.contains("REGEX-TEST: ")) {
-                    val test = line.substringAfter("REGEX-TEST: ")
+                if (line.contains("@regexTest ")) {
+                    val test = line.substringAfter("@regexTest ")
                     if (test.trim() != test) {
                         kDocErrors.add(
-                            "Plain REGEX-TEST must not contain leading or trailing whitespace. " +
-                                "If the whitespace is intentional, use WRAPPED-REGEX-TEST instead.",
+                            "Plain @regexTest must not contain leading or trailing whitespace. " +
+                                "If the whitespace is intentional, use @regexTestWrapped instead.",
                         )
                     } else {
                         regexTests.add(test)
                     }
                     return@forEach
                 }
-                if (line.contains("REGEX-FAIL: ")) {
-                    val test = line.substringAfter("REGEX-FAIL: ")
+                if (line.contains("@regexFail ")) {
+                    val test = line.substringAfter("@regexFail ")
                     if (test.trim() != test) {
                         kDocErrors.add(
-                            "Plain REGEX-FAIL must not contain leading or trailing whitespace. " +
-                                "If the whitespace is intentional, use WRAPPED-REGEX-FAIL instead.",
+                            "Plain @regexFail must not contain leading or trailing whitespace. " +
+                                "If the whitespace is intentional, use @regexFailWrapped instead.",
                         )
                     } else {
                         failingRegexTests.add(test)

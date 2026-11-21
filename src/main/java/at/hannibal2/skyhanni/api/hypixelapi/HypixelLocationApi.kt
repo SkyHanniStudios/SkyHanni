@@ -31,8 +31,8 @@ object HypixelLocationApi {
     private val patternGroup = RepoPattern.group("api.hypixellocation")
 
     /**
-     * REGEX-TEST: legacylobby3
-     * REGEX-TEST: lobby1
+     * @regexTest legacylobby3
+     * @regexTest lobby1
      */
     private val lobbyTypePattern by patternGroup.pattern(
         "lobbytype",

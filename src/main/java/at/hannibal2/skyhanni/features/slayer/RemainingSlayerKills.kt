@@ -47,7 +47,7 @@ object RemainingSlayerKills {
     private val patternGroup = RepoPattern.group("slayer.remaining-kills")
 
     /**
-     * REGEX-TEST: (120/500) Atomic Slayer
+     * @regexTest (120/500) Atomic Slayer
      */
     private val progressPattern by patternGroup.pattern(
         "progress",
@@ -55,7 +55,7 @@ object RemainingSlayerKills {
     )
 
     /**
-     * REGEX-TEST: Your Kill Combo has expired! You reached a 3 Kill Combo!
+     * @regexTest Your Kill Combo has expired! You reached a 3 Kill Combo!
      */
     private val comboExpiredPattern by patternGroup.pattern(
         "combo.expired",
@@ -63,7 +63,7 @@ object RemainingSlayerKills {
     )
 
     /**
-     * REGEX-TEST: +20 Kill Combo +15☯ Combat Wisdom
+     * @regexTest +20 Kill Combo +15☯ Combat Wisdom
      */
     private val killCombatWisdomPattern by patternGroup.pattern(
         "kill-combat-wisdom",

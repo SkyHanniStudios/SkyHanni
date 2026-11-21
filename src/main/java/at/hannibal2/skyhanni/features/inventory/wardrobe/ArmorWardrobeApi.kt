@@ -12,7 +12,7 @@ import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 object ArmorWardrobeApi : AbstractWardrobeApi() {
 
     /**
-     * REGEX-TEST: (1/3) Armor Sets
+     * @regexTest (1/3) Armor Sets
      */
     override val inventoryPattern by patternGroup.pattern(
         "armor.name",

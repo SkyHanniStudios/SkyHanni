@@ -58,8 +58,8 @@ object EnigmaSoulWaypoints {
     private val patternGroup = RepoPattern.group("rift.everywhere.enigma-souls")
 
     /**
-     * REGEX-TEST: Enigma: Tough Bark
-     * REGEX-TEST: ✔ Enigma: Woods Flower Pot
+     * @regexTest Enigma: Tough Bark
+     * @regexTest ✔ Enigma: Woods Flower Pot
      */
     private val enigmaTitlePattern by patternGroup.pattern(
         "title",
@@ -67,7 +67,7 @@ object EnigmaSoulWaypoints {
     )
 
     /**
-     * REGEX-TEST: ✖ Not completed yet!
+     * @regexTest ✖ Not completed yet!
      */
     private val notCompletedPattern by patternGroup.pattern(
         "not-completed",
@@ -75,7 +75,7 @@ object EnigmaSoulWaypoints {
     )
 
     /**
-     * REGEX-TEST: To Rift Guide ➜ Wyld Woods
+     * @regexTest To Rift Guide ➜ Wyld Woods
      */
     private val guideAreaPattern by patternGroup.pattern(
         "guide-area",
@@ -83,8 +83,8 @@ object EnigmaSoulWaypoints {
     )
 
     /**
-     * REGEX-TEST: SOUL! You unlocked an Enigma Soul!
-     * REGEX-TEST: You have already found that Enigma Soul!
+     * @regexTest SOUL! You unlocked an Enigma Soul!
+     * @regexTest You have already found that Enigma Soul!
      */
     private val foundPattern by patternGroup.pattern(
         "found",
@@ -92,7 +92,7 @@ object EnigmaSoulWaypoints {
     )
 
     /**
-     * REGEX-TEST: Rift Guide ➜ Enigma Souls
+     * @regexTest Rift Guide ➜ Enigma Souls
      */
     private val inventoryNamePattern by patternGroup.pattern(
         "inventory",

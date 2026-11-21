@@ -44,7 +44,7 @@ object SpiderDenRelicPathfinder {
     private val patternGroup = RepoPattern.group("misc.spider-relic")
 
     /**
-     * REGEX-TEST: +10,000 Coins! (2/28 Relics)
+     * @regexTest +10,000 Coins! (2/28 Relics)
      */
     private val foundPattern by patternGroup.pattern(
         key = "chat.found",
@@ -52,7 +52,7 @@ object SpiderDenRelicPathfinder {
     )
 
     /**
-     * REGEX-TEST: You've already found this relic!
+     * @regexTest You've already found this relic!
      */
     private val duplicatePattern by patternGroup.pattern(
         key = "chat.duplicate",

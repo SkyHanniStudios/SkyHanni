@@ -35,7 +35,7 @@ object PowderMiningChatFilter {
     private var unclosedRewards = false
 
     /**
-     * REGEX-TEST: §aYou uncovered a treasure chest!
+     * @regexTest §aYou uncovered a treasure chest!
      */
     private val uncoverChestPattern by patternGroup.pattern(
         "warning.chestuncover",
@@ -43,7 +43,7 @@ object PowderMiningChatFilter {
     )
 
     /**
-     * REGEX-TEST: §6You have successfully picked the lock on this chest!
+     * @regexTest §6You have successfully picked the lock on this chest!
      */
     private val successfulPickPattern by patternGroup.pattern(
         "warning.successpick",
@@ -51,7 +51,7 @@ object PowderMiningChatFilter {
     )
 
     /**
-     * REGEX-TEST: §cThis chest has already been looted.
+     * @regexTest §cThis chest has already been looted.
      */
     private val alreadyLootedPattern by patternGroup.pattern(
         "warning.alreadylooted",
@@ -59,8 +59,8 @@ object PowderMiningChatFilter {
     )
 
     /**
-     * REGEX-TEST: §cYou need a tool with a §r§aBreaking Power §r§cof §r§66§r§c to mine Ruby Gemstone Block§r§c! Speak to §r§dFragilis §r§cby the entrance to the Crystal Hollows to learn more!
-     * REGEX-TEST: §cYou need a tool with a §r§aBreaking Power §r§cof §r§64§r§c to mine Mithril§r§c! Speak to §r§dFragilis §r§cby the entrance to the Crystal Hollows to learn more!
+     * @regexTest §cYou need a tool with a §r§aBreaking Power §r§cof §r§66§r§c to mine Ruby Gemstone Block§r§c! Speak to §r§dFragilis §r§cby the entrance to the Crystal Hollows to learn more!
+     * @regexTest §cYou need a tool with a §r§aBreaking Power §r§cof §r§64§r§c to mine Mithril§r§c! Speak to §r§dFragilis §r§cby the entrance to the Crystal Hollows to learn more!
      */
     @Suppress("MaxLineLength")
     private val breakingPowerPattern by patternGroup.pattern(
@@ -69,8 +69,8 @@ object PowderMiningChatFilter {
     )
 
     /**
-     * REGEX-TEST: §e§l▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
-     * REGEX-TEST: §d§l▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+     * @regexTest §e§l▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+     * @regexTest §d§l▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
      */
     private val chestWrapperPattern by patternGroup.pattern(
         "powder.chestwrapper",
@@ -78,7 +78,7 @@ object PowderMiningChatFilter {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: "  §r§6§lCHEST LOCKPICKED"
+     * @regexTestWrapped "  §r§6§lCHEST LOCKPICKED"
      */
     private val lockPickedPattern by patternGroup.pattern(
         "powder.picked",
@@ -86,7 +86,7 @@ object PowderMiningChatFilter {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: "  §r§5§lLOOT CHEST COLLECTED"
+     * @regexTestWrapped "  §r§5§lLOOT CHEST COLLECTED"
      */
     private val lootChestCollectedPattern by patternGroup.pattern(
         "lootchest.collected",
@@ -94,7 +94,7 @@ object PowderMiningChatFilter {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: "  §r§a§lREWARDS"
+     * @regexTestWrapped "  §r§a§lREWARDS"
      */
     private val rewardHeaderPattern by patternGroup.pattern(
         "reward.header",
@@ -102,22 +102,22 @@ object PowderMiningChatFilter {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: "    §r§a§r§aGreen Goblin Egg"
-     * WRAPPED-REGEX-TEST: "    §r§9Goblin Egg"
-     * WRAPPED-REGEX-TEST: "    §r§dDiamond Essence"
-     * WRAPPED-REGEX-TEST: "    §r§dGold Essence"
-     * WRAPPED-REGEX-TEST: "    §r§dGold Essence §r§8x3"
-     * WRAPPED-REGEX-TEST: "    §r§dGemstone Powder §r§8x537"
-     * WRAPPED-REGEX-TEST: "    §r§dDiamond Essence §r§8x2"
-     * WRAPPED-REGEX-TEST: "    §r§2Mithril Powder §r§8x153"
-     * WRAPPED-REGEX-TEST: "    §r§5Treasurite"
-     * WRAPPED-REGEX-TEST: "    §r§f⸕ Rough Amber Gemstone §r§8x24"
-     * WRAPPED-REGEX-TEST: "    §r§f❤ Rough Ruby Gemstone §r§8x24"
-     * WRAPPED-REGEX-TEST: "    §r§f❈ Rough Amethyst Gemstone §r§8x24"
-     * WRAPPED-REGEX-TEST: "    §r§9§r§eYellow Goblin Egg"
-     * WRAPPED-REGEX-TEST: "    §r§a⸕ Flawed Amber Gemstone"
-     * WRAPPED-REGEX-TEST: "    §r§aWishing Compass §r§8x3"
-     * WRAPPED-REGEX-TEST: "    §r§a⸕ Flawed Amber Gemstone §r§8x2"
+     * @regexTestWrapped "    §r§a§r§aGreen Goblin Egg"
+     * @regexTestWrapped "    §r§9Goblin Egg"
+     * @regexTestWrapped "    §r§dDiamond Essence"
+     * @regexTestWrapped "    §r§dGold Essence"
+     * @regexTestWrapped "    §r§dGold Essence §r§8x3"
+     * @regexTestWrapped "    §r§dGemstone Powder §r§8x537"
+     * @regexTestWrapped "    §r§dDiamond Essence §r§8x2"
+     * @regexTestWrapped "    §r§2Mithril Powder §r§8x153"
+     * @regexTestWrapped "    §r§5Treasurite"
+     * @regexTestWrapped "    §r§f⸕ Rough Amber Gemstone §r§8x24"
+     * @regexTestWrapped "    §r§f❤ Rough Ruby Gemstone §r§8x24"
+     * @regexTestWrapped "    §r§f❈ Rough Amethyst Gemstone §r§8x24"
+     * @regexTestWrapped "    §r§9§r§eYellow Goblin Egg"
+     * @regexTestWrapped "    §r§a⸕ Flawed Amber Gemstone"
+     * @regexTestWrapped "    §r§aWishing Compass §r§8x3"
+     * @regexTestWrapped "    §r§a⸕ Flawed Amber Gemstone §r§8x2"
      */
     val genericMiningRewardMessage by patternGroup.pattern(
         "reward.generic",
@@ -125,8 +125,8 @@ object PowderMiningChatFilter {
     )
 
     /**
-     * REGEX-TEST: §r§2Mithril Powder §r§8x153
-     * REGEX-TEST: §r§dGemstone Powder §r§8x537
+     * @regexTest §r§2Mithril Powder §r§8x153
+     * @regexTest §r§dGemstone Powder §r§8x537
      */
     private val powderRewardPattern by patternGroup.pattern(
         "reward.powder",
@@ -134,10 +134,10 @@ object PowderMiningChatFilter {
     )
 
     /**
-     * REGEX-TEST: §r§dGold Essence
-     * REGEX-TEST: §r§dGold Essence §r§8x3
-     * REGEX-TEST: §r§dDiamond Essence §r§8x2
-     * REGEX-TEST: §r§dDiamond Essence
+     * @regexTest §r§dGold Essence
+     * @regexTest §r§dGold Essence §r§8x3
+     * @regexTest §r§dDiamond Essence §r§8x2
+     * @regexTest §r§dDiamond Essence
      */
     private val essenceRewardPattern by patternGroup.pattern(
         "reward.essence",
@@ -145,7 +145,7 @@ object PowderMiningChatFilter {
     )
 
     /**
-     * REGEX-TEST: §r§9Ascension Rope
+     * @regexTest §r§9Ascension Rope
      */
     private val ascensionRopeRewardPattern by patternGroup.pattern(
         "reward.ascensionrope",
@@ -153,7 +153,7 @@ object PowderMiningChatFilter {
     )
 
     /**
-     * REGEX-TEST: §r§aWishing Compass
+     * @regexTest §r§aWishing Compass
      */
     private val wishingCompassRewardPattern by patternGroup.pattern(
         "reward.wishingcompass",
@@ -161,7 +161,7 @@ object PowderMiningChatFilter {
     )
 
     /**
-     * REGEX-TEST: §r§aOil Barrel
+     * @regexTest §r§aOil Barrel
      */
     private val oilBarrelRewardPattern by patternGroup.pattern(
         "reward.oilbarrel",
@@ -169,7 +169,7 @@ object PowderMiningChatFilter {
     )
 
     /**
-     * REGEX-TEST: §r§fPrehistoric Egg
+     * @regexTest §r§fPrehistoric Egg
      */
     private val prehistoricEggPattern by patternGroup.pattern(
         "reward.prehistoricegg",
@@ -177,7 +177,7 @@ object PowderMiningChatFilter {
     )
 
     /**
-     * REGEX-TEST: §r§5Pickonimbus 2000
+     * @regexTest §r§5Pickonimbus 2000
      */
     private val pickonimbusPattern by patternGroup.pattern(
         "reward.pickonimbus",
@@ -185,7 +185,7 @@ object PowderMiningChatFilter {
     )
 
     /**
-     * REGEX-TEST: §r§6Jungle Heart
+     * @regexTest §r§6Jungle Heart
      */
     private val jungleHeartPattern by patternGroup.pattern(
         "reward.jungleheart",
@@ -193,7 +193,7 @@ object PowderMiningChatFilter {
     )
 
     /**
-     * REGEX-TEST: §r§aSludge Juice
+     * @regexTest §r§aSludge Juice
      */
     private val sludgeJuicePattern by patternGroup.pattern(
         "reward.sludgejuice",
@@ -201,7 +201,7 @@ object PowderMiningChatFilter {
     )
 
     /**
-     * REGEX-TEST: §r§aYoggie
+     * @regexTest §r§aYoggie
      */
     private val yoggiePattern by patternGroup.pattern(
         "reward.yoggie",
@@ -209,12 +209,12 @@ object PowderMiningChatFilter {
     )
 
     /**
-     * REGEX-TEST: §r§9FTX 3070
-     * REGEX-TEST: §r§9Synthetic Heart
-     * REGEX-TEST: §r§9Control Switch
-     * REGEX-TEST: §r§9Robotron Reflector
-     * REGEX-TEST: §r§9Electron Transmitter
-     * REGEX-TEST: §r§9Superlite Motor
+     * @regexTest §r§9FTX 3070
+     * @regexTest §r§9Synthetic Heart
+     * @regexTest §r§9Control Switch
+     * @regexTest §r§9Robotron Reflector
+     * @regexTest §r§9Electron Transmitter
+     * @regexTest §r§9Superlite Motor
      */
     @Suppress("MaxLineLength")
     private val robotPartsPattern by patternGroup.pattern(
@@ -223,7 +223,7 @@ object PowderMiningChatFilter {
     )
 
     /**
-     * REGEX-TEST: §r§5Treasurite
+     * @regexTest §r§5Treasurite
      */
     private val treasuritePattern by patternGroup.pattern(
         "reward.treasurite",
@@ -231,12 +231,12 @@ object PowderMiningChatFilter {
     )
 
     /**
-     * REGEX-TEST: §r§9§r§cRed Goblin Egg
-     * REGEX-TEST: §r§9§r§3Blue Goblin Egg
-     * REGEX-TEST: §r§9Goblin Egg
-     * REGEX-TEST: §r§9Goblin Egg §r§8x2
-     * REGEX-TEST: §r§a§r§aGreen Goblin Egg
-     * REGEX-TEST: §r§9§r§eYellow Goblin Egg
+     * @regexTest §r§9§r§cRed Goblin Egg
+     * @regexTest §r§9§r§3Blue Goblin Egg
+     * @regexTest §r§9Goblin Egg
+     * @regexTest §r§9Goblin Egg §r§8x2
+     * @regexTest §r§a§r§aGreen Goblin Egg
+     * @regexTest §r§9§r§eYellow Goblin Egg
      */
     private val goblinEggPattern by patternGroup.pattern(
         "reward.goblineggs",
@@ -244,12 +244,12 @@ object PowderMiningChatFilter {
     )
 
     /**
-     * REGEX-TEST: §r§f❈ Rough Amethyst Gemstone §r§8x24
-     * REGEX-TEST: §r§a❈ Flawed Amethyst Gemstone §r§8x4
-     * REGEX-TEST: §r§9⸕ Fine Amber Gemstone
-     * REGEX-TEST: §r§5⸕ Flawless Amber Gemstone
-     * REGEX-TEST: §r§f❁ Rough Jasper Gemstone §r§8x24
-     * REGEX-TEST: §r§a❁ Flawed Jasper Gemstone
+     * @regexTest §r§f❈ Rough Amethyst Gemstone §r§8x24
+     * @regexTest §r§a❈ Flawed Amethyst Gemstone §r§8x4
+     * @regexTest §r§9⸕ Fine Amber Gemstone
+     * @regexTest §r§5⸕ Flawless Amber Gemstone
+     * @regexTest §r§f❁ Rough Jasper Gemstone §r§8x24
+     * @regexTest §r§a❁ Flawed Jasper Gemstone
      */
     @Suppress("MaxLineLength")
     private val gemstonePattern by patternGroup.pattern(

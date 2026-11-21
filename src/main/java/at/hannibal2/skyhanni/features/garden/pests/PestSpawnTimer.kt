@@ -49,11 +49,11 @@ object PestSpawnTimer {
     private val cooldownOverMessageId = ChatUtils.getUniqueMessageId()
 
     /**
-     * WRAPPED-REGEX-TEST: " Cooldown: READY"
-     * WRAPPED-REGEX-TEST: " Cooldown: 1m 58s"
-     * WRAPPED-REGEX-TEST: " Cooldown: 1m"
-     * WRAPPED-REGEX-TEST: " Cooldown: 58s"
-     * WRAPPED-REGEX-TEST: " Cooldown: MAX PESTS"
+     * @regexTestWrapped " Cooldown: READY"
+     * @regexTestWrapped " Cooldown: 1m 58s"
+     * @regexTestWrapped " Cooldown: 1m"
+     * @regexTestWrapped " Cooldown: 58s"
+     * @regexTestWrapped " Cooldown: MAX PESTS"
      */
     private val pestCooldownPattern by patternGroup.pattern(
         "cooldowntime-no-color",
@@ -61,7 +61,7 @@ object PestSpawnTimer {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: " Alive: 8"
+     * @regexTestWrapped " Alive: 8"
      */
     private val maxPestsAlivePattern by patternGroup.pattern(
         "max-pests-alive",

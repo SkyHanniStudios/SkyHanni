@@ -52,58 +52,58 @@ object CroesusChestTracker {
     private val patternGroup = RepoPattern.group("dungeon.croesus")
 
     /**
-     * REGEX-TEST: (1/3) Croesus
-     * REGEX-TEST: Croesus
+     * @regexTest (1/3) Croesus
+     * @regexTest Croesus
      */
     private val croesusPattern by patternGroup.pattern("inventory", "(?:\\(\\d+/\\d+\\) )?Croesus")
 
     /**
-     * REGEX-TEST: No treasures!
+     * @regexTest No treasures!
      */
     private val croesusEmptyPattern by patternGroup.pattern("empty.colorless", "No treasures!")
 
     /**
-     * REGEX-TEST: Reroll Chest
+     * @regexTest Reroll Chest
      */
     private val kismetPattern by patternGroup.pattern("kismet.reroll.colorless", "Reroll Chest")
 
     /**
-     * REGEX-TEST: You already rerolled a chest!
+     * @regexTest You already rerolled a chest!
      */
     private val kismetUsedInChestPattern by patternGroup.pattern("kismet.used.colorless", "You already rerolled a chest!")
 
     /**
-     * REGEX-TEST: Floor V
+     * @regexTest Floor V
      */
     private val floorPattern by patternGroup.pattern("chest.floor.colorless", "Floor (?<floor>[IV]+)")
 
     /**
-     * REGEX-TEST: Master Mode The Catacombs
+     * @regexTest Master Mode The Catacombs
      */
     private val masterPattern by patternGroup.pattern("chest.master.colorless", ".*Master.*")
 
     /**
-     * REGEX-TEST: Infernal Tier
+     * @regexTest Infernal Tier
      */
     private val kuudraPattern by patternGroup.pattern("chest.kuudra.colorless", "(?<tier>Basic|Hot|Burning|Fiery|Infernal) Tier")
 
     /**
-     * REGEX-TEST: No more chests to open!
+     * @regexTest No more chests to open!
      */
     private val keyUsedPattern by patternGroup.pattern("chest.state.keyused.colorless", "No more chests to open!")
 
     /**
-     * REGEX-TEST: Opened Chest: Wood
+     * @regexTest Opened Chest: Wood
      */
     private val openedPattern by patternGroup.pattern("chest.state.opened.colorless", "Opened [cC]hest:.*")
 
     /**
-     * REGEX-TEST: No chests opened yet!
+     * @regexTest No chests opened yet!
      */
     private val unopenedPattern by patternGroup.pattern("chest.state.unopened.colorless", "No chests opened yet!")
 
     /**
-     * WRAPPED-REGEX-TEST: " Kismet Feather"
+     * @regexTestWrapped " Kismet Feather"
      */
     private val kismetUsedInCroesusPattern by patternGroup.pattern("chest.state.kismet.used.styled", " §mKismet Feather")
 

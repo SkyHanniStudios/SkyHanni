@@ -13,7 +13,7 @@ import at.hannibal2.skyhanni.utils.RegexUtils.matches
 object SowdustAchievement {
 
     /**
-     * WRAPPED-REGEX-TEST: " - 250,000,000 Sowdust"
+     * @regexTestWrapped " - 250,000,000 Sowdust"
      */
     private val maxSowdustPattern by AchievementManager.patternGroup.pattern(
         "sowdust",
@@ -21,7 +21,7 @@ object SowdustAchievement {
     )
 
     /**
-     * REGEX-TEST: Manage Chips
+     * @regexTest Manage Chips
      */
     private val manageChipsInventoryPattern by AchievementManager.patternGroup.pattern(
         "manage-chips-inventory",

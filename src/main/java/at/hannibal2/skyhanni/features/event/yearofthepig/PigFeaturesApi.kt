@@ -74,12 +74,12 @@ object PigFeaturesApi {
     )
 
     /**
-     * REGEX-TEST: SHINY! You received a Shiny Token and Blood God Crest from the Shiny Pig's orb!
-     * REGEX-TEST: SHINY! You received a Shiny Token and +1,185,000 Coins from the Shiny Pig's orb!
-     * REGEX-TEST: SHINY! You received a Shiny Token and +1,000 Foraging XP from the Shiny Pig's orb!
-     * REGEX-TEST: SHINY! You received a Shiny Token and 16x Enchanted Potato from the Shiny Pig's orb!
-     * REGEX-TEST: SHINY! You received a Shiny Token and +5,000 Combat XP from the Shiny Pig's orb!
-     * REGEX-TEST: SHINY! You received a Shiny Token, +19,500 Coins, and Harvesting VI from the Shiny Pig's orb!
+     * @regexTest SHINY! You received a Shiny Token and Blood God Crest from the Shiny Pig's orb!
+     * @regexTest SHINY! You received a Shiny Token and +1,185,000 Coins from the Shiny Pig's orb!
+     * @regexTest SHINY! You received a Shiny Token and +1,000 Foraging XP from the Shiny Pig's orb!
+     * @regexTest SHINY! You received a Shiny Token and 16x Enchanted Potato from the Shiny Pig's orb!
+     * @regexTest SHINY! You received a Shiny Token and +5,000 Combat XP from the Shiny Pig's orb!
+     * @regexTest SHINY! You received a Shiny Token, +19,500 Coins, and Harvesting VI from the Shiny Pig's orb!
      */
     private val orbLootedChatPattern by patternGroup.pattern(
         "chat.orb.looted",
@@ -87,8 +87,8 @@ object PigFeaturesApi {
     )
 
     /**
-     * REGEX-TEST: +3,000 Coins
-     * REGEX-TEST: +9,721 Coins
+     * @regexTest +3,000 Coins
+     * @regexTest +9,721 Coins
      */
     private val coinsRewardPattern by patternGroup.pattern(
         "orb.reward.coins",
@@ -96,8 +96,8 @@ object PigFeaturesApi {
     )
 
     /**
-     * REGEX-TEST: +1,000 Mining XP
-     * REGEX-TEST: +1,000 Alchemy XP
+     * @regexTest +1,000 Mining XP
+     * @regexTest +1,000 Alchemy XP
      */
     private val skillXpRewardPattern by patternGroup.pattern(
         "orb.reward.skillxp",

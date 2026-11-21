@@ -63,7 +63,7 @@ object SlayerRngMeterDisplay {
     )
 
     /**
-     * REGEX-TEST: §aEnchanted Book (§d§lDuplex I§a)
+     * @regexTest §aEnchanted Book (§d§lDuplex I§a)
      */
     private val bookFormatPattern by patternGroup.pattern(
         "book.format",

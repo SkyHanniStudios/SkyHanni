@@ -63,7 +63,7 @@ object MaxwellApi {
     private val patternGroup = RepoPattern.group("data.maxwell")
 
     /**
-     * REGEX-TEST: §eYou selected the §aSighted §epower for your §aAccessory Bag§e!
+     * @regexTest §eYou selected the §aSighted §epower for your §aAccessory Bag§e!
      */
     private val chatPowerPattern by patternGroup.pattern(
         "chat.power",
@@ -71,7 +71,7 @@ object MaxwellApi {
     )
 
     /**
-     * REGEX-TEST: §eYour selected power was set to §r§aSighted§r§e!
+     * @regexTest §eYour selected power was set to §r§aSighted§r§e!
      */
     private val chatPowerUnlockedPattern by patternGroup.pattern(
         "chat.power.unlocked",
@@ -79,7 +79,7 @@ object MaxwellApi {
     )
 
     /**
-     * REGEX-TEST: §7Selected Power: §aSighted
+     * @regexTest §7Selected Power: §aSighted
      */
     private val inventoryPowerPattern by patternGroup.pattern(
         "inventory.power",
@@ -87,7 +87,7 @@ object MaxwellApi {
     )
 
     /**
-     * REGEX-TEST: §7Accessory Power: §6419
+     * @regexTest §7Accessory Power: §6419
      */
     private val inventoryMPPattern by patternGroup.pattern(
         "inventory.magicalpower",
@@ -95,8 +95,8 @@ object MaxwellApi {
     )
 
     /**
-     * REGEX-TEST: (1/2) Accessory Bag Thaumaturgy
-     * REGEX-TEST: Accessory Bag Thaumaturgy
+     * @regexTest (1/2) Accessory Bag Thaumaturgy
+     * @regexTest Accessory Bag Thaumaturgy
      */
     private val thaumaturgyGuiPattern by patternGroup.pattern(
         "gui.thaumaturgy",
@@ -112,7 +112,7 @@ object MaxwellApi {
     )
 
     /**
-     * REGEX-TEST: §7Total: §6419 Accessory Power
+     * @regexTest §7Total: §6419 Accessory Power
      */
     private val thaumaturgyMagicalPowerPattern by patternGroup.pattern(
         "gui.thaumaturgy.magicalpower",
@@ -124,8 +124,8 @@ object MaxwellApi {
     )
 
     /**
-     * REGEX-TEST: §7You have: §b1,347 §7+ §b6 ✎
-     * REGEX-TEST: §7You have: §a812 §7+ §a3 ❈
+     * @regexTest §7You have: §b1,347 §7+ §b6 ✎
+     * @regexTest §7You have: §a812 §7+ §a3 ❈
      */
     private val statsTuningDataPattern by patternGroup.pattern(
         "thaumaturgy.statstuning",
@@ -149,7 +149,7 @@ object MaxwellApi {
     )
 
     /**
-     * REGEX-TEST: §aAccessory Bag
+     * @regexTest §aAccessory Bag
      */
     private val accessoryBagStack by patternGroup.pattern(
         "stack.accessorybag",
@@ -157,7 +157,7 @@ object MaxwellApi {
     )
 
     /**
-     * REGEX-TEST: §7§c§cRequires §aRedstone Collection II§c.
+     * @regexTest §7§c§cRequires §aRedstone Collection II§c.
      */
     private val redstoneCollectionRequirementPattern by patternGroup.pattern(
         "collection.redstone.requirement",
@@ -165,14 +165,14 @@ object MaxwellApi {
     )
 
     /**
-     * REGEX-TEST: ❤ Health
-     * REGEX-TEST: ❈ Defense
-     * REGEX-TEST: ✦ Speed
-     * REGEX-TEST: ❁ Strength
-     * REGEX-TEST: ☠ Crit Damage
-     * REGEX-TEST: ☣ Crit Chance
-     * REGEX-TEST: ⚔ Attack Speed
-     * REGEX-TEST: ✎ Intelligence
+     * @regexTest ❤ Health
+     * @regexTest ❈ Defense
+     * @regexTest ✦ Speed
+     * @regexTest ❁ Strength
+     * @regexTest ☠ Crit Damage
+     * @regexTest ☣ Crit Chance
+     * @regexTest ⚔ Attack Speed
+     * @regexTest ✎ Intelligence
      */
     private val tuningNamePattern by patternGroup.pattern(
         "tuning.name",

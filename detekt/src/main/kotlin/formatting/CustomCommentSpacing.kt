@@ -22,8 +22,8 @@ class CustomCommentSpacing(config: Config) : SkyHanniRule(config, "Enforces cust
 
     companion object {
         /**
-         * REGEX-TEST: // Test comment
-         * REGEX-TEST: /* Test comment */
+         * @regexTest // Test comment
+         * @regexTest /* Test comment */
          */
         val commentRegex = Regex("""^(?:\/{2}|\/\*)(?:\s.*|$)""", RegexOption.DOT_MATCHES_ALL)
     }

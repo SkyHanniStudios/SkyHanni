@@ -23,13 +23,13 @@ object InfernoMinionFeatures {
     private val config get() = SkyHanniMod.feature.misc.minions
 
     /**
-     * REGEX-TEST: Inferno Minion I
-     * REGEX-TEST: Inferno Minion II
-     * REGEX-TEST: Inferno Minion IX
-     * REGEX-TEST: Inferno Minion VIII
-     * REGEX-TEST: Inferno Minion 1
-     * REGEX-FAIL: Inferno Minion Recipes
-     * REGEX-FAIL: Inferno Minion -> Capsaicin Eyed
+     * @regexTest Inferno Minion I
+     * @regexTest Inferno Minion II
+     * @regexTest Inferno Minion IX
+     * @regexTest Inferno Minion VIII
+     * @regexTest Inferno Minion 1
+     * @regexFail Inferno Minion Recipes
+     * @regexFail Inferno Minion -> Capsaicin Eyed
      */
     val infernoMinionTitlePattern by RepoPattern.pattern(
         "minion.infernominiontitle",

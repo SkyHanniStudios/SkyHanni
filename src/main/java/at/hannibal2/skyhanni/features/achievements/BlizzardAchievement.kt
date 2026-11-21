@@ -13,7 +13,7 @@ import at.hannibal2.skyhanni.utils.StringUtils.cleanPlayerName
 object BlizzardAchievement {
 
     /**
-     * REGEX-TEST: BLIZZARD! [MVP+] Throwpo opened a Blizzard in a Bottle, improving everyone's Fishing Stats for the next 10 minutes and causing it to snow!
+     * @regexTest BLIZZARD! [MVP+] Throwpo opened a Blizzard in a Bottle, improving everyone's Fishing Stats for the next 10 minutes and causing it to snow!
      */
     private val blizzardPattern by AchievementManager.patternGroup.pattern(
         "blizzard",

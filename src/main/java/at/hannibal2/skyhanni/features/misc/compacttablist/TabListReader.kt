@@ -33,8 +33,8 @@ object TabListReader {
     private var inUpgrades = false
 
     /**
-     * REGEX-TEST: [164] CalMWolfs ᛝ♲
-     * REGEX-TEST: [328] vayness ☠
+     * @regexTest [164] CalMWolfs ᛝ♲
+     * @regexTest [328] vayness ☠
      */
     val usernamePattern by patternGroup.pattern(
         "username",
@@ -42,7 +42,7 @@ object TabListReader {
     )
 
     /**
-     * REGEX-TEST: You have a God Potion active! 12 Hours
+     * @regexTest You have a God Potion active! 12 Hours
      */
     private val godPotPattern by patternGroup.pattern(
         "effects.godpot.colorless",
@@ -50,7 +50,7 @@ object TabListReader {
     )
 
     /**
-     * REGEX-TEST: Active Effects
+     * @regexTest Active Effects
      */
     private val activeEffectPattern by patternGroup.pattern(
         "effects.active.colorless",
@@ -58,8 +58,8 @@ object TabListReader {
     )
 
     /**
-     * REGEX-TEST: No effects active. Drink Potions or splash them on the
-     * REGEX-TEST: ground to buff yourself!
+     * @regexTest No effects active. Drink Potions or splash them on the
+     * @regexTest ground to buff yourself!
      */
     private val noActiveEffectsPattern by patternGroup.pattern(
         "effects.active.none",
@@ -67,8 +67,8 @@ object TabListReader {
     )
 
     /**
-     * REGEX-TEST: You have 1 active effect. Use "/effects" to see it!
-     * REGEX-TEST: You have 1 non-god effects.
+     * @regexTest You have 1 active effect. Use "/effects" to see it!
+     * @regexTest You have 1 non-god effects.
      */
     private val effectCountPattern by patternGroup.pattern(
         "effects.count.colorless",
@@ -76,7 +76,7 @@ object TabListReader {
     )
 
     /**
-     * REGEX-TEST: Cookie Buff
+     * @regexTest Cookie Buff
      */
     private val cookiePattern by patternGroup.pattern(
         "cookie.colorless",
@@ -84,8 +84,8 @@ object TabListReader {
     )
 
     /**
-     * REGEX-TEST: Not active! Obtain booster cookies from the community
-     * REGEX-TEST: shop in the hub.
+     * @regexTest Not active! Obtain booster cookies from the community
+     * @regexTest shop in the hub.
      */
     private val noCookiePattern by patternGroup.pattern(
         "cookie.inactive",
@@ -93,7 +93,7 @@ object TabListReader {
     )
 
     /**
-     * REGEX-TEST: Dungeon Buffs
+     * @regexTest Dungeon Buffs
      */
     private val dungeonBuffPattern by patternGroup.pattern(
         "dungeonbuff.colorless",
@@ -101,7 +101,7 @@ object TabListReader {
     )
 
     /**
-     * REGEX-TEST: Use "/effects" to see them!
+     * @regexTest Use "/effects" to see them!
      */
     private val effectsUseCommandPattern by patternGroup.pattern(
         "effects.usecommand.colorless",
@@ -114,7 +114,7 @@ object TabListReader {
     )
 
     /**
-     * REGEX-TEST: Wardrobe Slots IV 5 Days
+     * @regexTest Wardrobe Slots IV 5 Days
      */
     private val upgradesPattern by patternGroup.pattern(
         "upgrades",

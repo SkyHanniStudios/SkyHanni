@@ -51,7 +51,7 @@ object JacobFarmingContestsInventory {
     private var hideEverything = true
 
     /**
-     * REGEX-TEST: §7You placed in the §c§lBRONZE §7bracket!
+     * @regexTest §7You placed in the §c§lBRONZE §7bracket!
      */
     private val medalPattern by RepoPattern.pattern(
         "garden.jacob.contests.inventory.medal",

@@ -28,9 +28,9 @@ object SirihHelper {
     private var lastSentMessage = SimpleTimeMark.farPast()
 
     /**
-     * REGEX-TEST: [NPC] Sirih: Oink.
-     * REGEX-TEST: [NPC] Sirih: ✆ Oink?
-     * REGEX-TEST: [NPC] Sirih: ✆ Oink.
+     * @regexTest [NPC] Sirih: Oink.
+     * @regexTest [NPC] Sirih: ✆ Oink?
+     * @regexTest [NPC] Sirih: ✆ Oink.
      */
     private val sirihLine by RepoPattern.pattern(
         "crimson.sirih.helper.colorless",

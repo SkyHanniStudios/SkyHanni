@@ -30,7 +30,7 @@ object AuctionHouseOpenPriceWebsite {
     private val patternGroup = RepoPattern.group("inventory.auctionhouse")
 
     /**
-     * REGEX-TEST: Auctions: "hyperion"
+     * @regexTest Auctions: "hyperion"
      */
     private val ahSearchPattern by patternGroup.pattern(
         "title.search",

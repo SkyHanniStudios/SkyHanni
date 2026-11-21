@@ -37,7 +37,7 @@ object ExperimentationSuperpairApi {
 
     // <editor-fold desc="Patterns">
     /**
-     * REGEX-TEST: GUARDIAN;4
+     * @regexTest GUARDIAN;4
      */
     private val guardianPetInternalNamePattern by ExperimentationTableApi.patternGroup.pattern(
         "guardian.pet.internalname",
@@ -45,10 +45,10 @@ object ExperimentationSuperpairApi {
     )
 
     /**
-     * REGEX-TEST: §8?
-     * REGEX-TEST: §eClick any button!
-     * REGEX-TEST: §bClick a second button!
-     * REGEX-TEST: §dNext button is instantly rewarded!
+     * @regexTest §8?
+     * @regexTest §eClick any button!
+     * @regexTest §bClick a second button!
+     * @regexTest §dNext button is instantly rewarded!
      */
     val unknownSuperpairsClickPattern by ExperimentationTableApi.patternGroup.pattern(
         "superpairs.unknown-click",
@@ -56,7 +56,7 @@ object ExperimentationSuperpairApi {
     )
 
     /**
-     * REGEX-TEST: Superpairs Powerup
+     * @regexTest Superpairs Powerup
      */
     private val powerupLorePattern by ExperimentationTableApi.patternGroup.pattern(
         "powerups.lore",
@@ -64,8 +64,8 @@ object ExperimentationSuperpairApi {
     )
 
     /**
-     * REGEX-TEST: Remaining Clicks: 22
-     * REGEX-TEST: Remaining Clicks: 0
+     * @regexTest Remaining Clicks: 22
+     * @regexTest Remaining Clicks: 0
      */
     private val remainingClicksPattern by ExperimentationTableApi.patternGroup.pattern(
         "clicks",

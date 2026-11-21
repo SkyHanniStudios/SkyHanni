@@ -33,7 +33,7 @@ object AnitaExtraFarmingFortune {
     private val anitaInventoryDetector = InventoryDetector { anitaInventoryPattern }
 
     /**
-     * REGEX-TEST: Anita
+     * @regexTest Anita
      */
     private val anitaInventoryPattern by patternGroup.pattern(
         "inventory",
@@ -41,7 +41,7 @@ object AnitaExtraFarmingFortune {
     )
 
     /**
-     * REGEX-TEST: Extra Farming Fortune
+     * @regexTest Extra Farming Fortune
      */
     private val extraFarmingFortunePattern by patternGroup.pattern(
         "extrafarmingfortune",
@@ -49,7 +49,7 @@ object AnitaExtraFarmingFortune {
     )
 
     /**
-     * REGEX-TEST: Jacob's Ticket x450
+     * @regexTest Jacob's Ticket x450
      */
     private val realAmountPattern by patternGroup.pattern(
         "realamount.new",
@@ -57,7 +57,7 @@ object AnitaExtraFarmingFortune {
     )
 
     /**
-     * REGEX-TEST: You have: +4 Farming Fortune
+     * @regexTest You have: +4 Farming Fortune
      */
     private val farmingFortunePattern by patternGroup.pattern(
         "farmingfortune",
@@ -65,7 +65,7 @@ object AnitaExtraFarmingFortune {
     )
 
     /**
-     * REGEX-TEST: Click to trade!
+     * @regexTest Click to trade!
      */
     private val clickToTradePattern by patternGroup.pattern(
         "clicktotrade",

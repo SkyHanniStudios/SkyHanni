@@ -102,9 +102,9 @@ object ChatFilter {
 
     // Guild & Event EXP
     /**
-     * REGEX-TEST: §aYou earned §r§22 GEXP §r§afrom playing SkyBlock!
-     * REGEX-TEST: §aYou earned §r§22 GEXP §r§a+ §r§c210 Event EXP §r§afrom playing SkyBlock!
-     * REGEX-TEST: §aYou earned §r§510 Event EXP §r§afrom playing SkyBlock!
+     * @regexTest §aYou earned §r§22 GEXP §r§afrom playing SkyBlock!
+     * @regexTest §aYou earned §r§22 GEXP §r§a+ §r§c210 Event EXP §r§afrom playing SkyBlock!
+     * @regexTest §aYou earned §r§510 Event EXP §r§afrom playing SkyBlock!
      */
     @Suppress("MaxLineLength")
     private val guildEventExpPatterns = listOf(
@@ -113,8 +113,8 @@ object ChatFilter {
 
     // Kill Combo
     /**
-     * REGEX-TEST: §6§l+175 Kill Combo
-     * REGEX-TEST: §a§l+5 Kill Combo §r§8+§r§b3% §r§b✯ Magic Find
+     * @regexTest §6§l+175 Kill Combo
+     * @regexTest §a§l+5 Kill Combo §r§8+§r§b3% §r§b✯ Magic Find
      */
     private val killComboPatterns = listOf(
         "§.§l\\+(.*) Kill Combo(.*)".toPattern(),
@@ -126,9 +126,9 @@ object ChatFilter {
 
     // Profile Join
     /**
-     * REGEX-TEST: §8Profile ID: 691d6a3b-23ea-4541-80b5-771facc73b16
-     * REGEX-TEST: §eProfile ID: 691d6a3b-23ea-4541-80b5-771facc73b16
-     * REGEX-TEST: §aYou are playing on profile: §e691d6a3b-23ea-4541-80b5-771facc73b16
+     * @regexTest §8Profile ID: 691d6a3b-23ea-4541-80b5-771facc73b16
+     * @regexTest §eProfile ID: 691d6a3b-23ea-4541-80b5-771facc73b16
+     * @regexTest §aYou are playing on profile: §e691d6a3b-23ea-4541-80b5-771facc73b16
      */
     private val profileJoinPatterns by miscPatternGroup.list(
         "profile-join",
@@ -333,7 +333,7 @@ object ChatFilter {
     )
 
     /**
-     * REGEX-TEST: §e[NPC] Jacob§f: §rYour §9Anita's Talisman §fis giving you §6+25 Carrot Fortune §fduring the contest!
+     * @regexTest §e[NPC] Jacob§f: §rYour §9Anita's Talisman §fis giving you §6+25 Carrot Fortune §fduring the contest!
      */
     @Suppress("MaxLineLength")
     private val anitaFortunePattern by RepoPattern.pattern(
@@ -381,8 +381,8 @@ object ChatFilter {
     )
 
     /**
-     * REGEX-TEST: §c§lSACRIFICE! §r§6[MVP§r§d++§r§6] Mikecraft1224§r§f §r§eturned §r§6Young Dragon Boots §r§einto §r§d40 Dragon Essence§r§e!
-     * REGEX-TEST: §c§lBONUS LOOT! §r§eThey also received §r§5Ritual Residue §r§efrom their sacrifice!
+     * @regexTest §c§lSACRIFICE! §r§6[MVP§r§d++§r§6] Mikecraft1224§r§f §r§eturned §r§6Young Dragon Boots §r§einto §r§d40 Dragon Essence§r§e!
+     * @regexTest §c§lBONUS LOOT! §r§eThey also received §r§5Ritual Residue §r§efrom their sacrifice!
      */
     private val sacrificePatterns = listOf(
         "§c§lSACRIFICE! (.*) §r§eturned (.*) §r§einto (.*) Dragon Essence§r§e!".toPattern(),
@@ -406,7 +406,7 @@ object ChatFilter {
     )
 
     /**
-     * REGEX-TEST: §6§lRARE REWARD! §r§bLeebys §r§efound a §r§6Recombobulator 3000 §r§ein their Obsidian Chest§r§e!
+     * @regexTest §6§lRARE REWARD! §r§bLeebys §r§efound a §r§6Recombobulator 3000 §r§ein their Obsidian Chest§r§e!
      */
     private val rareDropsMessages = listOf(
         "§6§lRARE REWARD! (.*) §r§efound a (.*) §r§ein their (.*) Chest§r§e!".toPattern(),
@@ -434,11 +434,11 @@ object ChatFilter {
     )
 
     /**
-     * REGEX-TEST: §aStarted parkour cocoa!
-     * REGEX-TEST: §aFinished parkour cocoa in 12:34.567!
-     * REGEX-TEST: §aReached checkpoint #4 for parkour cocoa!
-     * REGEX-TEST: §4Wrong checkpoint for parkour cocoa!
-     * REGEX-TEST: §4You haven't reached all checkpoints for parkour cocoa!
+     * @regexTest §aStarted parkour cocoa!
+     * @regexTest §aFinished parkour cocoa in 12:34.567!
+     * @regexTest §aReached checkpoint #4 for parkour cocoa!
+     * @regexTest §4Wrong checkpoint for parkour cocoa!
+     * @regexTest §4You haven't reached all checkpoints for parkour cocoa!
      */
     private val parkourPatterns = listOf(
         "§aStarted parkour (.*)!".toPattern(),
@@ -449,9 +449,9 @@ object ChatFilter {
     )
 
     /**
-     * REGEX-TEST: §4Cancelled parkour! You cannot fly.
-     * REGEX-TEST: §4Cancelled parkour! You cannot use item abilities.
-     * REGEX-TEST: §4Cancelled parkour!
+     * @regexTest §4Cancelled parkour! You cannot fly.
+     * @regexTest §4Cancelled parkour! You cannot use item abilities.
+     * @regexTest §4Cancelled parkour!
      */
     private val parkourCancelMessages = listOf(
         "§4Cancelled parkour! You cannot fly.",
@@ -460,7 +460,7 @@ object ChatFilter {
     )
 
     /**
-     ** REGEX-TEST: §r§aWarped from the tpPadOne §r§ato the tpPadTwo§r§a!
+     ** @regexTest §r§aWarped from the tpPadOne §r§ato the tpPadTwo§r§a!
      */
     private val teleportPadPatterns = listOf(
         "§aWarped from the (.*) §r§ato the (.*)§r§a!".toPattern(),
@@ -477,9 +477,9 @@ object ChatFilter {
     )
 
     /**
-     ** REGEX-TEST: §eYou haven't claimed your §r§6Summer Rewards §r§eyet!
-     ** REGEX-TEST: §eTalk to the §r§bSummer Sloth §r§ein the §r§aHub§r§e!
-     ** REGEX-TEST: §eTalk to the §r§bRandom NPC §r§ein the §r§aForbidden Zone§r§e!
+     ** @regexTest §eYou haven't claimed your §r§6Summer Rewards §r§eyet!
+     ** @regexTest §eTalk to the §r§bSummer Sloth §r§ein the §r§aHub§r§e!
+     ** @regexTest §eTalk to the §r§bRandom NPC §r§ein the §r§aForbidden Zone§r§e!
      */
     private val rewardBundlePatterns by miscPatternGroup.list(
         "seasonal-bundles",
@@ -488,8 +488,8 @@ object ChatFilter {
     )
 
     /**
-     ** REGEX-TEST: §cYou cannot damage a tree while it is regenerating!
-     ** REGEX-TEST: §c§oThe toughness of this tree is way too high!
+     ** @regexTest §cYou cannot damage a tree while it is regenerating!
+     ** @regexTest §c§oThe toughness of this tree is way too high!
      */
     private val unmineableTreePatterns by foragingPatternGroup.list(
         "unmineable-tree",
@@ -498,9 +498,9 @@ object ChatFilter {
     )
 
     /**
-     ** REGEX-TEST: §7§oMochibear ate too much and passed out! You caught it!
-     ** REGEX-TEST: §7§oYou caught yourself an invisibug! The shard was sent to your Hunting Box!
-     ** REGEX-TEST: §7§oThe Frog is exhausted...
+     ** @regexTest §7§oMochibear ate too much and passed out! You caught it!
+     ** @regexTest §7§oYou caught yourself an invisibug! The shard was sent to your Hunting Box!
+     ** @regexTest §7§oThe Frog is exhausted...
      */
     private val redundantShardsPatterns by huntingPatternGroup.list(
         "redundant-comments",
@@ -510,7 +510,7 @@ object ChatFilter {
     )
 
     /**
-     * REGEX-TEST: §e[NPC] §bSwoop§f: §rWow! I forgot to tell you, monsters around here can only take damage from Axes!
+     * @regexTest §e[NPC] §bSwoop§f: §rWow! I forgot to tell you, monsters around here can only take damage from Axes!
      */
     private val swoopAxePattern by huntingPatternGroup.pattern(
         "swoop-axe-message",
@@ -518,9 +518,9 @@ object ChatFilter {
     )
 
     /**
-     * REGEX-TEST: §d§lHOPPITY'S HUNT §r§dA §r§aChocolate Dinner Egg §r§dhas appeared!
-     * REGEX-TEST: §d§lHOPPITY'S HUNT §r§dA §r§9Chocolate Déjeuner Egg §r§dhas appeared!
-     * REGEX-TEST: §d§lHOPPITY'S HUNT §r§dA §r§6Chocolate Brunch Egg §r§dhas appeared!
+     * @regexTest §d§lHOPPITY'S HUNT §r§dA §r§aChocolate Dinner Egg §r§dhas appeared!
+     * @regexTest §d§lHOPPITY'S HUNT §r§dA §r§9Chocolate Déjeuner Egg §r§dhas appeared!
+     * @regexTest §d§lHOPPITY'S HUNT §r§dA §r§6Chocolate Brunch Egg §r§dhas appeared!
      */
     private val hoppityAppearPattern by eventPatternGroup.pattern(
         "hoppity-egg-appear",

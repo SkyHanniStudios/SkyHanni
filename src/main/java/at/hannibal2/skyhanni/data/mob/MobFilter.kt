@@ -61,8 +61,8 @@ object MobFilter {
     private val level = "(?:\\[Lv(?<level>\\d+)\\] )?"
 
     /**
-     * REGEX-TEST: Wither Husk 500M
-     * REGEX-TEST: [Lv10] ⚓♃ Sea Guardian 4,250/5,000
+     * @regexTest Wither Husk 500M
+     * @regexTest [Lv10] ⚓♃ Sea Guardian 4,250/5,000
      */
     val mobNameFilter by patternGroup.pattern(
         "filter.basic",
@@ -70,15 +70,15 @@ object MobFilter {
     )
 
     /**
-     * REGEX-TEST: [Lv655] ☠ Voidgloom Seraph IV 94 Hits
-     * REGEX-TEST: [Lv655] ☠ Voidgloom Seraph IV 143.2M/210M❤
-     * REGEX-TEST: [Lv396] ☠ Tarantula Broodfather V 6.3M/10M❤
-     * REGEX-TEST: [Lv377] ☠ Atoned Horror 4.1M/10M❤
-     * REGEX-TEST: [Lv396] ☠ Conjoined Brood 12.4M/20M❤
-     * REGEX-FAIL: [Lv183] ☠ Voidling Fanatic 750k/750k❤
-     * REGEX-FAIL: [Lv305] ☠ Voidling Extremist 7.3M/8M❤
-     * REGEX-FAIL: [Lv186] ☠ Primordial Minion 1.5M/1.5M❤
-     * REGEX-FAIL: [Lv11] ☠ Voracious Spider 430/430❤
+     * @regexTest [Lv655] ☠ Voidgloom Seraph IV 94 Hits
+     * @regexTest [Lv655] ☠ Voidgloom Seraph IV 143.2M/210M❤
+     * @regexTest [Lv396] ☠ Tarantula Broodfather V 6.3M/10M❤
+     * @regexTest [Lv377] ☠ Atoned Horror 4.1M/10M❤
+     * @regexTest [Lv396] ☠ Conjoined Brood 12.4M/20M❤
+     * @regexFail [Lv183] ☠ Voidling Fanatic 750k/750k❤
+     * @regexFail [Lv305] ☠ Voidling Extremist 7.3M/8M❤
+     * @regexFail [Lv186] ☠ Primordial Minion 1.5M/1.5M❤
+     * @regexFail [Lv11] ☠ Voracious Spider 430/430❤
      */
     val slayerNameFilter by patternGroup.pattern(
         "filter.slayer",
@@ -86,15 +86,15 @@ object MobFilter {
     )
 
     /**
-     * REGEX-TEST: ﴾ Storm ﴿
-     * REGEX-TEST: ﴾ [Lv200] aMage Outlawa 70M/70M ﴿
-     * REGEX-TEST: ﴾ [Lv500] Magma Boss █████████████████████████ ﴿
-     * REGEX-TEST: ﴾ [Lv200] Bladesoul 50M/50M ﴿
-     * REGEX-TEST: ﴾ [Lv300] Arachne 20,000/20,000 ﴿
-     * REGEX-TEST: ﴾ [Lv500] Arachne 100k/100k ﴿
-     * REGEX-TEST: ﴾ [Lv200] Barbarian Duke X 70M/70M ﴿
-     * REGEX-TEST: ﴾ [Lv100] Endstone Protector 4.6M/5M ﴿
-     * REGEX-TEST: ﴾ [Lv400] Thunder 29M/35M ﴿
+     * @regexTest ﴾ Storm ﴿
+     * @regexTest ﴾ [Lv200] aMage Outlawa 70M/70M ﴿
+     * @regexTest ﴾ [Lv500] Magma Boss █████████████████████████ ﴿
+     * @regexTest ﴾ [Lv200] Bladesoul 50M/50M ﴿
+     * @regexTest ﴾ [Lv300] Arachne 20,000/20,000 ﴿
+     * @regexTest ﴾ [Lv500] Arachne 100k/100k ﴿
+     * @regexTest ﴾ [Lv200] Barbarian Duke X 70M/70M ﴿
+     * @regexTest ﴾ [Lv100] Endstone Protector 4.6M/5M ﴿
+     * @regexTest ﴾ [Lv400] Thunder 29M/35M ﴿
      */
     val bossMobNameFilter by patternGroup.pattern(
         "filter.boss",
@@ -116,10 +116,10 @@ object MobFilter {
     )
 
     /**
-     * REGEX-TEST: [Lv1]  Throwpo's Green Jerry 3 Hits
-     * REGEX-TEST: [Lv1]  RecluseFang's Green Jerry 3 Hits
-     * REGEX-TEST: [Lv1]  aThunderblade73's Green Jerrya 7 Hits
-     * REGEX-TEST: [Lv1]  aThunderblade73's Golden Jerrya 7 Hits
+     * @regexTest [Lv1]  Throwpo's Green Jerry 3 Hits
+     * @regexTest [Lv1]  RecluseFang's Green Jerry 3 Hits
+     * @regexTest [Lv1]  aThunderblade73's Green Jerrya 7 Hits
+     * @regexTest [Lv1]  aThunderblade73's Golden Jerrya 7 Hits
      */
     val jerryPattern by patternGroup.pattern(
         "jerry",
@@ -141,8 +141,8 @@ object MobFilter {
     )
 
     /**
-     * REGEX-TEST: Ernor's SLAYER BOSS
-     * REGEX-TEST: cutelybarks' SLAYER BOSS
+     * @regexTest Ernor's SLAYER BOSS
+     * @regexTest cutelybarks' SLAYER BOSS
      */
     val summonOwnerPattern by patternGroup.pattern(
         "pattern.summon.owner",
@@ -150,7 +150,7 @@ object MobFilter {
     )
 
     /**
-     * REGEX-TEST: SHINY PIG
+     * @regexTest SHINY PIG
      */
     val shinyPig by patternGroup.pattern(
         "pattern.shiny",
@@ -158,11 +158,11 @@ object MobFilter {
     )
 
     /**
-     * REGEX-TEST: §8[§7Lv1§8] §5Horse
-     * REGEX-TEST: §8[§7Lv52§8] §eArmadillo
-     * REGEX-TEST: §8[§7Lv12§8] §eSkeleton Horse
-     * REGEX-TEST: §8[§7Lv49§8] §ePig
-     * REGEX-TEST: §8[§7Lv64§8] §eRat
+     * @regexTest §8[§7Lv1§8] §5Horse
+     * @regexTest §8[§7Lv52§8] §eArmadillo
+     * @regexTest §8[§7Lv12§8] §eSkeleton Horse
+     * @regexTest §8[§7Lv49§8] §ePig
+     * @regexTest §8[§7Lv64§8] §eRat
      */
     val illegalEntitiesPattern by patternGroup.pattern(
         "pattern.pet.entities",

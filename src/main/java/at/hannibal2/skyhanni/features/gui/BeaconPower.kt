@@ -41,7 +41,7 @@ object BeaconPower {
     )
 
     /**
-     * REGEX-TEST: Power Remaining: 0d 5h 53m 12s
+     * @regexTest Power Remaining: 0d 5h 53m 12s
      */
     private val timeRemainingPattern by patternGroup.pattern(
         "time",
@@ -49,7 +49,7 @@ object BeaconPower {
     )
 
     /**
-     * REGEX-TEST: Current Stat: +5✯ Magic Find
+     * @regexTest Current Stat: +5✯ Magic Find
      */
     private val boostedStatPattern by patternGroup.pattern(
         "stat",

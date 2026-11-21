@@ -48,9 +48,9 @@ object VisitorApi {
     val patternGroup = RepoPattern.group("garden.visitor.api")
 
     /**
-     * WRAPPED-REGEX-TEST: " §r§aEmissary Carlton"
-     * WRAPPED-REGEX-TEST: " §r§6Madame Eleanor Q. Goldsworth III"
-     * WRAPPED-REGEX-TEST: " §r§9Lazy Miner"
+     * @regexTestWrapped " §r§aEmissary Carlton"
+     * @regexTestWrapped " §r§6Madame Eleanor Q. Goldsworth III"
+     * @regexTestWrapped " §r§9Lazy Miner"
      */
     private val visitorNamePattern by patternGroup.pattern(
         "visitor.name",

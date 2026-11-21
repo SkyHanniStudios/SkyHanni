@@ -27,7 +27,7 @@ object CompactJacobClaim {
 
     // <editor-fold desc="Patterns">
     /**
-     * WRAPPED-REGEX-TEST: "  FARMING CONTEST REWARDS CLAIMED"
+     * @regexTestWrapped "  FARMING CONTEST REWARDS CLAIMED"
      */
     private val openingPattern by patternGroup.pattern(
         "opening.colorless",
@@ -35,8 +35,8 @@ object CompactJacobClaim {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: "   » Sunflower Contest on Autumn 31st, Year 472"
-     * WRAPPED-REGEX-TEST: "   » Melon Slice Contest on Early Spring 17th, Year 473"
+     * @regexTestWrapped "   » Sunflower Contest on Autumn 31st, Year 472"
+     * @regexTestWrapped "   » Melon Slice Contest on Early Spring 17th, Year 473"
      */
     private val specificContestLine by patternGroup.pattern(
         "contest.specific",
@@ -44,7 +44,7 @@ object CompactJacobClaim {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: "  REWARDS"
+     * @regexTestWrapped "  REWARDS"
      */
     private val rewardsHeaderPattern by patternGroup.pattern(
         "rewards.colorless",
@@ -52,9 +52,9 @@ object CompactJacobClaim {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: "    Jacob's Ticket x271"
-     * WRAPPED-REGEX-TEST: "    Carnival Ticket x21"
-     * WRAPPED-REGEX-TEST: "    Carnival Ticket"
+     * @regexTestWrapped "    Jacob's Ticket x271"
+     * @regexTestWrapped "    Carnival Ticket x21"
+     * @regexTestWrapped "    Carnival Ticket"
      */
     private val ticketPattern by patternGroup.pattern(
         "tickets.colorless",
@@ -62,12 +62,12 @@ object CompactJacobClaim {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: "    1x Turbo-Cacti I Book"
-     * WRAPPED-REGEX-TEST: "    1x Turbo-Pumpkin I Book"
-     * WRAPPED-REGEX-TEST: "    4x Turbo-Wheat I Book"
-     * WRAPPED-REGEX-TEST: "    6x Turbo-Mushrooms I Book"
-     * WRAPPED-REGEX-TEST: "    1x Turbo-Warts I Book"
-     * WRAPPED-REGEX-TEST: "    1x Turbo-Sunflower I Book"
+     * @regexTestWrapped "    1x Turbo-Cacti I Book"
+     * @regexTestWrapped "    1x Turbo-Pumpkin I Book"
+     * @regexTestWrapped "    4x Turbo-Wheat I Book"
+     * @regexTestWrapped "    6x Turbo-Mushrooms I Book"
+     * @regexTestWrapped "    1x Turbo-Warts I Book"
+     * @regexTestWrapped "    1x Turbo-Sunflower I Book"
      */
     private val bookPattern by patternGroup.pattern(
         "book.colorless",
@@ -75,10 +75,10 @@ object CompactJacobClaim {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: "    +8 gold medals"
-     * WRAPPED-REGEX-TEST: "    +7 silver medals"
-     * WRAPPED-REGEX-TEST: "    +5 bronze medals"
-     * WRAPPED-REGEX-TEST: "    +1 gold medal"
+     * @regexTestWrapped "    +8 gold medals"
+     * @regexTestWrapped "    +7 silver medals"
+     * @regexTestWrapped "    +5 bronze medals"
+     * @regexTestWrapped "    +1 gold medal"
      */
     private val medalsPattern by patternGroup.pattern(
         "medals.colorless",
@@ -86,7 +86,7 @@ object CompactJacobClaim {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: "    +2,293 Bits"
+     * @regexTestWrapped "    +2,293 Bits"
      */
     private val bitsPattern by patternGroup.pattern(
         "bits.colorless",
@@ -94,8 +94,8 @@ object CompactJacobClaim {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: "    Overclocker 3000"
-     * WRAPPED-REGEX-TEST: "    Overclocker 3000 x4"
+     * @regexTestWrapped "    Overclocker 3000"
+     * @regexTestWrapped "    Overclocker 3000 x4"
      */
     private val overclockerPattern by patternGroup.pattern(
         "overclocker",

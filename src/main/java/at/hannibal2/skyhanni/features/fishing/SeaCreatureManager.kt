@@ -27,8 +27,8 @@ object SeaCreatureManager {
     private val patternGroup = RepoPattern.group("fishing.seacreature")
 
     /**
-     * REGEX-TEST: It's a Double Hook! Woot woot!
-     * REGEX-TEST: It's a Double Hook!
+     * @regexTest It's a Double Hook! Woot woot!
+     * @regexTest It's a Double Hook!
      */
     private val doubleHookPattern by patternGroup.pattern(
         "doublehook.colorless",

@@ -39,7 +39,7 @@ object CurrencyApi {
     private val patternGroup = RepoPattern.group("data.currency")
 
     /**
-     * REGEX-TEST: You have: 1,005 Gems
+     * @regexTest You have: 1,005 Gems
      */
     private val gemsAmountPattern by patternGroup.pattern(
         "gems.amount",
@@ -47,7 +47,7 @@ object CurrencyApi {
     )
 
     /**
-     * REGEX-TEST: Pelts: 815
+     * @regexTest Pelts: 815
      */
     private val peltsAmountPattern by patternGroup.pattern(
         "pelts.amount",
@@ -55,7 +55,7 @@ object CurrencyApi {
     )
 
     /**
-     * REGEX-TEST: Vacuum Bag: 2,161  Pests
+     * @regexTest Vacuum Bag: 2,161  Pests
      */
     private val pestsAmountPattern by patternGroup.pattern(
         "pests.amount",
@@ -63,9 +63,9 @@ object CurrencyApi {
     )
 
     /**
-     * REGEX-TEST: GOLD medals: 174
-     * REGEX-TEST: SILVER medals: 16
-     * REGEX-TEST: BRONZE medals: 6
+     * @regexTest GOLD medals: 174
+     * @regexTest SILVER medals: 16
+     * @regexTest BRONZE medals: 6
      */
     private val medalAmountPattern by patternGroup.pattern(
         "medal.amount",
@@ -73,8 +73,8 @@ object CurrencyApi {
     )
 
     /**
-     * REGEX-TEST: Premium Safari Tickets: 0
-     * REGEX-TEST: First-Class Safari Tickets: 1,024
+     * @regexTest Premium Safari Tickets: 0
+     * @regexTest First-Class Safari Tickets: 1,024
      */
     private val safariTicketItemPattern by patternGroup.pattern(
         "safariticket.item",
@@ -82,8 +82,8 @@ object CurrencyApi {
     )
 
     /**
-     * REGEX-TEST: - Basic: 1
-     * REGEX-TEST: - First-Class: 0
+     * @regexTest - Basic: 1
+     * @regexTest - First-Class: 0
      */
     private val safariTicketSignPattern by patternGroup.pattern(
         "safariticket.sign",
@@ -93,7 +93,7 @@ object CurrencyApi {
     /**
      * The lore only writes "Tokens", the item this line belongs to is what makes it unambiguous.
      *
-     * REGEX-TEST: Carnival Tokens
+     * @regexTest Carnival Tokens
      */
     private val carnivalTokenItemPattern by patternGroup.pattern(
         "carnivaltoken.item",
@@ -101,7 +101,7 @@ object CurrencyApi {
     )
 
     /**
-     * REGEX-TEST: Your Tokens: 2,136
+     * @regexTest Your Tokens: 2,136
      */
     private val carnivalTokenAmountPattern by patternGroup.pattern(
         "carnivaltoken.amount",
@@ -111,7 +111,7 @@ object CurrencyApi {
     /**
      * The Grand Bakery item states how many kernels the player owns.
      *
-     * REGEX-TEST: Grand Bakery
+     * @regexTest Grand Bakery
      */
     private val kernelItemPattern by patternGroup.pattern(
         "kernel.item",
@@ -119,7 +119,7 @@ object CurrencyApi {
     )
 
     /**
-     * REGEX-TEST: Your Kernels: 12
+     * @regexTest Your Kernels: 12
      */
     private val kernelAmountPattern by patternGroup.pattern(
         "kernel.amount",
@@ -129,7 +129,7 @@ object CurrencyApi {
     /**
      * Only Ted is confirmed, the npc name is left open so another feast chef still matches.
      *
-     * REGEX-TEST: [NPC] Feast Chef Ted: Thanks for the donation! I've added a Kernel to your purse.
+     * @regexTest [NPC] Feast Chef Ted: Thanks for the donation! I've added a Kernel to your purse.
      */
     private val kernelGainPattern by patternGroup.pattern(
         "kernel.gain",
@@ -139,8 +139,8 @@ object CurrencyApi {
     /**
      * The type is read as written, so a new kind of essence needs no code change.
      *
-     * REGEX-TEST: Your Undead Essence: 28,439
-     * REGEX-TEST: Your Wither Essence: 1,204
+     * @regexTest Your Undead Essence: 28,439
+     * @regexTest Your Wither Essence: 1,204
      */
     private val essenceAmountPattern by patternGroup.pattern(
         "essence.amount",
@@ -151,8 +151,8 @@ object CurrencyApi {
      * The widget header has no amount and is skipped by the pattern. A shortened number like
      * "17k" is skipped as well, the amount group does not match it.
      *
-     * WRAPPED-REGEX-TEST: " Undead: 28,439"
-     * WRAPPED-REGEX-TEST: " Crimson: 12"
+     * @regexTestWrapped " Undead: 28,439"
+     * @regexTestWrapped " Crimson: 12"
      */
     private val essenceWidgetPattern by patternGroup.pattern(
         "essence.widget",

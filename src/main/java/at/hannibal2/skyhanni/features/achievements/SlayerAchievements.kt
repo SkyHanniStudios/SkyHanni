@@ -17,7 +17,7 @@ import net.minecraft.ChatFormatting
 object SlayerAchievements {
 
     /**
-     * WRAPPED-REGEX-TEST: "   RNG Meter - 728,269 Stored XP"
+     * @regexTestWrapped "   RNG Meter - 728,269 Stored XP"
      */
     private val rngMeterPattern by AchievementManager.patternGroup.pattern(
         "rng-meter",

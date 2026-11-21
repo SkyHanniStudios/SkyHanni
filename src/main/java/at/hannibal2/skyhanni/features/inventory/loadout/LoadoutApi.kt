@@ -36,8 +36,8 @@ object LoadoutApi {
     private val patternGroup = RepoPattern.group("inventory.loadout")
 
     /**
-     * REGEX-TEST: (1/3) Loadouts
-     * REGEX-TEST: (2/3) Loadouts
+     * @regexTest (1/3) Loadouts
+     * @regexTest (2/3) Loadouts
      */
     private val inventoryPattern by patternGroup.pattern(
         "inventory.name",
@@ -45,7 +45,7 @@ object LoadoutApi {
     )
 
     /**
-     * REGEX-TEST: Left-click to equip!
+     * @regexTest Left-click to equip!
      */
     private val unequippedSlotPattern by patternGroup.pattern(
         "unequippedslot",
@@ -53,7 +53,7 @@ object LoadoutApi {
     )
 
     /**
-     * REGEX-TEST: You must customize this loadout
+     * @regexTest You must customize this loadout
      */
     private val unusedSlotPattern by patternGroup.pattern(
         "unusedslot",
@@ -61,7 +61,7 @@ object LoadoutApi {
     )
 
     /**
-     * REGEX-TEST: Loadout 19 Locked
+     * @regexTest Loadout 19 Locked
      */
     private val lockedSlotPattern by patternGroup.pattern(
         "lockedslot",
@@ -69,9 +69,9 @@ object LoadoutApi {
     )
 
     /**
-     * REGEX-TEST: §7Current: §aHeart of the Forest 1
-     * REGEX-TEST: §7Current: §aHeart of the Mountain 1
-     * REGEX-TEST: §7Current: §aHurtful
+     * @regexTest §7Current: §aHeart of the Forest 1
+     * @regexTest §7Current: §aHeart of the Mountain 1
+     * @regexTest §7Current: §aHurtful
      */
     private val currentSelectionPattern by patternGroup.pattern(
         "currentselection",
@@ -79,7 +79,7 @@ object LoadoutApi {
     )
 
     /**
-     * REGEX-TEST: Your tuning:
+     * @regexTest Your tuning:
      */
     private val tuningHeaderPattern by patternGroup.pattern(
         "tuningheader",

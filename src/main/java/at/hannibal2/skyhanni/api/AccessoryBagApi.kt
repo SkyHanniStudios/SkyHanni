@@ -13,9 +13,9 @@ object AccessoryBagApi {
     private val patternGroup = RepoPattern.group("api.accessory.bag")
 
     /**
-     * REGEX-TEST: Accessory Bag
-     * REGEX-TEST: Accessory Bag (1/2)
-     * REGEX-TEST: Accessory Bag (909/394294)
+     * @regexTest Accessory Bag
+     * @regexTest Accessory Bag (1/2)
+     * @regexTest Accessory Bag (909/394294)
      */
     private val inventoryNamePattern by patternGroup.pattern(
         "inventory.name",

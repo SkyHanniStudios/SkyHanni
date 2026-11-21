@@ -20,7 +20,7 @@ object AnvilApi {
     private val patternGroup = RepoPattern.group("api.anvil")
 
     /**
-     * REGEX-TEST: Anvil
+     * @regexTest Anvil
      */
     private val inventoryNamePattern by patternGroup.pattern(
         "inventory",

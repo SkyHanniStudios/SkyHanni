@@ -82,7 +82,7 @@ object MinionFeatures {
     private val patternGroup = RepoPattern.group("minion")
 
     /**
-     * REGEX-TEST: You have upgraded your Minion to Tier V
+     * @regexTest You have upgraded your Minion to Tier V
      */
     private val minionUpgradePattern by patternGroup.pattern(
         "chat.upgrade-colorless",
@@ -90,7 +90,7 @@ object MinionFeatures {
     )
 
     /**
-     * REGEX-TEST: You received 3,520,690 coins!
+     * @regexTest You received 3,520,690 coins!
      */
     private val minionCoinPattern by patternGroup.pattern(
         "chat.coin-colorless",
@@ -98,7 +98,7 @@ object MinionFeatures {
     )
 
     /**
-     * REGEX-TEST: You picked up a minion!
+     * @regexTest You picked up a minion!
      */
     private val minionPickupPattern by patternGroup.pattern(
         "chat.pickup",
@@ -106,7 +106,7 @@ object MinionFeatures {
     )
 
     /**
-     * REGEX-TEST: You placed a minion!
+     * @regexTest You placed a minion!
      */
     private val minionPlacePattern by patternGroup.pattern(
         "chat.place",
@@ -114,8 +114,8 @@ object MinionFeatures {
     )
 
     /**
-     * REGEX-TEST: Redstone Minion IV
-     * REGEX-TEST: Chicken Minion XI
+     * @regexTest Redstone Minion IV
+     * @regexTest Chicken Minion XI
      */
     private val minionTitlePattern by patternGroup.pattern(
         "title",
@@ -127,7 +127,7 @@ object MinionFeatures {
     )
 
     /**
-     * REGEX-TEST: You applied the eyedrops on the minion and ran out!
+     * @regexTest You applied the eyedrops on the minion and ran out!
      */
     val eyedropsRanOutPattern by patternGroup.pattern(
         "eyedrops.ranout",

@@ -29,7 +29,7 @@ abstract class AbstractWardrobeApi {
         protected val patternGroup = RepoPattern.group("inventory.wardrobe")
 
         /**
-         * REGEX-TEST: Slot 4: Equipped
+         * @regexTest Slot 4: Equipped
          */
         val equippedSlotPattern by patternGroup.pattern(
             "equippedslot.colorless",

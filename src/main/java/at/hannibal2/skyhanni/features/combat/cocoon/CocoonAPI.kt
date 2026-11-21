@@ -64,9 +64,9 @@ object CocoonAPI {
      The "an Enderman" test is forward-proofing only, as Hypixel currently always sends "a".
      */
     /**
-     * REGEX-TEST: CAUGHT! You cocooned a Crypt Ghoul!
-     * REGEX-TEST: CAUGHT! You cocooned a Enderman!
-     * REGEX-TEST: CAUGHT! You cocooned an Enderman!
+     * @regexTest CAUGHT! You cocooned a Crypt Ghoul!
+     * @regexTest CAUGHT! You cocooned a Enderman!
+     * @regexTest CAUGHT! You cocooned an Enderman!
      */
     private val cocoonChatMessage by patternGroup.pattern(
         "spawn",

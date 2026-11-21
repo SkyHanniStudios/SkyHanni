@@ -53,8 +53,8 @@ object FishingProfitTracker {
     val config get() = SkyHanniMod.feature.fishing.fishingProfitTracker
 
     /**
-     * REGEX-TEST:  GOOD CATCH! You caught 36,064 Coins!
-     * REGEX-TEST:  GREAT CATCH! You caught 133,431 Coins!
+     * @regexTest  GOOD CATCH! You caught 36,064 Coins!
+     * @regexTest  GREAT CATCH! You caught 133,431 Coins!
      */
     private val coinsChatPattern by RepoPattern.pattern(
         "fishing.tracker.chat.coins.colorless",

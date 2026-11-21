@@ -78,14 +78,14 @@ object PestProfitTracker : SkyHanniBucketedItemTracker<PestType, PestProfitTrack
     private val patternGroup = RepoPattern.group("garden.pests.tracker")
 
     /**
-     * REGEX-TEST: §6§lRARE DROP! §9Mutant Nether Wart §8x9 §e(§e+134)
-     * REGEX-TEST: §6§lPET DROP! §r§6Slug §e(§e+78)
-     * REGEX-TEST: §r§6§lPET DROP! §r§6Slug §r§e(+140)
-     * REGEX-TEST: §6§lPET DROP! §6Slug §e(§e+145)
-     * REGEX-TEST: §6§lRARE DROP! §aWings of Harmony Vinyl §e(§e+139.5)
-     * REGEX-TEST: §6§lRARE DROP! §r§aNot Just a Pest Vinyl §r§6(Cocoaleech)
-     * REGEX-TEST: §6§lRARE DROP! §aDynaMITES Vinyl §e(§e+130)
-     * REGEX-FAIL: §6§lRARE CROP! §aCane Knot §e(§e+139.5)
+     * @regexTest §6§lRARE DROP! §9Mutant Nether Wart §8x9 §e(§e+134)
+     * @regexTest §6§lPET DROP! §r§6Slug §e(§e+78)
+     * @regexTest §r§6§lPET DROP! §r§6Slug §r§e(+140)
+     * @regexTest §6§lPET DROP! §6Slug §e(§e+145)
+     * @regexTest §6§lRARE DROP! §aWings of Harmony Vinyl §e(§e+139.5)
+     * @regexTest §6§lRARE DROP! §r§aNot Just a Pest Vinyl §r§6(Cocoaleech)
+     * @regexTest §6§lRARE DROP! §aDynaMITES Vinyl §e(§e+130)
+     * @regexFail §6§lRARE CROP! §aCane Knot §e(§e+139.5)
      */
     // Harvest Feast drops are handled elsewhere; they're added here if determined to come from a pest.
     // This pattern intentionally does not match them.

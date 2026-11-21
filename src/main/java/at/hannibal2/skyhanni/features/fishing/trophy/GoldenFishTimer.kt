@@ -62,7 +62,7 @@ object GoldenFishTimer {
     private val patternGroup = RepoPattern.group("fishing.goldenfish")
 
     /**
-     * REGEX-TEST: §9You spot a §r§6Golden Fish §r§9surface from beneath the lava!
+     * @regexTest §9You spot a §r§6Golden Fish §r§9surface from beneath the lava!
      */
     private val spawnPattern by patternGroup.pattern(
         "spawn",
@@ -70,7 +70,7 @@ object GoldenFishTimer {
     )
 
     /**
-     * REGEX-TEST: §9The §r§6Golden Fish §r§9escapes your hook but looks weakened.
+     * @regexTest §9The §r§6Golden Fish §r§9escapes your hook but looks weakened.
      */
     private val interactPattern by patternGroup.pattern(
         "interact",
@@ -78,7 +78,7 @@ object GoldenFishTimer {
     )
 
     /**
-     * REGEX-TEST: §9The §r§6Golden Fish §r§9is weak!
+     * @regexTest §9The §r§6Golden Fish §r§9is weak!
      */
     private val weakPattern by patternGroup.pattern(
         "weak",
@@ -86,7 +86,7 @@ object GoldenFishTimer {
     )
 
     /**
-     * REGEX-TEST: §9The §r§6Golden Fish §r§9swims back beneath the lava...
+     * @regexTest §9The §r§6Golden Fish §r§9swims back beneath the lava...
      */
     private val despawnPattern by patternGroup.pattern(
         "despawn",

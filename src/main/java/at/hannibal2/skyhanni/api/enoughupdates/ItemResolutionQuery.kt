@@ -59,8 +59,8 @@ class ItemResolutionQuery {
         private val patternGroup = RepoPattern.group("misc.itemresolution")
 
         /**
-         * REGEX-TEST: §r§7[Lvl 100] §r§6Scatha
-         * REGEX-TEST: §r§7[Lvl 200] §r§6Golden Dragon§5 ✦
+         * @regexTest §r§7[Lvl 100] §r§6Scatha
+         * @regexTest §r§7[Lvl 200] §r§6Golden Dragon§5 ✦
          */
         private val petPattern by patternGroup.pattern(
             "pet",
@@ -68,8 +68,8 @@ class ItemResolutionQuery {
         )
 
         /**
-         * REGEX-TEST: §aCondor
-         * REGEX-TEST: §aCondor §d§lNEW SHARD
+         * @regexTest §aCondor
+         * @regexTest §aCondor §d§lNEW SHARD
          */
         private val shardPattern by patternGroup.pattern(
             "shard",
@@ -77,7 +77,7 @@ class ItemResolutionQuery {
         )
 
         /**
-         * REGEX-TEST: ENCHANTMENT_LOOTING_5
+         * @regexTest ENCHANTMENT_LOOTING_5
          */
         private val bazaarEnchantmentPattern by patternGroup.pattern(
             "bazaar.enchantment",

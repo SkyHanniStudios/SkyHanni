@@ -34,7 +34,7 @@ object BingoCardTips {
     )
 
     /**
-     * REGEX-TEST: Reward
+     * @regexTest Reward
      */
     private val rewardPattern by patternGroup.pattern(
         "reward",
@@ -42,7 +42,7 @@ object BingoCardTips {
     )
 
     /**
-     * REGEX-TEST: Contribution Rewards
+     * @regexTest Contribution Rewards
      */
     private val contributionRewardsPattern by patternGroup.pattern(
         "reward.contribution",
@@ -50,7 +50,7 @@ object BingoCardTips {
     )
 
     /**
-     * REGEX-TEST: Row #4
+     * @regexTest Row #4
      */
     private val rowNamePattern by patternGroup.pattern(
         "row.name",

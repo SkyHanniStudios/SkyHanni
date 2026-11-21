@@ -102,7 +102,7 @@ object MineshaftPityDisplay {
     private val patternGroup = RepoPattern.group("mineshaft.pity")
 
     /**
-     * WRAPPED-REGEX-TEST: " Glacite Mineshafts: 124/2,000"
+     * @regexTestWrapped " Glacite Mineshafts: 124/2,000"
      */
     private val tabPityPattern by patternGroup.pattern(
         "tablist",

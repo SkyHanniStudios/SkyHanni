@@ -9,21 +9,21 @@ object HotxPatterns {
     private val patternGroup = RepoPattern.group("misc.hotx")
 
     /**
-     * REGEX-TEST: New buff: Gain +5% ∮ Sweep.
-     * REGEX-TEST: New buff: Gain +50 ☘ Mangrove Fortune.
-     * REGEX-TEST: New buff: Gain +50 ☘ Fig Fortune.
-     * REGEX-TEST: ■ Gain +5% ∮ Sweep.
-     * REGEX-TEST: ■ Gain +50 ☘ Mangrove Fortune.
-     * REGEX-TEST: ■ Gain +50 ☘ Fig Fortune.
+     * @regexTest New buff: Gain +5% ∮ Sweep.
+     * @regexTest New buff: Gain +50 ☘ Mangrove Fortune.
+     * @regexTest New buff: Gain +50 ☘ Fig Fortune.
+     * @regexTest ■ Gain +5% ∮ Sweep.
+     * @regexTest ■ Gain +50 ☘ Mangrove Fortune.
+     * @regexTest ■ Gain +50 ☘ Fig Fortune.
      *
-     * REGEX-TEST: New buff: Gain +50☘ Mining Fortune.
-     * REGEX-TEST: ■ Gain +100⸕ Mining Speed.
-     * REGEX-TEST: ■ Gain +50☘ Mining Fortune.
-     * REGEX-TEST: ■ Gain +15% more Powder while mining.
-     * REGEX-TEST: ■ -20% Pickaxe Ability cooldowns.
-     * REGEX-TEST: ■ 10x chance to find Golden and
-     * REGEX-TEST: ■ Gain 5x Titanium drops.
-     * WRAPPED-REGEX-TEST: " ■ -20% Pickaxe Ability cooldowns."
+     * @regexTest New buff: Gain +50☘ Mining Fortune.
+     * @regexTest ■ Gain +100⸕ Mining Speed.
+     * @regexTest ■ Gain +50☘ Mining Fortune.
+     * @regexTest ■ Gain +15% more Powder while mining.
+     * @regexTest ■ -20% Pickaxe Ability cooldowns.
+     * @regexTest ■ 10x chance to find Golden and
+     * @regexTest ■ Gain 5x Titanium drops.
+     * @regexTestWrapped " ■ -20% Pickaxe Ability cooldowns."
      */
     val rotatingPerkPattern by patternGroup.pattern(
         "perk.generic",

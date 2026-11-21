@@ -59,7 +59,7 @@ object CarnivalZombieShootout {
     private val patternGroup = RepoPattern.group("event.carnival")
 
     /**
-     * REGEX-TEST: [NPC] Carnival Cowboy: Good luck, pal!
+     * @regexTest [NPC] Carnival Cowboy: Good luck, pal!
      */
     private val startPattern by patternGroup.pattern(
         "shootout.start",
@@ -67,7 +67,7 @@ object CarnivalZombieShootout {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: "                             Zombie Shootout"
+     * @regexTestWrapped "                             Zombie Shootout"
      */
     private val endPattern by patternGroup.pattern(
         "shootout.end",

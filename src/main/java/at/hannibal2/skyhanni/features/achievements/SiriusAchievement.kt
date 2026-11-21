@@ -12,7 +12,7 @@ import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 object SiriusAchievement {
 
     /**
-     * REGEX-TEST: [NPC] Lucius: You've purchased 15 items from the Dark Auction.
+     * @regexTest [NPC] Lucius: You've purchased 15 items from the Dark Auction.
      */
     private val daItemsPattern by AchievementManager.patternGroup.pattern(
         "da-item-count",

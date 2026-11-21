@@ -36,7 +36,7 @@ object HoneyhiveReminder {
     private val patternGroup = RepoPattern.group("foraging.honeyhive")
 
     /**
-     * REGEX-TEST: You stick your hand into the honeyhive and feel around...
+     * @regexTest You stick your hand into the honeyhive and feel around...
      */
     private val hiveLootedPattern by patternGroup.pattern(
         "hive-looted",
@@ -44,7 +44,7 @@ object HoneyhiveReminder {
     )
 
     /**
-     * REGEX-TEST: QUEEN BEE! The Honeyhive instantly refilled with loot!
+     * @regexTest QUEEN BEE! The Honeyhive instantly refilled with loot!
      */
     private val queenBeePattern by patternGroup.pattern(
         "queen-bee",

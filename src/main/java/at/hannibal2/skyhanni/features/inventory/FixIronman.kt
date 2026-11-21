@@ -15,7 +15,7 @@ object FixIronman {
     private val patternGroup = RepoPattern.group("data.fixironman")
 
     /**
-     * REGEX-TEST: Select a Special Mode
+     * @regexTest Select a Special Mode
      */
     private val selectModePattern by patternGroup.pattern(
         "selectmode",
@@ -23,7 +23,7 @@ object FixIronman {
     )
 
     /**
-     * REGEX-TEST: Profile Management
+     * @regexTest Profile Management
      */
     private val profileManagementPattern by patternGroup.pattern(
         "profilemanagement",
@@ -31,7 +31,7 @@ object FixIronman {
     )
 
     /**
-     * REGEX-TEST: Visit liron150
+     * @regexTest Visit liron150
      */
     private val visitPattern by patternGroup.pattern(
         "visit",
@@ -39,7 +39,7 @@ object FixIronman {
     )
 
     /**
-     * REGEX-TEST: SkyBlock Leveling
+     * @regexTest SkyBlock Leveling
      */
     private val sbLevelingPattern by patternGroup.pattern(
         "sbleveling",

@@ -14,8 +14,8 @@ object WinterApi {
     private val patternGroup = RepoPattern.group("event.winter")
 
     /**
-     * REGEX-TEST: WOAH! [VIP] Georeek summoned a Reindrake from the depths!
-     * REGEX-TEST: WOAH! [MVP+] DulceLyncis summoned TWO Reindrakes from the depths!
+     * @regexTest WOAH! [VIP] Georeek summoned a Reindrake from the depths!
+     * @regexTest WOAH! [MVP+] DulceLyncis summoned TWO Reindrakes from the depths!
      */
     private val reindrakeSpawnPattern by patternGroup.pattern(
         "reindrake.spawn.message",

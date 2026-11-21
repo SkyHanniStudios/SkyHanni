@@ -37,7 +37,7 @@ object CrimsonMinibossRespawnTimer {
     private val patternGroup = RepoPattern.group("crimson.miniboss")
 
     /**
-     * REGEX-TEST: §c§lBEWARE - Bladesoul Is Spawning.
+     * @regexTest §c§lBEWARE - Bladesoul Is Spawning.
      */
     private val spawnPattern by patternGroup.pattern(
         "spawn",
@@ -45,7 +45,7 @@ object CrimsonMinibossRespawnTimer {
     )
 
     /**
-     * REGEX-TEST: §f                            §r§6§lBLADESOUL DOWN!
+     * @regexTest §f                            §r§6§lBLADESOUL DOWN!
      */
     private val downPattern by patternGroup.pattern(
         "down",

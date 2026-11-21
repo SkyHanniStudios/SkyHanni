@@ -122,9 +122,9 @@ object TimeUtils {
 
 
     /**
-     * REGEX-TEST: 12:00 am
-     * REGEX-TEST: 11:59 pm
-     * REGEX-TEST: 12:41 am
+     * @regexTest 12:00 am
+     * @regexTest 11:59 pm
+     * @regexTest 12:41 am
      */
     private val skyblockTimePattern by patternGroup.pattern(
         "24-hour-time",

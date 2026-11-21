@@ -12,7 +12,7 @@ import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 object SealAchievement {
 
     /**
-     * REGEX-TEST: INSANE! You kept the Bouncy Beach Ball in the air for 187 bounces and earned 20 Fishy Treats!
+     * @regexTest INSANE! You kept the Bouncy Beach Ball in the air for 187 bounces and earned 20 Fishy Treats!
      */
     private val sealBouncePattern by AchievementManager.patternGroup.pattern(
         "seal-bounce",

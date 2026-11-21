@@ -48,8 +48,8 @@ object SackDisplay {
     private val patternGroup = RepoPattern.group("inventory.sack.display")
 
     /**
-     * REGEX-TEST: Stored: 60.5k/60.5k
-     * REGEX-TEST: Stored: 28,183/60.5k
+     * @regexTest Stored: 60.5k/60.5k
+     * @regexTest Stored: 28,183/60.5k
      */
     private val storedPattern by patternGroup.pattern(
         "stored",

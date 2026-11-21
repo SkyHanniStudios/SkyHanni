@@ -41,7 +41,7 @@ object CurrentEquipmentApi {
     val patternGroup = RepoPattern.group("data.equipment")
 
     /**
-     * REGEX-TEST: Stats & Equipment
+     * @regexTest Stats & Equipment
      */
     val equipmentAndStatsMenuPattern by patternGroup.pattern(
         "equipment-and-stats-menu",
@@ -70,7 +70,7 @@ object CurrentEquipmentApi {
     private val repoGroup = RepoPattern.group("data.equipment")
 
     /**
-     * REGEX-TEST: §aYou equipped a §r§dSnowy Gillsplash Cloak§r§a!
+     * @regexTest §aYou equipped a §r§dSnowy Gillsplash Cloak§r§a!
      */
     private val chatEquipRegex by repoGroup.pattern(
         "chat.equip",

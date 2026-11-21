@@ -38,7 +38,7 @@ object StewHelper {
     private val patternGroup = RepoPattern.group("event.year-of-the-witch")
 
     /**
-     * REGEX-TEST: Warmed Flakes x64
+     * @regexTest Warmed Flakes x64
      */
     private val stewItemNamePattern by patternGroup.pattern(
         "stew-item",
@@ -46,7 +46,7 @@ object StewHelper {
     )
 
     /**
-     * REGEX-TEST: Witches Stew
+     * @regexTest Witches Stew
      */
     private val stewInventoryPattern by patternGroup.pattern(
         "stew-inventory",

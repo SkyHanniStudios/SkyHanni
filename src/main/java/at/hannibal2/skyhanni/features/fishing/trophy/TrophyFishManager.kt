@@ -29,7 +29,7 @@ object TrophyFishManager {
     private val patternGroup = RepoPattern.group("fishing.trophyfish")
 
     /**
-     * REGEX-TEST: Gold ✔ (1)
+     * @regexTest Gold ✔ (1)
      */
     private val odgerRankPattern by patternGroup.pattern(
         "odger.rank.colorless",
@@ -37,7 +37,7 @@ object TrophyFishManager {
     )
 
     /**
-     * REGEX-TEST: Diamond ✖
+     * @regexTest Diamond ✖
      */
     private val odgerRankEmptyPattern by patternGroup.pattern(
         "odger.rank.empty.colorless",
@@ -45,7 +45,7 @@ object TrophyFishManager {
     )
 
     /**
-     * REGEX-TEST: Trophy Fish
+     * @regexTest Trophy Fish
      */
     private val odgerInventoryNamePattern by patternGroup.pattern(
         "odger.inventory",

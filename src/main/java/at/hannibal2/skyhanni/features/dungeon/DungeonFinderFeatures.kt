@@ -37,7 +37,7 @@ object DungeonFinderFeatures {
     private val patternGroup = RepoPattern.group("dungeon.finder.new")
 
     /**
-     * REGEX-TEST: Note: 3m comp carry
+     * @regexTest Note: 3m comp carry
      */
     private val pricePattern by patternGroup.pattern(
         "price",
@@ -45,8 +45,8 @@ object DungeonFinderFeatures {
     )
 
     /**
-     * REGEX-TEST: Note: 3m comp carry
-     * REGEX-TEST: Note: 250k comp carry
+     * @regexTest Note: 3m comp carry
+     * @regexTest Note: 250k comp carry
      */
     private val carryPattern by patternGroup.pattern(
         "carry",
@@ -58,12 +58,12 @@ object DungeonFinderFeatures {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: " 4sn_: Archer (29)"
-     * WRAPPED-REGEX-TEST: " kaydo_odyak: Berserk (26)"
-     * WRAPPED-REGEX-TEST: " ItsKind: Berserk (38)"
-     * WRAPPED-REGEX-TEST: " sphxia: Tank (36)"
-     * WRAPPED-REGEX-TEST: " Skept1x: Mage (35)"
-     * WRAPPED-REGEX-TEST: " Mewlius: Archer (41)"
+     * @regexTestWrapped " 4sn_: Archer (29)"
+     * @regexTestWrapped " kaydo_odyak: Berserk (26)"
+     * @regexTestWrapped " ItsKind: Berserk (38)"
+     * @regexTestWrapped " sphxia: Tank (36)"
+     * @regexTestWrapped " Skept1x: Mage (35)"
+     * @regexTestWrapped " Mewlius: Archer (41)"
      */
     private val memberPattern by patternGroup.pattern(
         "member.colorless",
@@ -71,7 +71,7 @@ object DungeonFinderFeatures {
     )
 
     /**
-     * REGEX-TEST: Requires a Class at Level 25!
+     * @regexTest Requires a Class at Level 25!
      */
     private val ineligiblePattern by patternGroup.pattern(
         "ineligible",
@@ -79,7 +79,7 @@ object DungeonFinderFeatures {
     )
 
     /**
-     * REGEX-TEST: Note: s+ clear first
+     * @regexTest Note: s+ clear first
      */
     private val notePattern by patternGroup.pattern(
         "note",
@@ -87,8 +87,8 @@ object DungeonFinderFeatures {
     )
 
     /**
-     * REGEX-TEST: The Catacombs
-     * REGEX-TEST: MM The Catacombs
+     * @regexTest The Catacombs
+     * @regexTest MM The Catacombs
      */
     private val floorTypePattern by patternGroup.pattern(
         "floor.type",
@@ -96,7 +96,7 @@ object DungeonFinderFeatures {
     )
 
     /**
-     * REGEX-TEST: JohnRealNoob's Party
+     * @regexTest JohnRealNoob's Party
      */
     private val checkIfPartyPattern by patternGroup.pattern(
         "check.if.party",
@@ -116,7 +116,7 @@ object DungeonFinderFeatures {
     )
 
     /**
-     * REGEX-TEST: The Catacombs - Entrance
+     * @regexTest The Catacombs - Entrance
      */
     private val entranceFloorPattern by patternGroup.pattern(
         "entrance.colorless",
@@ -124,8 +124,8 @@ object DungeonFinderFeatures {
     )
 
     /**
-     * REGEX-TEST: Floor VII
-     * REGEX-TEST: Floor: Floor VII
+     * @regexTest Floor VII
+     * @regexTest Floor: Floor VII
      */
     private val floorPattern by patternGroup.pattern(
         "floor",
@@ -137,8 +137,8 @@ object DungeonFinderFeatures {
     )
 
     /**
-     * REGEX-TEST: Master Mode The Catacombs
-     * REGEX-TEST: MM The Catacombs
+     * @regexTest Master Mode The Catacombs
+     * @regexTest MM The Catacombs
      */
     private val masterModeFloorPattern by patternGroup.pattern(
         "floor.mastermode",
@@ -146,7 +146,7 @@ object DungeonFinderFeatures {
     )
 
     /**
-     * REGEX-TEST: Dungeon: The Catacombs
+     * @regexTest Dungeon: The Catacombs
      */
     private val dungeonFloorPattern by patternGroup.pattern(
         "floor.dungeon",
@@ -154,7 +154,7 @@ object DungeonFinderFeatures {
     )
 
     /**
-     * REGEX-TEST: Floor VII
+     * @regexTest Floor VII
      */
     private val floorNumberPattern by patternGroup.pattern(
         "floor.number",
@@ -162,7 +162,7 @@ object DungeonFinderFeatures {
     )
 
     /**
-     * REGEX-TEST: Currently Selected: Mage
+     * @regexTest Currently Selected: Mage
      */
     private val getDungeonClassPattern by patternGroup.pattern(
         "get.dungeon.class",

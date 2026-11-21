@@ -56,8 +56,8 @@ object UserLuckBreakdown {
     private val patternGroup = RepoPattern.group("misc.statsbreakdown")
 
     /**
-     * REGEX-TEST: §7Show all stats: §aYes
-     * REGEX-TEST: §7Show all stats: §cNope
+     * @regexTest §7Show all stats: §aYes
+     * @regexTest §7Show all stats: §cNope
      */
     private val showAllStatsPattern by patternGroup.pattern(
         "showallstats",
@@ -73,7 +73,7 @@ object UserLuckBreakdown {
     )
 
     /**
-     * REGEX-TEST: Miscellaneous Stats
+     * @regexTest Miscellaneous Stats
      */
     private val miscStatsInventoryPattern by patternGroup.pattern(
         "inventory.miscstats",

@@ -14,7 +14,7 @@ import at.hannibal2.skyhanni.utils.SafeItemStack
 object EquipmentWardrobeApi : AbstractWardrobeApi() {
 
     /**
-     * REGEX-TEST: (1/2) Equipment Sets
+     * @regexTest (1/2) Equipment Sets
      */
     override val inventoryPattern by patternGroup.pattern(
         "equipment.name",

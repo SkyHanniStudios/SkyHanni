@@ -16,7 +16,7 @@ object CrashOnTttFail {
     private val config get() = SkyHanniMod.feature.misc
 
     /**
-     * REGEX-TEST: PUZZLE FAIL! Webhead1104 lost Tic Tac Toe! Yikes!
+     * @regexTest PUZZLE FAIL! Webhead1104 lost Tic Tac Toe! Yikes!
      */
     private val tttFailPattern by RepoPattern.pattern(
         "dungeons.tttfail.colorless",

@@ -140,7 +140,7 @@ object ItemNameResolver {
     }
 
     /**
-     * REGEX-TEST: ULTIMATE_DUPLEX;5
+     * @regexTest ULTIMATE_DUPLEX;5
      */
     private val duplexPattern by patternGroup.pattern(
         "enchantment.duplex",

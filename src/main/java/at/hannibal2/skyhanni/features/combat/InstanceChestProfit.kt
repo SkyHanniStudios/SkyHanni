@@ -54,8 +54,8 @@ object InstanceChestProfit {
     private val patternGroup = RepoPattern.group("combat.instance-chest-profit")
 
     /**
-     * REGEX-TEST: §6Kraken Shard §8x1
-     * REGEX-TEST: §6Apex Dragon Shard §8x1
+     * @regexTest §6Kraken Shard §8x1
+     * @regexTest §6Apex Dragon Shard §8x1
      */
     private val attributeShardPattern by patternGroup.pattern(
         "attributeshard",
@@ -63,9 +63,9 @@ object InstanceChestProfit {
     )
 
     /**
-     * REGEX-TEST: §dCrimson Essence §8x250
-     * REGEX-TEST: §dUndead Essence §8x10
-     * REGEX-TEST: §dWither Essence §8x8
+     * @regexTest §dCrimson Essence §8x250
+     * @regexTest §dUndead Essence §8x10
+     * @regexTest §dWither Essence §8x8
      */
     private val essencePattern by patternGroup.pattern(
         "essence",
@@ -73,9 +73,9 @@ object InstanceChestProfit {
     )
 
     /**
-     * REGEX-TEST: §6500,000 Coins
-     * REGEX-TEST: §6100,000 Coins
-     * REGEX-TEST: §6250,00 Coins
+     * @regexTest §6500,000 Coins
+     * @regexTest §6100,000 Coins
+     * @regexTest §6250,00 Coins
      */
     private val coinsPattern by patternGroup.pattern(
         "coins",
@@ -83,7 +83,7 @@ object InstanceChestProfit {
     )
 
     /**
-     * REGEX-TEST: §9Dungeon Chest Key
+     * @regexTest §9Dungeon Chest Key
      */
     private val dungeonChestKey by patternGroup.pattern(
         "dungeonchestkey",
@@ -91,9 +91,9 @@ object InstanceChestProfit {
     )
 
     /**
-     * REGEX-TEST: §6Infernal Kuudra Key
-     * REGEX-TEST: §5Burning Kuudra Key
-     * REGEX-TEST: §9Kuudra Key
+     * @regexTest §6Infernal Kuudra Key
+     * @regexTest §5Burning Kuudra Key
+     * @regexTest §9Kuudra Key
      */
     private val kuudraChestKey by patternGroup.pattern(
         "kuudrachestkey",
@@ -101,7 +101,7 @@ object InstanceChestProfit {
     )
 
     /**
-     * REGEX-TEST: §aReroll Shard
+     * @regexTest §aReroll Shard
      */
     private val fakeItemNamePattern by patternGroup.pattern(
         "fakeitemname",
@@ -110,9 +110,9 @@ object InstanceChestProfit {
 
 
     /**
-     * REGEX-TEST: §61,000,000 Coins
-     * REGEX-TEST: §aFREE
-     * REGEX-TEST: §6250,000 Coins
+     * @regexTest §61,000,000 Coins
+     * @regexTest §aFREE
+     * @regexTest §6250,000 Coins
      */
     private val chestCostCroesus by patternGroup.pattern(
         "croesuscost",
@@ -120,7 +120,7 @@ object InstanceChestProfit {
     )
 
     /**
-     * REGEX-TEST: §aAlready opened!'
+     * @regexTest §aAlready opened!'
      */
     private val alreadyOpened by patternGroup.pattern(
         "alreadyopened",
@@ -128,8 +128,8 @@ object InstanceChestProfit {
     )
 
     /**
-     * REGEX-TEST: §d§lWisdom I§f
-     * REGEX-TEST: §d§lCombo I§f
+     * @regexTest §d§lWisdom I§f
+     * @regexTest §d§lCombo I§f
      */
     private val bookColorFixer by patternGroup.pattern(
         "bookcolorfixnew",
@@ -137,7 +137,7 @@ object InstanceChestProfit {
     )
 
     /**
-     * REGEX-TEST: §eRequires a Dungeon Chest Key
+     * @regexTest §eRequires a Dungeon Chest Key
      */
     private val requiresDungeonChestKeyPattern by patternGroup.pattern(
         "requiresadungeonchestkey",

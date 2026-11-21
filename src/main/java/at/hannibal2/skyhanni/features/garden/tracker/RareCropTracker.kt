@@ -44,9 +44,9 @@ object RareCropTracker {
     private val repoReloadCoroutine = CoroutineSettings("rare crop tracker repo reload")
 
     /**
-     * REGEX-TEST: FERMENTO_CHESTPLATE
-     * REGEX-TEST: CROPIE_BOOTS
-     * REGEX-TEST: SQUASH_HELMET
+     * @regexTest FERMENTO_CHESTPLATE
+     * @regexTest CROPIE_BOOTS
+     * @regexTest SQUASH_HELMET
      */
     private val armorPattern by patternGroup.pattern(
         "armor",
@@ -116,10 +116,10 @@ object RareCropTracker {
         val canDropFromPests: Boolean = pestType != null
 
         /**
-         * REGEX-TEST: RARE CROP! Cropie (+97)
-         * REGEX-TEST: RARE CROP! Cane Knot (+137.6)
-         * REGEX-TEST: RARE CROP! Seasoning (+115) (automatically donated)
-         * REGEX-TEST: VERY RARE CROP! Burrowing Spores
+         * @regexTest RARE CROP! Cropie (+97)
+         * @regexTest RARE CROP! Cane Knot (+137.6)
+         * @regexTest RARE CROP! Seasoning (+115) (automatically donated)
+         * @regexTest VERY RARE CROP! Burrowing Spores
          */
         val chatPattern by patternGroup.pattern(
             "${name.lowercase().replace('_', '-')}.colorless",

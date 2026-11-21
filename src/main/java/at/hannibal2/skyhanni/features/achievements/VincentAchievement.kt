@@ -13,7 +13,7 @@ import at.hannibal2.skyhanni.utils.chat.TextHelper.asComponent
 object VincentAchievement {
 
     /**
-     * REGEX-TEST: Vincent accepts your rose and is delighted to visit your Garden soon.
+     * @regexTest Vincent accepts your rose and is delighted to visit your Garden soon.
      */
     private val vincentPattern by AchievementManager.patternGroup.pattern(
         "vincent",

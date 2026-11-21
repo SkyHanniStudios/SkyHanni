@@ -40,8 +40,8 @@ object TradeValue {
     private var yourDisplay = emptyList<Renderable>()
 
     /**
-     * WRAPPED-REGEX-TEST: " §71"
-     * WRAPPED-REGEX-TEST: " §8(1,000)"
+     * @regexTestWrapped " §71"
+     * @regexTestWrapped " §8(1,000)"
      */
     private val coinPattern by RepoPattern.pattern(
         "inventory.tradevalue.coins",
@@ -49,7 +49,7 @@ object TradeValue {
     )
 
     /**
-     * REGEX-TEST: You     1
+     * @regexTest You     1
      */
     private val tradeMenuPattern by RepoPattern.pattern(
         "inventory.tradevalue.menu",

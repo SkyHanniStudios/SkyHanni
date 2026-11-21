@@ -120,8 +120,8 @@ object GhostTracker {
     private val patternGroup = RepoPattern.group("combat.ghosttracker")
 
     /**
-     * REGEX-TEST: RARE DROP! Sorrow (+210%  Magic Find)
-     * REGEX-TEST: RARE DROP! Sorrow (+210  Magic Find)
+     * @regexTest RARE DROP! Sorrow (+210%  Magic Find)
+     * @regexTest RARE DROP! Sorrow (+210  Magic Find)
      */
     private val itemDropPattern by patternGroup.pattern(
         "itemdrop.colorless",
@@ -129,8 +129,8 @@ object GhostTracker {
     )
 
     /**
-     * REGEX-TEST: Your Kill Combo has expired! You reached a 32 Kill Combo!
-     * REGEX-TEST: Your Kill Combo has expired! You reached a 1,187 Kill Combo!
+     * @regexTest Your Kill Combo has expired! You reached a 32 Kill Combo!
+     * @regexTest Your Kill Combo has expired! You reached a 1,187 Kill Combo!
      */
     private val killComboEndPattern by patternGroup.pattern(
         "killcombo.end.colorless",
@@ -138,7 +138,7 @@ object GhostTracker {
     )
 
     /**
-     * REGEX-TEST: The ghost's death materialized 1,000,000 coins from the mists!
+     * @regexTest The ghost's death materialized 1,000,000 coins from the mists!
      */
     private val bagOfCashPattern by patternGroup.pattern(
         "bagofcash.colorless",
@@ -146,8 +146,8 @@ object GhostTracker {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: " Ghost 21: 29,614/40,000"
-     * WRAPPED-REGEX-TEST: " Ghost 15: 12,449/12,500"
+     * @regexTestWrapped " Ghost 21: 29,614/40,000"
+     * @regexTestWrapped " Ghost 15: 12,449/12,500"
      */
     private val bestiaryTablistPattern by patternGroup.pattern(
         "tablist.bestiary-no-color",
@@ -155,7 +155,7 @@ object GhostTracker {
     )
 
     /**
-     * WRAPPED-REGEX-TEST: " Ghost 25: MAX"
+     * @regexTestWrapped " Ghost 25: MAX"
      */
     private val maxBestiaryTablistPattern by patternGroup.pattern(
         "tablist.bestiarymax-no-color",

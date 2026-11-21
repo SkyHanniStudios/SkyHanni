@@ -21,8 +21,8 @@ object HubSelectorCapacityHighlight {
     private val patternGroup = RepoPattern.group("inventory.hubselector")
 
     /**
-     * REGEX-TEST: SkyBlock Hub Selector
-     * REGEX-TEST: Skyblock Hub Selector
+     * @regexTest SkyBlock Hub Selector
+     * @regexTest Skyblock Hub Selector
      */
     private val inventoryPattern by patternGroup.pattern(
         "title",
@@ -30,8 +30,8 @@ object HubSelectorCapacityHighlight {
     )
 
     /**
-     * REGEX-TEST: Players: 54/60
-     * REGEX-TEST: Players: 60/60
+     * @regexTest Players: 54/60
+     * @regexTest Players: 60/60
      */
     private val playersPattern by patternGroup.pattern(
         "lobby.players",

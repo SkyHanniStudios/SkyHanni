@@ -75,10 +75,10 @@ sealed class LorenzVecArgumentType : ArgumentType<LorenzVec> {
         private val patternGroup = RepoPattern.group("commands.brigadier.arguments.lorenzvec")
 
         /**
-         * REGEX-TEST: LorenzVec(-91.7, 70.0, 29.3)
-         * REGEX-TEST: LorenzVec(1, 2, 3)
-         * REGEX-TEST: LorenzVec(0.0, 0.0, 0.0)
-         * REGEX-TEST: LorenzVec(-78.8, 68.0, -28.7)
+         * @regexTest LorenzVec(-91.7, 70.0, 29.3)
+         * @regexTest LorenzVec(1, 2, 3)
+         * @regexTest LorenzVec(0.0, 0.0, 0.0)
+         * @regexTest LorenzVec(-78.8, 68.0, -28.7)
          */
         private val lorenzVecPattern by patternGroup.pattern(
             "lorenz",
@@ -86,10 +86,10 @@ sealed class LorenzVecArgumentType : ArgumentType<LorenzVec> {
         )
 
         /**
-         * REGEX-TEST: x=-262.0, y=58.0, z=117.0
-         * REGEX-TEST: x: -598, y: 138, z: 235
-         * REGEX-TEST: x:-598,y:138,z:235
-         * REGEX-TEST: x=-49, y=79, z=-151
+         * @regexTest x=-262.0, y=58.0, z=117.0
+         * @regexTest x: -598, y: 138, z: 235
+         * @regexTest x:-598,y:138,z:235
+         * @regexTest x=-49, y=79, z=-151
          */
         private val namedParameterPattern by patternGroup.pattern(
             "named-parameter",
@@ -103,8 +103,8 @@ sealed class LorenzVecArgumentType : ArgumentType<LorenzVec> {
          * the literal character. Do not replace it with a normal space, the pattern would stop
          * matching what the wiki actually produces.
          *
-         * REGEX-TEST: -541, 94, 227
-         * REGEX-TEST: 1, 2, 3
+         * @regexTest -541, 94, 227
+         * @regexTest 1, 2, 3
          */
         private val wikiPattern by patternGroup.pattern(
             "wiki",
@@ -112,12 +112,12 @@ sealed class LorenzVecArgumentType : ArgumentType<LorenzVec> {
         )
 
         /**
-         * REGEX-TEST: 1 2 3
-         * REGEX-TEST: -4 0 5
-         * REGEX-TEST: ~ 64 ~
-         * REGEX-TEST: 1.0 2.5 -3
-         * REGEX-TEST: -1.7 ~ ~
-         * REGEX-TEST: 0.0 0.0 0.0
+         * @regexTest 1 2 3
+         * @regexTest -4 0 5
+         * @regexTest ~ 64 ~
+         * @regexTest 1.0 2.5 -3
+         * @regexTest -1.7 ~ ~
+         * @regexTest 0.0 0.0 0.0
          */
         private val spacePattern by patternGroup.pattern(
             "space",
@@ -125,9 +125,9 @@ sealed class LorenzVecArgumentType : ArgumentType<LorenzVec> {
         )
 
         /**
-         * REGEX-TEST: -49, 79, -151
-         * REGEX-TEST: -49,79,-151
-         * REGEX-TEST: 1.5, 2, -3.25
+         * @regexTest -49, 79, -151
+         * @regexTest -49,79,-151
+         * @regexTest 1.5, 2, -3.25
          */
         private val commaPattern by patternGroup.pattern(
             "comma",
@@ -137,10 +137,10 @@ sealed class LorenzVecArgumentType : ArgumentType<LorenzVec> {
         /**
          * Last in [patterns], because a bare colon triple is indistinguishable from a chat timestamp.
          *
-         * REGEX-TEST: -78.8:68.0:-28.7
-         * REGEX-TEST: 1:2:3
-         * REGEX-TEST: ~:64:~
-         * REGEX-TEST: ~:~:~
+         * @regexTest -78.8:68.0:-28.7
+         * @regexTest 1:2:3
+         * @regexTest ~:64:~
+         * @regexTest ~:~:~
          */
         private val colonPattern by patternGroup.pattern(
             "colon",

@@ -50,7 +50,7 @@ object ElectionApi {
     private val patternGroup = RepoPattern.group("mayorapi")
 
     /**
-     * REGEX-TEST: Schedules an extra §bFishing Festival §7event during the year.
+     * @regexTest Schedules an extra §bFishing Festival §7event during the year.
      */
     val foxyExtraEventPattern by patternGroup.pattern(
         "foxy.extraevent",
@@ -58,7 +58,7 @@ object ElectionApi {
     )
 
     /**
-     * REGEX-TEST: The election room is now closed. Clerk Seraphine is doing a final count of the votes...
+     * @regexTest The election room is now closed. Clerk Seraphine is doing a final count of the votes...
      */
     private val electionOverPattern by patternGroup.pattern(
         "election.over",
@@ -66,8 +66,8 @@ object ElectionApi {
     )
 
     /**
-     * REGEX-TEST: §dMayor Jerry
-     * REGEX-TEST: §cMayor Aatrox
+     * @regexTest §dMayor Jerry
+     * @regexTest §cMayor Aatrox
      */
     private val mayorHeadPattern by patternGroup.pattern(
         "mayor.head",
@@ -75,7 +75,7 @@ object ElectionApi {
     )
 
     /**
-     * REGEX-TEST: §9Perkpocalypse Perks:
+     * @regexTest §9Perkpocalypse Perks:
      */
     private val perkpocalypsePerksPattern by patternGroup.pattern(
         "perkpocalypse",

@@ -41,7 +41,7 @@ object GetFromSackApi {
     private val patternGroup = RepoPattern.group("gfs.chat")
 
     /**
-     * REGEX-TEST: §aMoved §r§e10 Wheat§r§a from your Sacks to your inventory.
+     * @regexTest §aMoved §r§e10 Wheat§r§a from your Sacks to your inventory.
      */
     private val fromSacksChatPattern by patternGroup.pattern(
         "from",
@@ -49,7 +49,7 @@ object GetFromSackApi {
     )
 
     /**
-     * REGEX-TEST: §cYou have no Compost in your Sacks!
+     * @regexTest §cYou have no Compost in your Sacks!
      */
     private val missingChatPattern by patternGroup.pattern(
         "missing",

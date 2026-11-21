@@ -17,7 +17,7 @@ object NpcApi {
     private val patternGroup = RepoPattern.group("npc-api")
 
     /**
-     * REGEX-TEST: skyblock:dialogue_response
+     * @regexTest skyblock:dialogue_response
      */
     private val dialogueResponseIdPattern by patternGroup.pattern(
         "dialogue.response",

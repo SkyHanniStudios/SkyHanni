@@ -24,7 +24,7 @@ object GardenCharmedVisitors {
     private const val VINYL_SLOT = 48
 
     /**
-     * REGEX-TEST: This Visitor has been Charmed! ❤
+     * @regexTest This Visitor has been Charmed! ❤
      */
     private val charmedItemNamePattern by patternGroup.pattern(
         "name",

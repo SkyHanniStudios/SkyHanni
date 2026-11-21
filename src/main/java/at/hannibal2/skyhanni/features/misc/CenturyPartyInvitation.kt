@@ -39,7 +39,7 @@ object CenturyPartyInvitation {
     private val chatGroup = RepoPattern.group("misc.century-party-invitation")
 
     /**
-     * REGEX-TEST: §r§8[§a136§8] §7_seagullz_ §e⛃§r
+     * @regexTest §r§8[§a136§8] §7_seagullz_ §e⛃§r
      */
     private val playerRankColorPattern by chatGroup.pattern(
         "nametag.player-color",
@@ -47,7 +47,7 @@ object CenturyPartyInvitation {
     )
 
     /**
-     * REGEX-TEST: §d§lPARTY! §r§7Iskc__§r§7§r§e's SkyBlock level color is §r§f§r§8[§r§f40§r§8] - [§r§f79§r§8] §r§fWhite§r§e!
+     * @regexTest §d§lPARTY! §r§7Iskc__§r§7§r§e's SkyBlock level color is §r§f§r§8[§r§f40§r§8] - [§r§f79§r§8] §r§fWhite§r§e!
      */
     private val chatPartyAddPattern by chatGroup.pattern(
         "chat-message.party-add",
@@ -55,7 +55,7 @@ object CenturyPartyInvitation {
     )
 
     /**
-     * REGEX-TEST: §aYou had already gained the bonus, so... at least everyone is now invited!
+     * @regexTest §aYou had already gained the bonus, so... at least everyone is now invited!
      */
     private val chatFoundAllPattern by chatGroup.pattern(
         "chat-message.found-all",
@@ -63,8 +63,8 @@ object CenturyPartyInvitation {
     )
 
     /**
-     * REGEX-TEST: §7Level colors missing:
-     * REGEX-TEST: §7Level color missing:
+     * @regexTest §7Level colors missing:
+     * @regexTest §7Level color missing:
      */
     private val itemMissingLineSeparatorPattern by chatGroup.pattern(
         "item-lore.missing-color-separator",
@@ -72,9 +72,9 @@ object CenturyPartyInvitation {
     )
 
     /**
-     * REGEX-TEST: §8[§e80§8] - [§e119§8] §eYellow
-     * REGEX-TEST: §8[§c440§8] - [§c479§8] §cRed
-     * REGEX-TEST: §8[§4480§8]+ §4Dark Red
+     * @regexTest §8[§e80§8] - [§e119§8] §eYellow
+     * @regexTest §8[§c440§8] - [§c479§8] §cRed
+     * @regexTest §8[§4480§8]+ §4Dark Red
      */
     private val itemMissingColorLinePattern by chatGroup.pattern(
         "item-lore.missing-color-line",

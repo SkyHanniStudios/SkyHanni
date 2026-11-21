@@ -18,10 +18,10 @@ object CorpseLoot {
     private val chatPatternGroup = patternGroup.group("chat")
 
     /**
-     * WRAPPED-REGEX-TEST: "  §r§b§l§r§9§lLAPIS §r§b§lCORPSE LOOT!"
-     * WRAPPED-REGEX-TEST: "  §r§b§l§r§7§lTUNGSTEN §r§b§lCORPSE LOOT!"
-     * WRAPPED-REGEX-TEST: "  §r§b§l§r§6§lUMBER §r§b§lCORPSE LOOT!"
-     * WRAPPED-REGEX-TEST: "  §r§b§l§r§f§lVANGUARD §r§b§lCORPSE LOOT!"
+     * @regexTestWrapped "  §r§b§l§r§9§lLAPIS §r§b§lCORPSE LOOT!"
+     * @regexTestWrapped "  §r§b§l§r§7§lTUNGSTEN §r§b§lCORPSE LOOT!"
+     * @regexTestWrapped "  §r§b§l§r§6§lUMBER §r§b§lCORPSE LOOT!"
+     * @regexTestWrapped "  §r§b§l§r§f§lVANGUARD §r§b§lCORPSE LOOT!"
      */
     private val startPattern by chatPatternGroup.pattern(
         "start",
@@ -29,18 +29,18 @@ object CorpseLoot {
     )
 
     /**
-     * REGEX-TEST: §a§l▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+     * @regexTest §a§l▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
      */
     private val endPattern by chatPatternGroup.pattern("end", "§a§l▬{64}")
 
     /**
-     * WRAPPED-REGEX-TEST: "    §r§9☠ Fine Onyx Gemstone §r§8x2"
-     * WRAPPED-REGEX-TEST: "    §r§fEnchanted Book (Ice Cold I§r§f)"
+     * @regexTestWrapped "    §r§9☠ Fine Onyx Gemstone §r§8x2"
+     * @regexTestWrapped "    §r§fEnchanted Book (Ice Cold I§r§f)"
      */
     private val itemPattern by chatPatternGroup.pattern("item", " {4}§r(?<item>.+)")
 
     /**
-     * REGEX-TEST: LUCKY! Your Resourceful perk saved your key from being consumed!
+     * @regexTest LUCKY! Your Resourceful perk saved your key from being consumed!
      */
     private val resourceFulPerkProcPattern by chatPatternGroup.pattern(
         "resourceful",
