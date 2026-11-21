@@ -195,6 +195,38 @@ class InventoryConfig {
     val npcTrade: NpcTradeConfig = NpcTradeConfig()
 
     @Expose
+    @ConfigOption(name = "Close Prevention", desc = "")
+    @Accordion
+    val closePrevention: AccidentalGuiClosePreventionConfig = AccidentalGuiClosePreventionConfig()
+
+    class AccidentalGuiClosePreventionConfig {
+
+        @Expose
+        @ConfigOption(
+            name = "Inventory Close Preventer",
+            desc = "Prevent using non mouse keys to close Inventories using Hypixel Close Menu Items."
+        )
+        @ConfigEditorBoolean
+        var enabled: Boolean = false
+
+        @Expose
+        @ConfigOption(
+            name = "Ignore Escape Key",
+            desc = "when enabled will ignore the Escape Key for this feature."
+        )
+        @ConfigEditorBoolean
+        var shouldIgnoreEscapeKey: Boolean = true
+
+        @Expose
+        @ConfigOption(
+            name = "Ignore Inventory Key",
+            desc = "when enabled willl ignore the Inventory Key for this feature."
+        )
+        @ConfigEditorBoolean
+        var shouldIgnoreInventoryKey: Boolean = true
+    }
+
+    @Expose
     @ConfigOption(name = "Hub Selector", desc = "Highlight near-capacity lobbies in the hub selector.")
     @Accordion
     @SearchTag("lobby full players")
