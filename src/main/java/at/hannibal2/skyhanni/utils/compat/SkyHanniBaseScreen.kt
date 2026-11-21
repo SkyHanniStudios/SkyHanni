@@ -104,13 +104,14 @@ abstract class SkyHanniBaseScreen(title: Component = Component.empty()) : Screen
 
     private fun postMouseClickMove(originalMouseX: Int, originalMouseY: Int, clickedMouseButton: Int, timeSinceLastClick: Long) {
         try {
-            onMouseClickMove(originalMouseX, originalMouseY, clickedMouseButton, timeSinceLastClick)
+            val key = InputKeys.mouse(clickedMouseButton)
+            onMouseClickMove(originalMouseX, originalMouseY, key, timeSinceLastClick)
         } catch (e: Exception) {
             ErrorManager.logErrorWithData(e, "Error while clicking and moving mouse", "screen" to this)
         }
     }
 
-    open fun onMouseClickMove(originalMouseX: Int, originalMouseY: Int, clickedMouseButton: Int, timeSinceLastClick: Long) {}
+    open fun onMouseClickMove(originalMouseX: Int, originalMouseY: Int, clickedMouseKey: InputConstants.Key, timeSinceLastClick: Long) {}
 
     override fun mouseMoved(mouseX: Double, mouseY: Double) {
         postHandleMouseInput()
@@ -162,7 +163,7 @@ abstract class SkyHanniBaseScreen(title: Component = Component.empty()) : Screen
 
     open fun onInitGui() {}
 
-    fun drawDefaultBackground(mouseX: Int, mouseY: Int, partialTicks: Float) {
+    fun drawDefaultBackground() {
         extractMenuBackground(DrawContextUtils.drawContext)
     }
 

@@ -41,7 +41,7 @@ class VisualWordScreen : SkyHanniBaseScreen() {
 
     override fun onInitGui() = rebuildDisplay()
     override fun onDrawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        drawDefaultBackground(mouseX, mouseY, partialTicks)
+        drawDefaultBackground()
         val renderable = display ?: return
         val startX = (width - renderable.width) / 2
         val startY = (height - renderable.height) / 2

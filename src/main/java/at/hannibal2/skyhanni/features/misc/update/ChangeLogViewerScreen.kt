@@ -66,7 +66,7 @@ class ChangeLogViewerScreen : SkyHanniBaseScreen() {
         val xTranslate = this.width / 10
         val yTranslate = this.height / 10
 
-        drawDefaultBackground(mouseX, mouseY, partialTicks)
+        drawDefaultBackground()
         DrawContextUtils.translate(xTranslate - 2.0, yTranslate - 2.0)
         GuiRenderUtils.drawFloatingRectDark(0, 0, width, height)
         DrawContextUtils.translate(-(xTranslate - 2.0), -(yTranslate - 2.0))
