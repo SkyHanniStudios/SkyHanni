@@ -3,6 +3,7 @@ package at.hannibal2.skyhanni.features.bingo
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
+import at.hannibal2.skyhanni.data.SackApi
 import at.hannibal2.skyhanni.data.title.TitleManager
 import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
@@ -86,7 +87,7 @@ object MinionCraftHelper {
         }
 
         if (event.repeatSeconds(2)) {
-            hasItemsForMinion = loadFromInventory(mainInventory).first.isNotEmpty()
+            hasItemsForMinion = loadFromInventoryAndSacks(mainInventory).first.isNotEmpty()
         }
 
         if (!hasMinionInInventory && !hasItemsForMinion) {
@@ -96,7 +97,7 @@ object MinionCraftHelper {
 
         if (!event.isMod(3)) return
 
-        val (minions, otherItems) = loadFromInventory(mainInventory)
+        val (minions, otherItems) = loadFromInventoryAndSacks(mainInventory)
 
         display = drawDisplay(minions, otherItems)
     }
@@ -116,7 +117,7 @@ object MinionCraftHelper {
         return newDisplay
     }
 
-    private fun loadFromInventory(
+    private fun loadFromInventoryAndSacks(
         mainInventory: List<SafeItemStack>,
     ): Pair<MutableMap<String, NeuInternalName>, MutableMap<NeuInternalName, Int>> {
         init()
@@ -146,6 +147,18 @@ object MinionCraftHelper {
                 val (itemId, multiplier) = NeuItems.getPrimitiveMultiplier(rawId)
                 val old = otherItems.getOrDefault(itemId, 0)
                 otherItems[itemId] = old + item.count * multiplier
+            }
+        }
+
+        for ((internalName, item) in SackApi.sackData) {
+            if (!allIngredients.contains(internalName)) continue
+            if (!isAllowed(allMinions, internalName)) continue
+
+            val (itemId, multiplier) = NeuItems.getPrimitiveMultiplier(internalName)
+            val old = otherItems.getOrDefault(itemId, 0)
+            val newAmount = old + item.amount * multiplier
+            if (newAmount > 0) {
+                otherItems[itemId] = newAmount
             }
         }
 
