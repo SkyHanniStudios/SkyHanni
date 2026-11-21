@@ -5,7 +5,6 @@ import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.events.GuiContainerEvent
 import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
 import at.hannibal2.skyhanni.events.experiments.TableSuperpairDataUpdatedEvent
-import at.hannibal2.skyhanni.events.experiments.TableTaskStartedEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ItemUtils.cleanName
 import at.hannibal2.skyhanni.utils.ItemUtils.getInternalNameOrNull
@@ -93,7 +92,7 @@ object ExperimentationSuperpairApi {
     fun onInventoryClose() = reset()
 
     @HandleEvent
-    fun onTableTaskStarted(event: TableTaskStartedEvent) = reset()
+    fun onTableTaskStarted() = reset()
 
     private fun reset() {
         superpairsSlotMap.clear()

@@ -47,17 +47,13 @@ object FishingHookDisplay {
     private var isRendering = false
 
     @HandleEvent
-    private fun onWorldChange() {
-        reset()
-    }
+    private fun onWorldChange() = reset()
 
     @HandleEvent
-    private fun onBobberCast() {
-        reset()
-    }
+    private fun onBobberCast() = reset()
 
     @HandleEvent(onlyOnSkyblock = true)
-    private fun onEntityCustomNameUpdate(event: EntityCustomNameUpdateEvent<ArmorStand>) {
+    private fun onEntityNameUpdate(event: EntityCustomNameUpdateEvent<ArmorStand>) {
         if (!isEnabled()) return
         val newName = event.newNameFormatted ?: return
         val bobber = FishingApi.bobber ?: return
@@ -95,7 +91,7 @@ object FishingHookDisplay {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    private fun onCheckRender(event: CheckRenderEntityEvent<ArmorStand>) {
+    private fun onCheckRenderEntity(event: CheckRenderEntityEvent<ArmorStand>) {
         if (!isEnabled()) return
         if (!config.hideArmorStand) return
         if (!isRendering) return

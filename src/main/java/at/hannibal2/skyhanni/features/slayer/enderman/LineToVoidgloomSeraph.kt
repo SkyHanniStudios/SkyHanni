@@ -19,7 +19,7 @@ object LineToVoidgloomSeraph {
     private val bosses = mutableSetOf<Mob>()
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
+    private fun onSkyblockMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
         val mob = event.mob
         if (SlayerType.getByName(mob.name) != SlayerType.VOID) return
         if (!mob.belongsToPlayer()) return
@@ -27,15 +27,15 @@ object LineToVoidgloomSeraph {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onMobDespawn(event: MobEvent.DeSpawn.SkyblockMob) {
+    private fun onSkyblockMobDeSpawn(event: MobEvent.DeSpawn.SkyblockMob) {
         bosses -= event.mob
     }
 
     @HandleEvent
-    fun onWorldChange() = bosses.clear()
+    private fun onWorldChange() = bosses.clear()
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!SlayerApi.isInAnyArea || !config.lineToBoss) return
         val seenMobs = bosses.filter { it.baseEntity.canBeSeen(30) && it.isAlive }
         seenMobs.forEach { mob ->

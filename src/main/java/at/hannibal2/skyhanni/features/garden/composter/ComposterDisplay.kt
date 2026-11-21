@@ -6,7 +6,6 @@ import at.hannibal2.skyhanni.config.enums.OutsideSBFeature
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.model.TabWidget
 import at.hannibal2.skyhanni.data.title.TitleManager
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.WidgetUpdateEvent
 import at.hannibal2.skyhanni.features.fame.ReminderUtils
 import at.hannibal2.skyhanni.features.garden.GardenApi
@@ -71,7 +70,7 @@ object ComposterDisplay {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onWidgetUpdate(event: WidgetUpdateEvent) {
+    private fun onWidgetUpdate(event: WidgetUpdateEvent) {
         if (!event.isWidget(TabWidget.COMPOSTER)) return
 
         val newData = mutableMapOf<DataType, Component>()
@@ -145,11 +144,8 @@ object ComposterDisplay {
         }
     }
 
-    @HandleEvent(
-        GuiRenderEvent.GuiOverlayRenderEvent::class,
-        onlyOnSkyblockOrFeatures = [OutsideSBFeature.COMPOSTER_TIME],
-    )
-    fun onGuiRenderOverlay() {
+    @HandleEvent(onlyOnSkyblockOrFeatures = [OutsideSBFeature.COMPOSTER_TIME])
+    private fun onGuiRenderOverlay() {
         if (GardenApi.inGarden() && config.displayEnabled) {
             display?.let {
                 config.displayPos.renderRenderable(it, posLabel = "Composter Display")
@@ -205,7 +201,7 @@ object ComposterDisplay {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(3, "garden.composterDisplayEnabled", "garden.composters.displayEnabled")
         event.move(3, "garden.composterDisplayOutsideGarden", "garden.composters.displayOutsideGarden")
         event.move(3, "garden.composterWarnAlmostClose", "garden.composters.warnAlmostClose")

@@ -7,11 +7,9 @@ import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
 import at.hannibal2.skyhanni.config.features.garden.CropFeverTrackerConfig.CropFeverTrackerTextEntry
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.garden.CropCollectionApi.addCollectionCounter
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.garden.farming.CropClickEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
-import at.hannibal2.skyhanni.events.minecraft.WorldChangeEvent
 import at.hannibal2.skyhanni.features.garden.CropCollectionType
 import at.hannibal2.skyhanni.features.garden.CropType
 import at.hannibal2.skyhanni.features.garden.GardenApi
@@ -123,7 +121,7 @@ object CropFeverTracker : SkyHanniBucketedItemTracker<CropType, CropFeverTracker
     private var cropFeverCurrentCrop: CropType? = null
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         val message = event.cleanMessage
         cropFeverStart.matchMatcher(message) {
             startCropFever()
@@ -152,7 +150,7 @@ object CropFeverTracker : SkyHanniBucketedItemTracker<CropType, CropFeverTracker
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onCropBreak(event: CropClickEvent) {
+    private fun onCropClick(event: CropClickEvent) {
         blocksBrokenCache.addOrPut(event.crop, 1)
         // multi crop support if people farm multiple crops during 1 crop fever
         if (isCropFever) {
@@ -168,7 +166,7 @@ object CropFeverTracker : SkyHanniBucketedItemTracker<CropType, CropFeverTracker
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onTick(event: SkyHanniTickEvent) {
+    private fun onTick(event: SkyHanniTickEvent) {
         if (!event.isMod(5) || blocksBrokenCache.isEmpty()) return
 
         val iterator = blocksBrokenCache.entries.iterator()
@@ -187,14 +185,14 @@ object CropFeverTracker : SkyHanniBucketedItemTracker<CropType, CropFeverTracker
     }
 
     @HandleEvent
-    fun onWorldChange(event: WorldChangeEvent) {
+    private fun onWorldChange() {
         update()
         if (!isCropFever) return
         stopCropFever()
     }
 
     @HandleEvent
-    fun onConfigLoad(event: ConfigLoadEvent) {
+    private fun onConfigLoad() {
         ConditionalUtils.onToggle(config.text) {
             update()
         }
@@ -348,7 +346,7 @@ object CropFeverTracker : SkyHanniBucketedItemTracker<CropType, CropFeverTracker
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shresetcropfevertracker") {
             aliases = listOf("shresetcft")
             description = "Resets the Crop Fever Tracker"

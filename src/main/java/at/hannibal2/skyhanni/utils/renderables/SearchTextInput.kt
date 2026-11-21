@@ -3,7 +3,6 @@ package at.hannibal2.skyhanni.utils.renderables
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.model.TextInput
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 
@@ -21,7 +20,7 @@ class SearchTextInput : TextInput() {
         val searchTextInputs = mutableListOf<SearchTextInput>()
 
         @HandleEvent
-        fun onInventoryClose(event: InventoryCloseEvent) {
+        fun onInventoryClose() {
             if (!isEnabled()) return
 
             for (input in searchTextInputs) {

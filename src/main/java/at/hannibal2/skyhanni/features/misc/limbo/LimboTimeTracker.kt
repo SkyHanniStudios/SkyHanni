@@ -8,7 +8,6 @@ import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
 import at.hannibal2.skyhanni.data.ProfileStorageData
 import at.hannibal2.skyhanni.data.achievements.Achievement
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.MessageSendToServerEvent
 import at.hannibal2.skyhanni.events.achievements.AchievementRegistrationEvent
 import at.hannibal2.skyhanni.events.hypixel.modapi.HypixelApiServerChangeEvent
@@ -125,7 +124,7 @@ object LimboTimeTracker {
     }
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    fun onGuiRenderOverlay() {
         if (!config.showTimeInLimbo || !inLimbo) return
         val duration = limboJoinTime.passedSince().format()
         val display = Renderable.text("§eIn Limbo since §b$duration")

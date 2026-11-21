@@ -2,8 +2,6 @@ package at.hannibal2.skyhanni.features.fishing
 
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.events.fishing.FishingBobberInLiquidEvent
-import at.hannibal2.skyhanni.events.fishing.FishingCatchEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderable
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
@@ -28,12 +26,12 @@ object FishingBobberTimer {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    private fun onBobberInLiquid(event: FishingBobberInLiquidEvent) {
+    private fun onBobberInLiquid() {
         if (config.startOnLiquidTouch) deployTime = SimpleTimeMark.now()
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    private fun onFishingCatch(event: FishingCatchEvent) {
+    private fun onFishingCatch() {
         deployTime = SimpleTimeMark.farPast()
     }
 

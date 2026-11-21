@@ -64,7 +64,7 @@ object StewHelper {
     private val config get() = SkyHanniMod.feature.event.yearOfTheWitch
 
     @HandleEvent(onlyOnIsland = IslandType.HUB)
-    fun onBackgroundDrawnEvent(event: GuiContainerEvent.BackgroundDrawnEvent) {
+    private fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
         if (!config.stewHighlighter) return
         if (!inventoryDetector.isInside()) return
         for (slot in event.container.slots) {
@@ -126,14 +126,14 @@ object StewHelper {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.HUB)
-    fun onChestGuiRender() {
+    private fun onChestGuiRender() {
         if (!config.stewHelper) return
         if (display.isEmpty()) return
         config.stewHelperPosition.renderRenderables(display, posLabel = "Witch Stew Helper")
     }
 
     @HandleEvent
-    fun onInventoryClose() {
+    private fun onInventoryClose() {
         display = emptyList()
     }
 

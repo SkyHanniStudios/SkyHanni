@@ -1,8 +1,6 @@
 package at.hannibal2.skyhanni.features.inventory.chocolatefactory
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.events.ProfileJoinEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.features.fame.ReminderUtils
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
@@ -22,7 +20,7 @@ object CFUpgradeWarning {
     private var lastUpgradeLevel = 0
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed() {
         val profileStorage = profileStorage ?: return
 
         val upgradeAvailableAt = profileStorage.bestUpgradeAvailableAt
@@ -51,7 +49,7 @@ object CFUpgradeWarning {
     }
 
     @HandleEvent
-    fun onProfileChange(event: ProfileJoinEvent) {
+    private fun onProfileJoin() {
         lastUpgradeWarning = SimpleTimeMark.farPast()
     }
 

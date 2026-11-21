@@ -1,7 +1,6 @@
 package at.hannibal2.skyhanni.features.garden.farming.lane
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.events.garden.GardenToolChangeEvent
 import at.hannibal2.skyhanni.events.garden.farming.CropClickEvent
 import at.hannibal2.skyhanni.events.garden.farming.FarmingLaneSwitchEvent
 import at.hannibal2.skyhanni.features.garden.CropType
@@ -22,7 +21,7 @@ object FarmingLaneApi {
     private var lastNoLaneWarning = SimpleTimeMark.farPast()
 
     @HandleEvent
-    fun onGardenToolChange(event: GardenToolChangeEvent) {
+    fun onGardenToolChange() {
         currentLane = null
     }
 

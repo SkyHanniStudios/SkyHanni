@@ -92,7 +92,7 @@ object CocoonAPI {
         (this.getInternalName() == "THE_PRIMORDIAL".toInternalName() || this.getReforgeModifier() == "blood_shot")
 
     @HandleEvent
-    fun onSkyblockEquipmentDataUpdate(event: SkyblockEquipmentDataUpdateEvent) {
+    private fun onSkyblockEquipmentDataUpdate(event: SkyblockEquipmentDataUpdateEvent) {
         if (!event.isBelt) return
         if (event.newItemStack == null) {
             canCocoon = false
@@ -103,25 +103,26 @@ object CocoonAPI {
     }
 
     @HandleEvent
-    fun onProfileJoin() {
+    private fun onProfileJoin() {
         canCocoon = playerCanCocoon()
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onEntityMove(event: EntityMoveEvent<ArmorStand>) {
+    private fun onEntityMove(event: EntityMoveEvent<ArmorStand>) {
         val cocoon = existingCocoons.firstOrNull { it.cocoonID == event.entity.id } ?: return
         updateCocoonSeen(cocoon)
     }
 
+    @Suppress("UNUSED_PARAMETER")
     @HandleEvent(onlyOnSkyblock = true)
-    fun onLocalPlayerMove(event: EntityMoveEvent<LocalPlayer>) {
+    private fun onLocalPlayerMove(event: EntityMoveEvent<LocalPlayer>) {
         existingCocoons.forEach { cocoon ->
             updateCocoonSeen(cocoon)
         }
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onEntityEquipmentChangeEvent(event: EntityEquipmentChangeEvent<ArmorStand>) {
+    private fun onEntityEquipmentChange(event: EntityEquipmentChangeEvent<ArmorStand>) {
         if (IslandType.THE_RIFT.isInIsland()) return
         val entity = event.entity
         if (!entity.wearingSkullTexture(COCOON_SKULL_TEXTURE)) return
@@ -138,12 +139,12 @@ object CocoonAPI {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onWorldChange() {
+    private fun onWorldChange() {
         existingCocoons.clear()
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onEntityLeaveWorld(event: EntityLeaveWorldEvent<ArmorStand>) {
+    private fun onEntityLeaveWorld(event: EntityLeaveWorldEvent<ArmorStand>) {
         if (IslandType.THE_RIFT.isInIsland()) return
         val cocoon = existingCocoons.firstOrNull { it.cocoonID == event.entity.id } ?: return
         val cocoonMob = cocoon.mob
@@ -153,7 +154,7 @@ object CocoonAPI {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         cocoonChatMessage.matchMatcher(event.cleanMessage) {
             HypixelCocoonChatMessageEvent(group("name")).post()
         }

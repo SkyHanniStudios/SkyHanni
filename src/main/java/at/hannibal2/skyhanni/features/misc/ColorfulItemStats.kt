@@ -29,7 +29,7 @@ object ColorfulItemStats {
     )
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onTooltipEvent(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!config.statIcons) return
 
         for ((index, line) in event.toolTip.withIndex()) {
@@ -52,7 +52,7 @@ object ColorfulItemStats {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.transform(122, "misc.colorfulItemTooltips") { element ->
             val oldEnabled = element.asJsonObject.get("enabled").asBoolean
             if (!oldEnabled) {

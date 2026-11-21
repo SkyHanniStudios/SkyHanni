@@ -4,7 +4,6 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.events.CheckRenderEntityEvent
 import at.hannibal2.skyhanni.events.entity.EntityTransparencyActiveEvent
 import at.hannibal2.skyhanni.events.entity.EntityTransparencyTickEvent
-import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
 import at.hannibal2.skyhanni.events.render.EntityRenderLayersEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.EntityUtils
@@ -26,8 +25,8 @@ object EntityTransparencyManager {
     /** Transient per-render-call overrides for holographic entities. */
     private val entityTransparencyOverrides = mutableMapOf<LivingEntity, Int>()
 
-    @HandleEvent(SkyHanniTickEvent::class, onlyOnSkyblock = true)
-    fun onTick() {
+    @HandleEvent(onlyOnSkyblock = true)
+    private fun onTick() {
         if (!active) return
         this.entities = EntityUtils.getEntitiesNearby<LivingEntity>(80.0).associateNotNull status@{ entity ->
             val event = EntityTransparencyTickEvent(entity).apply { post() }
@@ -65,8 +64,8 @@ object EntityTransparencyManager {
     }
 
     @HandleEvent
-    fun onCheckRender(event: CheckRenderEntityEvent<LivingEntity>) = processEntityTransparency(event.entity, event::cancel)
+    private fun onCheckRenderEntity(event: CheckRenderEntityEvent<LivingEntity>) = processEntityTransparency(event.entity, event::cancel)
 
     @HandleEvent
-    fun onRender(event: EntityRenderLayersEvent.Pre<LivingEntity>) = processEntityTransparency(event.entity, event::cancel)
+    private fun onRender(event: EntityRenderLayersEvent.Pre<LivingEntity>) = processEntityTransparency(event.entity, event::cancel)
 }

@@ -31,8 +31,9 @@ object QuiverWarning {
     private var lastLowQuiverReminder = SimpleTimeMark.farPast()
     private val arrowsInInstance = mutableSetOf<ArrowType>()
 
+    @Suppress("MismatchedPrimaryFunction")
     @HandleEvent(eventTypes = [DungeonCompleteEvent::class, KuudraCompleteEvent::class])
-    fun onInstanceComplete() {
+    private fun onDungeonComplete() {
         val arrows = arrowsInInstance.filterTo(mutableSetOf()) { it.amount <= config.lowQuiverAmount }
         arrowsInInstance.clear()
 
@@ -61,7 +62,7 @@ object QuiverWarning {
     }
 
     @HandleEvent
-    fun onQuiverUpdate(event: QuiverUpdateEvent) {
+    private fun onQuiverUpdate(event: QuiverUpdateEvent) {
         val amount = event.currentAmount
         val arrow = event.currentArrow ?: return
         if (arrow == QuiverApi.NONE_ARROW_TYPE) return
@@ -75,12 +76,12 @@ object QuiverWarning {
     }
 
     @HandleEvent
-    fun onWorldChange() = arrowsInInstance.clear()
+    private fun onWorldChange() = arrowsInInstance.clear()
 
     private fun inInstance() = DungeonApi.inDungeon() || KuudraApi.inKuudra
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(35, "inventory.quiverAlert", "combat.quiverConfig.lowQuiverNotification")
     }
 }

@@ -48,7 +48,7 @@ object ForagingTutorialQuest {
     }
 
     @HandleEvent
-    fun onMessageSendToServer(event: MessageSendToServerEvent) {
+    private fun onMessageSendToServer(event: MessageSendToServerEvent) {
         val message = event.message
         if (message.lowercase() == "/warp park") {
             lastParkWarpAttempt = SimpleTimeMark.now()
@@ -56,7 +56,7 @@ object ForagingTutorialQuest {
     }
 
     @HandleEvent
-    fun onChat(event: SystemMessageEvent.Allow) {
+    private fun onSystemMessage(event: SystemMessageEvent.Allow) {
         if (event.message == "§cYou don't have the requirements to use this warp!" ||
             event.message == "§cYou haven't unlocked this fast travel destination!"
         ) {
@@ -87,7 +87,7 @@ object ForagingTutorialQuest {
     }
 
     @HandleEvent
-    fun onPlayerSpawn(event: MobEvent.Spawn.DisplayNpc) {
+    private fun onDisplayNpcSpawn(event: MobEvent.Spawn.DisplayNpc) {
         "§cRequires §6(?<quest>.*) Quest".toPattern().matchMatcher(event.mob.name) {
             stepByName(group("quest"))
         }

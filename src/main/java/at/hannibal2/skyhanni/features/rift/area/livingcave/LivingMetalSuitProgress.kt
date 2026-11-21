@@ -1,8 +1,6 @@
 package at.hannibal2.skyhanni.features.rift.area.livingcave
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.features.rift.RiftApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.InventoryUtils
@@ -25,7 +23,7 @@ object LivingMetalSuitProgress {
     private var progressMap = mapOf<SafeItemStack, Double?>()
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    fun onGuiRenderOverlay() {
         if (!isEnabled()) return
         config.position.renderRenderables(
             display,
@@ -64,7 +62,7 @@ object LivingMetalSuitProgress {
     }
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    fun onSecondPassed() {
         if (!isEnabled()) return
         val old = progressMap
         progressMap = buildMap {

@@ -3,7 +3,6 @@ package at.hannibal2.skyhanni.features.rift.area.mirrorverse
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.jsonobjects.repo.ParkourJson
 import at.hannibal2.skyhanni.events.CheckRenderEntityEvent
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.features.rift.RiftApi
@@ -22,7 +21,7 @@ object TubulatorParkour {
     private val puzzleRoom = AABB(-298.0, 0.0, -112.0, -309.0, 63.0, -101.0)
 
     @HandleEvent
-    fun onRepoReload(event: RepositoryReloadEvent) {
+    private fun onRepoReload(event: RepositoryReloadEvent) {
         val data = event.getConstant<ParkourJson>("RiftTubulator")
         parkourHelper = ParkourHelper(
             data.locations,
@@ -34,7 +33,7 @@ object TubulatorParkour {
     }
 
     @HandleEvent
-    fun onCheckRender(event: CheckRenderEntityEvent<Entity>) {
+    private fun onCheckRenderEntity(event: CheckRenderEntityEvent<Entity>) {
         if (!isEnabled()) return
         if (!config.hidePlayers) return
 
@@ -46,7 +45,7 @@ object TubulatorParkour {
     }
 
     @HandleEvent
-    fun onConfigLoad(event: ConfigLoadEvent) {
+    private fun onConfigLoad() {
         ConditionalUtils.onToggle(config.rainbowColor, config.monochromeColor, config.lookAhead) {
             updateConfig()
         }
@@ -62,7 +61,7 @@ object TubulatorParkour {
     }
 
     @HandleEvent
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!isEnabled()) return
 
         parkourHelper?.render(event)

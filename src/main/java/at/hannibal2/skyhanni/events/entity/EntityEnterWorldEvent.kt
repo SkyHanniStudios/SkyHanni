@@ -14,4 +14,6 @@ import net.minecraft.world.entity.Entity
  * @param T the type of entity
  * @param entity the entity that was added to the world
  */
+// TODO, I'm redoing all of these already. -Dae
+@Suppress("MissingPrimaryFunction")
 class EntityEnterWorldEvent<T : Entity>(val entity: T) : GenericSkyHanniEvent<T>(entity.javaClass)

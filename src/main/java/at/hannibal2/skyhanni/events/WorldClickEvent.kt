@@ -2,6 +2,7 @@ package at.hannibal2.skyhanni.events
 
 import at.hannibal2.skyhanni.api.event.CancellableSkyHanniEvent
 import at.hannibal2.skyhanni.data.InteractClickType
+import at.hannibal2.skyhanni.skyhannimodule.PrimaryFunction
 import at.hannibal2.skyhanni.utils.SafeItemStack
 
 /**
@@ -14,4 +15,5 @@ import at.hannibal2.skyhanni.utils.SafeItemStack
  * @param itemInHand The item held by the player at the time of the click, or null if the hand is empty.
  * @param clickType Whether it was a left or a right click.
  */
+@PrimaryFunction("onWorldClick")
 open class WorldClickEvent(val itemInHand: SafeItemStack?, val clickType: InteractClickType) : CancellableSkyHanniEvent()

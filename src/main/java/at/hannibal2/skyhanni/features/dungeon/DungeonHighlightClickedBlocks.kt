@@ -55,7 +55,7 @@ object DungeonHighlightClickedBlocks {
     }
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!isEnabled()) return
 
         if (leverPattern.matches(event.message)) {
@@ -68,7 +68,7 @@ object DungeonHighlightClickedBlocks {
     }
 
     @HandleEvent
-    fun onDungeonClickedBlock(event: DungeonBlockClickEvent) {
+    private fun onDungeonBlockClick(event: DungeonBlockClickEvent) {
         if (!isEnabled()) return
         if (DungeonApi.inWaterRoom && event.blockType == ClickedBlockType.LEVER) return
 
@@ -90,7 +90,7 @@ object DungeonHighlightClickedBlocks {
     }
 
     @HandleEvent
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!isEnabled()) return
 
         blocks.forEach { (position, block) ->
@@ -102,7 +102,7 @@ object DungeonHighlightClickedBlocks {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(56, "dungeon.highlightClickedBlocks", "dungeon.clickedBlocks.enabled")
     }
 

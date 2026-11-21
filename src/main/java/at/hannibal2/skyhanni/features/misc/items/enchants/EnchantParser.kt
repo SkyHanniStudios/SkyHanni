@@ -4,7 +4,6 @@ import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.features.inventory.EnchantParsingConfig
 import at.hannibal2.skyhanni.events.ChatHoverEvent
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.events.minecraft.ToolTipTextEvent
 import at.hannibal2.skyhanni.features.chroma.ChromaManager
@@ -60,7 +59,7 @@ object EnchantParser {
      */
     val enchantmentExclusivePattern by patternGroup.pattern(
         "exclusive",
-        "^(?:(?:§.)*[A-Za-z][A-Za-z '-]+ (?:[IVXLCDM]+|[0-9]+)(?:(?:§r)?, |\$| (?:§r)?§8\\d{1,3}(?:[,.]\\d{1,3})*)[kKmMbB]?)+\$",
+        "^(?:(?:§.)*[A-Za-z][A-Za-z '-]+ (?:[IVXLCDM]+|[0-9]+)(?:(?:§r)?, |$| (?:§r)?§8\\d{1,3}(?:[,.]\\d{1,3})*)[kKmMbB]?)+$",
     )
 
     /**
@@ -74,7 +73,7 @@ object EnchantParser {
     @Suppress("MaxLineLength")
     val enchantmentPattern by patternGroup.pattern(
         "enchants.new",
-        "(?<=^|, )(?:§.)*(?<enchant>[A-Za-z][A-Za-z '-]+) (?<levelNumeral>[IVXLCDM]+|[0-9]+)(?<stacking>(?:§r)?, |\$| (?:§r)?§8\\d{1,3}(?:[,.]\\d{1,3})*[kKmMbB]?)",
+        "(?<=^|, )(?:§.)*(?<enchant>[A-Za-z][A-Za-z '-]+) (?<levelNumeral>[IVXLCDM]+|[0-9]+)(?<stacking>(?:§r)?, |$| (?:§r)?§8\\d{1,3}(?:[,.]\\d{1,3})*[kKmMbB]?)",
     )
 
     private var currentItem: SafeItemStack? = null
@@ -102,12 +101,12 @@ object EnchantParser {
     private var enchants: EnchantsJson = EnchantsJson()
 
     @HandleEvent
-    fun onRepoReload(event: RepositoryReloadEvent) {
+    private fun onRepoReload(event: RepositoryReloadEvent) {
         this.enchants = event.getConstant<EnchantsJson>("Enchants")
     }
 
-    @HandleEvent(ConfigLoadEvent::class)
-    fun onConfigLoad() {
+    @HandleEvent
+    private fun onConfigLoad() {
         // Add observers to config options that would need us to mark cache dirty
         ConditionalUtils.onToggle(
             config.colorParsing,
@@ -134,7 +133,7 @@ object EnchantParser {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onTooltipEvent(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         // Only proceed if we are on the render thread as other mods could end up triggering
         // the ToolTipTextEvent from different threads which breaks the parser. (i.e. REI
         // during item searching since it needs to check tooltips for search queries)
@@ -155,7 +154,7 @@ object EnchantParser {
      * For tooltips that are shown when hovering over an item from /show
      */
     @HandleEvent
-    fun onChatHoverEvent(event: ChatHoverEvent) {
+    private fun onChatHover(event: ChatHoverEvent) {
         if (event.get().action() != HoverEvent.Action.SHOW_TEXT) return
         if (!isEnabled() || !this.enchants.hasEnchantData()) return
 
@@ -330,11 +329,11 @@ object EnchantParser {
         var startEnchant = -1
         var endEnchant = -1
 
-        for (i in 0 until loreList.size) {
-            val strippedLine = loreList[i].unformattedTextCompat()
+        for ((i, element) in loreList.withIndex()) {
+            val strippedLine = element.unformattedTextCompat()
 
             if (startEnchant == -1) {
-                if (this.enchants.containsEnchantment(enchants, loreList[i].formattedTextCompat())) startEnchant = i
+                if (this.enchants.containsEnchantment(enchants, element.formattedTextCompat())) startEnchant = i
             } else {
                 if (strippedLine.trim().isEmpty() && endEnchant == -1) endEnchant = i - 1 // Handles item tooltips end line
                 else if (strippedLine.contains("\n\n")) { // Handles chat component tooltips end line
@@ -353,7 +352,7 @@ object EnchantParser {
         var maxComponentEnchantsPerLine = 0
 
         val isRoman = !SkyHanniMod.feature.misc.replaceRomanNumerals.get()
-        val regex = "[\\d,.kKmMbB]+\$".toRegex()
+        val regex = "[\\d,.kKmMbB]+$".toRegex()
         for (i in startEnchant..endEnchant) {
             val matcher = enchantmentPattern.matcher(loreList[i].formattedTextCompat().replace("\n", ""))
             var containsEnchant = false

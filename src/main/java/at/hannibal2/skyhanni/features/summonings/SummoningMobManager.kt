@@ -5,7 +5,6 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.data.mob.Mob
 import at.hannibal2.skyhanni.data.mob.Mob.Companion.belongsToPlayer
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.MobEvent
 import at.hannibal2.skyhanni.events.SkyHanniRenderEntityEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
@@ -75,7 +74,7 @@ object SummoningMobManager {
     )
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!config.summonMessages) return
         if (spawnPattern.matches(event.message)) event.blockedReason = "summoning_soul"
 
@@ -86,7 +85,7 @@ object SummoningMobManager {
     }
 
     @HandleEvent
-    fun onMobSpawn(event: MobEvent.Spawn.Summon) {
+    private fun onSummonSpawn(event: MobEvent.Spawn.Summon) {
         if (!event.mob.belongsToPlayer()) return
 
         mobs += event.mob
@@ -95,7 +94,7 @@ object SummoningMobManager {
     }
 
     @HandleEvent
-    fun onMobDeSpawn(event: MobEvent.DeSpawn.Summon) {
+    private fun onSummonDeSpawn(event: MobEvent.DeSpawn.Summon) {
         val mob = event.mob
         if (mob !in mobs) return
         mobs -= mob
@@ -119,14 +118,14 @@ object SummoningMobManager {
     }
 
     @HandleEvent(priority = HandleEvent.HIGH, onlyOnSkyblock = true)
-    fun onRenderLiving(event: SkyHanniRenderEntityEvent.Specials.Pre<ArmorStand>) {
+    private fun onRenderLiving(event: SkyHanniRenderEntityEvent.Specials.Pre<ArmorStand>) {
         if (!config.summoningMobHideNametag) return
         if (event.entity.mob !in mobs) return
         event.cancel()
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay() {
         if (!config.summoningMobDisplay) return
         if (mobs.isEmpty()) return
 
@@ -146,7 +145,7 @@ object SummoningMobManager {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(2, "summonings", "combat.summonings")
     }
 }

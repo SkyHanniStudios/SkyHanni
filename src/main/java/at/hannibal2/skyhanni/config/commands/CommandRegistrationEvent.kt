@@ -5,24 +5,24 @@ import at.hannibal2.skyhanni.config.commands.CommandsRegistry.addToRegister
 import at.hannibal2.skyhanni.config.commands.CommandsRegistry.hasUniqueName
 import at.hannibal2.skyhanni.config.commands.brigadier.BaseBrigadierBuilder
 import at.hannibal2.skyhanni.config.commands.brigadier.CommandData
+import at.hannibal2.skyhanni.skyhannimodule.PrimaryFunction
 import at.hannibal2.skyhanni.utils.CommandArgument
 import at.hannibal2.skyhanni.utils.CommandContextAwareObject
 import com.mojang.brigadier.CommandDispatcher
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 
+@PrimaryFunction("onCommandRegistration")
 class CommandRegistrationEvent(
     val dispatcher: CommandDispatcher<FabricClientCommandSource>,
 ) : SkyHanniEvent() {
-    private val builders = mutableListOf<CommandData>()
-
-    val commands: List<CommandData> get() = builders
+    val commands: List<CommandData> field = mutableListOf<CommandData>()
 
     // TODO: Make it possible to disable specific aliases via config
     fun registerBrigadier(name: String, builder: BaseBrigadierBuilder.() -> Unit) {
         val command = BaseBrigadierBuilder(name).apply(builder)
-        command.hasUniqueName(builders)
+        command.hasUniqueName(commands)
         command.checkDescriptionAndCategory()
-        command.addToRegister(dispatcher, builders)
+        command.addToRegister(dispatcher, commands)
     }
 
     private fun CommandData.checkDescriptionAndCategory() {
@@ -36,7 +36,7 @@ class CommandRegistrationEvent(
         block: ComplexCommandBuilder<O, CommandArgument<O>>.() -> Unit,
     ) {
         val command = ComplexCommandBuilder<O, CommandArgument<O>>(name).apply(block)
-        command.hasUniqueName(builders)
-        command.addToRegister(dispatcher, builders)
+        command.hasUniqueName(commands)
+        command.addToRegister(dispatcher, commands)
     }
 }

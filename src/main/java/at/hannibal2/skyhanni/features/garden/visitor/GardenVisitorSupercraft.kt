@@ -4,7 +4,6 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.SackApi.getAmountInSacks
 import at.hannibal2.skyhanni.data.jsonobjects.repo.neu.recipe.NeuRecipeType
 import at.hannibal2.skyhanni.events.GuiContainerEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.garden.visitor.VisitorOpenEvent
 import at.hannibal2.skyhanni.events.render.gui.ReplaceItemEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -40,8 +39,8 @@ object GardenVisitorSupercraft {
         )
     }
 
-    @HandleEvent(InventoryCloseEvent::class)
-    fun onInventoryClose() {
+    @HandleEvent
+    private fun onInventoryClose() {
         if (hasIngredients) {
             hasIngredients = false
         }
@@ -49,7 +48,7 @@ object GardenVisitorSupercraft {
 
     // needs to run later than onVisitorOpen at GardenVisitorFeatures
     @HandleEvent(priority = HandleEvent.LOW)
-    fun onVisitorOpen(event: VisitorOpenEvent) {
+    private fun onVisitorOpen(event: VisitorOpenEvent) {
         val visitor = event.visitor
         visitor.offer?.offerItem ?: return
         for ((internalName, amount) in visitor.shoppingList) {
@@ -93,7 +92,7 @@ object GardenVisitorSupercraft {
     }
 
     @HandleEvent
-    fun replaceItem(event: ReplaceItemEvent) {
+    private fun onReplaceItem(event: ReplaceItemEvent) {
         if (!hasIngredients) return
         if (event.inventory is Inventory) return
 
@@ -103,7 +102,7 @@ object GardenVisitorSupercraft {
     }
 
     @HandleEvent(priority = HandleEvent.HIGH)
-    fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
+    private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
         if (!hasIngredients) return
 
         if (event.slotId != 31) return

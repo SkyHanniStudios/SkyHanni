@@ -3,7 +3,6 @@ package at.hannibal2.skyhanni.features.fishing
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.mob.Mob
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.fishing.SeaCreatureEvent
 import at.hannibal2.skyhanni.features.fishing.seaCreatureXMLGui.SeaCreatureSettings
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -26,13 +25,13 @@ object MobHealthDisplay {
     private val healthMap = mutableMapOf<LivingSeaCreatureData, Int>()
 
     @HandleEvent
-    fun onSeaCreatureSpawn(event: SeaCreatureEvent.Spawn) = addMob(event.seaCreature)
+    private fun onSeaCreatureSpawn(event: SeaCreatureEvent.Spawn) = addMob(event.seaCreature)
 
     @HandleEvent
-    fun onSeaCreatureRemove(event: SeaCreatureEvent.Remove) = healthMap.remove(event.seaCreature)
+    private fun onSeaCreatureRemove(event: SeaCreatureEvent.Remove) = healthMap.remove(event.seaCreature)
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onTick() {
+    private fun onTick() {
         for (seaCreature in healthMap.keys) {
             if (!seaCreature.exists() || !seaCreature.canBeSeen()) continue
             val health = seaCreature.health ?: continue
@@ -55,7 +54,7 @@ object MobHealthDisplay {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onRenderWorld(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay() {
         if (!config.enabled) return
         if (healthMap.isEmpty()) return
         val strings = buildList {

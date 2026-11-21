@@ -6,7 +6,6 @@ import at.hannibal2.skyhanni.api.ExperimentationSuperpairApi.FoundType
 import at.hannibal2.skyhanni.api.ExperimentationTableApi
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.IslandType
-import at.hannibal2.skyhanni.events.GuiContainerEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.RenderUtils.highlight
@@ -17,7 +16,7 @@ object SuperpairHighlight {
     private val config get() = SkyHanniMod.feature.inventory.experimentationTable.superpairs
 
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
+    fun onBackgroundDrawn() {
         if (!config.highlightPairs) return
         if (!ExperimentationTableApi.inSuperpairs) return
 

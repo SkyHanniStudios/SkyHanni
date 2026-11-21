@@ -285,7 +285,7 @@ object HoppityCollectionStats {
     private val replacementCache: MutableMap<String, SafeItemStack> = mutableMapOf()
 
     @HandleEvent
-    private fun replaceItem(event: ReplaceItemEvent) {
+    private fun onReplaceItem(event: ReplaceItemEvent) {
         if (!inInventory || replacementCache.isEmpty()) return
         if (!event.hasItem) return
         replacementCache[event.originalItem.hoverName.formattedTextCompatLeadingWhiteLessResets()]?.let { event.replace(it) }
@@ -845,11 +845,6 @@ object HoppityCollectionStats {
         MYTHIC("§dMythic", "STAINED_GLASS-6".toInternalName()),
         DIVINE("§bDivine", "STAINED_GLASS-3".toInternalName()),
         TOTAL("§cTotal", "STAINED_GLASS-14".toInternalName()),
-        ;
-
-        companion object {
-            fun fromDisplayName(displayName: String) = entries.firstOrNull { it.name == displayName }
-        }
     }
 
     @HandleEvent

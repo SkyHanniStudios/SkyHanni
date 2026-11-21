@@ -28,7 +28,7 @@ object LivingCaveLivingMetalHelper {
     private var animationStartTime = SimpleTimeMark.farPast()
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onBlockClick(event: BlockClickEvent) {
+    private fun onBlockClick(event: BlockClickEvent) {
         if (!isEnabled()) return
         if (event.clickType == InteractClickType.LEFT_CLICK) {
             val name = event.blockState.block.toString()
@@ -39,7 +39,7 @@ object LivingCaveLivingMetalHelper {
     }
 
     @HandleEvent
-    fun onBlockChange(event: ServerBlockChangeEvent) {
+    private fun onServerBlockChange(event: ServerBlockChangeEvent) {
         if (!isEnabled()) return
         val location = event.location
         if (location.distanceToPlayer() >= 7) return
@@ -64,7 +64,7 @@ object LivingCaveLivingMetalHelper {
     }
 
     @HandleEvent
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!isEnabled()) return
         val (a, b) = pair ?: return
         if (animationStartTime.passedSince() > 4.seconds) return
@@ -79,7 +79,7 @@ object LivingCaveLivingMetalHelper {
     }
 
     @HandleEvent
-    fun onParticle(event: ParticleEvent) {
+    private fun onParticle(event: ParticleEvent) {
         if (!isEnabled()) return
         if (!config.hideParticles) return
 
@@ -91,7 +91,7 @@ object LivingCaveLivingMetalHelper {
     }
 
     @HandleEvent
-    fun onTitleReceived(event: TitleReceivedEvent) {
+    private fun onTitleReceived(event: TitleReceivedEvent) {
         if (!isEnabled()) return
         if (event.title.contains("Living Metal")) {
             pair = null

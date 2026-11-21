@@ -4,10 +4,6 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.config.commands.CommandCategory
 import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
-import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.hoppity.EggFoundEvent
 import at.hannibal2.skyhanni.features.event.hoppity.HoppityApi
 import at.hannibal2.skyhanni.features.event.hoppity.HoppityEggType
@@ -275,8 +271,8 @@ object CFStrayTracker {
         return true
     }
 
-    @HandleEvent(SecondPassedEvent::class)
-    fun onSecondPassed() {
+    @HandleEvent
+    private fun onSecondPassed() {
         if (!isEnabled()) return
         InventoryUtils.getItemsInOpenChest().filter {
             claimedStraysSlots.contains(it.containerSlot)
@@ -288,7 +284,7 @@ object CFStrayTracker {
     }
 
     @HandleEvent
-    fun onEggFound(event: EggFoundEvent) {
+    private fun onEggFound(event: EggFoundEvent) {
         if (!isEnabled() || event.type != HoppityEggType.SIDE_DISH) return
         event.slotIndex?.let {
             claimedStraysSlots.add(it)
@@ -307,16 +303,16 @@ object CFStrayTracker {
         ) { config.strayRabbitTracker && isEnabled() }
     }
 
-    @HandleEvent(InventoryFullyOpenedEvent::class)
-    fun onInventoryFullyOpened() {
+    @HandleEvent
+    private fun onInventoryFullyOpened() {
         if (!isEnabled()) return
         // Force a refresh for party mode
         if (CFApi.inChocolateFactory && config.partyMode.get()) tracker.update()
         tracker.firstUpdate()
     }
 
-    @HandleEvent(InventoryCloseEvent::class)
-    fun onInventoryClose() {
+    @HandleEvent
+    private fun onInventoryClose() {
         if (!isEnabled()) return
         tracker.update() // Make sure we don't stay in party mode
     }
@@ -326,11 +322,9 @@ object CFStrayTracker {
         val newElement = JsonObject()
 
         for ((key, value) in jElement.asJsonObject.entrySet()) {
-            val enum = try {
+            val enum = runCatching {
                 enumClass.javaClass.enumConstants.first { it.name.equals(key, ignoreCase = true) }
-            } catch (e: IllegalArgumentException) {
-                continue
-            }
+            }.getOrNull() ?: continue
             value?.asInt?.let { newElement.addProperty(enum.toString(), it) }
         }
 
@@ -338,7 +332,7 @@ object CFStrayTracker {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.transform(58, "chocolateFactory.strayTracker.straysCaught") { element ->
             migrateJsonStringKeyToRarityKey(element, LorenzRarity::class.java)
         }
@@ -347,13 +341,13 @@ object CFStrayTracker {
         }
     }
 
-    @HandleEvent(ConfigLoadEvent::class)
-    fun onConfigLoad() {
+    @HandleEvent
+    private fun onConfigLoad() {
         config.partyMode.onToggle(tracker::update)
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shresetstrayrabbittracker") {
             description = "Resets the Stray Rabbit Tracker"
             category = CommandCategory.USERS_RESET

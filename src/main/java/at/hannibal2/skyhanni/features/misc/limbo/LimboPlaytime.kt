@@ -61,7 +61,7 @@ object LimboPlaytime {
     private var lastCreateCooldown = SimpleTimeMark.farPast()
 
     @HandleEvent
-    private fun replaceItem(event: ReplaceItemEvent) {
+    private fun onReplaceItem(event: ReplaceItemEvent) {
         if (!enabled) return
         if (event.inventory !is SimpleContainer) return
         // TODO replace with InventoryDetector

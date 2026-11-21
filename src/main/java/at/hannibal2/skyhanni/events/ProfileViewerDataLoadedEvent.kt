@@ -3,8 +3,10 @@ package at.hannibal2.skyhanni.events
 import at.hannibal2.skyhanni.api.event.SkyHanniEvent
 import at.hannibal2.skyhanni.data.HypixelData
 import at.hannibal2.skyhanni.data.jsonobjects.other.HypixelPlayerApiJson
+import at.hannibal2.skyhanni.skyhannimodule.PrimaryFunction
 import at.hannibal2.skyhanni.utils.PlayerUtils
 
+@PrimaryFunction("onProfileViewerDataLoaded")
 class ProfileViewerDataLoadedEvent(val playerData: HypixelPlayerApiJson) : SkyHanniEvent() {
     fun getCurrentProfileData() =
         playerData.profiles.firstOrNull { it.profileName.equals(HypixelData.profileName, ignoreCase = true) }
@@ -12,4 +14,6 @@ class ProfileViewerDataLoadedEvent(val playerData: HypixelPlayerApiJson) : SkyHa
     fun getCurrentPlayerData() = getCurrentProfileData()?.members?.get(PlayerUtils.getUuid())
 }
 
+// Todo rename to ProfileViewerDataReadyEvent ? -Dae
+@PrimaryFunction("onProfileDataReady")
 class ProfileDataReadyEvent : SkyHanniEvent()

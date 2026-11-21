@@ -5,7 +5,6 @@ import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.model.SkyblockStat
 import at.hannibal2.skyhanni.data.model.TabWidget
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.WidgetUpdateEvent
 import at.hannibal2.skyhanni.features.garden.GardenApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -36,12 +35,12 @@ object BonusPestChanceDisplay {
     private var display: Renderable? = null
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         display = null
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onWidgetUpdate(event: WidgetUpdateEvent) {
+    private fun onWidgetUpdate(event: WidgetUpdateEvent) {
         if (!event.isWidget(TabWidget.STATS)) return
         val compact = config.pestChanceDisplay.get() == DisplayFormat.COMPACT
         bonusPestChancePattern.matchAllComponents(event.widget.lines) { line ->
@@ -58,15 +57,15 @@ object BonusPestChanceDisplay {
         }
     }
 
-    @HandleEvent(GuiRenderEvent.GuiOverlayRenderEvent::class)
-    fun onGuiRenderOverlay() {
+    @HandleEvent
+    private fun onGuiRenderOverlay() {
         if (!isEnabled()) return
         val display = display ?: return
         config.pestChanceDisplayPosition.renderRenderable(display, posLabel = "Bonus Pest Chance")
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.transform(118, "garden.pests.pestChanceDisplay") { entry ->
             ConfigUtils.migrateBooleanToEnum(entry, DisplayFormat.FULL, DisplayFormat.DISABLED)
         }

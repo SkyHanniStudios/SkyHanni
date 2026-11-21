@@ -6,7 +6,6 @@ import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.config.enums.OutsideSBFeature
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.WinterApi
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.RecalculatingValue
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderable
@@ -31,7 +30,7 @@ object TimeFeatures {
     }
 
     @HandleEvent(onlyOnSkyblockOrFeatures = [OutsideSBFeature.REAL_TIME])
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    fun onGuiRenderOverlay() {
         if (config.realTime) {
             // TODO we should be using the standard formats, not remaking our own DTS
             val timeFormat = if (config.realTimeFormatToggle) {

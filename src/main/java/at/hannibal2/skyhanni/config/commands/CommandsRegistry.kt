@@ -3,7 +3,6 @@ package at.hannibal2.skyhanni.config.commands
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.commands.brigadier.BaseBrigadierBuilder
 import at.hannibal2.skyhanni.config.commands.brigadier.CommandData
-import at.hannibal2.skyhanni.events.utils.PreInitFinishedEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.command.requireDevEnv
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.addOrInsert
@@ -15,8 +14,8 @@ import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource
 @SkyHanniModule
 object CommandsRegistry {
 
-    @HandleEvent(PreInitFinishedEvent::class)
-    fun onPreInitFinished() {
+    @HandleEvent
+    private fun onPreInitFinished() {
         ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
             CommandRegistrationEvent(dispatcher).post()
         }

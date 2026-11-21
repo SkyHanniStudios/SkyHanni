@@ -8,7 +8,6 @@ import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.jsonobjects.repo.RareCropDropInfo
 import at.hannibal2.skyhanni.data.jsonobjects.repo.RareCropDropsJson
-import at.hannibal2.skyhanni.events.IslandJoinEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.features.garden.CropType
@@ -164,7 +163,7 @@ object RareCropTracker {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onIslandJoin(event: IslandJoinEvent) {
+    fun onIslandJoin() {
         tracker.firstUpdate()
     }
 

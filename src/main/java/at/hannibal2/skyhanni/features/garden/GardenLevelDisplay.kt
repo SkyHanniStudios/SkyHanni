@@ -4,10 +4,7 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.ProfileStorageData
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
-import at.hannibal2.skyhanni.events.ProfileJoinEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.minecraft.ToolTipTextEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -102,7 +99,7 @@ object GardenLevelDisplay {
     private var display: Renderable? = null
 
     @HandleEvent
-    fun onProfileJoin(event: ProfileJoinEvent) {
+    fun onProfileJoin() {
         update()
     }
 
@@ -234,7 +231,7 @@ object GardenLevelDisplay {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.GARDEN)
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    fun onGuiRenderOverlay() {
         if (!config.display || GardenApi.hideExtraGuis()) return
 
         val display = display ?: return
@@ -242,7 +239,7 @@ object GardenLevelDisplay {
     }
 
     @HandleEvent
-    fun onConfigLoad(event: ConfigLoadEvent) {
+    fun onConfigLoad() {
         ConditionalUtils.onToggle(config.overflow) { update() }
     }
 

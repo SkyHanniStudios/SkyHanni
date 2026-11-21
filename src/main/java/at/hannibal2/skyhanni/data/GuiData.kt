@@ -3,9 +3,6 @@ package at.hannibal2.skyhanni.data
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.events.GuiContainerEvent
 import at.hannibal2.skyhanni.events.GuiKeyPressEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
-import at.hannibal2.skyhanni.events.NeuRenderEvent
-import at.hannibal2.skyhanni.events.minecraft.ClientDisconnectEvent
 import at.hannibal2.skyhanni.features.inventory.loadout.CustomLoadoutKeybinds
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.DelayedRun
@@ -21,11 +18,6 @@ object GuiData {
 
     @JvmStatic
     var preDrawEventCancelled = false
-
-    @HandleEvent(priority = HandleEvent.HIGH)
-    private fun onNeuRenderEvent(event: NeuRenderEvent) {
-        if (preDrawEventCancelled) event.cancel()
-    }
 
     @HandleEvent(priority = HandleEvent.HIGH)
     private fun onSlotClick(event: GuiContainerEvent.SlotClickEvent) {
@@ -50,7 +42,7 @@ object GuiData {
     }
 
     @HandleEvent
-    private fun onInventoryClose(event: InventoryCloseEvent) {
+    private fun onInventoryClose() {
         DelayedRun.runNextTick {
             if (MinecraftCompat.screen !is ContainerScreen) {
                 preDrawEventCancelled = false
@@ -64,7 +56,7 @@ object GuiData {
     }
 
     @HandleEvent
-    private fun onDisconnect(event: ClientDisconnectEvent) {
+    private fun onDisconnect() {
         preDrawEventCancelled = false
     }
 }

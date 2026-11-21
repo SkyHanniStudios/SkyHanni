@@ -3,7 +3,6 @@ package at.hannibal2.skyhanni.features.fishing
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.events.CheckRenderEntityEvent
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ConditionalUtils
 import at.hannibal2.skyhanni.utils.PlayerUtils
@@ -24,20 +23,16 @@ object ChumBucketHider {
     private val hiddenEntities = TimeLimitedCache<Entity, Boolean>(5.seconds, useWeakKeys = true)
 
     @HandleEvent
-    fun onWorldChange() {
-        reset()
-    }
+    private fun onWorldChange() = reset()
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onCheckRender(event: CheckRenderEntityEvent<ArmorStand>) {
+    private fun onCheckRenderEntity(event: CheckRenderEntityEvent<ArmorStand>) {
         if (!config.enabled.get()) return
 
         val entity = event.entity
 
         hiddenEntities[entity]?.let { cancelled ->
-            if (cancelled) {
-                event.cancel()
-            }
+            if (cancelled) event.cancel()
             return
         }
 
@@ -83,7 +78,7 @@ object ChumBucketHider {
     }
 
     @HandleEvent
-    fun onConfigLoad(event: ConfigLoadEvent) {
+    private fun onConfigLoad() {
         ConditionalUtils.onToggle(config.enabled, config.hideBucket, config.hideOwn) { reset() }
     }
 

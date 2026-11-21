@@ -4,7 +4,6 @@ import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.api.pet.CurrentPetApi
 import at.hannibal2.skyhanni.api.pet.PetStorageApi
-import at.hannibal2.skyhanni.events.GuiContainerEvent
 import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.InventoryUtils
@@ -20,7 +19,7 @@ object HighlightCurrentPet {
     private var highlightSlot: Int? = null
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
+    fun onBackgroundDrawn() {
         if (!config.enabled || !inInventory) return
         val highlightSlot = highlightSlot ?: return
         val slotToHighlight = InventoryUtils.getItemsInOpenChest().firstOrNull {

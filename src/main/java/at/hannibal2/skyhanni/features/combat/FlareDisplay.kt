@@ -4,9 +4,7 @@ import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.features.combat.FlareConfig
 import at.hannibal2.skyhanni.data.title.TitleManager
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.ParticleEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.entity.EntityEquipmentChangeEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -61,7 +59,7 @@ object FlareDisplay {
     )
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay() {
         if (!enabled) return
 
         if (config.flashScreen && activeWarning) {
@@ -80,7 +78,7 @@ object FlareDisplay {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onEntitySpawn(event: EntityEquipmentChangeEvent<ArmorStand>) {
+    private fun onEntityEquipmentChange(event: EntityEquipmentChangeEvent<ArmorStand>) {
         if (!enabled) return
         val entity = event.entity
         if (entity.tickCount.ticks > MAX_FLARE_TIME) return
@@ -92,7 +90,7 @@ object FlareDisplay {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed() {
         if (!enabled) return
         flares.removeIf { !it.entity.isAlive }
         var newDisplay: List<Renderable>? = null
@@ -154,13 +152,13 @@ object FlareDisplay {
         flares.any { it.entity.id == entity.id }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         flares.clear()
         display = emptyList()
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!enabled) return
 
         if (config.displayType != FlareConfig.DisplayType.GUI) {
@@ -204,7 +202,7 @@ object FlareDisplay {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onParticle(event: ParticleEvent) {
+    private fun onParticle(event: ParticleEvent) {
         if (!enabled) return
         if (!config.hideParticles) return
 

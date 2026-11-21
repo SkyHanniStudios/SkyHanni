@@ -8,7 +8,6 @@ import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
 import at.hannibal2.skyhanni.config.features.misc.tracker.ItemTrackerGenericConfig
 import at.hannibal2.skyhanni.config.features.misc.tracker.individual.GenericIndividualTrackerConfig.TrackerSync.configSet
 import at.hannibal2.skyhanni.config.features.misc.tracker.individual.GenericIndividualTrackerConfig.TrackerSync.syncAllTrackers
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
 import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.ItemAddEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -27,7 +26,7 @@ object TrackerManager {
 
 
     @HandleEvent
-    fun onConfigLoad(event: ConfigLoadEvent) {
+    fun onConfigLoad() {
         with(SkyHanniMod.feature.misc.tracker) {
             ConditionalUtils.onToggle(
                 this.itemTracker.textOrder,

@@ -4,9 +4,7 @@ import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.SlayerApi
 import at.hannibal2.skyhanni.data.effect.NonGodPotEffect
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.ItemInHandChangeEvent
-import at.hannibal2.skyhanni.events.OwnInventoryArmorUpdateEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.events.entity.EntityClickEvent
 import at.hannibal2.skyhanni.events.skyblock.GraphAreaChangeEvent
@@ -61,7 +59,7 @@ object GummyWarning {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    private fun onArmorChange(event: OwnInventoryArmorUpdateEvent) {
+    private fun onOwnInventoryArmorUpdate() {
         if (!config.gummyWarning) return
         val armor = InventoryUtils.getArmor()
         hasHabanero = armor.any { piece ->
@@ -108,7 +106,7 @@ object GummyWarning {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay() {
         if (!isEnabled()) return
         if (lastWarningShown.passedSince() > 3.seconds) return
         config.gummyWarningPosition.renderRenderable(display, posLabel = "Gummy Warning")

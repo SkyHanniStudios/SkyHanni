@@ -3,14 +3,12 @@ package at.hannibal2.skyhanni.features.inventory
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.ToolTipData
-import at.hannibal2.skyhanni.events.InventoryOpenEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.KeyboardManager.isKeyHeld
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SimpleTimeMark.Companion.fromNow
-import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.compat.MouseCompat
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLeadingWhiteLessResets
 import at.hannibal2.skyhanni.utils.renderables.ScrollValue
@@ -56,8 +54,8 @@ object PageScrolling {
     private var currentlyScrollable = false
     private var cooldown = SimpleTimeMark.farPast()
 
-    @HandleEvent
-    fun onTick() {
+    @HandleEvent(onlyOnSkyblock = true)
+    private fun onTick() {
         if (!isEnabled()) return
         if (!currentlyScrollable && cooldown.isInFuture()) return
         if (!scroll.isMouseEventValid()) return
@@ -82,11 +80,11 @@ object PageScrolling {
         cooldown = 1.0.seconds.fromNow()
     }
 
-    @HandleEvent
-    fun onInventoryOpen(event: InventoryOpenEvent) {
+    @HandleEvent(onlyOnSkyblock = true)
+    private fun onInventoryOpen() {
         if (!isEnabled()) return
         currentlyScrollable = true
     }
 
-    fun isEnabled() = SkyBlockUtils.inSkyBlock && config.enable && InventoryUtils.inInventory()
+    fun isEnabled() = config.enable && InventoryUtils.inInventory()
 }

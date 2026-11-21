@@ -24,7 +24,7 @@ object ToolkitCropReplacer {
     private val storedTools: MutableMap<Int, CropType> = mutableMapOf()
 
     @HandleEvent
-    fun replaceItem(event: ReplaceItemEvent) {
+    private fun onReplaceItem(event: ReplaceItemEvent) {
         if (!config.replaceMenuIcons) return
         if (!GardenApi.toolkitInventory.isInside()) return
         if (!event.hasItem) return
@@ -64,7 +64,7 @@ object ToolkitCropReplacer {
     }
 
     @HandleEvent
-    fun onProfileJoin() {
+    private fun onProfileJoin() {
         storedTools.clear()
         iconCache.clear()
     }

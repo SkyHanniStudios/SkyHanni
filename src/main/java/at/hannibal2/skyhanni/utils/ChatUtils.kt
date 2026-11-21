@@ -47,10 +47,6 @@ object ChatUtils {
     private val log = SkyHanniLogger("chat/mod_sent")
     var lastButtonClicked = 0L
 
-    fun Component.hoverTextLines(): List<String> = buildList {
-        addHoverTextLines(this@hoverTextLines)
-    }
-
     private fun MutableList<String>.addHoverTextLines(component: Component) {
         component.hover?.formattedTextCompat()?.split("\n")?.let(::addAll)
         component.siblings.forEach { addHoverTextLines(it) }
@@ -351,7 +347,7 @@ object ChatUtils {
     private var deleteNext: Pair<String, (Component) -> Boolean>? = null
 
     @HandleEvent(priority = HandleEvent.HIGH)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         val (reason, predicate) = deleteNext ?: return
         this.deleteNext = null
 
@@ -361,7 +357,7 @@ object ChatUtils {
     }
 
     @HandleEvent
-    fun onSendMessage(event: MessageSendToServerEvent) {
+    private fun onMessageSendToServer(event: MessageSendToServerEvent) {
         if (event.senderIsSkyhanni()) return
         lastMessageSent = SimpleTimeMark.now()
     }
@@ -381,7 +377,7 @@ object ChatUtils {
         (lastMessageSent + sendQueue.size * messageDelay).takeIf { !it.isInPast() } ?: SimpleTimeMark.now()
 
     @HandleEvent
-    fun onTick() {
+    private fun onTick() {
         if (lastMessageSent.passedSince() > messageDelay) {
             val message = sendQueue.poll() ?: return
             MinecraftCompat.localPlayerOrThrow.connection.dispatchMessage(message)

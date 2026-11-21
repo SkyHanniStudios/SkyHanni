@@ -3,7 +3,7 @@ package at.hannibal2.skyhanni.data
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.mob.MobCategory
 import at.hannibal2.skyhanni.events.MobEvent
-import at.hannibal2.skyhanni.events.entity.slayer.SlayerDeathEvent
+import at.hannibal2.skyhanni.events.slayer.SlayerDeathEvent
 import at.hannibal2.skyhanni.features.slayer.SlayerType
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.command.ErrorManager
@@ -13,7 +13,7 @@ import at.hannibal2.skyhanni.utils.compat.findHealthReal
 object OtherPlayersSlayerApi {
 
     @HandleEvent
-    fun onMobDespawn(event: MobEvent.DeSpawn.SkyblockMob) {
+    private fun onSkyblockMobDeSpawn(event: MobEvent.DeSpawn.SkyblockMob) {
         val mob = event.mob
 
         // no death, rather despawn because too far away

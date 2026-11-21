@@ -4,6 +4,8 @@ import at.hannibal2.skyhanni.api.event.SkyHanniEvent
 import at.hannibal2.skyhanni.utils.SafeItemStack
 import net.minecraft.world.inventory.Slot
 
+// TODO Disambiguate with [RenderItemTipEvent]
+@Suppress("MissingPrimaryFunction")
 class RenderInventoryItemTipEvent(
     val inventoryName: String,
     val slot: Slot,

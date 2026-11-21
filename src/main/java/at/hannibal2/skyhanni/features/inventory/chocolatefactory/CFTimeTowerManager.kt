@@ -2,7 +2,6 @@ package at.hannibal2.skyhanni.features.inventory.chocolatefactory
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.events.ProfileJoinEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.features.fame.ReminderUtils
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
@@ -25,14 +24,14 @@ object CFTimeTowerManager {
     private var wasTimeTowerRecentlyActive = false
 
     @HandleEvent
-    fun onProfileJoin(event: ProfileJoinEvent) {
+    fun onProfileJoin() {
         wasTimeTowerRecentlyActive = false
     }
 
     private const val HOVER_TEXT = "§eClick to run /cf!"
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed(event: SecondPassedEvent) {
+    fun onSecondPassed() {
         val profileStorage = profileStorage ?: return
 
         if (profileStorage.currentTimeTowerEnds.isInPast()) {

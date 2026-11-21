@@ -210,7 +210,7 @@ object BitsApi {
     )
 
     @HandleEvent
-    fun onScoreboardChange(event: ScoreboardUpdateEvent) {
+    private fun onScoreboardUpdate(event: ScoreboardUpdateEvent) {
         if (!isEnabled()) return
         for (line in event.added) {
             val message = line.trimWhiteSpace().removeResets()
@@ -239,7 +239,7 @@ object BitsApi {
     }
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!isEnabled()) return
         val message = event.message.trimWhiteSpace().removeResets()
 
@@ -284,7 +284,7 @@ object BitsApi {
     }
 
     @HandleEvent
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         if (!isEnabled()) return
 
         val stacks = event.inventoryItems.values
@@ -396,8 +396,8 @@ object BitsApi {
                 return
             }
 
-            noCookieActiveCookieMenuPattern.matchMatcher(line) {
-                val nextLine = stack.getLore().nextAfter(line) ?: continue
+            noCookieActiveCookieMenuPattern.matchMatcher(line) matcher@{
+                val nextLine = stack.getLore().nextAfter(line) ?: return@matcher false
                 if (noCookieActiveCookieMenuPattern.matches(nextLine)) cookieBuffTime = SimpleTimeMark.farPast()
                 return
             }
@@ -423,7 +423,7 @@ object BitsApi {
     fun isEnabled() = SkyBlockUtils.inSkyBlock && !SkyBlockUtils.isOnAlphaServer && profileStorage != null
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Bits API")
         event.addIrrelevant {
             add("Bits: $bits")
@@ -436,7 +436,7 @@ object BitsApi {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(35, "#profile.bits.bitsToClaim", "#profile.bits.bitsAvailable")
     }
 

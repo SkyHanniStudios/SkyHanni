@@ -12,7 +12,6 @@ import at.hannibal2.skyhanni.data.HypixelData
 import at.hannibal2.skyhanni.data.Perk
 import at.hannibal2.skyhanni.data.jsonobjects.elitedev.EliteFeastData
 import at.hannibal2.skyhanni.data.jsonobjects.elitedev.EliteFeastJson
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
 import at.hannibal2.skyhanni.events.GuiContainerEvent
 import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
@@ -114,7 +113,7 @@ object HarvestFeastManager {
     )
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Harvest Feast Data")
 
         val now = SkyBlockTime.now()
@@ -129,13 +128,13 @@ object HarvestFeastManager {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         if (displayDirty) updateDisplay()
         fetch()
     }
 
     @HandleEvent
-    fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
+    private fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
         if (!mainMenuInventoryDetector.isInside()) return
         if (!isCurrentOutdated) return
         event.container.slots.find { it.item.cleanName.contains("all crops", ignoreCase = true) }
@@ -143,13 +142,13 @@ object HarvestFeastManager {
     }
 
     @HandleEvent
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         if (!allCropsInventoryDetector.isInside()) return
         readAllCrops(event.inventoryItems)
     }
 
-    @HandleEvent(ConfigLoadEvent::class)
-    fun onConfigLoad() {
+    @HandleEvent
+    private fun onConfigLoad() {
         currentFeastData = profileStorage.storedHarvestFeastData.takeUnless { isOutdated(it) }
         lastSubmit = profileStorage.lastHarvestFeastSubmitYear
             .takeIf { it > 0 }
@@ -377,7 +376,7 @@ object HarvestFeastManager {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onGuiRenderOverlay() {
+    private fun onGuiRenderOverlay() {
         if (!config.displayCurrentCrops) return
         if (isCurrentOutdated) return
         @Suppress("IsInIslandEarlyReturn")
@@ -388,7 +387,7 @@ object HarvestFeastManager {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shcopyfeastdata") {
             description = "Copies the current harvest feast data"
             category = CommandCategory.DEVELOPER_DEBUG

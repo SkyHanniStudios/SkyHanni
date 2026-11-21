@@ -1,5 +1,6 @@
 package at.hannibal2.skyhanni.data.hypixel.chat.event
 
+import at.hannibal2.skyhanni.skyhannimodule.PrimaryFunction
 import at.hannibal2.skyhanni.utils.ComponentSpan
 import net.minecraft.network.chat.Component
 
@@ -18,6 +19,7 @@ object NpcChatEvent {
      * @param chatComponent The entire original chat component.
      * @param blockedReason The reason if the message should be blocked. null means not blocked.
      */
+    @PrimaryFunction("onNpcChat")
     class Allow(
         authorComponent: ComponentSpan,
         messageComponent: ComponentSpan,
@@ -34,6 +36,7 @@ object NpcChatEvent {
      * @param messageComponent The content of the actual message.
      * @param chatComponent The entire original chat component.
      */
+    @PrimaryFunction("onNpcChatModify")
     class Modify(
         authorComponent: ComponentSpan,
         messageComponent: ComponentSpan,

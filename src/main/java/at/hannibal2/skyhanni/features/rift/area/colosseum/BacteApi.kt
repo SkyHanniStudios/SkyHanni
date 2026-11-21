@@ -5,7 +5,6 @@ import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.mob.Mob
 import at.hannibal2.skyhanni.data.model.SkyblockStat
 import at.hannibal2.skyhanni.events.MobEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
@@ -53,20 +52,20 @@ object BacteApi {
     private var bacte: Mob? = null
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onChatMessage(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         nameChatPattern.matchMatcher(event.message) {
             currentPhase = Phase.fromNumber(group("name").length)
         }
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
+    private fun onSkyblockMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
         if (event.mob.name != "Bacte") return
         bacte = event.mob
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onMobDespawn(event: MobEvent.DeSpawn.SkyblockMob) {
+    private fun onSkyblockMobDeSpawn(event: MobEvent.DeSpawn.SkyblockMob) {
         if (event.mob == bacte) {
             currentPhase = Phase.NOT_ACTIVE
             bacte = null
@@ -74,7 +73,7 @@ object BacteApi {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed() {
         val bacte = bacte ?: return
 
         val name = bacte.armorStand?.name?.formattedTextCompatLessResets() ?: return

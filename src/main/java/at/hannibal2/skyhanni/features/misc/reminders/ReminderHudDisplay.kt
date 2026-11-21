@@ -2,8 +2,6 @@ package at.hannibal2.skyhanni.features.misc.reminders
 
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderable
 import at.hannibal2.skyhanni.utils.TimeUtils.format
@@ -20,7 +18,7 @@ object ReminderHudDisplay {
     private var display: Renderable? = null
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed(event: SecondPassedEvent) {
+    fun onSecondPassed() {
         if (!config.showHud) return
         val reminders = storage.values.sortedBy { it.remindAt }
         if (reminders.isEmpty()) {
@@ -36,7 +34,7 @@ object ReminderHudDisplay {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    fun onGuiRenderOverlay() {
         if (!config.showHud) return
         val display = display ?: return
         config.hudPosition.renderRenderable(display, posLabel = "Reminders HUD")

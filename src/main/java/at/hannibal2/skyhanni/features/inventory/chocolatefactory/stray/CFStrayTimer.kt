@@ -6,10 +6,6 @@ import at.hannibal2.skyhanni.api.event.SkyHanniEvent
 import at.hannibal2.skyhanni.data.jsonobjects.repo.HoppityEggLocationsJson
 import at.hannibal2.skyhanni.data.title.TitleManager
 import at.hannibal2.skyhanni.events.GuiContainerEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
-import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
-import at.hannibal2.skyhanni.events.IslandChangeEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.events.hoppity.EggFoundEvent
 import at.hannibal2.skyhanni.events.inventory.AttemptedInventoryCloseEvent
@@ -51,13 +47,13 @@ object CFStrayTimer {
     }
 
     @HandleEvent
-    fun onIslandChange(event: IslandChangeEvent) {
+    fun onIslandChange() {
         timer = Duration.ZERO
         lastTimerSubtraction = null
     }
 
     @HandleEvent
-    fun onInventoryUpdated(event: InventoryUpdatedEvent) {
+    fun onInventoryUpdated() {
         if (timer == Duration.ZERO) return
         timer = when {
             CFApi.inChocolateFactory -> timer
@@ -66,7 +62,7 @@ object CFStrayTimer {
     }
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    fun onInventoryClose() {
         if (timer == Duration.ZERO) return
         // Reset the timer when the inventory is closed prematurely
         timer = 30.seconds
@@ -88,7 +84,7 @@ object CFStrayTimer {
     }
 
     @HandleEvent
-    fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
+    fun onChestGuiRender() {
         if (!isEnabled()) return
         config.strayTimerPosition.renderRenderable(getTimerRenderable(), posLabel = "Stray Timer")
     }

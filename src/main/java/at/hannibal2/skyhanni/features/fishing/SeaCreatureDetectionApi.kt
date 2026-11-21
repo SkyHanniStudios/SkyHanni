@@ -60,7 +60,7 @@ object SeaCreatureDetectionApi {
     var lastBobberLocation: LorenzVec? = null
 
     @HandleEvent
-    fun onMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
+    private fun onSkyblockMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
         if (!isActive()) return
         val mob = event.mob
         val data = entityIdToData[mob.id]
@@ -84,7 +84,7 @@ object SeaCreatureDetectionApi {
     }
 
     @HandleEvent
-    fun onMobDespawn(event: MobEvent.DeSpawn.SkyblockMob) {
+    private fun onSkyblockMobDeSpawn(event: MobEvent.DeSpawn.SkyblockMob) {
         val mob = event.mob
         recentBabyMagmaSlugs.remove(mob)
         recentMobs.remove(mob)
@@ -115,7 +115,7 @@ object SeaCreatureDetectionApi {
     }
 
     @HandleEvent
-    fun onSeaCreatureFish(event: SeaCreatureFishEvent) {
+    private fun onSeaCreatureFish(event: SeaCreatureFishEvent) {
         lastSeaCreatureFished = SimpleTimeMark.now()
         lastNameFished = event.seaCreature.name
         mobsToFind = if (event.doubleHook) 2 else 1
@@ -183,12 +183,12 @@ object SeaCreatureDetectionApi {
     }
 
     @HandleEvent(onlyOnSkyblock = true, priority = HandleEvent.HIGHEST)
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         for (data in seaCreatures.values) data.updateWorld(event)
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onTick() {
+    private fun onTick() {
         for (data in seaCreatures.values) data.updateNonWorld()
         recentMobs.removeIf { (mob, time) ->
             if (time.passedSince() < 1.2.seconds) return@removeIf false
@@ -208,7 +208,7 @@ object SeaCreatureDetectionApi {
     // This should hopefully make it so that if a sea creature dies while the player isn't in the area and the despawn timer
     // isn't up yet, it will be assumed that it died
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         val playerPos = LocationUtils.playerLocation()
         for ((_, data) in entityIdToData) {
             if (!assumeDeathIfAreaLeft(data, playerPos)) continue
@@ -225,7 +225,7 @@ object SeaCreatureDetectionApi {
     }
 
     @HandleEvent
-    fun onWorldChange() = reset()
+    private fun onWorldChange() = reset()
 
     private fun reset() {
         entityIdToData.values.forEach { it.forceRemove() }
@@ -243,7 +243,7 @@ object SeaCreatureDetectionApi {
     }
 
     @HandleEvent
-    fun onCommand(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shresetlivingseacreaturedata") {
             this.aliases = listOf("shresetscdata")
             this.description = "Resets Living Sea Creature Data"
@@ -256,7 +256,7 @@ object SeaCreatureDetectionApi {
 
     @Suppress("MaxLineLength")
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("Sea Creatures")
         event.addIrrelevant {
             entityIdToData.forEach { (entityID, data) ->

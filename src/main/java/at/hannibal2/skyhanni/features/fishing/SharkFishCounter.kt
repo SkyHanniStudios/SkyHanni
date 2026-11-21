@@ -2,7 +2,6 @@ package at.hannibal2.skyhanni.features.fishing
 
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.fishing.SeaCreatureFishEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
@@ -107,7 +106,7 @@ object SharkFishCounter {
     private fun isWaterFishingRod() = FishingApi.isFishing() && !FishingApi.holdingLavaRod
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    fun onGuiRenderOverlay() {
         if (!SkyHanniMod.feature.fishing.sharkFishCounter) return
         if (!hasWaterRodInHand) return
 

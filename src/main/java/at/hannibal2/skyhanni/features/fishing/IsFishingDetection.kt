@@ -1,7 +1,6 @@
 package at.hannibal2.skyhanni.features.fishing
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.events.fishing.FishingBobberInLiquidEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.EntityUtils
 import at.hannibal2.skyhanni.utils.LocationUtils
@@ -26,20 +25,19 @@ object IsFishingDetection {
     private var lastSeaCreatureKillAreaTime = SimpleTimeMark.farPast()
 
     @HandleEvent
-    fun onBobber(event: FishingBobberInLiquidEvent) {
+    private fun onBobberInLiquid() {
         lastRodCastLocation = LocationUtils.playerLocation()
         lastRodCastTime = SimpleTimeMark.now()
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onTick() {
+    private fun onTick() {
         if (inRodCastArea()) {
             lastInAreaTime = SimpleTimeMark.now()
         }
 
         if (lastInAreaTime.passedSince() < 5.seconds) {
-            if (EntityUtils.getEntitiesNearby<ArmorStand>(5.0).any { FishingApi.seaCreatureCount(it) > 0 }
-            ) {
+            if (EntityUtils.getEntitiesNearby<ArmorStand>(5.0).any { FishingApi.seaCreatureCount(it) > 0 }) {
                 lastSeaCreatureKillArea = LocationUtils.playerLocation()
                 lastSeaCreatureKillAreaTime = SimpleTimeMark.now()
             }

@@ -5,8 +5,6 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.features.inventory.ChestValueConfig.NumberFormatEntry
 import at.hannibal2.skyhanni.config.features.inventory.ChestValueConfig.SortingTypeEntry
 import at.hannibal2.skyhanni.data.IslandType
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
-import at.hannibal2.skyhanni.events.InventoryOpenEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
 import at.hannibal2.skyhanni.features.dungeon.DungeonApi
 import at.hannibal2.skyhanni.features.inventory.bazaar.BazaarApi
@@ -28,7 +26,6 @@ import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderables
 import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.SkyBlockItemModifierUtils.getPetLevel
-import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.StringUtils.removeColor
 import at.hannibal2.skyhanni.utils.collection.RenderableCollectionUtils.addItemStack
 import at.hannibal2.skyhanni.utils.collection.RenderableCollectionUtils.addString
@@ -62,9 +59,9 @@ object ChestValue {
         "Personal Vault|Chest Storage|Wood Chest\\+"
     )
 
-    @HandleEvent
-    fun onChestGuiRender() {
-        if (!isEnabled()) return
+    @HandleEvent(onlyOnSkyblock = true)
+    private fun onChestGuiRender() {
+        if (!config.enabled) return
         if (DungeonApi.inDungeon() && !config.enableInDungeons) return
         if (!inOwnInventory) {
             if (InventoryUtils.openInventoryName() == "") return
@@ -83,9 +80,9 @@ object ChestValue {
 
     private fun featureName() = if (inOwnInventory) "Estimated Inventory Value" else "Estimated Chest Value"
 
-    @HandleEvent
-    fun onTick(event: SkyHanniTickEvent) {
-        if (!isEnabled()) return
+    @HandleEvent(onlyOnSkyblock = true)
+    private fun onTick(event: SkyHanniTickEvent) {
+        if (!config.enabled) return
         if (!event.isMod(5)) return
         val inInv = MinecraftCompat.screen is InventoryScreen
         inOwnInventory = inInv && config.enableInOwnInventory
@@ -93,18 +90,14 @@ object ChestValue {
         update()
     }
 
-    @HandleEvent(InventoryOpenEvent::class)
-    fun onInventoryOpen() {
-        if (!isEnabled()) return
-        if (inInventory) {
-            DelayedRun.runOrNextTick {
-                update()
-            }
-        }
+    @HandleEvent(onlyOnSkyblock = true)
+    private fun onInventoryOpen() {
+        if (!config.enabled || !inInventory) return
+        DelayedRun.runOrNextTick(::update)
     }
 
-    @HandleEvent(InventoryCloseEvent::class)
-    fun onInventoryClose() {
+    @HandleEvent
+    private fun onInventoryClose() {
         chestItems = emptyMap()
     }
 
@@ -214,7 +207,7 @@ object ChestValue {
         chestItems = createItems(stacks)
     }
 
-    fun createItems(stacks: Map<Int, SafeItemStack>) = buildMap<String, ChestItem> {
+    fun createItems(stacks: Map<Int, SafeItemStack>) = buildMap {
         for ((i, stack) in stacks) {
             val internalName = stack.getInternalNameOrNull() ?: continue
             if (internalName.getItemStackOrNull() == null) continue
@@ -249,8 +242,7 @@ object ChestValue {
         if (MinionFeatures.minionInventoryOpen) return false
         if (MinionFeatures.minionStorageInventoryOpen) return false
 
-        if ((name.contains("Backpack") && name.contains("Slot #") || name.startsWith("Ender Chest ("))
-        ) {
+        if ((name.contains("Backpack") && name.contains("Slot #") || name.startsWith("Ender Chest ("))) {
             return true
         }
 
@@ -288,6 +280,4 @@ object ChestValue {
         var total: Double,
         val tips: List<String>,
     )
-
-    private fun isEnabled() = SkyBlockUtils.inSkyBlock && config.enabled
 }

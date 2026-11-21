@@ -5,9 +5,7 @@ import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.ProfileStorageData
 import at.hannibal2.skyhanni.events.GuiContainerEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.events.minecraft.ToolTipTextEvent
@@ -47,7 +45,7 @@ object KloonHacking {
     private val RETRO_ENCABULATING_VISOR = "RETRO_ENCABULATING_VISOR".toInternalName()
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onSecondPassed(event: SecondPassedEvent) {
+    fun onSecondPassed() {
         checkHelmet()
     }
 
@@ -76,13 +74,13 @@ object KloonHacking {
     }
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    fun onInventoryClose() {
         inTerminalInventory = false
         inColorInventory = false
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
+    fun onBackgroundDrawn() {
         if (inTerminalInventory) {
             if (!config.solver) return
             var i = 0

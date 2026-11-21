@@ -3,7 +3,6 @@ package at.hannibal2.skyhanni.features.inventory
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
-import at.hannibal2.skyhanni.events.GuiContainerEvent
 import at.hannibal2.skyhanni.events.RenderItemTipEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.InventoryUtils
@@ -42,7 +41,7 @@ object RngMeterInventory {
     }
 
     @HandleEvent(priority = HandleEvent.LOW, onlyOnSkyblock = true)
-    fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
+    fun onBackgroundDrawn() {
 
         val chestName = InventoryUtils.openInventoryName()
         if (config.noDrop && chestName == "Catacombs RNG Meter") {

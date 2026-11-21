@@ -1,8 +1,6 @@
 package at.hannibal2.skyhanni.features.garden.contest
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
 import at.hannibal2.skyhanni.features.garden.CropType
 import at.hannibal2.skyhanni.features.garden.FarmingFortuneDisplay.getLatestTrueFarmingFortune
 import at.hannibal2.skyhanni.features.garden.GardenApi
@@ -32,7 +30,7 @@ object JacobContestTimeNeeded {
     private var currentBracket = ContestBracket.GOLD
 
     @HandleEvent(priority = HandleEvent.LOW, onlyOnSkyblock = true)
-    fun onInventoryUpdated(event: InventoryUpdatedEvent) {
+    fun onInventoryUpdated() {
         if (FarmingContestApi.inInventory) {
             update()
         }
@@ -195,7 +193,7 @@ object JacobContestTimeNeeded {
     } else getLatestBlocksPerSecond()
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
+    fun onChestGuiRender() {
         if (!config.enabled) return
         if (!FarmingContestApi.inInventory) return
         config.position.renderRenderables(display, posLabel = "Jacob Contest Time Needed")

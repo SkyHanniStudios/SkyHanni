@@ -3,13 +3,11 @@ package at.hannibal2.skyhanni.features.misc
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.HypixelData
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.TimeUtils.format
-import at.hannibal2.skyhanni.utils.compat.append
 import at.hannibal2.skyhanni.utils.compat.appendWithColor
 import at.hannibal2.skyhanni.utils.compat.componentBuilder
 import at.hannibal2.skyhanni.utils.compat.withColor
@@ -24,7 +22,7 @@ object LastServers {
     private val lastServers = mutableMapOf<String, SimpleTimeMark>()
 
     @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    fun onSecondPassed() {
         if (!isEnabled()) return
 
         val id = HypixelData.serverId ?: return

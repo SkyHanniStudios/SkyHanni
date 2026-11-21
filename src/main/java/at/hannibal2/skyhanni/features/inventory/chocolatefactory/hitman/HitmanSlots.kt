@@ -1,8 +1,6 @@
 package at.hannibal2.skyhanni.features.inventory.chocolatefactory.hitman
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
 import at.hannibal2.skyhanni.events.InventoryOpenEvent
 import at.hannibal2.skyhanni.features.event.hoppity.HoppityApi.hitmanInventoryPattern
@@ -36,7 +34,7 @@ object HitmanSlots {
     private var inInventory = false
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    fun onInventoryClose() {
         inInventory = false
     }
 
@@ -48,7 +46,7 @@ object HitmanSlots {
     }
 
     @HandleEvent
-    fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
+    fun onChestGuiRender() {
         if (!config.hitmanCosts || slotPricesLeft.isEmpty()) return
         if (!inInventory) return
         config.hitmanCostsPosition.renderRenderable(

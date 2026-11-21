@@ -41,7 +41,7 @@ object DungeonCleanEnd {
     private var lastBossId: Int = -1
 
     @HandleEvent(onlyOnIsland = IslandType.CATACOMBS)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!config.enabled) return
 
         val message = event.message
@@ -60,14 +60,14 @@ object DungeonCleanEnd {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         bossDone = false
         chestsSpawned = false
         lastBossId = -1
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CATACOMBS)
-    fun onBossDead(event: DamageIndicatorFinalBossEvent) {
+    private fun onDamageIndicatorFinalBoss(event: DamageIndicatorFinalBossEvent) {
         if (bossDone) return
 
         if (lastBossId == -1) {
@@ -76,7 +76,7 @@ object DungeonCleanEnd {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CATACOMBS)
-    fun onEntityHealthUpdate(event: EntityHealthUpdateEvent) {
+    private fun onEntityHealthUpdate(event: EntityHealthUpdateEvent) {
         if (!config.enabled) return
         if (bossDone) return
         if (lastBossId == -1) return
@@ -90,7 +90,7 @@ object DungeonCleanEnd {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CATACOMBS)
-    fun onCheckRender(event: CheckRenderEntityEvent<Entity>) {
+    private fun onCheckRenderEntity(event: CheckRenderEntityEvent<Entity>) {
         if (!shouldBlock()) return
 
         val entity = event.entity
@@ -114,21 +114,21 @@ object DungeonCleanEnd {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CATACOMBS)
-    fun onParticle(event: ParticleEvent) {
+    private fun onParticle(event: ParticleEvent) {
         if (shouldBlock()) {
             event.cancel()
         }
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CATACOMBS)
-    fun onPlaySound(event: PlaySoundEvent) {
+    private fun onPlaySound(event: PlaySoundEvent) {
         if (shouldBlock() && !chestsSpawned && event.soundName.startsWith("block.note_block.")) {
             event.cancel()
         }
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(3, "dungeon.cleanEndToggle", "dungeon.cleanEnd.enabled")
         event.move(3, "dungeon.cleanEndF3IgnoreGuardians", "dungeon.cleanEnd.F3IgnoreGuardians")
         event.move(75, "dungeon.cleanEnd.F3IgnoreGuardians", "dungeon.cleanEnd.f3IgnoreGuardians")

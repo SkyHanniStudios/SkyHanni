@@ -12,7 +12,6 @@ import at.hannibal2.skyhanni.data.ProfileStorageData
 import at.hannibal2.skyhanni.data.achievements.Achievement
 import at.hannibal2.skyhanni.events.BlockClickEvent
 import at.hannibal2.skyhanni.events.CheckRenderEntityEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
 import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
@@ -23,11 +22,8 @@ import at.hannibal2.skyhanni.events.achievements.AchievementRegistrationEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.entity.EntityClickEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
-import at.hannibal2.skyhanni.events.player.ClickAction
-import at.hannibal2.skyhanni.events.player.PlayerInteractionEvent
 import at.hannibal2.skyhanni.features.achievements.AchievementManager
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
-import at.hannibal2.skyhanni.utils.BlockUtils.getBlockStateAt
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.ColorUtils.toColor
 import at.hannibal2.skyhanni.utils.EntityUtils.getEntitiesNearby
@@ -59,10 +55,8 @@ import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
-import at.hannibal2.skyhanni.utils.toLorenzVec
 import net.minecraft.client.gui.screens.inventory.ContainerScreen
 import net.minecraft.world.entity.decoration.ArmorStand
-import net.minecraft.world.level.block.Blocks
 
 @SkyHanniModule
 object MinionFeatures {
@@ -142,39 +136,22 @@ object MinionFeatures {
     private val minions: MutableMap<LorenzVec, ProfileSpecificStorage.MinionConfig>?
         get() = ProfileStorageData.profileSpecific?.minions
 
-    @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onPlayerInteraction(event: PlayerInteractionEvent) {
-        if (event.action != ClickAction.RIGHT_CLICK_BLOCK) return
-
-        val vec = event.face?.unitVec3i ?: return
-        val lookingAt = event.pos?.offset(vec)?.toLorenzVec() ?: return
-        val equipped = InventoryUtils.getItemInHand() ?: return
-
-        if (equipped.hoverName.string.contains(" Minion ") && lookingAt.getBlockStateAt().block == Blocks.AIR) {
-            newMinion = lookingAt.add(0.5, 0.0, 0.5)
-            newMinionName = getMinionName(equipped.cleanName)
-        } else {
-            newMinion = null
-            newMinionName = null
-        }
-    }
-
     @HandleEvent(onlyOnIslands = [PRIVATE_ISLAND, HUB])
-    fun onEntityClick(event: EntityClickEvent) {
+    private fun onEntityClick(event: EntityClickEvent) {
         if (event.clickType != InteractClickType.RIGHT_CLICK) return
 
         lastClickedEntity = event.clickedEntity.getLorenzVec()
     }
 
     @HandleEvent(onlyOnIslands = [PRIVATE_ISLAND, HUB])
-    fun onBlockClick(event: BlockClickEvent) {
+    private fun onBlockClick(event: BlockClickEvent) {
         if (event.clickType != InteractClickType.RIGHT_CLICK) return
 
         lastStorage = event.position
     }
 
     @HandleEvent(onlyOnIslands = [PRIVATE_ISLAND, HUB])
-    fun onRenderLastClickedMinion(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderLastClickedMinion(event: SkyHanniRenderWorldEvent) {
         if (!config.lastClickedMinion.display) return
 
         val color = config.lastClickedMinion.color.toColor()
@@ -196,7 +173,7 @@ object MinionFeatures {
     }
 
     @HandleEvent(onlyOnIslands = [PRIVATE_ISLAND, HUB])
-    fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
+    private fun onInventoryFullyOpened(event: InventoryFullyOpenedEvent) {
         val inventoryName = event.inventoryName
         if (!minionTitlePattern.find(inventoryName)) return
 
@@ -212,14 +189,14 @@ object MinionFeatures {
     }
 
     @HandleEvent(onlyOnIslands = [PRIVATE_ISLAND, HUB])
-    fun onInventoryUpdated(event: InventoryUpdatedEvent) {
+    private fun onInventoryUpdated(event: InventoryUpdatedEvent) {
         if (minionInventoryOpen) {
             MinionOpenEvent(event.inventoryName, event.inventoryItems).post()
         }
     }
 
     @HandleEvent
-    fun onMinionOpen(event: MinionOpenEvent) {
+    private fun onMinionOpen(event: MinionOpenEvent) {
         removeBuggedMinions()
         val minions = minions ?: return
         val entity = lastClickedEntity ?: return
@@ -241,7 +218,7 @@ object MinionFeatures {
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shfixminions") {
             description = "Removed bugged minion locations from your private island"
             category = CommandCategory.USERS_BUG_FIX
@@ -276,7 +253,7 @@ object MinionFeatures {
     }
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    private fun onInventoryClose(event: InventoryCloseEvent) {
         if (event.reopenSameName) return
 
         minionStorageInventoryOpen = false
@@ -301,7 +278,7 @@ object MinionFeatures {
     // Todo this calculation should not happen invariably when null.
     //  Use a "dirty" flag or something similar, and handle state management.
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onTick() {
+    private fun onTick() {
         if (display != null) return
 
         if (MinecraftCompat.screen is ContainerScreen && config.hopperProfitDisplay) {
@@ -345,7 +322,7 @@ object MinionFeatures {
 
     // TODO reshape to data class, use Resettable
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         lastClickedEntity = null
         lastMinion = null
         lastMinionOpened = 0L
@@ -356,7 +333,7 @@ object MinionFeatures {
     private const val MINION_COIN_ACHIEVEMENT = "minion hopper"
 
     @HandleEvent
-    fun onAchievementRegistration(event: AchievementRegistrationEvent) {
+    private fun onAchievementRegistration(event: AchievementRegistrationEvent) {
         val achievement = Achievement(
             name = "Inflation Contributor".asComponent(),
             description = "Gain Coins from a single Minion Hopper".asComponent(),
@@ -367,7 +344,7 @@ object MinionFeatures {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         val message = event.cleanMessage
         minionCoinPattern.matchMatcher(message) {
             if (System.currentTimeMillis() - lastInventoryClosed < 2_000) {
@@ -410,7 +387,7 @@ object MinionFeatures {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onRenderLastEmptied(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderLastEmptied(event: SkyHanniRenderWorldEvent) {
         val playerLocation = LocationUtils.playerLocation()
         val minions = minions ?: return
         for (minion in minions) {
@@ -437,7 +414,7 @@ object MinionFeatures {
     }
 
     @HandleEvent(priority = HandleEvent.HIGH, onlyOnIsland = IslandType.PRIVATE_ISLAND)
-    fun onRenderLiving(event: CheckRenderEntityEvent<ArmorStand>) {
+    private fun onCheckRenderEntity(event: CheckRenderEntityEvent<ArmorStand>) {
         if (!config.hideMobsNametagNearby) return
 
         val entity = event.entity.takeIf {
@@ -453,7 +430,7 @@ object MinionFeatures {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
+    private fun onChestGuiRender() {
         if (!minionInventoryOpen || !config.hopperProfitDisplay) return
 
         val display = display ?: return
@@ -461,7 +438,7 @@ object MinionFeatures {
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(3, "minions.lastClickedMinionDisplay", "minions.lastClickedMinion.display")
         event.move(3, "minions.lastOpenedMinionColor", "minions.lastClickedMinion.color")
         event.move(3, "minions.lastOpenedMinionTime", "minions.lastClickedMinion.time")

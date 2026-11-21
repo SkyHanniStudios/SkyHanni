@@ -2,6 +2,7 @@ package at.hannibal2.skyhanni.events.slayer
 
 import at.hannibal2.skyhanni.api.event.SkyHanniEvent
 import at.hannibal2.skyhanni.data.SlayerApi.ActiveQuestState
+import at.hannibal2.skyhanni.features.slayer.SlayerType
 import at.hannibal2.skyhanni.skyhannimodule.PrimaryFunction
 
 /**
@@ -27,3 +28,6 @@ class SlayerStateChangeEvent(val state: ActiveQuestState) : SkyHanniEvent()
  */
 @PrimaryFunction("onSlayerQuestComplete")
 object SlayerQuestCompleteEvent : SkyHanniEvent()
+
+@PrimaryFunction("onSlayerDeath")
+class SlayerDeathEvent(val slayerType: SlayerType, val tier: Int, val owner: String?) : SkyHanniEvent()

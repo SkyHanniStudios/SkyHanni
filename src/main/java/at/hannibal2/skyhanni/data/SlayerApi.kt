@@ -4,7 +4,6 @@ import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.model.TabWidget
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
-import at.hannibal2.skyhanni.events.ScoreboardUpdateEvent
 import at.hannibal2.skyhanni.events.WidgetUpdateEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.slayer.SlayerChangeEvent
@@ -348,8 +347,8 @@ object SlayerApi {
         }
     }
 
-    @HandleEvent(ScoreboardUpdateEvent::class, onlyOnSkyblock = true)
-    private fun onScoreboardChange() {
+    @HandleEvent(onlyOnSkyblock = true)
+    private fun onScoreboardUpdate() {
         updateSlayerState()
     }
 

@@ -13,7 +13,6 @@ import at.hannibal2.skyhanni.data.SkyHanniNotification
 import at.hannibal2.skyhanni.data.jsonobjects.repo.ItemsJson
 import at.hannibal2.skyhanni.data.jsonobjects.repo.neu.NeuItemJson
 import at.hannibal2.skyhanni.data.model.SkyblockStat
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
 import at.hannibal2.skyhanni.events.DebugDataCollectEvent
 import at.hannibal2.skyhanni.events.NeuRepositoryReloadEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
@@ -158,7 +157,7 @@ object ItemUtils {
 
     fun NeuInternalName.getRawBaseStats(): Map<String, Int> = itemBaseStatsRaw[this].orEmpty()
 
-    @HandleEvent(ConfigLoadEvent::class)
+    @HandleEvent
     private fun onConfigLoad() {
         ConditionalUtils.onToggle(SkyHanniMod.feature.misc.replaceRomanNumerals) {
             itemNameCache.clear()
@@ -190,7 +189,7 @@ object ItemUtils {
     }
 
     /**
-     * For use in [ItemUtilsTest].
+     * For use [ItemUtilsTest]
      */
     internal fun SafeItemStack.cacheInternalName(internalName: NeuInternalName) {
         internalNameCache[this] = internalName

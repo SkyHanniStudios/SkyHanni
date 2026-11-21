@@ -3,8 +3,6 @@ package at.hannibal2.skyhanni.features.rift.area.westvillage
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.jsonobjects.repo.ParkourJson
 import at.hannibal2.skyhanni.events.CheckRenderEntityEvent
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
-import at.hannibal2.skyhanni.events.IslandChangeEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
@@ -54,17 +52,17 @@ object RiftGunthersRace {
     )
 
     @HandleEvent
-    fun onIslandChange(event: IslandChangeEvent) {
+    private fun onIslandChange() {
         parkourHelper?.reset()
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         RiftApi.inRiftRace = false
     }
 
     @HandleEvent
-    fun onRepoReload(event: RepositoryReloadEvent) {
+    private fun onRepoReload(event: RepositoryReloadEvent) {
         val data = event.getConstant<ParkourJson>("rift/RiftRace")
         parkourHelper = ParkourHelper(
             data.locations,
@@ -76,7 +74,7 @@ object RiftGunthersRace {
     }
 
     @HandleEvent
-    fun onConfigLoad(event: ConfigLoadEvent) {
+    private fun onConfigLoad() {
         ConditionalUtils.onToggle(config.rainbowColor, config.monochromeColor, config.lookAhead) {
             updateConfig()
         }
@@ -91,7 +89,7 @@ object RiftGunthersRace {
     }
 
     @HandleEvent
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!isEnabled()) return
 
         raceStartedPattern.matchMatcher(event.message) {
@@ -108,7 +106,7 @@ object RiftGunthersRace {
     }
 
     @HandleEvent
-    fun onCheckRender(event: CheckRenderEntityEvent<Entity>) {
+    private fun onCheckRenderEntity(event: CheckRenderEntityEvent<Entity>) {
         if (!isEnabled()) return
         if (!config.hidePlayers) return
         if (!RiftApi.inRiftRace) return
@@ -120,7 +118,7 @@ object RiftGunthersRace {
     }
 
     @HandleEvent
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!isEnabled() || !RiftApi.inRiftRace) return
 
         parkourHelper?.render(event)

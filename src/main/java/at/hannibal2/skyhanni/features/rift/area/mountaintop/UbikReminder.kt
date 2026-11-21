@@ -3,8 +3,6 @@ package at.hannibal2.skyhanni.features.rift.area.mountaintop
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.ProfileStorageData
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.SecondPassedEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.features.rift.RiftApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -68,7 +66,7 @@ object UbikReminder {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!config.ubikReminder) return
 
         cooldownPattern.matchMatcher(event.cleanMessage) {
@@ -77,7 +75,7 @@ object UbikReminder {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onSecondPassed(event: SecondPassedEvent) {
+    private fun onSecondPassed() {
         val storage = storage ?: return
         if (storage.ubikRemindTime.isInFuture()) return
         if (config.ubikReminder) {
@@ -91,7 +89,7 @@ object UbikReminder {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onRender(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay() {
         if (!config.ubikReminder || !config.ubikGui) return
         val storage = storage ?: return
         val remindTime = storage.ubikRemindTime

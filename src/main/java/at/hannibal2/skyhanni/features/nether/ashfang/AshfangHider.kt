@@ -17,7 +17,7 @@ object AshfangHider {
     private val config get() = AshfangManager.config.hide
 
     @HandleEvent(priority = HandleEvent.HIGH)
-    fun onRenderLiving(event: SkyHanniRenderEntityEvent.Specials.Pre<ArmorStand>) {
+    private fun onRenderLiving(event: SkyHanniRenderEntityEvent.Specials.Pre<ArmorStand>) {
         if (!AshfangManager.active || !config.damageSplash) return
 
         if (DamageIndicatorManager.isDamageSplash(event.entity)) {
@@ -26,19 +26,19 @@ object AshfangHider {
     }
 
     @HandleEvent
-    fun onParticle(event: ParticleEvent) {
+    private fun onParticle(event: ParticleEvent) {
         if (!AshfangManager.active || !config.particles) return
         event.cancel()
     }
 
     @HandleEvent(priority = HandleEvent.HIGH, onlyOnIsland = IslandType.CRIMSON_ISLE)
-    fun onCheckRender(event: CheckRenderEntityEvent<ArmorStand>) {
+    private fun onCheckRenderEntity(event: CheckRenderEntityEvent<ArmorStand>) {
         if (!AshfangManager.active || !config.particles) return
         if (event.entity.getAllEquipment().any { it?.hoverName?.string == "Glowstone" }) event.cancel()
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(2, "ashfang.hideDamageSplash", "crimsonIsle.ashfang.hide.damageSplash")
         event.move(2, "ashfang.hideParticles", "crimsonIsle.ashfang.hide.particles")
     }

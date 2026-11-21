@@ -43,6 +43,8 @@ enum class ProjectTarget(
     val projectPath get() = ":$projectName"
 
     companion object {
+        val primary get() = MODERN_26200
+
         fun findByMcVersion(mcVersion: String): ProjectTarget? {
             return entries.find { it.minecraftVersion.versionName == mcVersion }
         }

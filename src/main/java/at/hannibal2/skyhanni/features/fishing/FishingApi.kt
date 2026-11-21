@@ -8,7 +8,6 @@ import at.hannibal2.skyhanni.data.jsonobjects.repo.ItemsJson
 import at.hannibal2.skyhanni.events.ItemInHandChangeEvent
 import at.hannibal2.skyhanni.events.OwnInventoryMenuUpdateEvent
 import at.hannibal2.skyhanni.events.PlaySoundEvent
-import at.hannibal2.skyhanni.events.ProfileJoinEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.events.WorldClickEvent
 import at.hannibal2.skyhanni.events.entity.EntityEnterWorldEvent
@@ -223,7 +222,7 @@ object FishingApi {
     }
 
     @HandleEvent
-    private fun onProfileJoin(event: ProfileJoinEvent) {
+    private fun onProfileJoin() {
         checkAndUpdateBaitFromInventory()
     }
 
@@ -296,7 +295,7 @@ object FishingApi {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    private fun onClick(event: WorldClickEvent) {
+    private fun onWorldClick(event: WorldClickEvent) {
         if (event.clickType != InteractClickType.RIGHT_CLICK || !holdingRod || !bobberHasTouchedLiquid) return
         if (lastReelTime.passedSince() < .3.seconds) return
         lastReelTime = SimpleTimeMark.now()

@@ -15,7 +15,6 @@ import at.hannibal2.skyhanni.data.model.waypoints.Waypoints
 import at.hannibal2.skyhanni.events.IslandChangeEvent
 import at.hannibal2.skyhanni.events.hypixel.HypixelJoinEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
-import at.hannibal2.skyhanni.events.minecraft.WorldChangeEvent
 import at.hannibal2.skyhanni.events.mining.GlaciteMineshaftDetectEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
@@ -49,7 +48,7 @@ object OrderedWaypoints {
     private var loadJob: Job? = null
 
     @HandleEvent(HypixelJoinEvent::class)
-    fun onHypixelJoin() {
+    private fun onHypixelJoin() {
         if (SkyHanniMod.orderedWaypointsRoutesData.routes == null) {
             SkyHanniMod.orderedWaypointsRoutesData.routes = mutableMapOf()
             saveConfig()
@@ -61,7 +60,7 @@ object OrderedWaypoints {
     }
 
     @HandleEvent
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!config.enabled) return
 
         for (i in renderWaypoints.indices) {
@@ -143,13 +142,13 @@ object OrderedWaypoints {
         decideWaypoints()
     }
 
-    @HandleEvent(WorldChangeEvent::class)
-    fun onWorldChange() {
+    @HandleEvent
+    private fun onWorldChange() {
         currentOrderedWaypointIndex = 0
     }
 
     @HandleEvent
-    fun onCommandRegistration(event: CommandRegistrationEvent) {
+    private fun onCommandRegistration(event: CommandRegistrationEvent) {
         event.registerBrigadier("shordered") {
             description = "Ordered Waypoints commands."
             category = CommandCategory.USERS_ACTIVE
@@ -230,7 +229,7 @@ object OrderedWaypoints {
     }
 
     @HandleEvent
-    fun onGlaciteMineshaftDetectEvent(event: GlaciteMineshaftDetectEvent) {
+    private fun onGlaciteMineshaftDetect(event: GlaciteMineshaftDetectEvent) {
         val routeName = event.type.name
         val hasRoute = storage?.routes?.get(routeName) != null
         ChatUtils.debug("AutoLoad check: type=$routeName, autoLoad=${config.autoLoadMatchingShaftRoute}, hasRoute=$hasRoute")
@@ -242,7 +241,7 @@ object OrderedWaypoints {
     }
 
     @HandleEvent
-    fun onIslandChange(event: IslandChangeEvent) {
+    private fun onIslandChange(event: IslandChangeEvent) {
         if (event.oldIsland == IslandType.MINESHAFT && config.autoUnloadWhenLeavingMineshaft) unload()
         if (config.autoUnload) unload()
     }

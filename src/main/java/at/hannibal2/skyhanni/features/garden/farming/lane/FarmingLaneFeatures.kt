@@ -3,9 +3,6 @@ package at.hannibal2.skyhanni.features.garden.farming.lane
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.title.TitleContext
 import at.hannibal2.skyhanni.data.title.TitleManager
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.garden.GardenToolChangeEvent
-import at.hannibal2.skyhanni.events.garden.farming.FarmingLaneSwitchEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.features.garden.GardenApi
 import at.hannibal2.skyhanni.features.garden.farming.lane.FarmingLaneApi.getValue
@@ -55,12 +52,12 @@ object FarmingLaneFeatures {
     }
 
     @HandleEvent
-    private fun onFarmingLaneSwitch(event: FarmingLaneSwitchEvent) {
+    private fun onFarmingLaneSwitch() {
         display = emptyList()
     }
 
     @HandleEvent
-    private fun onGardenToolChange(event: GardenToolChangeEvent) {
+    private fun onGardenToolChange() {
         display = emptyList()
     }
 
@@ -212,7 +209,7 @@ object FarmingLaneFeatures {
     private fun LorenzVec.capAtBuildHeight(): LorenzVec = if (y > 76) copy(y = 76.0) else this
 
     @HandleEvent(onlyOnIsland = GARDEN)
-    private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onGuiRenderOverlay() {
         if (!config.distanceDisplay) return
 
         val display = display.takeIfNotEmpty() ?: return

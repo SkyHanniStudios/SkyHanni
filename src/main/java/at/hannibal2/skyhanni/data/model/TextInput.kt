@@ -1,7 +1,6 @@
 package at.hannibal2.skyhanni.data.model
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.KeyboardManager
 import at.hannibal2.skyhanni.utils.KeyboardManager.isKeyClicked
@@ -10,7 +9,6 @@ import at.hannibal2.skyhanni.utils.LorenzColor
 import at.hannibal2.skyhanni.utils.OSUtils
 import at.hannibal2.skyhanni.utils.StringUtils.insert
 import at.hannibal2.skyhanni.utils.StringUtils.removeWordsAtEnd
-import net.minecraft.client.KeyMapping
 import org.apache.commons.lang3.SystemUtils
 import org.lwjgl.glfw.GLFW
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
@@ -46,7 +44,7 @@ open class TextInput {
         carriage = null
     }
 
-    val isActive get() = Companion.activeInstance == this
+    val isActive get() = activeInstance == this
 
     private val updateEvents = mutableMapOf<Int, (TextInput) -> Unit>()
 
@@ -56,10 +54,6 @@ open class TextInput {
 
     fun registerToEvent(key: Int, event: (TextInput) -> Unit) {
         updateEvents[key] = event
-    }
-
-    fun removeFromEvent(key: Int) {
-        updateEvents.remove(key)
     }
 
     @SkyHanniModule
@@ -77,12 +71,11 @@ open class TextInput {
         }
 
         @HandleEvent
-        fun onInventoryClose(event: InventoryCloseEvent) {
+        fun onInventoryClose() {
             disable()
         }
 
-        @Suppress("UnusedParameter")
-        fun onMinecraftInput(keyBinding: KeyMapping, cir: CallbackInfoReturnable<Boolean>) {
+        fun onMinecraftInput(cir: CallbackInfoReturnable<Boolean>) {
             if (activeInstance != null) {
                 cir.returnValue = false
                 return

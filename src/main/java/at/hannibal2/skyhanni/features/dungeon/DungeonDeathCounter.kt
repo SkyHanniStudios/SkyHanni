@@ -3,9 +3,7 @@ package at.hannibal2.skyhanni.features.dungeon
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.IslandType
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
-import at.hannibal2.skyhanni.events.dungeon.DungeonStartEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
@@ -75,13 +73,13 @@ object DungeonDeathCounter {
     }
 
     @HandleEvent
-    fun onDungeonStart(event: DungeonStartEvent) = clear()
+    fun onDungeonStart() = clear()
 
     @HandleEvent
     fun onWorldChange() = clear()
 
     @HandleEvent(onlyOnIsland = IslandType.CATACOMBS)
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    fun onGuiRenderOverlay() {
         if (!config.deathCounterDisplay) return
         val display = display ?: return
         config.deathCounterPos.renderRenderable(display, posLabel = "Dungeon Death Counter")

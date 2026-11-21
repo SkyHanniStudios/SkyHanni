@@ -14,10 +14,7 @@ import java.util.TreeMap
 @SkyHanniModule
 object MobData {
 
-    class MobSet : HashSet<Mob>() {
-        val entityList get() = this.flatMap { listOf(it.baseEntity) + (it.extraEntities) }
-    }
-
+    class MobSet : HashSet<Mob>()
     val players = MobSet()
     val displayNpcs = MobSet()
     val skyblockMobs = MobSet()
@@ -59,11 +56,6 @@ object MobData {
             val somethingWentWrong = MobResult(Result.SomethingWentWrong, null)
             fun found(mob: Mob) = MobResult(Result.Found, mob)
 
-            fun ArmorStand?.makeMobResult(mob: (ArmorStand) -> Mob?) =
-                this?.let { armor ->
-                    mob.invoke(armor)?.let { found(it) } ?: somethingWentWrong
-                } ?: notYetFound
-
             fun List<ArmorStand?>.makeMobResult(mob: (List<ArmorStand>) -> Mob?) =
                 this.takeIfAllNotNull()?.let { armor ->
                     mob.invoke(armor)?.let { found(it) } ?: somethingWentWrong
@@ -89,66 +81,66 @@ object MobData {
     }
 
     @HandleEvent
-    fun onMobEventSpawn(event: MobEvent.Spawn) {
+    private fun onMobEventSpawn(event: MobEvent.Spawn) {
         entityToMob.putAll(event.mob.makeEntityToMobAssociation())
         currentMobs.add(event.mob)
         notSeenMobs.add(event.mob)
     }
 
     @HandleEvent
-    fun onMobEventDeSpawn(event: MobEvent.DeSpawn) {
+    private fun onMobEventDeSpawn(event: MobEvent.DeSpawn) {
         event.mob.fullEntityList().forEach { entityToMob.remove(it) }
         currentMobs.remove(event.mob)
         notSeenMobs.remove(event.mob)
     }
 
     @HandleEvent
-    fun onSkyblockMobSpawnEvent(event: MobEvent.Spawn.SkyblockMob) {
+    private fun onSkyblockMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
         skyblockMobs.add(event.mob)
     }
 
     @HandleEvent
-    fun onSkyblockMobDeSpawnEvent(event: MobEvent.DeSpawn.SkyblockMob) {
+    private fun onSkyblockMobDeSpawn(event: MobEvent.DeSpawn.SkyblockMob) {
         skyblockMobs.remove(event.mob)
     }
 
     @HandleEvent
-    fun onSummonSpawnEvent(event: MobEvent.Spawn.Summon) {
+    private fun onSummonSpawn(event: MobEvent.Spawn.Summon) {
         summoningMobs.add(event.mob)
     }
 
     @HandleEvent
-    fun onSummonDeSpawnEvent(event: MobEvent.DeSpawn.Summon) {
+    private fun onSummonDeSpawn(event: MobEvent.DeSpawn.Summon) {
         summoningMobs.remove(event.mob)
     }
 
     @HandleEvent
-    fun onSpecialSpawnEvent(event: MobEvent.Spawn.Special) {
+    private fun onSpecialSpawn(event: MobEvent.Spawn.Special) {
         special.add(event.mob)
     }
 
     @HandleEvent
-    fun onSpecialDeSpawnEvent(event: MobEvent.DeSpawn.Special) {
+    private fun onSpecialDeSpawn(event: MobEvent.DeSpawn.Special) {
         special.remove(event.mob)
     }
 
     @HandleEvent
-    fun onDisplayNpcSpawnEvent(event: MobEvent.Spawn.DisplayNpc) {
+    private fun onDisplayNpcSpawn(event: MobEvent.Spawn.DisplayNpc) {
         displayNpcs.add(event.mob)
     }
 
     @HandleEvent
-    fun onDisplayNpcDeSpawnEvent(event: MobEvent.DeSpawn.DisplayNpc) {
+    private fun onDisplayNpcDeSpawn(event: MobEvent.DeSpawn.DisplayNpc) {
         displayNpcs.remove(event.mob)
     }
 
     @HandleEvent
-    fun onRealPlayerSpawnEvent(event: MobEvent.Spawn.Player) {
+    private fun onPlayerSpawn(event: MobEvent.Spawn.Player) {
         players.add(event.mob)
     }
 
     @HandleEvent
-    fun onRealPlayerDeSpawnEvent(event: MobEvent.DeSpawn.Player) {
+    private fun onPlayerDeSpawn(event: MobEvent.DeSpawn.Player) {
         players.remove(event.mob)
     }
 }

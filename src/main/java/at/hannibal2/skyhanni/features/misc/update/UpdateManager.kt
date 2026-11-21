@@ -318,7 +318,7 @@ object UpdateManager {
     }
 
     @HandleEvent
-    private fun onUserLuck(event: UserLuckCalculateEvent) {
+    private fun onUserLuckCalculate(event: UserLuckCalculateEvent) {
         if (PlatformUtils.MC_VERSION in discontinuedVersions) {
             val luck = discontinuedVersions[PlatformUtils.MC_VERSION]?.luckAmount ?: -10f
             event.addLuck(luck)

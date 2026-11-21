@@ -212,7 +212,7 @@ object TunnelsMaps {
     }
 
     @HandleEvent
-    private fun onTooltip(event: ToolTipTextEvent) {
+    private fun onToolTip(event: ToolTipTextEvent) {
         if (!isEnabled()) return
         event.slot ?: return
         clickTranslate[event.slot.containerSlot]?.let {

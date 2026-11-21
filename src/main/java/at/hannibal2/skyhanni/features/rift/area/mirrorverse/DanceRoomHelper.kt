@@ -91,7 +91,7 @@ object DanceRoomHelper {
     }
 
     @HandleEvent
-    fun onGuiRenderOverlay() {
+    private fun onGuiRenderOverlay() {
         if (!config.enabled || !inRoom) return
         config.position.renderRenderables(
             display,
@@ -101,14 +101,14 @@ object DanceRoomHelper {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         inRoom = false
         index = 0
         countdownTicks = 0
     }
 
     @HandleEvent(onlyOnIsland = IslandType.THE_RIFT)
-    fun onTick(event: SkyHanniTickEvent) {
+    private fun onTick(event: SkyHanniTickEvent) {
         // We want this to run even if not enabled, so that the Hide Other Players feature
         // properly updates without the helper being enabled
         if (event.isMod(10)) {
@@ -131,7 +131,7 @@ object DanceRoomHelper {
             (soundName == "entity.player.levelup" && pitch == 1.8412699f && volume == 1f)
 
     @HandleEvent
-    fun onPlaySound(event: PlaySoundEvent) {
+    private fun onPlaySound(event: PlaySoundEvent) {
         if (!config.enabled || !inRoom) return
 
         when {
@@ -151,13 +151,13 @@ object DanceRoomHelper {
     }
 
     @HandleEvent
-    fun onTitleReceived(event: TitleReceivedEvent) {
+    private fun onTitleReceived(event: TitleReceivedEvent) {
         if (!config.enabled || !inRoom) return
         if (config.hideOriginalTitle) event.cancel()
     }
 
     @HandleEvent
-    fun onCheckRender(event: CheckRenderEntityEvent<RemotePlayer>) {
+    private fun onCheckRenderEntity(event: CheckRenderEntityEvent<RemotePlayer>) {
         if (!inRoom) return
         if (config.hidePlayers && event.entity.isRealPlayer()) {
             event.cancel()
@@ -165,19 +165,19 @@ object DanceRoomHelper {
     }
 
     @HandleEvent
-    fun onRepoReload(event: RepositoryReloadEvent) {
+    private fun onRepoReload(event: RepositoryReloadEvent) {
         instructions = event.getConstant<DanceRoomInstructionsJson>("DanceRoomInstructions").instructions
     }
 
     @HandleEvent
-    fun onServerTick() {
+    private fun onServerTick() {
         if (!inRoom) return
 
         if (countdownTicks > 0) countdownTicks--
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(9, "rift.area.mirrorVerseConfig", "rift.area.mirrorverse")
     }
 }

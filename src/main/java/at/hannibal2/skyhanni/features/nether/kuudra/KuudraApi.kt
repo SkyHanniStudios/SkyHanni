@@ -57,9 +57,7 @@ object KuudraApi {
     )
 
     val kuudraTiers = listOf("basic", "hot", "burning", "fiery", "infernal")
-
     val kuudraArmorTiers = listOf("", "HOT", "BURNING", "FIERY", "INFERNAL")
-    val kuudraSets = listOf("AURORA", "CRIMSON", "TERROR", "HOLLOW", "FERVOR")
 
     fun NeuInternalName.isKuudraArmor(): Boolean = kuudraArmorPattern.matches(asString())
 
@@ -97,7 +95,7 @@ object KuudraApi {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onScoreboardChange(event: ScoreboardUpdateEvent) {
+    private fun onScoreboardUpdate(event: ScoreboardUpdateEvent) {
         if (kuudraTier != null) return
         tierPattern.firstMatcher(event.added) {
             val tier = group("tier").toInt()
@@ -107,12 +105,12 @@ object KuudraApi {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         kuudraTier = null
     }
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         completePattern.matchMatcher(event.message) {
             val tier = kuudraTier ?: return
             KuudraCompleteEvent(tier).post()

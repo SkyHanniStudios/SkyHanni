@@ -151,19 +151,19 @@ object VampireSlayerFeatures {
     }
 
     @HandleEvent(onlyOnIsland = THE_RIFT)
-    private fun onPlayerMove(event: EntityMoveEvent<LocalPlayer>) {
+    private fun onEntityMove(event: EntityMoveEvent<LocalPlayer>) {
         if (!isEnabled()) return
         val removed = trackedBosses.filter { it.entity.distanceToPlayer() > MAX_SLAYER_DISTANCE }
         trackedBosses.removeAll(removed)
     }
 
     @HandleEvent(onlyOnIsland = THE_RIFT)
-    private fun onMobDespawn(event: MobEvent.DeSpawn.SkyblockMob) {
+    private fun onSkyblockMobDeSpawn(event: MobEvent.DeSpawn.SkyblockMob) {
         trackedBosses.removeIf { it.mob === event.mob }
     }
 
     @HandleEvent(onlyOnIsland = THE_RIFT)
-    private fun onEffectLeaveWorld(event: EntityLeaveWorldEvent<ArmorStand>) {
+    private fun onEntityLeaveWorld(event: EntityLeaveWorldEvent<ArmorStand>) {
         trackedBosses.forEach { it.effects.remove(event.entity) }
     }
 
@@ -203,7 +203,7 @@ object VampireSlayerFeatures {
     }
 
     @HandleEvent(onlyOnIsland = THE_RIFT)
-    private fun onArmorStandNameChange(event: EntityCustomNameUpdateEvent<ArmorStand>) {
+    private fun onEntityNameUpdate(event: EntityCustomNameUpdateEvent<ArmorStand>) {
         val name = event.cleanName
         val steakBoss = trackedBosses.firstOrNull { it.armorStand === event.entity }
         if (isEnabled() && steakBoss != null) {

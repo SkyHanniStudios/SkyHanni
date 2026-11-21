@@ -9,7 +9,6 @@ import at.hannibal2.skyhanni.data.hotx.HotfData
 import at.hannibal2.skyhanni.data.hotx.HotmData
 import at.hannibal2.skyhanni.data.hotx.HotxHandler
 import at.hannibal2.skyhanni.data.hotx.RotatingPerkSlot
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.RenderItemTipEvent
 import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -29,7 +28,7 @@ object HotxFeatures {
 
     private val handlers = listOf(HotmData, HotfData)
 
-    @HandleEvent(GuiRenderEvent.GuiOverlayRenderEvent::class, onlyOnSkyblock = true)
+    @HandleEvent(onlyOnSkyblock = true)
     private fun onGuiRenderOverlay() {
         handlers.forEach { it.renderOverlay() }
     }

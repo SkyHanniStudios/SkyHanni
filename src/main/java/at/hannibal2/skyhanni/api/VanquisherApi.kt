@@ -45,6 +45,8 @@ object VanquisherApi {
         }
     }
 
+    // Faz, what's goin on here? 🥺🥺
+    @Suppress("MissingPrimaryFunction")
     data object VanquisherOwnMessageEvent : SkyHanniEvent()
 
     private val patternGroup = RepoPattern.group("combat.crimsonisle.vanquisherapi")
@@ -73,7 +75,7 @@ object VanquisherApi {
     private val vanquisherLongTimeout = 5.seconds
 
     @HandleEvent(onlyOnIsland = IslandType.CRIMSON_ISLE)
-    fun onChat(event: SkyHanniChatEvent.Allow) {
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
         if (spawnPattern.matches(event.cleanMessage)) {
             lastOwnTime = SimpleTimeMark.now()
             VanquisherOwnMessageEvent.post()
@@ -82,7 +84,7 @@ object VanquisherApi {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CRIMSON_ISLE)
-    fun onPlaySound(event: PlaySoundEvent) {
+    private fun onPlaySound(event: PlaySoundEvent) {
         if (event.soundName != "entity.wither.spawn" || event.pitch != 1f || event.volume != 2f) return
         lastSoundPos = event.location
         lastSoundTime = SimpleTimeMark.now()
@@ -90,7 +92,7 @@ object VanquisherApi {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CRIMSON_ISLE)
-    fun onEntityHealthUpdate(event: EntityMaxHealthUpdateEvent) {
+    private fun onEntityHealthUpdate(event: EntityMaxHealthUpdateEvent) {
         val entity = event.entity as? ArmorStand ?: return
         val helmet = entity.getStandHelmet() ?: return
         if (!helmet.`is`(Items.WITHER_SKELETON_SKULL)) return
@@ -115,7 +117,7 @@ object VanquisherApi {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CRIMSON_ISLE)
-    fun onMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
+    private fun onSkyblockMobSpawn(event: MobEvent.Spawn.SkyblockMob) {
         val mob = event.mob
         if (mob.name != "Vanquisher") return
         val isOwn = mob.isOwnVanquisher()
@@ -126,7 +128,7 @@ object VanquisherApi {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CRIMSON_ISLE)
-    fun onMobDeSpawn(event: MobEvent.DeSpawn.SkyblockMob) {
+    private fun onSkyblockMobDeSpawn(event: MobEvent.DeSpawn.SkyblockMob) {
         val mob = event.mob
         val data = vanquishers.remove(mob) ?: return
         data.postDespawn()
@@ -134,7 +136,7 @@ object VanquisherApi {
     }
 
     @HandleEvent(onlyOnIsland = IslandType.CRIMSON_ISLE)
-    fun onSecondPassed() {
+    private fun onSecondPassed() {
         if ((lastPossibleSpawnEntity != null || lastSpawnEntityPos != null || lastSoundPos != null) &&
             lastOwnTime.passedSince() > vanquisherLongTimeout
         ) {
@@ -149,7 +151,7 @@ object VanquisherApi {
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         vanquishers.values.forEach { it.postDespawn() }
         vanquishers.clear()
         lastPossibleSpawnEntity = null
@@ -167,7 +169,7 @@ object VanquisherApi {
     }
 
     @HandleEvent
-    fun onDebugDataCollect(event: DebugDataCollectEvent) {
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
         event.title("VanquisherAPI")
         event.addIrrelevant {
             addAll(

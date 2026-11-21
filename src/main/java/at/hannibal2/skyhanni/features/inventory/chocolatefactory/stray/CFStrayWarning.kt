@@ -6,8 +6,6 @@ import at.hannibal2.skyhanni.config.features.inventory.chocolatefactory.CFStrayR
 import at.hannibal2.skyhanni.data.jsonobjects.repo.HoppityEggLocationsJson
 import at.hannibal2.skyhanni.data.title.TitleManager
 import at.hannibal2.skyhanni.events.GuiContainerEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
 import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
 import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.events.hoppity.RabbitFoundEvent
@@ -154,7 +152,7 @@ object CFStrayWarning {
     }
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    fun onInventoryClose() {
         reset()
     }
 
@@ -165,7 +163,7 @@ object CFStrayWarning {
     }
 
     @HandleEvent(priority = HandleEvent.HIGHEST)
-    fun onChestGuiRender(event: GuiRenderEvent.ChestGuiOverlayRenderEvent) {
+    fun onChestGuiRender() {
         if (!CFApi.inChocolateFactory) return
         if (!flashScreen && !config.partyMode.get()) return
         val alpha = ((2 + sin(SimpleTimeMark.now().toMillis() / 1000.0)) * 255 / 4).toInt().coerceIn(0..255)

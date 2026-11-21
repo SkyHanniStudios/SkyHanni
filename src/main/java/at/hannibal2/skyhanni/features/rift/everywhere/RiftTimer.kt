@@ -5,8 +5,6 @@ import at.hannibal2.skyhanni.data.ActionBarStatsData
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.model.SkyblockStat
 import at.hannibal2.skyhanni.events.ActionBarValueUpdateEvent
-import at.hannibal2.skyhanni.events.ConfigLoadEvent
-import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.entity.EntityHealthDisplayEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
 import at.hannibal2.skyhanni.features.rift.RiftApi
@@ -117,7 +115,7 @@ object RiftTimer {
     }
 
     @HandleEvent
-    fun onConfigLoad(event: ConfigLoadEvent) {
+    fun onConfigLoad() {
         ConditionalUtils.onToggle(
             config.percentage,
             config.maxTime,
@@ -129,7 +127,7 @@ object RiftTimer {
     }
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    fun onGuiRenderOverlay() {
         if (!isEnabled() || RiftApi.inMirrorVerse) return
 
         val display = display.takeIfNotEmpty() ?: return

@@ -4,7 +4,6 @@ import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.SlayerApi
 import at.hannibal2.skyhanni.events.entity.EntityLeaveWorldEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
-import at.hannibal2.skyhanni.events.minecraft.WorldChangeEvent
 import at.hannibal2.skyhanni.features.slayer.SlayerType
 import at.hannibal2.skyhanni.mixins.hooks.RenderLivingEntityHelper
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -33,7 +32,7 @@ object SpiderEggSacHighlighter {
     )
 
     @HandleEvent(onlyOnSkyblock = true)
-    fun onTick(event: SkyHanniTickEvent) {
+    private fun onTick(event: SkyHanniTickEvent) {
         if (!event.isMod(5)) return
         if (!isEnabled()) {
             if (highlightedEggSacs.isNotEmpty()) clearEggSacs()
@@ -87,8 +86,8 @@ object SpiderEggSacHighlighter {
         }
     }
 
-    @HandleEvent(WorldChangeEvent::class)
-    fun onWorldChange() = clearEggSacs()
+    @HandleEvent
+    private fun onWorldChange() = clearEggSacs()
 
     private fun clearEggSacs() {
         if (highlightedEggSacs.isEmpty()) return

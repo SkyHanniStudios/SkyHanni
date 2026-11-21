@@ -4,7 +4,6 @@ import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.model.TabWidget
 import at.hannibal2.skyhanni.data.title.TitleManager
-import at.hannibal2.skyhanni.events.dungeon.DungeonStartEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.HypixelCommands
@@ -14,7 +13,7 @@ object DungeonTrinityHelper {
     private val config get() = SkyHanniMod.feature.dungeon.trinityHelper
 
     @HandleEvent
-    private fun onDungeonStart(event: DungeonStartEvent) {
+    private fun onDungeonStart() {
         if (!config.enabled) return
 
         TabWidget.DUNGEON_PUZZLE.matchMatcherFirstLine {

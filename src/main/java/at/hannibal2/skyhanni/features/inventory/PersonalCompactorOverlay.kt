@@ -3,8 +3,6 @@ package at.hannibal2.skyhanni.features.inventory
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.features.inventory.PersonalCompactorConfig
-import at.hannibal2.skyhanni.events.InventoryCloseEvent
-import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
 import at.hannibal2.skyhanni.events.RenderItemTipEvent
 import at.hannibal2.skyhanni.events.RenderObject
 import at.hannibal2.skyhanni.events.minecraft.ToolTipTextEvent
@@ -96,12 +94,12 @@ object PersonalCompactorOverlay {
     }
 
     @HandleEvent
-    fun onInventoryClose(event: InventoryCloseEvent) {
+    fun onInventoryClose() {
         compactorRenderableMap.clear()
     }
 
     @HandleEvent
-    fun onInventoryUpdated(event: InventoryUpdatedEvent) {
+    fun onInventoryUpdated() {
         compactorEnabledMap.clear()
     }
 
