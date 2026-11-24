@@ -1,7 +1,9 @@
 package at.hannibal2.skyhanni.config.features.event.yearofthepig
 
+import at.hannibal2.skyhanni.config.FeatureToggle
 import com.google.gson.annotations.Expose
 import io.github.notenoughupdates.moulconfig.annotations.Accordion
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDraggableList
 import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 
@@ -19,6 +21,12 @@ class YearOfThePigConfig {
         ShinyOrbLineType.TO_PIG,
         ShinyOrbLineType.TO_ORB,
     )
+
+    @Expose
+    @ConfigOption(name = "Pig Pet Warning", desc = "Warn after using a Shiny Orb if a Pig Pet is not equipped.")
+    @ConfigEditorBoolean
+    @FeatureToggle
+    var petWarning: Boolean = false
 
     enum class ShinyOrbLineType(private val displayName: String) {
         TO_PIG("§dYou to Pig"),
