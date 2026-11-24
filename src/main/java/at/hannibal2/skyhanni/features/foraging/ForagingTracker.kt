@@ -2,6 +2,7 @@ package at.hannibal2.skyhanni.features.foraging
 
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.CompactorCraftApi
+import at.hannibal2.skyhanni.api.CompactorCraftApi.CraftState
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.config.commands.CommandCategory
@@ -151,14 +152,14 @@ object ForagingTracker : SkyHanniBucketedItemTracker<ForagingTrackerLegacy.TreeT
         val baseLog = treeType.getBaseLog()
         val enchantedLog = treeType.getEnchantedLog()
         val compactionAmount = when (val craft = CompactorCraftApi.getCraftState(baseLog, 0)) {
-            is CompactorCraftApi.CraftState.Ambiguous -> null
-            is CompactorCraftApi.CraftState.Enough -> craft.upgrade.baseAmount.takeIf {
+            is CraftState.Ambiguous -> null
+            is CraftState.Enough -> craft.upgrade.baseAmount.takeIf {
                 craft.upgrade.result == enchantedLog
             }
-            is CompactorCraftApi.CraftState.Missing -> craft.upgrade.baseAmount.takeIf {
+            is CraftState.Missing -> craft.upgrade.baseAmount.takeIf {
                 craft.upgrade.result == enchantedLog
             }
-            CompactorCraftApi.CraftState.NoCraft, CompactorCraftApi.CraftState.NotLoaded -> null
+            CraftState.NoCraft, CraftState.NotLoaded -> null
         }
         val baseLogDelta = if (compactionAmount == null) delta else delta - deltaEnchanted * compactionAmount
         if (baseLogDelta > 0) addItem(treeType, baseLog, baseLogDelta, command = false)
