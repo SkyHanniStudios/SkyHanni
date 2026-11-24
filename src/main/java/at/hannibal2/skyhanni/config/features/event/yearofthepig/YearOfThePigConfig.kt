@@ -23,7 +23,7 @@ class YearOfThePigConfig {
     )
 
     @Expose
-    @ConfigOption(name = "Pig Pet Warning", desc = "Warn after using a Shiny Orb if a Pig Pet is not equipped.")
+    @ConfigOption(name = "Pig Pet Warning", desc = "Warn when using a Shiny Orb without a Pig Pet equipped.")
     @ConfigEditorBoolean
     @FeatureToggle
     var petWarning: Boolean = false
