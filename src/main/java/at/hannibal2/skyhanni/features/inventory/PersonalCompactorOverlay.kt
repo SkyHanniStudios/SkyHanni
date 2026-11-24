@@ -33,22 +33,22 @@ object PersonalCompactorOverlay {
 
     private val config get() = SkyHanniMod.feature.inventory.personalCompactor
 
-    private val group = RepoPattern.group("inventory.personalcompactor")
+    private val patternGroup = RepoPattern.group("inventory.personalcompactor")
 
     /**
      * REGEX-TEST: PERSONAL_COMPACTOR_4000
      * REGEX-TEST: PERSONAL_DELETOR_7000
      */
-    private val internalNamePattern by group.pattern(
+    private val internalNamePattern by patternGroup.pattern(
         "internalname",
         "PERSONAL_(?<type>[^_]+)_(?<tier>\\d+)",
     )
 
     private val slotsMap = mapOf(
-        7000 to 12,
-        6000 to 7,
-        5000 to 3,
-        4000 to 1,
+        7000 to 28,
+        6000 to 21,
+        5000 to 14,
+        4000 to 7,
     )
 
     private const val MAX_ITEMS_PER_ROW = 7

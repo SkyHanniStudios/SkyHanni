@@ -1,5 +1,226 @@
 # SkyHanni - Change Log
 
+## Version 10.0.0
+
+### New Features
+
+#### Inventory
+
++ Added Stonks Auction features. - RemainingDelta (https://github.com/SkyHanniStudios/SkyHanni/pull/6304)
+    + A One Minute Warning and a New Round Alert.
+    + A Countdown showing the time left in the round and your bid status.
+
+#### Hunting
+
++ Added an option to hide Critter Capsules on the Critter Safari. - hannibal2 (https://github.com/hannibal002/SkyHanni/pull/6542)
+    + Capsules in flight can be hidden always or only while close to the player.
+    + Capsules lying on the ground can be hidden with a separate option.
++ Added Critter Safari Shard Checklist. - pan_truskawka045 (https://github.com/hannibal002/SkyHanni/pull/6526)
+    + Tracks which shards you caught during the current run and shows the ones still missing.
+    + Can show every biome, the current biome first, or only the current biome with a one-line summary for the rest.
+    + Can hide already caught shards and the shard icons.
+
+#### Misc
+
++ Added Muted Narrator Warning. - Dae (https://github.com/SkyHanniStudios/SkyHanni/pull/6663)
+   + Send a warning reminder in chat when the narrator is enabled, but in a muted state.
+   + Narrator destroys performance in SkyBlock.
+
+### Improvements
+
+#### Mining
+
++ Added an In Dwarven Mines option to the Fallen Star Cult Timer. - Ironfort9 (https://github.com/hannibal002/SkyHanni/pull/6547)
++ Improved config options for Glacite Mineshaft Waypoints. - Piggered (https://github.com/SkyHanniStudios/SkyHanni/pull/6233)
+    + Consolidated the "Corpse Locator" section into the "Mineshaft Waypoints" section.
+    + Made changes to waypoint config options apply immediately while inside a Mineshaft.
+    + Removed the main toggle required to be enabled for Glacite Mineshaft features.
+    + Added a "Looted Corpse" waypoint type, which can be disabled separately from "Found Corpse".
+
+#### Chat
+
++ Added an opt-out for contributors who do not want to count toward Achievements or trigger the Discover Contributor Message. - Empa (https://github.com/hannibal002/SkyHanni/pull/6556)
+
+#### Fishing
+
++ Added a Custom Reel In Time option to the Fishing Hook Display. - SuperClash (https://github.com/SkyHanniStudios/SkyHanni/pull/6598)
+    + Helpful for high-ping players who can set it close to their ping so they can reel in for the catch earlier.
+
+#### Foraging
+
++ Added a Display Tree Gifts option to the Foraging Tracker. - Ironfort9 (https://github.com/SkyHanniStudios/SkyHanni/pull/6543)
+    + This dropdown in the Foraging Tracker replaces the old Compact Gifts option.
+    + You can set it to display the full Tree Gift message, to compact the Tree Gift message or to disable the Tree Gift messages altogether.
+
+#### Farming
+
++ Added an option for the Pest Finder Teleport Hotkey to ignore plots with exactly one Pest. - mattwhyy (https://github.com/SkyHanniStudios/SkyHanni/pull/6578)
+    + Useful when leaving one Pest alive for Infiltration.
+
+#### Event
+
++ Added an option to render Diana Burrow Waypoints as block outlines with an adjustable width. - Fazfoxy (https://github.com/SkyHanniStudios/SkyHanni/pull/6460)
++ Added customizable colors for Diana Burrow Waypoints and the Line To Next Burrow, separately for Start, Mob and Treasure Burrows. - Fazfoxy (https://github.com/SkyHanniStudios/SkyHanni/pull/6460)
+
+#### Combat
+
++ Improved Vampire Slayer Killer Spring features in the Rift. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6593)
+   + Improved highlight to only show the segment closest to your eye height.
+   + Added Beacon Beam option.
+
+#### Misc
+
++ Added a way for Contributors to opt out of the chat message other players get on first seeing a Contributor. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6581)
++ Improved `/shcalc` to support the 'x' symbol for multiplication. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6603)
++ Added fox sounds to Chat Sound Responses. - Empa (https://github.com/SkyHanniStudios/SkyHanni/pull/6640)
+
+### Fixes
+
+#### Chat
+
++ Fixed being kicked from Hypixel when copying and sending the Overflow level-up messages for Skills and Garden Milestones. - Rhynohowl (https://github.com/hannibal002/SkyHanni/pull/6544)
+
+#### Combat
+
++ Fixed ConcurentModificationException errors in chat from Damage Indicator. - Luna (https://github.com/hannibal002/SkyHanni/pull/6548)
++ Fixed Slayer Damage Indicator not working and showing errors after Hypixel changed the Slayer boss nametags. - FabiHBBBT (https://github.com/hannibal002/SkyHanni/pull/6588)
++ Fixed items with the new Slayer Weapon item category giving an error. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6617)
++ Fixed outdated Broodmother spawn timings after Hypixel changed them. - Pablete1234 (https://github.com/SkyHanniStudios/SkyHanni/pull/6606)
++ Fixed Slayer features (Time to Kill, Line to Tarantula Boss) not detecting your own Slayer boss. - Fazfoxy (https://github.com/SkyHanniStudios/SkyHanni/pull/6637)
+   + This fix may not work for the Vampire Slayer due to apparent inconsistencies in the Rift.
++ Fixed Vampire Slayer features not detecting the boss after a Hypixel change. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6593)
+
+#### Events
+
++ Fixed Shiny Orb Rewards not being detected. - Avrg (https://github.com/hannibal002/SkyHanni/pull/6558)
++ Fixed Math Enjoyer Solver failing for multiplication. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6603)
++ Fixed Primal Fear Notify constantly spamming sounds. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6603)
++ Fixed the Broodmother Imminent Warning saying 60 seconds instead of 30 seconds. - MTOnline (https://github.com/SkyHanniStudios/SkyHanni/pull/6586)
++ Fixed the Hoppity Call Warning staying active after answering the call. - Taubsie (https://github.com/SkyHanniStudios/SkyHanni/pull/6576)
++ Fixed Carnival Double Click to Start not working. - Taubsie (https://github.com/SkyHanniStudios/SkyHanni/pull/6577)
++ Fixed rabbits bought from Hoppity's Abiphone calls not being detected. - Taubsie (https://github.com/SkyHanniStudios/SkyHanni/pull/6577)
++ Fixed Shiny Orb Tracker not detecting multiple rewards. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6579)
+
+#### Fishing
+
++ Fixed Sack Display showing the selected bait in the Bait Sack as Common Hook. - Avrg (https://github.com/hannibal002/SkyHanni/pull/6591)
++ Fixed Trophy Fish catches not being counted and Trophy Fishing Chat Messages not working after Hypixel changed the catch message. - CalMWolfs (https://github.com/hannibal002/SkyHanni/pull/6587)
++ Fixed Old SkyBlock Menu Fishing Bag using the old command /fishingbag, changing it to use /baitsack. - Shana (https://github.com/hannibal002/SkyHanni/pull/6597)
++ Fixed catches without a chat message not contributing towards the catch count in the Fishing Profit Tracker. - SuperClash (https://github.com/SkyHanniStudios/SkyHanni/pull/6599)
++ Fixed Sea Creature Lootshare Sphere flickering above 20 FPS. - Fazfoxy (https://github.com/SkyHanniStudios/SkyHanni/pull/6689)
+
+#### Inventory
+
++ Fixed an error when having Odger's Tooth in the Accessory Bag. - Avrg (https://github.com/hannibal002/SkyHanni/pull/6590)
++ Fixed errors and missing prices for the Phoenix Pet after Hypixel changed its rarities to Special and Very Special. - Pablete1234 (https://github.com/hannibal002/SkyHanni/pull/6575)
++ Fixed unknown item category errors. - CalMWolfs (https://github.com/hannibal002/SkyHanni/pull/6587)
++ Fixed errors when opening the Tyashoi Alchemist's shop. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6604)
++ Fixed the Perkpocalypse Mayor not being detected when opening the Calendar. - jani (https://github.com/SkyHanniStudios/SkyHanni/pull/6611)
++ Fixed Trinity Helper not working. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6602)
++ Fixed unknown enchanted books being detected as Paleontology. - Dae (https://github.com/SkyHanniStudios/SkyHanni/pull/6646)
++ Fixed displays not highlighting the matching inventory item when hovering over a line. - Dae (https://github.com/SkyHanniStudios/SkyHanni/pull/6662)
+   + Mainly fixes the Sack Item Display, other displays may be affected as well.
++ Fixed item rendering for custom Hypixel item models. - Dae (https://github.com/SkyHanniStudios/SkyHanni/pull/6650)
++ Fixed Personal Compactor Overlay not showing Personal Deletor items past the 12th slot after Hypixel increased the maximum number of items. - Fazfoxy (https://github.com/SkyHanniStudios/SkyHanni/pull/6634)
+
+#### Farming
+
++ Fixed the Kernel donation message from Feast Chef Ted not being hidden. - Shana (https://github.com/hannibal002/SkyHanni/pull/6546)
+
+#### Command
+
++ Fixed `/gfs` tab completion not working for item names with more than one word. - Empa (https://github.com/SkyHanniStudios/SkyHanni/pull/6612)
++ Fixed Call Tab Complete suggesting invalid names. - Alex (https://github.com/SkyHanniStudios/SkyHanni/pull/6632)
+
+
+#### Dungeon
+
++ Fixed Dungeon features not working because the start of a run was not detected. - heyn (https://github.com/SkyHanniStudios/SkyHanni/pull/6565)
++ Fixed Dungeon Filters not hiding Mort's dialogue. - heyn (https://github.com/SkyHanniStudios/SkyHanni/pull/6565)
++ Fixed the Low Teammate Health Alert not firing. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6574)
+
+#### Mining
+
++ Fixed Mute Powder Chest Opening Sound not muting the full chest opening sound. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6614)
++ Fixed Profit Per Corpse not recognizing the Resourceful perk. - CalMWolfs (https://github.com/SkyHanniStudios/SkyHanni/pull/6621)
++ Fixed Profit Per Corpse deducting the key cost only when the Resourceful perk saved the key. - CalMWolfs (https://github.com/SkyHanniStudios/SkyHanni/pull/6692)
+
+#### Misc
+
++ Fixed wrong colors in Fix Colored Particles. - Luna (https://github.com/hannibal002/SkyHanni/pull/6549)
+    + Green and blue were swapped, so green particles rendered blue and blue ones green.
++ Fixed expired config backups not being deleted. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6083)
++ Fixed Fiesta Flask and Scatha-in-a-Bottle not being detected in Non-God Pot Effects. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6601)
++ Fixed grammar and SkyHanni capitalization in settings and command descriptions. - IGrindDiana77 (https://github.com/SkyHanniStudios/SkyHanni/pull/6568)
++ Fixed old log files not always being deleted after expiring. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6083)
++ Fixed lag spikes caused by the config saving too often. - FabiHBBBT (https://github.com/SkyHanniStudios/SkyHanni/pull/6622)
++ Removed the white background behind the Stonks Auction timer. - RemainingDelta (https://github.com/SkyHanniStudios/SkyHanni/pull/6620)
++ Fixed clicking the Muted Narrator Warning not showing a confirmation after turning off the narrator. - hannibal2 (https://github.com/SkyHanniStudios/SkyHanni/pull/6694)
++ Fixed Muted Narrator Warning showing when the narrator is off. - Dae (https://github.com/SkyHanniStudios/SkyHanni/pull/6693)
++ Fixed saving the config causing lag spikes. - FabiHBBBT (https://github.com/SkyHanniStudios/SkyHanni/pull/6688)
+   + This happened every minute.
+
+### Technical Details
++ Added the internal item name to the `/shcopyentities` output. - hannibal2 (https://github.com/hannibal002/SkyHanni/pull/6542)
++ Renamed most variables of RepoPatternGroup. - hannibal2 (https://github.com/hannibal002/SkyHanni/pull/6527)
+
++ Added a Copy Sack Items feature that copies Sack contents to the clipboard. - jani (https://github.com/SkyHanniStudios/SkyHanni/pull/6609)
++ Added a Reviews section to CONTRIBUTING.md that explains who reviews pull requests and which approvals count. - hannibal2 (https://github.com/SkyHanniStudios/SkyHanni/pull/6607)
++ Corrected grammar in CONTRIBUTING.md and spelling in test text. - IGrindDiana77 (https://github.com/SkyHanniStudios/SkyHanni/pull/6568)
++ Fixed `LorenzRarity.oneBelow` throwing for Common instead of returning `null`. - hannibal2 (https://github.com/SkyHanniStudios/SkyHanni/pull/6594)
++ Fixed all missing trailing comma warnings. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6615)
++ Moved log files into the Minecraft logs folder. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6083)
++ Moved SkyHanni, SkyHanni-REPO and SkyHanniDevelopment to the SkyHanniStudios GitHub organization. - hannibal2 (https://github.com/SkyHanniStudios/SkyHanni/pull/6595)
+    + Updated all GitHub links to the new location.
+    + Added a migration that moves configs still using the old SkyHanni-REPO location to the new one.
++ Moved the SkyHanni and NotEnoughUpdates repos out of the config folder. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6083)
++ Optimized all PNG assets with oxipng, deleted unused assets, and downscaled an unnecessarily big asset. - Luna (https://github.com/SkyHanniStudios/SkyHanni/pull/6589)
++ Refactored Glacite Mineshaft Waypoints. - Piggered (https://github.com/SkyHanniStudios/SkyHanni/pull/6233)
++ Replaced `LorenzRarity.id` and `getById` with `neuPetIndex` and `fromNeuPetIndex`. - hannibal2 (https://github.com/SkyHanniStudios/SkyHanni/pull/6594)
++ Updated the Discord roles documentation to the new role structure. - hannibal2 (https://github.com/SkyHanniStudios/SkyHanni/pull/6607)
+    + Renamed Moderator to Discord Moderator and Main Contributor to Veteran Contributor, added Code Reviewer, and removed Mod Maintainer and Member.
++ Added a new NpcApi that takes care of handling the new NPC interactions. - Taubsie (https://github.com/SkyHanniStudios/SkyHanni/pull/6577)
+   + Added a new event `DialogueResponseSentEvent` that is sent on such an NPC interaction.
+   + Added the method `sendNpcResponse` exposed by that class, which replaces the deprecated `HypixelCommands#npcOption`.
++ Added build progress loggers for Java, Kotlin, and Detekt. - Dae (https://github.com/SkyHanniStudios/SkyHanni/pull/6638)
++ Added debouncing to config saving. - FabiHBBBT (https://github.com/SkyHanniStudios/SkyHanni/pull/6622)
++ Added support for Faction Rabbits to the Item Resolution Query. - jani (https://github.com/SkyHanniStudios/SkyHanni/pull/6500)
++ Fixed cosmetic warnings in Gradle tasks. - Dae (https://github.com/SkyHanniStudios/SkyHanni/pull/6641)
++ Fixed Croesus Chest Tracker not removing old chests beyond the chest limit from storage. - 3d3n-pyc (https://github.com/SkyHanniStudios/SkyHanni/pull/6479)
++ Moved `PROJECT_VERSION` from buildTools into buildSrc and set the Kotlin language and API version of buildSrc to 2.4. - Dae (https://github.com/SkyHanniStudios/SkyHanni/pull/6638)
++ Moved Loom off the deprecated `isIdeConfigGenerated` property. - Dae (https://github.com/SkyHanniStudios/SkyHanni/pull/6625)
+   + Also added some unsafe flags to silence test JVMs on Java 25.
++ Re-pointed all enchanted book parsing through ItemNameResolver. - Dae (https://github.com/SkyHanniStudios/SkyHanni/pull/6646)
++ Re-set the preprocessor cache directory in Gradle. - Dae (https://github.com/SkyHanniStudios/SkyHanni/pull/6630)
+   + Preprocessor caching should now happen again.
++ Relocated `keval` since we now ship `2.0`. - Dae (https://github.com/SkyHanniStudios/SkyHanni/pull/6641)
+   + Most other mods seem to stay on 1.x for a while.
++ Removed live plugins. - Dae (https://github.com/SkyHanniStudios/SkyHanni/pull/6653)
+   + Replaced with [SkyHanniDevelopment](https://github.com/SkyHanniStudios/SkyHanniDevelopment).
++ Removed unused shaders. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6563)
++ Upgraded Kotlin to 2.4.21. - Dae (https://github.com/SkyHanniStudios/SkyHanni/pull/6625)
+   + Upgraded fabric-language-kotlin to 1.14.2, KSP to 2.3.12, keval to 2.0.1.
+   + Required adding a flag to disable new features in ModuleProcessor.
++ Upgraded Loom to 1.19.3. - Dae (https://github.com/SkyHanniStudios/SkyHanni/pull/6625)
+   + Shadow to 9.6.1, Gson to 2.15.0, Guava to 33.7.2, JUnit to 6.1.3.
++ Bumped Gradle to 9.9.1. - Dae (https://github.com/SkyHanniStudios/SkyHanni/pull/6686)
++ Merged annotation-processors package into buildSrc. - Dae (https://github.com/SkyHanniStudios/SkyHanni/pull/6686)
++ Removed Position.renderStrings and Position.renderString0. - Dae (https://github.com/SkyHanniStudios/SkyHanni/pull/6664)
+
+### Removed Features
+
++ Removed Fishing Bag related features from Not Clickable Items due to the Fishing Bag not existing anymore. - Shana (https://github.com/hannibal002/SkyHanni/pull/6597)
++ Removed the Chat Messages option for Broodmother stages. - MTOnline (https://github.com/SkyHanniStudios/SkyHanni/pull/6586)
+    + Hypixel shortened the spawn timings so much that these messages are now redundant.
+    + The message for the Slain stage is now a separate Slain Message option, which is disabled by default.
+    + The message for the Alive stage is now only sent by the Spawn Alert.
++ Removed the Ensure Coins Pre-Trade option for Hoppity calls. - Taubsie (https://github.com/SkyHanniStudios/SkyHanni/pull/6576)
+    + Hoppity now takes the Coins from the Bank automatically.
++ Removed Co-op and Other Vampire Boss configs. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6593)
+   + Any boss you attack is now tracked until it is more than 20 blocks away from the player.
++ Removed Vampire Slayer Transparency option. - Avrg (https://github.com/SkyHanniStudios/SkyHanni/pull/6593)
+   + It had not been working for a while.
+
 ## Version 9.0.0
 
 ### New Features
