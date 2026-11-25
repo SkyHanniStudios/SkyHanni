@@ -1097,6 +1097,8 @@ class ProfileSpecificStorage(
         @Expose var amountSyphoned: Int = 0,
         @Expose var amountInBox: Int = 0,
         @Expose var enabled: Boolean = true,
+        // False until the syphoned amount is read. Older profiles have null here.
+        @Expose var syphonKnown: Boolean? = null,
     )
 
     // - hunting

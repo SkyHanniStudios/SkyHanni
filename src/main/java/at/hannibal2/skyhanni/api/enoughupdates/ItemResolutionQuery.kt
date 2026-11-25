@@ -185,6 +185,9 @@ class ItemResolutionQuery {
         private fun String.renamedEnchantmentCheck(): String = renamedEnchantments[this] ?: this
 
         fun attributeNameToInternalName(attributeName: String): String? {
+            // Some shards have different names on the Bazaar.
+            AttributeShardsData.findInternalNameByShardName(attributeName)?.let { return it.asString() }
+
             var fixedAttributeName = attributeName.uppercase().replace(" ", "_")
             fixedAttributeName = shardNameOverrides[fixedAttributeName] ?: fixedAttributeName
             val shardName = "SHARD_$fixedAttributeName"
@@ -336,7 +339,10 @@ class ItemResolutionQuery {
         return null
     }
 
-    private fun resolveItemInAttributeMenu(lore: List<String>): NeuInternalName? {
+    private fun resolveItemInAttributeMenu(displayName: String, lore: List<String>): NeuInternalName? {
+        AttributeShardsData.resolveMenuShardInternalName(displayName.removeColor(), lore.map { it.removeColor() })?.let {
+            return it
+        }
         UtilsPatterns.attributeSourcePattern.firstMatcher(lore) {
             return attributeNameToInternalName(group("source"))?.toInternalName()
         }
@@ -375,7 +381,7 @@ class ItemResolutionQuery {
         } else if (guiName.endsWith("Experimentation Table RNG")) {
             resolveEnchantmentByName(displayName)
         } else if (AttributeShardsData.attributeMenuInventory.isInside()) {
-            resolveItemInAttributeMenu(compound.getLore())
+            resolveItemInAttributeMenu(displayName, compound.getLore())
         } else if (
             AttributeShardsData.huntingBoxInventory.isInside() ||
             AttributeShardsData.fusionBoxInventory.isInside() ||

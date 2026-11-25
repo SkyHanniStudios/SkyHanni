@@ -22,7 +22,6 @@ import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.DelayedRun
 import at.hannibal2.skyhanni.utils.HypixelCommands
 import at.hannibal2.skyhanni.utils.InventoryDetector
-import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.ItemUtils
 import at.hannibal2.skyhanni.utils.ItemUtils.cleanName
 import at.hannibal2.skyhanni.utils.ItemUtils.getCleanLore
@@ -38,12 +37,12 @@ import at.hannibal2.skyhanni.utils.RegexUtils.groupOrNull
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
-import at.hannibal2.skyhanni.utils.compat.InventoryCompat.orNull
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import java.util.regex.Pattern
 import kotlin.time.Duration.Companion.seconds
 
 @SkyHanniModule
+@Suppress("LargeClass")
 object AttributeShardsData {
     val config get(): AttributeShardsConfig = SkyHanniMod.feature.inventory.attributeShards
     private val storage get() = ProfileStorageData.profileSpecific?.attributeShards
@@ -53,14 +52,18 @@ object AttributeShardsData {
     private var attributeInfo = mapOf<String, NeuAttributeShardData>()
     private var internalNameToShard = mapOf<NeuInternalName, String>()
     private var attributeAbilityNameToShard = mapOf<String, String>()
+    private var shardIdToShard = mapOf<String, String>()
+    private var shardNameToShard = mapOf<String, String>()
+
+    private var legacyEmptyKeyTarget: String? = null
     private val validItemSlots = 9..44
+    private const val ADVANCED_MODE_SLOT = 52
+    private const val BAZAAR_PREFIX = "SHARD_"
 
     var maxShards = 0
         private set
 
-    val attributeMenuInventory = InventoryDetector(
-        onOpenInventory = { DelayedRun.runNextTick { processAttributeMenuItems() } },
-    ) { attributeMenuPattern }
+    val attributeMenuInventory = InventoryDetector { attributeMenuPattern }
     val huntingBoxInventory = InventoryDetector { huntingBoxPattern }
     val bazaarShardsInventory = InventoryDetector(
         onOpenInventory = { DelayedRun.runNextTick { AttributeShardOverlay.updateDisplay() } },
@@ -178,6 +181,16 @@ object AttributeShardsData {
     private val syphonAmountPattern by patternGroup.pattern(
         "syphon.amount.colorless",
         """Syphon (?<amount>\d+) shards? to (?:level up|unlock)!""",
+    )
+
+    /**
+     * REGEX-TEST: Source: Verdant Shard (C11)
+     * REGEX-TEST: Source: Barbarian Duke X Shard (E27)
+     * REGEX-TEST: Source: Packrat Shard (U73)
+     */
+    private val menuSourcePattern by patternGroup.pattern(
+        "menu.source.colorless",
+        """Source: (?<source>.+) Shard \((?<id>\w\d+)\)""",
     )
 
     /**
@@ -381,7 +394,8 @@ object AttributeShardsData {
         val attributesJson = event.getConstant<NeuAttributeShardJson>("attribute_shards")
         attributeLevelling = attributesJson.attributeLevelling
         unconsumableAttributes = attributesJson.unconsumableAttributes
-        attributeInfo = attributesJson.attributes.associateBy { it.bazaarName.asString() }
+        val attributes = attributesJson.attributes
+        attributeInfo = attributes.associateBy { it.shardKey() }
         maxShards = attributeInfo.size - unconsumableAttributes.size
         internalNameToShard = attributeInfo.map { (name, info) ->
             info.internalName to name
@@ -389,7 +403,28 @@ object AttributeShardsData {
         attributeAbilityNameToShard = attributeInfo.map { (name, info) ->
             info.abilityName to name
         }.toMap()
+        shardIdToShard = attributeInfo.map { (name, info) ->
+            info.shardId to name
+        }.toMap()
+        shardNameToShard = buildMap {
+            for ((name, info) in attributeInfo) put(normalizeShardName(info.displayName), name)
+            for ((name, info) in attributeInfo) {
+                val bazaarName = info.bazaarName.asString()
+                if (bazaarName.startsWith(BAZAAR_PREFIX)) putIfAbsent(bazaarName.removePrefix(BAZAAR_PREFIX), name)
+            }
+        }
+        legacyEmptyKeyTarget = attributes.firstOrNull { it.bazaarName.asString().isEmpty() }?.shardKey()
     }
+
+    private fun normalizeShardName(name: String): String = name.uppercase().replace(" ", "_")
+
+    /** Shards without a Bazaar name (e.g. Rainbug) use their display name for storage. */
+    private fun NeuAttributeShardData.shardKey(): String =
+        bazaarName.asString().ifEmpty { BAZAAR_PREFIX + normalizeShardName(displayName) }
+
+    /** Accepts both display names and old Bazaar names. */
+    fun findInternalNameByShardName(name: String): NeuInternalName? =
+        shardNameToShard[normalizeShardName(name)]?.let { attributeInfo[it]?.internalName }
 
     @HandleEvent(onlyOnSkyblock = true)
     private fun onChat(event: SkyHanniChatEvent.Allow) {
@@ -483,31 +518,63 @@ object AttributeShardsData {
                 add("- $shardName: Level ${getActiveLevel(shardName)}/10")
             }
         }
+
+        event.title("Attribute Shards Without Data")
+        val missing = getMissingDataShards()
+        if (missing.isEmpty()) {
+            event.addIrrelevant("All attribute shards have data.")
+        } else {
+            event.addData {
+                for (shardName in missing) add("- $shardName")
+            }
+        }
     }
 
-    private fun processAttributeMenuItems() {
-        val items = InventoryUtils.getItemsInOpenChest().map { it.item }
-        for (item in items) {
-            val internalName = item.getInternalNameOrNull() ?: continue
-            if (!isAttributeShard(internalName)) continue
-            var tier = 0
-            var toNextTier = 0
-            attributeShardNamePattern.matchMatcher(item.cleanName) {
-                tier = groupOrNull("tier")?.romanToDecimal() ?: 0
-            }
-            val lore = item.getCleanLore()
-            syphonAmountPattern.firstMatcher(lore) {
-                toNextTier = group("amount").toInt()
-            }
-            processShard(internalName, tier, toNextTier)
-            attributeStatePattern.firstMatcher(lore) {
-                val enabled = group("state") == "Yes"
-                setAttributeState(internalName, enabled)
+    private data class MenuShard(val key: String, val tier: Int)
+
+    /** Prefer the lore ID because shard names can differ between the menu and the Bazaar. */
+    private fun readMenuShard(cleanName: String, cleanLore: List<String>): MenuShard? {
+        val source = menuSourcePattern.firstMatcher(cleanLore) { group("source") to group("id") }
+        val isShardItem = source != null ||
+            syphonAmountPattern.anyMatches(cleanLore) ||
+            attributeStatePattern.anyMatches(cleanLore)
+        if (!isShardItem) return null
+
+        val (abilityName, tier) = attributeShardNamePattern.matchMatcher(cleanName) {
+            group("name") to (groupOrNull("tier")?.romanToDecimal() ?: 0)
+        } ?: return null
+
+        val key = source?.let { shardIdToShard[it.second] }
+            ?: attributeAbilityNameToShard[abilityName]
+            ?: attributeAbilityNameToShard[cleanName]
+            ?: source?.let { shardNameToShard[normalizeShardName(it.first)] }
+            ?: return null
+        return MenuShard(key, tier)
+    }
+
+    /**
+     * Resolves an item of the attribute menu to the internal name of its shard.
+     * Used by [at.hannibal2.skyhanni.api.enoughupdates.ItemResolutionQuery].
+     */
+    fun resolveMenuShardInternalName(cleanName: String, cleanLore: List<String>): NeuInternalName? {
+        val shard = readMenuShard(cleanName, cleanLore) ?: return null
+        return attributeInfo[shard.key]?.internalName
+    }
+
+    private fun processAttributeMenuItems(items: Map<Int, SafeItemStack>) {
+        migrateLegacyStorage()
+        for (item in items.values) {
+            try {
+                processAttributeMenuItem(item)
+            } catch (e: Exception) {
+                ErrorManager.logErrorWithData(
+                    e, "Failed to read an attribute shard in the attribute menu",
+                    "item" to item.cleanName,
+                )
             }
         }
 
-        val advancedModeStack = InventoryUtils.getSlotAtIndex(52)?.item?.orNull()
-        val advancedModeLore = advancedModeStack?.getCleanLore().orEmpty()
+        val advancedModeLore = items[ADVANCED_MODE_SLOT]?.getCleanLore().orEmpty()
         advancedModeNotUnlockedPattern.firstMatcher(advancedModeLore) {
             addAllMissingShards()
         }
@@ -515,20 +582,68 @@ object AttributeShardsData {
         AttributeShardOverlay.updateDisplay()
     }
 
+    private fun processAttributeMenuItem(item: SafeItemStack) {
+        val cleanLore = item.getCleanLore()
+        val shard = readMenuShard(item.cleanName, cleanLore) ?: return
+        if (shard.key in unconsumableAttributes) return
+
+        val toNextTier = syphonAmountPattern.firstMatcher(cleanLore) { group("amount").toInt() } ?: 0
+        processShard(shard.key, shard.tier, toNextTier)
+        attributeStatePattern.firstMatcher(cleanLore) {
+            setAttributeState(shard.key, group("state") == "Yes")
+        }
+    }
+
     private fun addAllMissingShards() {
-        val currentShards = storage?.keys.orEmpty()
-        if (currentShards.size > 30) return
-        for ((shardName, shardInfo) in attributeInfo) {
-            if (shardName in currentShards) continue
+        val knownShards = storage?.filterValues { it.syphonKnown != false }?.keys.orEmpty()
+        if (knownShards.size > 30) return
+        for (shardName in attributeInfo.keys) {
+            if (shardName in knownShards) continue
             if (shardName in unconsumableAttributes) continue
 
-            val internalName = shardInfo.internalName
-            processShard(internalName, 0, 1)
+            processShard(shardName, 0, 1)
         }
+    }
+
+    /** Older profiles used an empty key for the shard without a Bazaar name. */
+    private fun migrateLegacyStorage() {
+        val data = storage ?: return
+        val target = legacyEmptyKeyTarget ?: return
+        val legacy = data.remove("") ?: return
+        data.putIfAbsent(target, legacy)
+    }
+
+    private fun getOrCreateData(attributeName: String): ProfileSpecificStorage.AttributeShardData? =
+        storage?.getOrPut(attributeName) { ProfileSpecificStorage.AttributeShardData(syphonKnown = false) }
+
+    /** Copies the entries so the overlay can compare them after the next update. */
+    fun getTrackedShards(): Map<String, ProfileSpecificStorage.AttributeShardData> {
+        migrateLegacyStorage()
+        val data = storage ?: return emptyMap()
+        return data
+            .filterKeys { it in attributeInfo && it !in unconsumableAttributes }
+            .mapValues { it.value.copy() }
+    }
+
+    /** Display names of shards with missing syphon data. */
+    fun getMissingDataShards(): List<String> {
+        migrateLegacyStorage()
+        val data = storage ?: return emptyList()
+        return attributeInfo.mapNotNull { (key, info) ->
+            if (key in unconsumableAttributes) return@mapNotNull null
+            val entry = data[key]
+            if (entry != null && entry.syphonKnown != false) null else info.displayName
+        }.sorted()
     }
 
     @HandleEvent(onlyOnSkyblock = true)
     private fun onInventoryUpdated(event: InventoryUpdatedEvent) {
+        if (attributeMenuInventory.isInside()) {
+            // The first update runs on the packet thread. Update the overlay on the main thread.
+            val menuItems = event.inventoryItems
+            DelayedRun.runNextTick { processAttributeMenuItems(menuItems) }
+            return
+        }
         if (!huntingBoxInventory.isInside()) return
         val items = event.inventoryItems
         val shardsInBox = mutableSetOf<String>()
@@ -541,29 +656,40 @@ object AttributeShardsData {
             }
             val internalName = item.getInternalNameOrNull() ?: continue
             if (!isAttributeShard(internalName)) continue
-            shardsInBox.add(readShardInHuntingBox(internalName, item))
+            try {
+                readShardInHuntingBox(internalName, item)?.let { shardsInBox.add(it) }
+            } catch (e: Exception) {
+                ErrorManager.logErrorWithData(
+                    e, "Failed to read an attribute shard in the hunting box",
+                    "item" to item.cleanName,
+                )
+            }
         }
 
         syncHuntingBoxAmounts(event.inventoryName, shardsInBox, searchActive)
         HuntingBoxValue.processInventory(items)
     }
 
-    private fun readShardInHuntingBox(internalName: NeuInternalName, item: SafeItemStack): String {
-        val attributeName = shardInternalNameToShardName(internalName)
+    private fun readShardInHuntingBox(internalName: NeuInternalName, item: SafeItemStack): String? {
+        val attributeName = internalNameToShard[internalName] ?: return null
         var tier = 0
         var toNextTier = 0
+        var levelRead = false
         for (line in item.getCleanLore()) {
             attributeShardNameLorePattern.matchMatcher(line) {
                 tier = groupOrNull("tier")?.romanToDecimal() ?: 0
+                levelRead = true
             }
             syphonAmountPattern.matchMatcher(line) {
                 toNextTier = group("amount").toInt()
+                levelRead = true
             }
             amountOwnedPattern.matchMatcher(line) {
                 setAmountInBox(attributeName, group("amount").formatInt())
             }
         }
-        processShard(internalName, tier, toNextTier)
+        // A missing level line leaves the syphoned amount unknown.
+        if (levelRead) processShard(attributeName, tier, toNextTier)
         return attributeName
     }
 
@@ -590,14 +716,13 @@ object AttributeShardsData {
     }
 
     private fun setAmountInBox(attributeName: String, amount: Int) {
-        storage?.getOrPut(attributeName) {
-            ProfileSpecificStorage.AttributeShardData()
-        }?.amountInBox = amount
+        getOrCreateData(attributeName)?.amountInBox = amount
     }
 
     @HandleEvent(priority = HandleEvent.HIGHEST)
     private fun onShardGain(event: ShardEvent) {
-        val attributeName = shardInternalNameToShardName(event.shardInternalName)
+        val attributeName = internalNameToShard[event.shardInternalName] ?: return
+        if (attributeName in unconsumableAttributes) return
         val existing = storage?.get(attributeName)?.amountInBox ?: 0
         setAmountInBox(attributeName, (existing + event.amount).coerceAtLeast(0))
     }
@@ -607,35 +732,42 @@ object AttributeShardsData {
         currentTier: Int,
         toNextTier: Int,
     ) {
-        val attributeName = shardInternalNameToShardName(internalName)
+        processShard(shardInternalNameToShardName(internalName), currentTier, toNextTier)
+    }
+
+    private fun processShard(
+        attributeName: String,
+        currentTier: Int,
+        toNextTier: Int,
+    ) {
         if (attributeName in unconsumableAttributes) return
-        val rarity = attributeInfo[attributeName]?.rarity
-            ?: ErrorManager.skyHanniError("Unknown attribute shard rarity for $attributeName")
-        val totalAmount = findTotalAmount(currentTier, toNextTier, rarity)
-        storage?.getOrPut(attributeName) {
-            ProfileSpecificStorage.AttributeShardData()
-        }?.amountSyphoned = totalAmount
+        val rarity = attributeInfo[attributeName]?.rarity ?: return
+        val totalAmount = findTotalAmount(currentTier, toNextTier, rarity) ?: return
+        getOrCreateData(attributeName)?.apply {
+            amountSyphoned = totalAmount
+            syphonKnown = true
+        }
     }
 
     private fun setAttributeState(
         internalName: NeuInternalName,
         enabled: Boolean,
     ) {
-        val attributeName = shardInternalNameToShardName(internalName)
-        if (attributeName in unconsumableAttributes) {
-            ErrorManager.skyHanniError("Unconsumable attribute was toggled: $attributeName. This should never happen.")
-        }
-        storage?.getOrPut(attributeName) {
-            ProfileSpecificStorage.AttributeShardData()
-        }?.enabled = enabled
+        setAttributeState(shardInternalNameToShardName(internalName), enabled)
     }
 
-    private fun findTotalAmount(currentTier: Int, toNextTier: Int, rarity: LorenzRarity): Int {
-        val tierLevelling = attributeLevelling[rarity] ?: ErrorManager.skyHanniError("Unknown attribute rarity: $rarity")
-        if (currentTier > tierLevelling.size) {
-            ErrorManager.skyHanniError("Current attribute tier $currentTier exceeds the maximum tier")
-        }
-        val cumulativeAmount = tierLevelling.take(currentTier + 1).sum()
+    private fun setAttributeState(
+        attributeName: String,
+        enabled: Boolean,
+    ) {
+        // Chameleon can appear in the menu without a level.
+        if (attributeName in unconsumableAttributes) return
+        getOrCreateData(attributeName)?.enabled = enabled
+    }
+
+    private fun findTotalAmount(currentTier: Int, toNextTier: Int, rarity: LorenzRarity): Int? {
+        val tierLevelling = attributeLevelling[rarity] ?: return null
+        val cumulativeAmount = tierLevelling.take(currentTier.coerceAtMost(tierLevelling.size) + 1).sum()
         return cumulativeAmount - toNextTier
     }
 
