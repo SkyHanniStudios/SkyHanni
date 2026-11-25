@@ -191,15 +191,16 @@ object UtilsPatterns {
     val skyblockMenuInventory = InventoryDetector { skyblockMenuGuiPattern }
 
     /**
-     * REGEX-TEST: §7Source: §fVerdant Shard §8(C11)
-     * REGEX-TEST: §7Source: §9Drowned Shard §8(R18)
-     * REGEX-TEST: §7Source: §5Barbarian Duke X Shard §8(E27)
-     * REGEX-TEST: §7Source: §6Galaxy Fish Shard §8(L41)
-     * REGEX-TEST: §7Source: §6Starborn Shard §8(L44)
-     * REGEX-TEST: §7Source: §fSea Archer Shard §8(C14)
+     * REGEX-TEST: Source: Verdant Shard (C11)
+     * REGEX-TEST: Source: Barbarian Duke X Shard (E27)
+     * REGEX-TEST: Source: Drowned Shard (R18)
+     * REGEX-TEST: Source: Galaxy Fish Shard (L41)
+     * REGEX-TEST: Source: Starborn Shard (L44)
+     * REGEX-TEST: Source: Sea Archer Shard (C14)
+     * REGEX-TEST: Source: Packrat Shard (U73)
      */
     val attributeSourcePattern by patternGroup.pattern(
-        "attribute.shard.source",
-        "§7Source: §.(?<source>.+) Shard §8\\(\\w\\d+\\)"
+        "attribute.shard.source.colorless",
+        """Source: (?<source>.+) Shard \((?<id>\w\d+)\)""",
     )
 }

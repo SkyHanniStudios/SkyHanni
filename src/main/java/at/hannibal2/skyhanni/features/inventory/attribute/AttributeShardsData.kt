@@ -37,6 +37,7 @@ import at.hannibal2.skyhanni.utils.RegexUtils.groupOrNull
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
+import at.hannibal2.skyhanni.utils.UtilsPatterns
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import java.util.regex.Pattern
 import kotlin.time.Duration.Companion.seconds
@@ -182,16 +183,6 @@ object AttributeShardsData {
     private val syphonAmountPattern by patternGroup.pattern(
         "syphon.amount.remaining",
         """Syphon (?<amount>\d+) (?:shards?|more) to (?:level up|unlock)!""",
-    )
-
-    /**
-     * REGEX-TEST: Source: Verdant Shard (C11)
-     * REGEX-TEST: Source: Barbarian Duke X Shard (E27)
-     * REGEX-TEST: Source: Packrat Shard (U73)
-     */
-    private val menuSourcePattern by patternGroup.pattern(
-        "menu.source.colorless",
-        """Source: (?<source>.+) Shard \((?<id>\w\d+)\)""",
     )
 
     /**
@@ -414,14 +405,17 @@ object AttributeShardsData {
                 if (bazaarName.startsWith(BAZAAR_PREFIX)) putIfAbsent(bazaarName.removePrefix(BAZAAR_PREFIX), name)
             }
         }
-        legacyEmptyKeyTarget = attributes.firstOrNull { it.bazaarName.asString().isEmpty() }?.shardKey()
+        legacyEmptyKeyTarget = attributes.singleOrNull { it.displayName == "Rainbug" }?.shardKey()
     }
 
     private fun normalizeShardName(name: String): String = name.uppercase().replace(" ", "_")
 
     /** Shards without a Bazaar name (e.g. Rainbug) use their display name for storage. */
     private fun NeuAttributeShardData.shardKey(): String =
-        bazaarName.asString().ifEmpty { BAZAAR_PREFIX + normalizeShardName(displayName) }
+        shardStorageKey(bazaarName.asString(), displayName)
+
+    internal fun shardStorageKey(bazaarName: String, displayName: String): String =
+        bazaarName.ifEmpty { BAZAAR_PREFIX + normalizeShardName(displayName) }
 
     /** Accepts both display names and old Bazaar names. */
     fun findInternalNameByShardName(name: String): NeuInternalName? =
@@ -535,7 +529,7 @@ object AttributeShardsData {
 
     /** Prefer the lore ID because shard names can differ between the menu and the Bazaar. */
     private fun readMenuShard(cleanName: String, cleanLore: List<String>): MenuShard? {
-        val source = menuSourcePattern.firstMatcher(cleanLore) { group("source") to group("id") }
+        val source = UtilsPatterns.attributeSourcePattern.firstMatcher(cleanLore) { group("source") to group("id") }
         val isShardItem = source != null ||
             syphonAmountPattern.anyMatches(cleanLore) ||
             attributeStatePattern.anyMatches(cleanLore)
@@ -607,9 +601,11 @@ object AttributeShardsData {
     }
 
     /** Older profiles used an empty key for the shard without a Bazaar name. */
-    private fun migrateLegacyStorage() {
-        val data = storage ?: return
-        val target = legacyEmptyKeyTarget ?: return
+    internal fun migrateLegacyStorage(
+        data: MutableMap<String, ProfileSpecificStorage.AttributeShardData>? = storage,
+        target: String? = legacyEmptyKeyTarget,
+    ) {
+        if (data == null || target == null) return
         val legacy = data.remove("") ?: return
         data.putIfAbsent(target, legacy)
     }
@@ -640,9 +636,8 @@ object AttributeShardsData {
     @HandleEvent(onlyOnSkyblock = true)
     private fun onInventoryUpdated(event: InventoryUpdatedEvent) {
         if (attributeMenuInventory.isInside()) {
-            // The first update runs on the packet thread. Update the overlay on the main thread.
             val menuItems = event.inventoryItems
-            DelayedRun.runNextTick { processAttributeMenuItems(menuItems) }
+            DelayedRun.runOrNextTick { processAttributeMenuItems(menuItems) }
             return
         }
         if (!huntingBoxInventory.isInside()) return
@@ -866,13 +861,13 @@ object AttributeShardsData {
             }
         }
     }
-}
 
-internal fun syphonedAtTier(tierCosts: List<Int>, tier: Int, remaining: Int?): Int? {
-    if (tier !in 0..tierCosts.size) return null
-    val earned = tierCosts.take(tier).sum()
-    val nextCost = tierCosts.getOrNull(tier) ?: return earned
-    if (remaining == null) return earned
-    if (remaining !in 0..nextCost) return null
-    return earned + nextCost - remaining
+    internal fun syphonedAtTier(tierCosts: List<Int>, tier: Int, remaining: Int?): Int? {
+        if (tier !in 0..tierCosts.size) return null
+        val earned = tierCosts.take(tier).sum()
+        val nextCost = tierCosts.getOrNull(tier) ?: return earned
+        if (remaining == null) return earned
+        if (remaining !in 0..nextCost) return null
+        return earned + nextCost - remaining
+    }
 }

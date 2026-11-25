@@ -12,6 +12,7 @@ import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.ItemNameResolver
 import at.hannibal2.skyhanni.utils.ItemUtils
 import at.hannibal2.skyhanni.utils.ItemUtils.extraAttributes
+import at.hannibal2.skyhanni.utils.ItemUtils.getCleanLore
 import at.hannibal2.skyhanni.utils.ItemUtils.getLore
 import at.hannibal2.skyhanni.utils.ItemUtils.takeUnlessEmpty
 import at.hannibal2.skyhanni.utils.LorenzRarity
@@ -340,7 +341,7 @@ class ItemResolutionQuery {
     }
 
     private fun resolveItemInAttributeMenu(displayName: String, lore: List<String>): NeuInternalName? {
-        AttributeShardsData.resolveMenuShardInternalName(displayName.removeColor(), lore.map { it.removeColor() })?.let {
+        AttributeShardsData.resolveMenuShardInternalName(displayName, lore)?.let {
             return it
         }
         UtilsPatterns.attributeSourcePattern.firstMatcher(lore) {
@@ -381,7 +382,7 @@ class ItemResolutionQuery {
         } else if (guiName.endsWith("Experimentation Table RNG")) {
             resolveEnchantmentByName(displayName)
         } else if (AttributeShardsData.attributeMenuInventory.isInside()) {
-            resolveItemInAttributeMenu(displayName, compound.getLore())
+            resolveItemInAttributeMenu(displayName.removeColor(), compound.getCleanLore())
         } else if (
             AttributeShardsData.huntingBoxInventory.isInside() ||
             AttributeShardsData.fusionBoxInventory.isInside() ||

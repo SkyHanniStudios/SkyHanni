@@ -1097,7 +1097,7 @@ class ProfileSpecificStorage(
         @Expose var amountSyphoned: Int = 0,
         @Expose var amountInBox: Int = 0,
         @Expose var enabled: Boolean = true,
-        // False until the syphoned amount is read. Older profiles have null here.
+        // Null for legacy entries, false for new entries until the syphoned amount is read.
         @Expose var syphonKnown: Boolean? = null,
     )
 
