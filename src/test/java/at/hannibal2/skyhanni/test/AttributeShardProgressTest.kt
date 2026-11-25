@@ -1,10 +1,14 @@
 package at.hannibal2.skyhanni.test
 
-import at.hannibal2.skyhanni.config.storage.ProfileSpecificStorage.AttributeShardData
+import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
+import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator.at
+import at.hannibal2.skyhanni.features.inventory.attribute.AttributeShardsData
 import at.hannibal2.skyhanni.features.inventory.attribute.AttributeShardsData.migrateLegacyStorage
 import at.hannibal2.skyhanni.features.inventory.attribute.AttributeShardsData.shardStorageKey
 import at.hannibal2.skyhanni.features.inventory.attribute.AttributeShardsData.syphonedAtTier
+import com.google.gson.JsonObject
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 
@@ -38,30 +42,42 @@ class AttributeShardProgressTest {
 
     @Test
     fun `Rainbug progress survives migration from an empty Bazaar key`() {
-        val rainbug = AttributeShardData(amountSyphoned = 5, amountInBox = 2)
-        val data = mutableMapOf("" to rainbug)
+        val rainbug = JsonObject().apply {
+            addProperty("amountSyphoned", 5)
+            addProperty("amountInBox", 2)
+        }
+        val profilePath = "storage.players.0a2af95e-21cf-4ee2-8a96-e30352680646.profiles.pear"
+        val old = JsonObject()
+        val profile = old.at(profilePath.split("."), true) as JsonObject
+        profile.add("attributeShards", JsonObject().apply { add("", rainbug) })
+
+        val event = ConfigUpdaterMigrator.ConfigFixEvent(
+            old = old,
+            new = JsonObject(),
+            oldVersion = 149,
+            movesPerformed = 0,
+            dynamicPrefix = mapOf("#profile" to listOf(profilePath)),
+        )
+        AttributeShardsData.onConfigFix(event)
+
+        val migrated = checkNotNull(event.new.at("$profilePath.attributeShards".split("."), false) as? JsonObject)
         val key = shardStorageKey("", "Rainbug")
         assertEquals("SHARD_RAINBUG", key)
-        migrateLegacyStorage(data, key)
-        migrateLegacyStorage(data, key)
-        assertEquals(mapOf(key to rainbug), data)
+        assertFalse(migrated.has(""))
+        assertEquals(rainbug, migrated[key])
     }
 
     @Test
     fun `an existing Rainbug entry takes precedence over old data`() {
-        val current = AttributeShardData(amountInBox = 3)
+        val current = JsonObject().apply { addProperty("amountInBox", 3) }
         val key = shardStorageKey("", "Rainbug")
-        val data = mutableMapOf("" to AttributeShardData(), key to current)
-        migrateLegacyStorage(data, key)
-        assertEquals(mapOf(key to current), data)
-    }
-
-    @Test
-    fun `a missing repo entry leaves legacy progress intact`() {
-        val legacy = AttributeShardData(amountInBox = 1)
-        val data = mutableMapOf("" to legacy)
-        migrateLegacyStorage(data, null)
-        assertEquals(mapOf("" to legacy), data)
+        val data = JsonObject().apply {
+            add("", JsonObject())
+            add(key, current)
+        }
+        migrateLegacyStorage(data)
+        assertFalse(data.has(""))
+        assertEquals(current, data[key])
     }
 
     @Test

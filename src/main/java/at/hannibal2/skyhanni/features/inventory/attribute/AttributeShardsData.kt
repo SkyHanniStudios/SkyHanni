@@ -3,6 +3,7 @@ package at.hannibal2.skyhanni.features.inventory.attribute
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.enoughupdates.ItemResolutionQuery
 import at.hannibal2.skyhanni.api.event.HandleEvent
+import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
 import at.hannibal2.skyhanni.config.features.inventory.AttributeShardsConfig
 import at.hannibal2.skyhanni.config.storage.ProfileSpecificStorage
@@ -39,6 +40,9 @@ import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.UtilsPatterns
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
+import org.jetbrains.annotations.VisibleForTesting
 import java.util.regex.Pattern
 import kotlin.time.Duration.Companion.seconds
 
@@ -56,7 +60,6 @@ object AttributeShardsData {
     private var shardIdToShard = mapOf<String, String>()
     private var shardNameToShard = mapOf<String, String>()
 
-    private var legacyEmptyKeyTarget: String? = null
     private val validItemSlots = 9..44
     private const val ADVANCED_MODE_SLOT = 52
     private const val BAZAAR_PREFIX = "SHARD_"
@@ -171,7 +174,7 @@ object AttributeShardsData {
      */
     private val attributeStatePattern by patternGroup.pattern(
         "state.colorless",
-        "Enabled: (?<state>.+)",
+        "Enabled: (?:(?<enabled>Yes)|No)",
     )
 
     /**
@@ -179,10 +182,11 @@ object AttributeShardsData {
      * REGEX-TEST: Syphon 1 shard to level up!
      * REGEX-TEST: Syphon 3 shards to level up!
      * REGEX-TEST: Syphon 3 more to level up!
+     * REGEX-TEST: Syphon 1,000 shards to level up!
      */
     private val syphonAmountPattern by patternGroup.pattern(
         "syphon.amount.remaining",
-        """Syphon (?<amount>\d+) (?:shards?|more) to (?:level up|unlock)!""",
+        """Syphon (?<amount>[\d,]+) (?:shards?|more) to (?:level up|unlock)!""",
     )
 
     /**
@@ -222,7 +226,7 @@ object AttributeShardsData {
      */
     private val shardSyphonedPattern by patternGroup.pattern(
         "chat.syphoned.colorless",
-        """\+(?<amount>\d+) (?<attributeName>.+) Attribute \(Level (?<level>\d+)\) - (?<untilNext>\d+) more to upgrade!""",
+        """\+(?<amount>[\d,]+) (?<attributeName>.+) Attribute \(Level (?<level>[\d,]+)\) - (?<untilNext>[\d,]+) more to upgrade!""",
     )
 
     /**
@@ -231,7 +235,7 @@ object AttributeShardsData {
      */
     private val shardSyphonedMaxedPattern by patternGroup.pattern(
         "chat.syphoned.maxed.colorless",
-        """\+(?<amount>\d+) (?<attributeName>.+) Attribute \(Level (?<level>\d+)\) MAXED""",
+        """\+(?<amount>[\d,]+) (?<attributeName>.+) Attribute \(Level (?<level>[\d,]+)\) MAXED""",
     )
 
     /**
@@ -239,7 +243,7 @@ object AttributeShardsData {
      */
     private val andMoreMessagePattern by patternGroup.pattern(
         "chat.and.more.colorless",
-        """and (?<amount>\d+) more\.\.\.""",
+        """and (?<amount>[\d,]+) more\.\.\.""",
     )
 
     private val advancedModeNotUnlockedPattern by patternGroup.pattern(
@@ -405,7 +409,6 @@ object AttributeShardsData {
                 if (bazaarName.startsWith(BAZAAR_PREFIX)) putIfAbsent(bazaarName.removePrefix(BAZAAR_PREFIX), name)
             }
         }
-        legacyEmptyKeyTarget = attributes.singleOrNull { it.displayName == "Rainbug" }?.shardKey()
     }
 
     private fun normalizeShardName(name: String): String = name.uppercase().replace(" ", "_")
@@ -426,13 +429,13 @@ object AttributeShardsData {
         val message = event.cleanMessage
         shardSyphonedPattern.matchMatcher(message) {
             val attributeName = group("attributeName")
-            val level = group("level").toInt()
-            val untilNext = group("untilNext").toInt()
+            val level = group("level").formatInt()
+            val untilNext = group("untilNext").formatInt()
             val shardName = abilityNameToShardName(attributeName) ?: return
             val shardInternalName = shardNameToInternalName(shardName) ?: return
             processShard(shardInternalName, level, untilNext)
 
-            ShardEvent(shardInternalName, -group("amount").toInt(), ShardSource.SYPHON).post()
+            ShardEvent(shardInternalName, -group("amount").formatInt(), ShardSource.SYPHON).post()
 
             lastSyphonedMessage = SimpleTimeMark.now()
             return
@@ -444,7 +447,7 @@ object AttributeShardsData {
             val shardInternalName = shardNameToInternalName(shardName) ?: return
             processShard(shardInternalName, 10, 0)
 
-            ShardEvent(shardInternalName, -group("amount").toInt(), ShardSource.SYPHON).post()
+            ShardEvent(shardInternalName, -group("amount").formatInt(), ShardSource.SYPHON).post()
 
             lastSyphonedMessage = SimpleTimeMark.now()
             return
@@ -453,7 +456,7 @@ object AttributeShardsData {
         andMoreMessagePattern.matchMatcher(message) {
             if (lastSyphonedMessage.passedSince() > 1.seconds) return
             if (!config.enabled) return
-            val amount = group("amount").toInt()
+            val amount = group("amount").formatInt()
             DelayedRun.runNextTick {
                 ChatUtils.clickableChat(
                     "§aClick here and scroll through to refresh SkyHanni's attribute overlay data with $amount shards",
@@ -479,7 +482,7 @@ object AttributeShardsData {
         for ((pattern, source) in shardGainChatPatterns) {
             pattern.matchMatcher(message) {
                 val shardName = group("shardName")
-                val amount = groupOrNull("amount")?.toInt() ?: 1
+                val amount = groupOrNull("amount")?.formatInt() ?: 1
 
                 val shardInternalName = ItemResolutionQuery.attributeNameToInternalName(shardName)?.toInternalName()
                 if (shardInternalName == null) {
@@ -498,7 +501,7 @@ object AttributeShardsData {
 
         fusionShardPattern.matchMatcher(message) {
             val currentFusionData = FusionData.currentFusionData ?: return
-            val amount = groupOrNull("amount")?.toInt() ?: 1
+            val amount = groupOrNull("amount")?.formatInt() ?: 1
             ShardEvent(currentFusionData.outputShard, amount, ShardSource.FUSE).post()
             ShardEvent(currentFusionData.firstShard.internalName, -currentFusionData.firstShard.amount, ShardSource.FUSE).post()
             ShardEvent(currentFusionData.secondShard.internalName, -currentFusionData.secondShard.amount, ShardSource.FUSE).post()
@@ -557,7 +560,6 @@ object AttributeShardsData {
     }
 
     private fun processAttributeMenuItems(items: Map<Int, SafeItemStack>) {
-        migrateLegacyStorage()
         for (item in items.values) {
             try {
                 processAttributeMenuItem(item)
@@ -582,10 +584,10 @@ object AttributeShardsData {
         val shard = readMenuShard(item.cleanName, cleanLore) ?: return
         if (shard.key in unconsumableAttributes) return
 
-        val toNextTier = syphonAmountPattern.firstMatcher(cleanLore) { group("amount").toInt() }
+        val toNextTier = syphonAmountPattern.firstMatcher(cleanLore) { group("amount").formatInt() }
         processShard(shard.key, shard.tier, toNextTier)
         attributeStatePattern.firstMatcher(cleanLore) {
-            setAttributeState(shard.key, group("state") == "Yes")
+            setAttributeState(shard.key, groupOrNull("enabled") != null)
         }
     }
 
@@ -601,13 +603,21 @@ object AttributeShardsData {
     }
 
     /** Older profiles used an empty key for the shard without a Bazaar name. */
-    internal fun migrateLegacyStorage(
-        data: MutableMap<String, ProfileSpecificStorage.AttributeShardData>? = storage,
-        target: String? = legacyEmptyKeyTarget,
-    ) {
-        if (data == null || target == null) return
-        val legacy = data.remove("") ?: return
-        data.putIfAbsent(target, legacy)
+    internal fun migrateLegacyStorage(element: JsonElement): JsonElement {
+        val obj = element as? JsonObject ?: return element
+        val legacy = obj.remove("") ?: return obj
+        val target = shardStorageKey("", "Rainbug")
+        if (!obj.has(target)) {
+            obj.add(target, legacy)
+        }
+        return obj
+    }
+
+    @HandleEvent
+    @VisibleForTesting
+    @Suppress("PrivateEventListener")
+    internal fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+        event.transform(150, "#profile.attributeShards", ::migrateLegacyStorage)
     }
 
     private fun getOrCreateData(attributeName: String): ProfileSpecificStorage.AttributeShardData? =
@@ -615,7 +625,6 @@ object AttributeShardsData {
 
     /** Copies the entries so the overlay can compare them after the next update. */
     fun getTrackedShards(): Map<String, ProfileSpecificStorage.AttributeShardData> {
-        migrateLegacyStorage()
         val data = storage ?: return emptyMap()
         return data
             .filterKeys { it in attributeInfo && it !in unconsumableAttributes }
@@ -624,7 +633,6 @@ object AttributeShardsData {
 
     /** Display names of shards with missing syphon data. */
     fun getMissingDataShards(): List<String> {
-        migrateLegacyStorage()
         val data = storage ?: return emptyList()
         return attributeInfo.mapNotNull { (key, info) ->
             if (key in unconsumableAttributes) return@mapNotNull null
@@ -675,7 +683,7 @@ object AttributeShardsData {
                 tier = groupOrNull("tier")?.romanToDecimal() ?: 0
             }
             syphonAmountPattern.matchMatcher(line) {
-                toNextTier = group("amount").toInt()
+                toNextTier = group("amount").formatInt()
             }
             amountOwnedPattern.matchMatcher(line) {
                 setAmountInBox(attributeName, group("amount").formatInt())
