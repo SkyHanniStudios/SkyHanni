@@ -84,6 +84,7 @@ object BetterContainers {
     }
 
     private val slotTypeCache = WeakIdentityCache.sized<SafeItemStack, SlotType>(128) { stack ->
+        if (stack == null) return SlotType.OTHER
         SlotType.entries.find { entry -> entry.isSlotType(stack) } ?: SlotType.OTHER
     }
 
