@@ -177,10 +177,11 @@ object AttributeShardsData {
      * REGEX-TEST: Syphon 1 shard to unlock!
      * REGEX-TEST: Syphon 1 shard to level up!
      * REGEX-TEST: Syphon 3 shards to level up!
+     * REGEX-TEST: Syphon 3 more to level up!
      */
     private val syphonAmountPattern by patternGroup.pattern(
-        "syphon.amount.colorless",
-        """Syphon (?<amount>\d+) shards? to (?:level up|unlock)!""",
+        "syphon.amount.remaining",
+        """Syphon (?<amount>\d+) (?:shards?|more) to (?:level up|unlock)!""",
     )
 
     /**
@@ -587,7 +588,7 @@ object AttributeShardsData {
         val shard = readMenuShard(item.cleanName, cleanLore) ?: return
         if (shard.key in unconsumableAttributes) return
 
-        val toNextTier = syphonAmountPattern.firstMatcher(cleanLore) { group("amount").toInt() } ?: 0
+        val toNextTier = syphonAmountPattern.firstMatcher(cleanLore) { group("amount").toInt() }
         processShard(shard.key, shard.tier, toNextTier)
         attributeStatePattern.firstMatcher(cleanLore) {
             setAttributeState(shard.key, group("state") == "Yes")
@@ -672,24 +673,20 @@ object AttributeShardsData {
 
     private fun readShardInHuntingBox(internalName: NeuInternalName, item: SafeItemStack): String? {
         val attributeName = internalNameToShard[internalName] ?: return null
-        var tier = 0
-        var toNextTier = 0
-        var levelRead = false
+        var tier: Int? = null
+        var toNextTier: Int? = null
         for (line in item.getCleanLore()) {
             attributeShardNameLorePattern.matchMatcher(line) {
                 tier = groupOrNull("tier")?.romanToDecimal() ?: 0
-                levelRead = true
             }
             syphonAmountPattern.matchMatcher(line) {
                 toNextTier = group("amount").toInt()
-                levelRead = true
             }
             amountOwnedPattern.matchMatcher(line) {
                 setAmountInBox(attributeName, group("amount").formatInt())
             }
         }
-        // A missing level line leaves the syphoned amount unknown.
-        if (levelRead) processShard(attributeName, tier, toNextTier)
+        tier?.let { processShard(attributeName, it, toNextTier) }
         return attributeName
     }
 
@@ -738,11 +735,12 @@ object AttributeShardsData {
     private fun processShard(
         attributeName: String,
         currentTier: Int,
-        toNextTier: Int,
+        toNextTier: Int?,
     ) {
         if (attributeName in unconsumableAttributes) return
         val rarity = attributeInfo[attributeName]?.rarity ?: return
-        val totalAmount = findTotalAmount(currentTier, toNextTier, rarity) ?: return
+        val tierCosts = attributeLevelling[rarity] ?: return
+        val totalAmount = syphonedAtTier(tierCosts, currentTier, toNextTier) ?: return
         getOrCreateData(attributeName)?.apply {
             amountSyphoned = totalAmount
             syphonKnown = true
@@ -763,12 +761,6 @@ object AttributeShardsData {
         // Chameleon can appear in the menu without a level.
         if (attributeName in unconsumableAttributes) return
         getOrCreateData(attributeName)?.enabled = enabled
-    }
-
-    private fun findTotalAmount(currentTier: Int, toNextTier: Int, rarity: LorenzRarity): Int? {
-        val tierLevelling = attributeLevelling[rarity] ?: return null
-        val cumulativeAmount = tierLevelling.take(currentTier.coerceAtMost(tierLevelling.size) + 1).sum()
-        return cumulativeAmount - toNextTier
     }
 
     fun findTierAndAmountUntilNext(shardName: String, totalAmount: Int): Triple<Int, Int, Int> {
@@ -874,4 +866,13 @@ object AttributeShardsData {
             }
         }
     }
+}
+
+internal fun syphonedAtTier(tierCosts: List<Int>, tier: Int, remaining: Int?): Int? {
+    if (tier !in 0..tierCosts.size) return null
+    val earned = tierCosts.take(tier).sum()
+    val nextCost = tierCosts.getOrNull(tier) ?: return earned
+    if (remaining == null) return earned
+    if (remaining !in 0..nextCost) return null
+    return earned + nextCost - remaining
 }
