@@ -17,6 +17,13 @@ class AttributeShardProgressTest {
     private val costs = listOf(1, 3, 5)
 
     @Test
+    fun `only explicit Yes and No lines change the shard state`() {
+        assertEquals(true, AttributeShardsData.readAttributeEnabled(listOf("Fiesta Fortune", "Enabled: Yes")))
+        assertEquals(false, AttributeShardsData.readAttributeEnabled(listOf("Enabled: No")))
+        assertNull(AttributeShardsData.readAttributeEnabled(listOf("Fiesta Fortune")))
+    }
+
+    @Test
     fun `missing progress uses the current tier`() {
         assertEquals(0, syphonedAtTier(costs, 0, null))
         assertEquals(4, syphonedAtTier(costs, 2, null))
