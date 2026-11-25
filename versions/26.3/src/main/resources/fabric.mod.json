@@ -53,7 +53,7 @@
         "fabricloader": ">=${fabloader}",
         "hypixel-mod-api": ">=${hypixelmodapi}",
         "minecraft": "${minecraft}",
-        "render-chest": "~${renderchest}"
+        "render-chest": ">=${renderchest}"
     },
     "breaks": {
         "clientspoofer": "*",
