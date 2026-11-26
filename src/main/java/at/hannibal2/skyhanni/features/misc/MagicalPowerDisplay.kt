@@ -39,16 +39,14 @@ object MagicalPowerDisplay {
 
     /**
      * REGEX-TEST: Accessory Bag
-     * REGEX-TEST: Accessory Bag (1/75)
-     * REGEX-TEST (1/6) Accessory Bag
-     * REGEX-TEST: Accessory Bag (909/394294)
+     * REGEX-TEST: (1/6) Accessory Bag
      * REGEX-TEST: Auctions Browser
      * REGEX-TEST: Auctions: "ligma"
      * REGEX-TEST: Auctions: ""sugoma""
      */
     private val acceptedInvPattern by RepoPattern.pattern(
         "inv.acceptable",
-        "^(?:(?:\\(\\d+\\/\\d+\\) )?Accessory Bag(?: \\(\\d+\\/\\d+\\))?|Auctions Browser|Manage Auctions|Auctions: \".*\"?)$",
+        "^(?:(?:\\(\\d+\\/\\d+\\) )?Accessory Bag|Auctions Browser|Manage Auctions|Auctions: \".*\"?)$",
     )
 
     private val patternGroup = RepoPattern.group("data.abiphone")
