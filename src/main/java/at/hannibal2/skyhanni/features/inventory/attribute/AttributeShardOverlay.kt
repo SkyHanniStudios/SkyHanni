@@ -147,7 +147,7 @@ object AttributeShardOverlay {
     }
 
     private fun shardIdsInOpenInventory(): Set<NeuInternalName> =
-        InventoryUtils.getItemIdsInOpenChest().filterTo(mutableSetOf()) { AttributeShardsData.isAttributeShard(it) }
+        InventoryUtils.getItemIdsInOpenChest().filterTo(mutableSetOf(), AttributeShardsData::isTrackedShard)
 
     private fun AttributeShardDisplayLine.isVisible(): Boolean {
         if (config.hideMaxed && currentTier == 10) return false

@@ -397,7 +397,10 @@ object AttributeShardsData {
 
     @HandleEvent(priority = HandleEvent.LOWEST)
     private fun onNeuRepoReload(event: NeuRepositoryReloadEvent) {
-        val attributesJson = event.getConstant<NeuAttributeShardJson>("attribute_shards")
+        loadShardData(event.getConstant<NeuAttributeShardJson>("attribute_shards"))
+    }
+
+    internal fun loadShardData(attributesJson: NeuAttributeShardJson) {
         attributeLevelling = attributesJson.attributeLevelling
         unconsumableAttributes = attributesJson.unconsumableAttributes
         val attributes = attributesJson.attributes
@@ -827,6 +830,11 @@ object AttributeShardsData {
         if (slot !in validItemSlots) return false
         val modNine = slot % 9
         return modNine != 0 && modNine != 8
+    }
+
+    internal fun isTrackedShard(internalName: NeuInternalName): Boolean {
+        val key = internalNameToShard[internalName] ?: return false
+        return key !in unconsumableAttributes
     }
 
     fun isAttributeShard(internalName: NeuInternalName): Boolean =

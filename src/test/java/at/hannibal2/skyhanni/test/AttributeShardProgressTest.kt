@@ -2,19 +2,68 @@ package at.hannibal2.skyhanni.test
 
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator.at
+import at.hannibal2.skyhanni.data.jsonobjects.repo.neu.NeuAttributeShardData
+import at.hannibal2.skyhanni.data.jsonobjects.repo.neu.NeuAttributeShardJson
 import at.hannibal2.skyhanni.features.inventory.attribute.AttributeShardsData
 import at.hannibal2.skyhanni.features.inventory.attribute.AttributeShardsData.migrateLegacyStorage
 import at.hannibal2.skyhanni.features.inventory.attribute.AttributeShardsData.shardStorageKey
 import at.hannibal2.skyhanni.features.inventory.attribute.AttributeShardsData.syphonedAtTier
+import at.hannibal2.skyhanni.utils.LorenzRarity
+import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import com.google.gson.JsonObject
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.parallel.Isolated
 
+@Isolated
 class AttributeShardProgressTest {
 
     private val costs = listOf(1, 3, 5)
+
+    private val packrat = "ATTRIBUTE_SHARD_FIESTA_FORTUNE;1".toInternalName()
+    private val chameleon = "ATTRIBUTE_SHARD_REPTILOID;1".toInternalName()
+
+    private fun withMenuShards(check: AttributeShardsData.() -> Unit) {
+        val packratData = NeuAttributeShardData(
+            bazaarName = "SHARD_PACKRAT_SKULL".toInternalName(),
+            displayName = "Packrat",
+            rarity = LorenzRarity.UNCOMMON,
+            internalName = packrat,
+            abilityName = "Fiesta Fortune",
+            family = emptyList(),
+            alignment = "Forest",
+            shardId = "U73",
+        )
+        val chameleonData = packratData.copy(
+            bazaarName = "SHARD_CHAMELEON".toInternalName(),
+            displayName = "Chameleon",
+            internalName = chameleon,
+            rarity = LorenzRarity.LEGENDARY,
+            abilityName = "Reptiloid",
+            shardId = "L4",
+        )
+        val repo = NeuAttributeShardJson(emptyMap(), listOf("SHARD_CHAMELEON"), listOf(packratData, chameleonData))
+        try {
+            AttributeShardsData.loadShardData(repo)
+            AttributeShardsData.check()
+        } finally {
+            AttributeShardsData.loadShardData(NeuAttributeShardJson(emptyMap(), emptyList(), emptyList()))
+        }
+    }
+
+    @Test
+    fun `Packrat source ID takes precedence over a different known ability`() = withMenuShards {
+        assertEquals(packrat, resolveMenuShardInternalName("Reptiloid I", listOf("Source: Packrat Shard (U73)")))
+        assertEquals(packrat, resolveMenuShardInternalName("Reptiloid I", listOf("Source: Chameleon Shard (U73)")))
+    }
+
+    @Test
+    fun `current inventory only counts shards with levels`() = withMenuShards {
+        val items = setOf(packrat, chameleon, "ARROW".toInternalName())
+        assertEquals(setOf(packrat), items.filterTo(mutableSetOf(), this::isTrackedShard))
+    }
 
     @Test
     fun `Hunting Box accepts both tier formats for the matching ability`() {
