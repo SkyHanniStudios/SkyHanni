@@ -15,17 +15,19 @@ object AccessoryBagApi {
     /**
      * REGEX-TEST: Accessory Bag
      * REGEX-TEST: Accessory Bag (1/2)
+     * REGEX-TEST: (1/6) Accessory Bag
      * REGEX-TEST: Accessory Bag (909/394294)
      */
     private val inventoryNamePattern by patternGroup.pattern(
         "inventory.name",
-        "Accessory Bag(?: \\(\\d+\\/\\d+\\))?",
+        "(?:\\(\\d+\\/\\d+\\) )?Accessory Bag(?: \\(\\d+\\/\\d+\\))?",
     )
 
     fun isAccessoryBag(inventoryName: String): Boolean = inventoryNamePattern.matches(inventoryName)
 
     @HandleEvent(onlyOnSkyblock = true)
     fun onInventoryUpdated(event: InventoryUpdatedEvent) {
+        println("[AccBagDebug] name='${event.inventoryName}' match=${isAccessoryBag(event.inventoryName)}")
         if (!isAccessoryBag(event.inventoryName)) return
 
         AccessoryBagUpdateEvent(event.inventoryName, event.inventoryItems).post()
