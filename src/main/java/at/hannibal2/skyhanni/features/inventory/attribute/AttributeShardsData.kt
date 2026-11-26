@@ -31,7 +31,7 @@ import at.hannibal2.skyhanni.utils.LorenzRarity
 import at.hannibal2.skyhanni.utils.NeuInternalName
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.NumberUtil.formatInt
-import at.hannibal2.skyhanni.utils.NumberUtil.romanToDecimal
+import at.hannibal2.skyhanni.utils.NumberUtil.romanToDecimalIfNecessary
 import at.hannibal2.skyhanni.utils.RegexUtils.anyMatches
 import at.hannibal2.skyhanni.utils.RegexUtils.firstMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.groupOrNull
@@ -159,13 +159,14 @@ object AttributeShardsData {
 
     /**
      * REGEX-TEST: Nature Elemental
+     * REGEX-TEST: Berry Eater 9
      * REGEX-TEST: Berry Eater IX
      * REGEX-TEST: Essence of Ice I
      * REGEX-TEST: Advanced Mode
      */
     val attributeShardNamePattern by patternGroup.pattern(
-        "name.colorless",
-        "(?<name>.+?) ?(?<tier>[IVXL]+)?$",
+        "name.with-tier",
+        """(?<name>.+?)(?: (?<tier>[IVXL]+|[0-9]+))?$""",
     )
 
     /**
@@ -192,10 +193,19 @@ object AttributeShardsData {
     /**
      * REGEX-TEST: Veil (Combat)
      * REGEX-TEST: Yummy X (Foraging)
+     * REGEX-TEST: Diurnal Animal 5 (Foraging)
      */
     private val attributeShardNameLorePattern by patternGroup.pattern(
-        "name.lore.colorless",
-        """(?<name>.+?) ?(?<tier>[IVXL]+)? \(\w+\)$""",
+        "name.lore.with-tier",
+        """(?<name>.+?)(?: (?<tier>[IVXL]+|[0-9]+))? \(\w+\)$""",
+    )
+
+    /**
+     * REGEX-TEST: Attribute Maxed!
+     */
+    private val attributeMaxedPattern by patternGroup.pattern(
+        "hunting-box.attribute-maxed",
+        "Attribute Maxed!",
     )
 
     /**
@@ -539,7 +549,7 @@ object AttributeShardsData {
         if (!isShardItem) return null
 
         val (abilityName, tier) = attributeShardNamePattern.matchMatcher(cleanName) {
-            group("name") to (groupOrNull("tier")?.romanToDecimal() ?: 0)
+            group("name") to (groupOrNull("tier")?.romanToDecimalIfNecessary() ?: 0)
         } ?: return null
 
         val key = source?.let { shardIdToShard[it.second] }
@@ -659,10 +669,11 @@ object AttributeShardsData {
                 if (huntingBoxSearchQueryPattern.anyMatches(item.getCleanLore())) searchActive = true
                 continue
             }
-            val internalName = item.getInternalNameOrNull() ?: continue
-            if (!isAttributeShard(internalName)) continue
             try {
-                readShardInHuntingBox(internalName, item)?.let { shardsInBox.add(it) }
+                val internalName = item.getInternalNameOrNull() ?: continue
+                val key = internalNameToShard[internalName] ?: continue
+                shardsInBox.add(key)
+                readShardInHuntingBox(key, item)
             } catch (e: Exception) {
                 ErrorManager.logErrorWithData(
                     e, "Failed to read an attribute shard in the hunting box",
@@ -675,23 +686,25 @@ object AttributeShardsData {
         HuntingBoxValue.processInventory(items)
     }
 
-    private fun readShardInHuntingBox(internalName: NeuInternalName, item: SafeItemStack): String? {
-        val attributeName = internalNameToShard[internalName] ?: return null
-        var tier: Int? = null
-        var toNextTier: Int? = null
-        for (line in item.getCleanLore()) {
+    private fun readShardInHuntingBox(key: String, item: SafeItemStack) {
+        val lore = item.getCleanLore()
+        amountOwnedPattern.firstMatcher(lore) {
+            setAmountInBox(key, group("amount").formatInt())
+        }
+        val info = attributeInfo[key] ?: return
+        val tier = readHuntingBoxTier(lore, info.abilityName) ?: return
+        val remaining = syphonAmountPattern.firstMatcher(lore) { group("amount").formatInt() }
+        processShard(key, tier, remaining)
+    }
+
+    internal fun readHuntingBoxTier(lore: List<String>, abilityName: String): Int? {
+        if (attributeMaxedPattern.anyMatches(lore)) return 10
+        for (line in lore) {
             attributeShardNameLorePattern.matchMatcher(line) {
-                tier = groupOrNull("tier")?.romanToDecimal() ?: 0
-            }
-            syphonAmountPattern.matchMatcher(line) {
-                toNextTier = group("amount").formatInt()
-            }
-            amountOwnedPattern.matchMatcher(line) {
-                setAmountInBox(attributeName, group("amount").formatInt())
+                if (group("name") == abilityName) return groupOrNull("tier")?.romanToDecimalIfNecessary() ?: 0
             }
         }
-        tier?.let { processShard(attributeName, it, toNextTier) }
-        return attributeName
+        return null
     }
 
     /**

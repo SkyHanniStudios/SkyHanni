@@ -17,6 +17,27 @@ class AttributeShardProgressTest {
     private val costs = listOf(1, 3, 5)
 
     @Test
+    fun `Hunting Box accepts both tier formats for the matching ability`() {
+        val ability = "Diurnal Animal"
+        assertEquals(5, AttributeShardsData.readHuntingBoxTier(listOf("Diurnal Animal V (Foraging)"), ability))
+        assertEquals(5, AttributeShardsData.readHuntingBoxTier(listOf("Diurnal Animal 5 (Foraging)"), ability))
+        assertNull(AttributeShardsData.readHuntingBoxTier(listOf("Something else (Foraging)", "Owned: 1 Shard"), ability))
+    }
+
+    @Test
+    fun `Packrat before its first syphon is distinct from an entry with no level data`() {
+        val ability = "Fiesta Fortune"
+        val owned = listOf("Owned: 1 Shard", "Syphon 1 more to level up!")
+        assertNull(AttributeShardsData.readHuntingBoxTier(owned, ability))
+        assertEquals(0, AttributeShardsData.readHuntingBoxTier(owned + "Fiesta Fortune (Mining)", ability))
+    }
+
+    @Test
+    fun `an explicit maxed line is enough to identify the last tier`() {
+        assertEquals(10, AttributeShardsData.readHuntingBoxTier(listOf("Attribute Maxed!"), "Fiesta Fortune"))
+    }
+
+    @Test
     fun `only explicit Yes and No lines change the shard state`() {
         assertEquals(true, AttributeShardsData.readAttributeEnabled(listOf("Fiesta Fortune", "Enabled: Yes")))
         assertEquals(false, AttributeShardsData.readAttributeEnabled(listOf("Enabled: No")))
