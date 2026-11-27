@@ -1,7 +1,6 @@
 package at.hannibal2.skyhanni.features.combat
 
 import at.hannibal2.skyhanni.SkyHanniMod
-import at.hannibal2.skyhanni.api.enoughupdates.ItemResolutionQuery
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.ProfileStorageData
@@ -20,6 +19,7 @@ import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.DiscountUtils.getDiscountedPrice
 import at.hannibal2.skyhanni.utils.InventoryUtils
+import at.hannibal2.skyhanni.utils.ItemNameResolver
 import at.hannibal2.skyhanni.utils.ItemPriceUtils.formatCoin
 import at.hannibal2.skyhanni.utils.ItemPriceUtils.getPrice
 import at.hannibal2.skyhanni.utils.ItemUtils
@@ -29,7 +29,6 @@ import at.hannibal2.skyhanni.utils.ItemUtils.getLore
 import at.hannibal2.skyhanni.utils.ItemUtils.repoItemName
 import at.hannibal2.skyhanni.utils.KeyboardManager.isKeyHeld
 import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.LorenzRarity
 import at.hannibal2.skyhanni.utils.NeuInternalName
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.NONE
 import at.hannibal2.skyhanni.utils.NumberUtil.formatInt
@@ -238,12 +237,10 @@ object InstanceChestProfit {
                 }
             } else {
                 var itemPrice: Double
-                val bookCheckedLoreLine = ItemUtils.readBookType(loreLine) ?: loreLine
-                var itemInternalName = NeuInternalName.fromItemNameOrNull(bookCheckedLoreLine)
-                bookColorFixer.matchMatcher(bookCheckedLoreLine) {
-                    itemInternalName = ItemResolutionQuery.resolveEnchantmentByName(group("item")) ?: itemInternalName
-                }
-                val internalName = itemInternalName
+                val bookType = ItemUtils.readBookType(loreLine)
+                val internalName = if (bookType != null) {
+                    ItemNameResolver.resolveEnchantedBook(bookColorFixer.matchMatcher(bookType) { group("item") } ?: bookType)
+                } else NeuInternalName.fromItemNameOrNull(loreLine)
                 var favorited = ""
                 if (profileStorage?.instanceChestFavoriteItems?.contains(internalName) == true) {
                     slotsWithFavorites.add(chestType.stackChestName)
@@ -420,11 +417,11 @@ object InstanceChestProfit {
 
     private fun getKuudraEssenceBonus(): Double =
         ProfileStorageData.petProfiles?.pets?.filter { PetUtils.getPetProperName(it.fauxInternalName) == "KUUDRA" }
-            ?.maxByOrNull { it.rarity.id }
+            ?.maxByOrNull { it.rarity }
             ?.let {
                 when (it.rarity) {
-                    LorenzRarity.RARE -> 0.15 / 100 * it.level
-                    LorenzRarity.EPIC, LorenzRarity.LEGENDARY -> 0.2 / 100 * it.level
+                    RARE -> 0.15 / 100 * it.level
+                    EPIC, LEGENDARY -> 0.2 / 100 * it.level
                     else -> 0.0
                 }
             } ?: 0.0

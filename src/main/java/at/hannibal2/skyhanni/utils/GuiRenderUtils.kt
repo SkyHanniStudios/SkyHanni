@@ -2,6 +2,7 @@ package at.hannibal2.skyhanni.utils
 
 import at.hannibal2.skyhanni.utils.ItemBlink.checkBlinkItem
 import at.hannibal2.skyhanni.utils.ItemUtils.isSkull
+import at.hannibal2.skyhanni.utils.ItemUtils.withLoadedItemModel
 import at.hannibal2.skyhanni.utils.compat.DrawContextUtils
 import at.hannibal2.skyhanni.utils.compat.RenderCompat
 import at.hannibal2.skyhanni.utils.render.item.SkyHanniGuiItemRenderState
@@ -276,7 +277,7 @@ object GuiRenderUtils {
         frameNumber: Int? = null,
         alpha: Float = 1f,
     ): Int? {
-        val item = checkBlinkItem()
+        val item = checkBlinkItem().withLoadedItemModel()
         val isItemSkull = rescaleSkulls && item.isSkull()
 
         val baseItemScale = if (isItemSkull) SKULL_SCALE else 1f
@@ -341,7 +342,7 @@ object GuiRenderUtils {
     private fun SafeItemStack.normalRenderOnScreen(
         translateX: Float,
         translateY: Float,
-        scale: Float
+        scale: Float,
     ): Int? = RenderUtils.scheduleOnRenderThread(setupFor = Lighting.Entry.ITEMS_3D) {
         DrawContextUtils.translatedPushPopResult(translateX, translateY, postTranslateScale = scale) {
             DrawContextUtils.drawItem(this, 0, 0)

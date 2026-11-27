@@ -18,7 +18,7 @@ import at.hannibal2.skyhanni.features.rift.RiftApi.motesNpcPrice
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.ItemCategory
-import at.hannibal2.skyhanni.utils.ItemPriceUtils.getNpcPriceOrNull
+import at.hannibal2.skyhanni.utils.ItemPriceUtils.getNpcPrice
 import at.hannibal2.skyhanni.utils.ItemUtils
 import at.hannibal2.skyhanni.utils.ItemUtils.cleanName
 import at.hannibal2.skyhanni.utils.ItemUtils.getInternalName
@@ -39,7 +39,6 @@ import at.hannibal2.skyhanni.utils.SkyBlockItemModifierUtils.isMuseumDonated
 import at.hannibal2.skyhanni.utils.SkyBlockItemModifierUtils.isRiftExportable
 import at.hannibal2.skyhanni.utils.SkyBlockItemModifierUtils.isRiftTransferable
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
-import at.hannibal2.skyhanni.utils.StringUtils.removeColor
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.equalsOneOf
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 
@@ -127,7 +126,6 @@ object HideNotClickableItemsFeature {
             if (hideNetherWartPouch()) return
             if (hideTrickOrTreatBag()) return
             if (hideSackOfSacks()) return
-            if (hideFishingBag()) return
             if (hidePotionBag()) return
             if (hidePrivateIslandChest()) return
             if (hideAttributeFusion()) return
@@ -290,23 +288,6 @@ object HideNotClickableItemsFeature {
         return true
     }
 
-    private fun ItemNotClickableEvent.hideFishingBag(): Boolean {
-        if (!chestName.startsWith("Fishing Bag")) return false
-
-        if (ItemUtils.isSkyBlockMenuItem(stack)) {
-            hideReason = "The SkyBlock Menu cannot be put into the fishing bag!"
-            allowBypass = false
-            return true
-        }
-
-        showGreenLine = true
-        if (stack.getLore().any { it.removeColor() == "Fishing Bait" }) {
-            return false
-        }
-        hideReason = "This item is not a fishing bait!"
-        return true
-    }
-
     private fun ItemNotClickableEvent.hideSackOfSacks(): Boolean {
         if (!chestName.startsWith("Sack of Sacks")) return false
         if (ItemUtils.isSkyBlockMenuItem(stack)) return false
@@ -449,7 +430,7 @@ object HideNotClickableItemsFeature {
 
     fun npcSellable(stack: SafeItemStack): Boolean {
         return clickToSellPattern.anyMatches(stack.getLore()) ||
-            (stack.getItemId() != "PET" && (stack.getInternalNameOrNull()?.getNpcPriceOrNull() ?: 0.0) > 0)
+            (stack.getItemId() != "PET" && (stack.getInternalNameOrNull()?.getNpcPrice() ?: 0.0) > 0)
     }
 
     private fun ItemNotClickableEvent.hideInStorage(): Boolean {

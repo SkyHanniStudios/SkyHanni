@@ -124,7 +124,7 @@ class CustomAnglesConfig {
     val sunMoonFlowerYaw: Property<Float> = Property.of(45f)
 
     @Expose
-    @ConfigOption(name = "Sunflower & Moonflower  Pitch", desc = "Set Pitch for sunflower & moonflower farming.")
+    @ConfigOption(name = "Sunflower & Moonflower Pitch", desc = "Set Pitch for sunflower & moonflower farming.")
     @ConfigEditorSlider(minValue = -90f, maxValue = 90f, minStep = 0.1f)
     val sunMoonFlowerPitch: Property<Float> = Property.of(0f)
 
