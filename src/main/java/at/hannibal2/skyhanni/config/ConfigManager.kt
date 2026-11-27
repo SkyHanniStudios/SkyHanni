@@ -43,7 +43,7 @@ import java.io.IOException
 import java.lang.reflect.Field
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import kotlin.concurrent.fixedRateTimer
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KMutableProperty0
 import kotlin.time.Duration.Companion.days
 
@@ -58,6 +58,7 @@ class ConfigManager {
 
     lateinit var processor: BlockingMoulConfigProcessor
     private var disableSaving = false
+    private val pendingSaves = ConcurrentHashMap<ConfigFileType, String>()
 
     private fun setConfigHolder(type: ConfigFileType, value: Any) {
         require(value.javaClass == type.clazz)
@@ -76,11 +77,6 @@ class ConfigManager {
         for (fileType in ConfigFileType.entries) {
             val clazzInstance = fileType.clazz.getDeclaredConstructor().newInstance()
             setConfigHolder(fileType, firstLoadFile(fileType.file, fileType, clazzInstance))
-        }
-
-        // TODO use SecondPassedEvent
-        fixedRateTimer(name = "skyhanni-config-auto-save", daemon = true, period = 60_000L, initialDelay = 60_000L) {
-            saveConfig(ConfigFileType.FEATURES, "auto-save-60s")
         }
 
         val features = SkyHanniMod.feature
@@ -204,20 +200,42 @@ class ConfigManager {
         return output
     }
 
-    fun saveConfig(fileType: ConfigFileType, reason: String) {
-        val json = jsonHolder[fileType] ?: error("Could not find json object for $fileType")
-        saveFile(fileType.file, fileType.fileName, json, reason)
-        saveFile(fileType.backupFile, fileType.fileName, json, reason)
+    fun saveConfig(fileType: ConfigFileType, reason: String, now: Boolean = false) {
+        if (now) {
+            pendingSaves.remove(fileType)
+            writeConfig(fileType, reason)
+        } else {
+            pendingSaves[fileType] = reason
+        }
     }
 
-    private fun saveFile(file: File, fileName: String, data: Any, reason: String) {
+    fun savePendingConfigs() {
+        for (fileType in ConfigFileType.entries) {
+            pendingSaves.remove(fileType)?.let { writeConfig(fileType, it) }
+        }
+    }
+
+    @Synchronized
+    private fun writeConfig(fileType: ConfigFileType, reason: String) {
+        val data = jsonHolder[fileType] ?: error("Could not find json object for $fileType")
+        val json = lazy { gson.toJson(data) }
+        try {
+            saveFile(fileType.file, fileType.fileName, data, json, reason)
+            saveFile(fileType.backupFile, fileType.fileName, data, json, reason)
+        } catch (e: ConcurrentModificationException) {
+            logger.log("Config changed while saving ${fileType.fileName}, retrying later: ${e.message}")
+            pendingSaves.putIfAbsent(fileType, reason)
+        }
+    }
+
+    private fun saveFile(file: File, fileName: String, data: Any, json: Lazy<String>, reason: String) {
         if (disableSaving) return
         if (HypixelData.hypixelAlpha && !PlatformUtils.isDevEnvironment) return
         logger.log("saveConfig: $reason")
         try {
             logger.log("Saving $fileName file")
             file.parentFile.mkdirs()
-            StringFileHandler(file).save(gson.toJson(data))
+            StringFileHandler(file).save(json.value)
             logger.log("Saved $fileName file successfully")
         } catch (e: ClassCastException) {
             ErrorManager.logErrorWithData(
