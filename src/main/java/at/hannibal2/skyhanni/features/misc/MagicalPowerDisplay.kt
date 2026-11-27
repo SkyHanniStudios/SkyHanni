@@ -39,18 +39,17 @@ object MagicalPowerDisplay {
 
     /**
      * REGEX-TEST: Accessory Bag
-     * REGEX-TEST: Accessory Bag (1/75)
-     * REGEX-TEST: Accessory Bag (909/394294)
+     * REGEX-TEST: (1/6) Accessory Bag
      * REGEX-TEST: Auctions Browser
      * REGEX-TEST: Auctions: "ligma"
      * REGEX-TEST: Auctions: ""sugoma""
      */
     private val acceptedInvPattern by RepoPattern.pattern(
         "inv.acceptable",
-        "^(?:Accessory Bag(?: \\(\\d+\\/\\d+\\))?|Auctions Browser|Manage Auctions|Auctions: \".*\"?)$",
+        "^(?:(?:\\(\\d+\\/\\d+\\) )?Accessory Bag|Auctions Browser|Manage Auctions|Auctions: \".*\"?)$",
     )
 
-    private val abiphoneGroup = RepoPattern.group("data.abiphone")
+    private val patternGroup = RepoPattern.group("data.abiphone")
 
     /**
      * REGEX-TEST: Abiphone X Plus
@@ -61,7 +60,7 @@ object MagicalPowerDisplay {
      * REGEX-TEST: Abiphone XIV Enormous Purple
      * REGEX-TEST: Abiphone Flip
      */
-    private val abiphoneNamePattern by abiphoneGroup.pattern(
+    private val abiphoneNamePattern by patternGroup.pattern(
         "name",
         "Abiphone .*",
     )
@@ -71,7 +70,7 @@ object MagicalPowerDisplay {
      * REGEX-TEST: Your contacts: 1/75
      * REGEX-TEST: Your contacts: 52/60
      */
-    private val yourContactPattern by abiphoneGroup.pattern(
+    private val yourContactPattern by patternGroup.pattern(
         "contacts",
         "Your contacts: (?<contacts>\\d+)\\/\\d+",
     )

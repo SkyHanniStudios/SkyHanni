@@ -22,7 +22,7 @@ import java.time.Duration
 abstract class PublishToModrinth : DefaultTask() {
 
     @get:Internal
-    val jarDirectory: Provider<Directory>? = project.rootProject.layout.buildDirectory.dir("downloadedJars")
+    val jarDirectory: Provider<Directory> = project.rootProject.layout.buildDirectory.dir("downloadedJars")
 
     private lateinit var changelog: String
     private lateinit var versionNumber: String
@@ -34,7 +34,7 @@ abstract class PublishToModrinth : DefaultTask() {
     @TaskAction
     fun publishToModrinth() {
         initVariables()
-        val jars = jarDirectory?.get()?.asFile?.listFiles()?.filter { it.extension == "jar" }.orEmpty()
+        val jars = jarDirectory.get().asFile.listFiles()?.filter { it.extension == "jar" }.orEmpty()
 
         for (jar in jars) {
             processJar(jar)
@@ -68,8 +68,6 @@ abstract class PublishToModrinth : DefaultTask() {
             ?: throw IllegalArgumentException("No ProjectTarget found for Minecraft version '$mcVersion'.")
 
         val modrinthInfo = projectTarget.modrinthInfo
-            ?: throw IllegalArgumentException("No ModrinthInfo found for ProjectTarget '$projectTarget'.")
-
         val modVersionObj = ModVersion.fromString(modVersion)
 
         val versionName = "$modVersion for $mcVersion"
@@ -79,7 +77,7 @@ abstract class PublishToModrinth : DefaultTask() {
         val loader = modrinthInfo.loader
         val versionType = if (modVersionObj.isBeta) "beta" else "release"
         val loaders = loader.toLoadersArray()
-        val featured = ProjectTarget.values().last() == projectTarget
+        val featured = ProjectTarget.entries.last() == projectTarget
         val status = "listed"
         val requestedStatus = "listed"
 
@@ -111,13 +109,13 @@ abstract class PublishToModrinth : DefaultTask() {
             .header("Authorization", modrinthToken)
             .header("User-Agent", userAgent)
 
-        val modrinthRespnse = client.send(modrinthRequest, HttpResponse.BodyHandlers.ofString())
-        val responseCode = modrinthRespnse.statusCode()
+        val modrinthResponse = client.send(modrinthRequest, HttpResponse.BodyHandlers.ofString())
+        val responseCode = modrinthResponse.statusCode()
         if (responseCode !in 200..201) {
-            throw RuntimeException("Failed to publish to Modrinth: HTTP $responseCode - ${modrinthRespnse.body()}")
+            throw RuntimeException("Failed to publish to Modrinth: HTTP $responseCode - ${modrinthResponse.body()}")
         }
 
-        val responseBody = modrinthRespnse.body()
+        val responseBody = modrinthResponse.body()
         println("Successfully published to Modrinth: $responseBody")
     }
 

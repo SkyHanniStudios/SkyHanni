@@ -9,10 +9,12 @@ import at.hannibal2.skyhanni.features.inventory.attribute.AttributeShardsData
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.InventoryUtils
+import at.hannibal2.skyhanni.utils.ItemNameResolver
 import at.hannibal2.skyhanni.utils.ItemUtils
 import at.hannibal2.skyhanni.utils.ItemUtils.extraAttributes
 import at.hannibal2.skyhanni.utils.ItemUtils.getLore
 import at.hannibal2.skyhanni.utils.ItemUtils.takeUnlessEmpty
+import at.hannibal2.skyhanni.utils.LorenzRarity
 import at.hannibal2.skyhanni.utils.NeuInternalName
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.NeuItems
@@ -74,9 +76,13 @@ class ItemResolutionQuery {
             "(?<name>§.[^§]+)(?: §d§lNEW SHARD)?",
         )
 
-        val petRarities = listOf("COMMON", "UNCOMMON", "RARE", "EPIC", "LEGENDARY", "MYTHIC")
-
-        private val BAZAAR_ENCHANTMENT_PATTERN = "ENCHANTMENT_(\\D*)_(\\d+)".toPattern()
+        /**
+         * REGEX-TEST: ENCHANTMENT_LOOTING_5
+         */
+        private val bazaarEnchantmentPattern by patternGroup.pattern(
+            "bazaar.enchantment",
+            "ENCHANTMENT_(?<name>\\D*)_(?<tier>\\d+)",
+        )
 
         private var renamedEnchantments: Map<String, String> = mapOf()
         private var shardNameOverrides: Map<String, String> = mapOf()
@@ -92,9 +98,8 @@ class ItemResolutionQuery {
             ItemUtils.bazaarOverrides[hypixelId]?.let {
                 return it
             }
-            val matcher = BAZAAR_ENCHANTMENT_PATTERN.matcher(hypixelId)
-            if (matcher.matches()) {
-                return matcher.group(1) + ";" + matcher.group(2)
+            bazaarEnchantmentPattern.matchMatcher(hypixelId) {
+                return ItemNameResolver.fixEnchantmentName("${group("name")};${group("tier")}").asString()
             }
             return hypixelId.replace(":", "-")
         }
@@ -125,7 +130,7 @@ class ItemResolutionQuery {
                 if (NeuItems.isIgnoredDisplayNameItem(internalName)) continue
                 val unCleanItemDisplayName: String = EnoughUpdatesManager.getDisplayName(internalName)
                 var cleanItemDisplayName = unCleanItemDisplayName.removeColor()
-                if (cleanItemDisplayName.isEmpty()) continue
+                if (cleanItemDisplayName.isEmpty() || internalName.isLeveledEnchantedBook()) continue
                 if (petPattern.matches(itemName)) {
                     if (!cleanItemDisplayName.contains("[Lvl {LVL}] ")) continue
                     cleanItemDisplayName = cleanItemDisplayName.replace("[Lvl {LVL}] ", "")
@@ -147,6 +152,9 @@ class ItemResolutionQuery {
             }
             return bestMatch
         }
+
+        private fun NeuInternalName.isLeveledEnchantedBook(): Boolean = asString().contains(";") &&
+            EnoughUpdatesManager.getItemById(this)?.itemId?.removePrefix("minecraft:") == "enchanted_book"
 
         private fun findInternalNameCandidatesForDisplayName(displayName: String): Set<String> {
             val isPet = petPattern.matches(displayName)
@@ -171,7 +179,7 @@ class ItemResolutionQuery {
                 val ultimate = group("format").lowercase().contains("§l")
                 val prefix = if (ultimate && name != "Ultimate Wise" && name != "Ultimate Jerry") "ULTIMATE_" else ""
                 val cleanedEnchantName = name.renamedEnchantmentCheck().replace(" ", "_").replace("-", "_").uppercase()
-                "$prefix$cleanedEnchantName;${group("level").romanToDecimal()}".uppercase().toInternalName()
+                ItemNameResolver.fixEnchantmentName("$prefix$cleanedEnchantName;${group("level").romanToDecimal()}")
             }
 
         private fun String.renamedEnchantmentCheck(): String = renamedEnchantments[this] ?: this
@@ -215,6 +223,7 @@ class ItemResolutionQuery {
             "BALLOON_HAT_2024", "BALLOON_HAT_2025" -> resolveBalloonHatName()
             "ATTRIBUTE_SHARD" -> resolveAttributeShardName()
             "CAKE_HAT_2026" -> resolveCakeHatName()
+            "FACTION_RABBIT" -> resolveFactionRabbitName()
             else -> resolvedName
         }
     }
@@ -226,7 +235,7 @@ class ItemResolutionQuery {
             val petInfoObject = ConfigManager.gson.fromJson(petInfo, JsonObject::class.java)
             val petId = petInfoObject["type"].asString
             val petTier = petInfoObject["tier"].asString
-            val rarityIndex = petRarities.indexOf(petTier)
+            val rarityIndex = LorenzRarity.getByNameOrError(petTier).neuPetIndex
             val rawInternalName = petId.uppercase() + ";" + rarityIndex
             return rawInternalName.toInternalName()
         } catch (e: Exception) {
@@ -250,8 +259,7 @@ class ItemResolutionQuery {
         val enchantments = getExtraAttributes().getCompoundOrDefault("enchantments")
         val enchantName = enchantments.keySet().singleOrNull()
         if (enchantName.isNullOrEmpty()) return null
-        val rawInternalName = enchantName.uppercase() + ";" + enchantments.getIntOrDefault(enchantName)
-        return rawInternalName.toInternalName()
+        return ItemNameResolver.fixEnchantmentName("$enchantName;${enchantments.getIntOrDefault(enchantName)}")
     }
 
     private fun resolveCrabHatName(): NeuInternalName {
@@ -306,6 +314,12 @@ class ItemResolutionQuery {
     private fun resolveCakeHatName(): NeuInternalName {
         val color = getExtraAttributes().getStringOrDefault("party_hat_color")
         val rawInternalName = "CAKE_HAT_2026_" + color.uppercase()
+        return rawInternalName.toInternalName()
+    }
+
+    private fun resolveFactionRabbitName(): NeuInternalName {
+        val id = getExtraAttributes().getStringOrDefault("faction_rabbit_id")
+        val rawInternalName = "FACTION_RABBIT_" + id.uppercase()
         return rawInternalName.toInternalName()
     }
 

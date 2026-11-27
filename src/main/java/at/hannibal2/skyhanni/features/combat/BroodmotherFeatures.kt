@@ -2,8 +2,8 @@ package at.hannibal2.skyhanni.features.combat
 
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
+import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.data.IslandType
-import at.hannibal2.skyhanni.data.model.TabWidget
 import at.hannibal2.skyhanni.data.title.TitleManager
 import at.hannibal2.skyhanni.events.GuiRenderEvent
 import at.hannibal2.skyhanni.events.SecondPassedEvent
@@ -14,31 +14,31 @@ import at.hannibal2.skyhanni.utils.HypixelCommands
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderable
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SoundUtils
-import at.hannibal2.skyhanni.utils.StringUtils
+import at.hannibal2.skyhanni.utils.SoundUtils.playSound
 import at.hannibal2.skyhanni.utils.StringUtils.removeColor
 import at.hannibal2.skyhanni.utils.TimeUtils.format
 import at.hannibal2.skyhanni.utils.compat.appendWithColor
 import at.hannibal2.skyhanni.utils.compat.componentBuilder
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
+import com.google.gson.JsonArray
+import com.google.gson.JsonPrimitive
 import net.minecraft.ChatFormatting
-import kotlin.reflect.KProperty0
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
-import kotlin.time.DurationUnit
 
 // TODO clean this file up - there is a lot of state management that could utilize Resettable
 //  and other mechanisms to avoid the repetitive code.
 @SkyHanniModule
 object BroodmotherFeatures {
-
     enum class StageEntry(private val str: String, val duration: Duration) {
-        SLAIN("§eSlain", 10.minutes),
-        DORMANT("§eDormant", 9.minutes),
-        SOON("§6Soon", 6.minutes),
-        AWAKENING("§6Awakening", 3.minutes),
-        IMMINENT("§4Imminent", 1.minutes),
-        ALIVE("§4Alive!", 0.minutes);
+        SLAIN("§eSlain", 2.5.minutes),
+        DORMANT("§eDormant", 2.minutes),
+        SOON("§6Soon", 1.5.minutes),
+        AWAKENING("§6Awakening", 1.minutes),
+        IMMINENT("§4Imminent", 0.5.minutes),
+        ALIVE("§4Alive!", 0.minutes),
+        ;
 
         override fun toString() = str
     }
@@ -46,14 +46,20 @@ object BroodmotherFeatures {
     private val config get() = SkyHanniMod.feature.combat.broodmother
     private val spawnAlertConfig get() = config.spawnAlert
 
+    private val alertSound get() =
+        SoundUtils.createSound(spawnAlertConfig.alertSound, spawnAlertConfig.pitch, isWarning = true)
+
+    @JvmStatic
+    fun playTestSound() = alertSound.playSound()
+
     private var lastStage: StageEntry? = null
     private var currentStage: StageEntry? = null
     private var broodmotherSpawnTime = SimpleTimeMark.farPast()
     private var display: Renderable? = null
 
-    @HandleEvent
-    fun onWidgetUpdate(event: WidgetUpdateEvent) {
-        if (!event.isWidget(TabWidget.BROODMOTHER)) return
+    @HandleEvent(onlyOnIsland = IslandType.SPIDER_DEN)
+    private fun onWidgetUpdate(event: WidgetUpdateEvent) {
+        if (!event.isWidget(BROODMOTHER)) return
         val newStage = event.widget.matchMatcherFirstLine { group("stage") }.orEmpty()
         if (newStage.isNotEmpty() && newStage != lastStage.toString().removeColor()) {
             lastStage = currentStage
@@ -66,48 +72,38 @@ object BroodmotherFeatures {
     private fun onStageUpdate() {
         ChatUtils.debug("New Broodmother stage: $currentStage")
 
-        if (onServerJoin()) return
+        if (handleInitialStage()) return
 
         // ignore Hypixel bug where the stage may temporarily revert to Imminent after the Broodmother's death
-        if (currentStage == StageEntry.IMMINENT && lastStage == StageEntry.ALIVE) return
+        if (currentStage == IMMINENT && lastStage == ALIVE) return
 
-        if (currentStage == StageEntry.ALIVE) {
+        if (currentStage == ALIVE) {
             onBroodmotherSpawn()
             return
         }
 
-        val lastStage = lastStage ?: return
         val timeUntilSpawn = currentStage?.duration ?: return
         broodmotherSpawnTime = SimpleTimeMark.now() + timeUntilSpawn
 
-        if (currentStage == StageEntry.IMMINENT && config.imminentWarning) {
+        if (currentStage == IMMINENT) {
             playImminentWarning()
-            return
-        }
-
-        if (currentStage !in config.stages) return
-        if (currentStage == StageEntry.SLAIN) {
+        } else if (currentStage == SLAIN) {
             onBroodmotherSlain()
-        } else {
-            val pluralize = StringUtils.pluralize(timeUntilSpawn.toInt(DurationUnit.MINUTES), "minute")
-            ChatUtils.chat(
-                "Broodmother: $lastStage §e-> $currentStage§e. §b${timeUntilSpawn.inWholeMinutes} $pluralize §euntil it spawns!",
-            )
         }
     }
 
-    private fun onServerJoin(): Boolean {
+    private fun handleInitialStage(): Boolean {
         if (lastStage != null || !config.stageOnJoin) return false
-        // don't send if user has config enabled for either of the alive messages
+        // don't send if user has the spawn alert enabled
         // this is so that two messages aren't immediately sent upon joining a server
-        if (!(currentStage == StageEntry.ALIVE && isAliveMessageEnabled())) {
-            val duration = currentStage?.duration
+        if (!(currentStage == ALIVE && isSpawnAlertEnabled())) {
             var message = "The Broodmother's current stage in this server is ${currentStage.toString().replace("!", "")}§e."
+
+            val duration = currentStage?.duration
             if (duration != 0.minutes) {
-                val minutes = duration?.inWholeMinutes?.toInt() ?: 0
-                val pluralize = StringUtils.pluralize(minutes, "minute")
-                message += " It will spawn §bwithin ${duration?.inWholeMinutes} $pluralize§e."
+                message += " It will spawn §bwithin $duration§e."
             }
+
             ChatUtils.chat(message)
             return true
         }
@@ -116,46 +112,46 @@ object BroodmotherFeatures {
 
     private fun onBroodmotherSpawn() {
         broodmotherSpawnTime = SimpleTimeMark.farPast()
-        if (!isAliveMessageEnabled()) return
-        val feature: KProperty0<*>
-        if (config.alertOnSpawn) {
-            feature = config::alertOnSpawn
-            val alertSound = SoundUtils.createSound(spawnAlertConfig.alertSound, spawnAlertConfig.pitch)
-            SoundUtils.repeatSound(100, spawnAlertConfig.repeatSound, alertSound)
-            TitleManager.sendTitle(spawnAlertConfig.text.replace("&", "§"))
-        } else {
-            feature = config::stages
-        }
+
+        if (!isSpawnAlertEnabled()) return
+
+        SoundUtils.repeatSound(100, spawnAlertConfig.repeatSound, alertSound)
+        TitleManager.sendTitle(spawnAlertConfig.text.replace("&", "§"))
+
         ChatUtils.clickToActionOrDisable(
             "The Broodmother has spawned!",
-            feature,
+            config::alertOnSpawn,
             actionName = "warp to the Top of the Nest",
             action = { HypixelCommands.warp("nest") },
         )
     }
 
     private fun playImminentWarning() {
-        SoundUtils.repeatSound(100, 2, SoundUtils.createSound("block.note_block.pling", 0.5f))
+        if (!config.imminentWarning) return
+
+        SoundUtils.repeatSound(100, 2, SoundUtils.createSound("block.note_block.pling", 0.5f, isWarning = true))
         ChatUtils.chat(
             componentBuilder {
                 append("The Broodmother is ")
                 appendWithColor("Imminent", ChatFormatting.DARK_RED)
                 append("! It will spawn in ")
-                appendWithColor("60 seconds", ChatFormatting.AQUA)
+                appendWithColor("30 seconds", ChatFormatting.AQUA)
                 append("!")
             },
         )
     }
 
     private fun onBroodmotherSlain() {
-        broodmotherSpawnTime = SimpleTimeMark.now() + 10.minutes
-        if (!(config.hideSlainWhenNearby && SpidersDenApi.isAtTopOfNest())) {
-            ChatUtils.chat("The Broodmother was killed!")
-        }
+        broodmotherSpawnTime = SimpleTimeMark.now() + 2.5.minutes
+
+        if (!config.slainMessage) return
+        if (config.hideSlainWhenNearby && SpidersDenApi.isAtTopOfNest()) return
+
+        ChatUtils.chat("The Broodmother was killed!")
     }
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         broodmotherSpawnTime = SimpleTimeMark.farPast()
         lastStage = null
         currentStage = null
@@ -163,7 +159,14 @@ object BroodmotherFeatures {
     }
 
     @HandleEvent
-    fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+        event.move(149, "combat.broodmother.stages", "combat.broodmother.slainMessage") { stages ->
+            JsonPrimitive((stages as? JsonArray)?.contains(JsonPrimitive("SLAIN")) == true)
+        }
+    }
+
+    @HandleEvent(onlyOnIsland = IslandType.SPIDER_DEN)
+    private fun onGuiRenderOverlay(event: GuiRenderEvent.GuiOverlayRenderEvent) {
         if (!isCountdownEnabled()) return
         val display = if (broodmotherSpawnTime.isInPast() && !broodmotherSpawnTime.isFarPast()) {
             Renderable.text("§4Broodmother spawning now!")
@@ -171,12 +174,12 @@ object BroodmotherFeatures {
         config.countdownPosition.renderRenderable(display, posLabel = "Broodmother Countdown")
     }
 
-    @HandleEvent
-    fun onSecondPassed(event: SecondPassedEvent) {
+    @HandleEvent(onlyOnIsland = IslandType.SPIDER_DEN)
+    private fun onSecondPassed(event: SecondPassedEvent) {
         if (!isCountdownEnabled()) return
 
         if (broodmotherSpawnTime.isFarPast()) {
-            if (currentStage == StageEntry.ALIVE) {
+            if (currentStage == ALIVE) {
                 display = Renderable.text("§4Broodmother spawned!")
             }
         } else {
@@ -185,7 +188,6 @@ object BroodmotherFeatures {
         }
     }
 
-    private fun inSpidersDen() = IslandType.SPIDER_DEN.isInIsland()
-    private fun isCountdownEnabled() = inSpidersDen() && config.countdown
-    private fun isAliveMessageEnabled() = config.alertOnSpawn || config.stages.contains(StageEntry.ALIVE)
+    private fun isCountdownEnabled() = config.countdown
+    private fun isSpawnAlertEnabled() = config.alertOnSpawn
 }

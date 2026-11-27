@@ -44,10 +44,7 @@ value class NeuInternalName private constructor(private val internalName: String
     val skyblockCommandId: String
         get() = when {
             isPet -> internalName.split(";").first()
-            isEnchantedBook && internalName.contains(";") -> {
-                val (name, level) = internalName.split(";", limit = 2)
-                "ENCHANTED_BOOK_${name}_$level"
-            }
+            isEnchantedBook && internalName.contains(";") -> ItemNameResolver.enchantedBookCommandId(internalName)
 
             else -> internalName
         }
@@ -76,6 +73,7 @@ value class NeuInternalName private constructor(private val internalName: String
         val SKYBLOCK_BRONZE_MEDAL = "SKYBLOCK_BRONZE_MEDAL".toInternalName()
         val SKYBLOCK_COPPER = "SKYBLOCK_COPPER".toInternalName()
         val SKYBLOCK_MOTE = "SKYBLOCK_MOTE".toInternalName()
+        val SKYBLOCK_KERNEL = "SKYBLOCK_KERNEL".toInternalName()
 
         val WISP_POTION = "WISP_POTION".toInternalName()
         val ENCHANTED_HAY_BLOCK = "ENCHANTED_HAY_BLOCK".toInternalName()

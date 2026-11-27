@@ -11,10 +11,12 @@ import at.hannibal2.skyhanni.config.features.misc.navigation.NavigationConfig
 import at.hannibal2.skyhanni.config.features.misc.tracker.UniversalTrackerConfig
 import at.hannibal2.skyhanni.config.features.pets.PetConfig
 import at.hannibal2.skyhanni.config.features.stranded.StrandedConfig
+import at.hannibal2.skyhanni.utils.SoundUtils
 import com.google.gson.annotations.Expose
 import io.github.notenoughupdates.moulconfig.annotations.Accordion
 import io.github.notenoughupdates.moulconfig.annotations.Category
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorButton
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDraggableList
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorInfoText
 import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorKeybind
@@ -397,13 +399,17 @@ class MiscConfig {
     @Expose
     @ConfigOption(
         name = "Boost Warning Volume",
-        desc = "Play SkyHanni warning sounds at 100% volume regardless of game volume settings.\n" +
-            "If the game is muted, you still won't hear the sounds.",
+        desc = "Always play SkyHanni warning sounds at 100% volume (unless the game is muted).\n" +
+            "§cThis may be very loud if your game is at low volume!",
     )
     @ConfigEditorBoolean
-    @FeatureToggle
-    @SearchTag("beep change ding during loud maintain pling quiet warnings")
-    var boostWarningVolume: Boolean = true
+    @SearchTag("beep change ding during maintain pling quiet warnings")
+    var boostWarningVolume: Boolean = false
+
+    @ConfigOption(name = "Test Warning Sound", desc = "Play a test warning sound to see how loud it will be.")
+    @ConfigEditorButton(buttonText = "Test")
+    @SearchTag("beep boost change ding during loud maintain pling quiet volume warnings")
+    val testWarningSound: Runnable = Runnable(SoundUtils::playPlingSound)
 
     @Expose
     @ConfigOption(
@@ -504,13 +510,15 @@ class MiscConfig {
     @FeatureToggle
     var fixDoubleClicks: Boolean = true
 
-
     @ConfigOption(
         name = "Color Particle Warning",
         desc = "§c§lThis can break particle Coloring in parts of Skyblock where it is done properly.",
     )
     @ConfigEditorInfoText
-    @SearchTag("Fixes Hypixel not setting colored particles properly such as Slayer Specific Spawn Particles or Motes Fix Colored Particles")
+    @SearchTag(
+        "Fixes Hypixel not setting colored particles properly " +
+            "such as Slayer Specific Spawn Particles or Motes Fix Colored Particles",
+    )
     val notice: String = ""
 
     @Expose
@@ -539,6 +547,15 @@ class MiscConfig {
     @ConfigEditorBoolean
     @FeatureToggle
     var achievementMessages: Boolean = true
+
+    @Expose
+    @ConfigOption(
+        name = "Muted Narrator Warning",
+        desc = "Send a warning reminder in chat when the narrator is enabled, but in a muted state. " +
+            "§eNarrator destroys performance in SkyBlock.",
+    )
+    @ConfigEditorBoolean
+    val mutedNarratorWarning: Property<Boolean> = Property.of(true)
 
     @Expose
     @ConfigOption(
