@@ -87,12 +87,12 @@ object BetterContainers {
         SlotType.entries.find { entry -> entry.isSlotType(stack) } ?: SlotType.OTHER
     }
 
-    private val toggleOff = Identifier.fromNamespaceAndPath("skyhanni", "dynamic_54/toggle_off.png")
-    private val toggleOn = Identifier.fromNamespaceAndPath("skyhanni", "dynamic_54/toggle_on.png")
-    private val dynamic54Base = Identifier.fromNamespaceAndPath("skyhanni", "dynamic_54/style1/dynamic_54.png")
-    private val dynamic54Slot = Identifier.fromNamespaceAndPath("skyhanni", "dynamic_54/style1/dynamic_54_slot_ctm.png")
-    private val dynamic54Button = Identifier.fromNamespaceAndPath("skyhanni", "dynamic_54/style1/dynamic_54_button_ctm.png")
-    private val customDynamicChest = Identifier.fromNamespaceAndPath("skyhanni", "dynamic_chest_inventory.png")
+    private val toggleOff = SkyHanniMod.id("dynamic_54/toggle_off.png")
+    private val toggleOn = SkyHanniMod.id("dynamic_54/toggle_on.png")
+    private val dynamic54Base = SkyHanniMod.id("dynamic_54/style1/dynamic_54.png")
+    private val dynamic54Slot = SkyHanniMod.id("dynamic_54/style1/dynamic_54_slot_ctm.png")
+    private val dynamic54Button = SkyHanniMod.id("dynamic_54/style1/dynamic_54_button_ctm.png")
+    private val customDynamicChest = SkyHanniMod.id("dynamic_chest_inventory.png")
 
     /**
      * REGEX-TEST: navigate the maze
