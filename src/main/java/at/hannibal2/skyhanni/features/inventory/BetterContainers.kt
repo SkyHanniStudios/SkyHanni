@@ -53,10 +53,10 @@ object BetterContainers {
     private val config get() = SkyHanniMod.feature.inventory.improvedSBMenus
 
     enum class SlotType(val isSlotType: (SafeItemStack) -> Boolean) {
-        BLANK(SlotType::isBlankStack),
+        BLANK({ stack -> isBlankStack(stack) }),
         TOGGLE_ON({ stack -> isToggleCommon(stack, "disable") }),
         TOGGLE_OFF({ stack -> isToggleCommon(stack, "enable") }),
-        BUTTON(SlotType::isButtonStack),
+        BUTTON({ stack -> isButtonStack(stack) }),
         OTHER({ _ -> true }),
         ;
 
@@ -84,7 +84,6 @@ object BetterContainers {
     }
 
     private val slotTypeCache = WeakIdentityCache.sized<SafeItemStack, SlotType>(128) { stack ->
-        if (stack == null) return SlotType.OTHER
         SlotType.entries.find { entry -> entry.isSlotType(stack) } ?: SlotType.OTHER
     }
 
