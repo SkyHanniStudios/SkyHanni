@@ -33,6 +33,11 @@ class SlayerConfig {
     @Accordion
     val spider: SpiderConfig = SpiderConfig()
 
+    @Expose
+    @ConfigOption(name = "Wolf", desc = "")
+    @Accordion
+    val wolf: WolfConfig = WolfConfig()
+
     // TODO rename to "enderman"
     @Expose
     @Category(name = "Enderman", desc = "Enderman Slayer Feature")

@@ -75,14 +75,17 @@ object MobFilter {
      * REGEX-TEST: [Lv396] ☠ Tarantula Broodfather V 6.3M/10M❤
      * REGEX-TEST: [Lv377] ☠ Atoned Horror 4.1M/10M❤
      * REGEX-TEST: [Lv396] ☠ Conjoined Brood 12.4M/20M❤
+     * REGEX-TEST: [Lv487]  ☠ Packmaster Soul 28.4M/40M❤
+     * REGEX-FAIL: [Lv356]  ☠ Warrior Wolf 2.3M/4M❤
      * REGEX-FAIL: [Lv183] ☠ Voidling Fanatic 750k/750k❤
      * REGEX-FAIL: [Lv305] ☠ Voidling Extremist 7.3M/8M❤
      * REGEX-FAIL: [Lv186] ☠ Primordial Minion 1.5M/1.5M❤
      * REGEX-FAIL: [Lv11] ☠ Voracious Spider 430/430❤
      */
     val slayerNameFilter by patternGroup.pattern(
-        "filter.slayer",
-        "^(?:\\[Lv(?<level>\\d+)\\] )?(?<mobType>[^\\w\\s✯\\-]+ )?. (?<name>.*)(?: (?<tier>[IV]+)|(?<=Atoned Horror|Conjoined Brood)) \\d+.*",
+        "filter.slayer.new",
+        "^(?:\\[Lv(?<level>\\d+)\\] +)?(?<mobType>[^\\w\\s✯\\-]+ )?. (?<name>.*)" +
+            "(?: (?<tier>[IV]+)|(?<=Atoned Horror|Conjoined Brood|Packmaster Soul)) \\d+.*",
     )
 
     /**

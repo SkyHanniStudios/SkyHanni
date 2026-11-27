@@ -32,6 +32,7 @@ enum class SlayerType(
         "sven",
         Wolf::class.java,
         SlayerMiniBossType.SVEN,
+        listOf("Packmaster Soul"),
     ),
     VOID(
         "Voidgloom Seraph",
@@ -66,7 +67,7 @@ enum class SlayerType(
 enum class SlayerMiniBossType(vararg names: String) {
     REVENANT("Revenant Sycophant", "Revenant Champion", "Deformed Revenant", "Atoned Champion", "Atoned Revenant"),
     TARANTULA("Tarantula Vermin", "Tarantula Beast", "Mutant Tarantula", "Primordial Jockey", "Primordial Viscount"),
-    SVEN("Pack Enforcer", "Sven Follower", "Sven Alpha"),
+    SVEN("Pack Enforcer", "Sven Follower", "Sven Alpha", "Follower Soul"),
     VOIDLING("Voidling Devotee", "Voidling Radical", "Voidcrazed Maniac"),
     INFERNAL("Flare Demon", "Kindleheart Demon", "Burningsoul Demon"),
     ;
@@ -76,6 +77,6 @@ enum class SlayerMiniBossType(vararg names: String) {
     companion object {
         private val allNames = entries.flatMap { it.names }.toSet()
 
-        fun isMiniboss(name: String) = name in allNames
+        fun isMiniboss(name: String) = name.removePrefix("☠ ") in allNames
     }
 }

@@ -40,6 +40,7 @@ enum class BossType(
     SLAYER_WOLF_2("§eSven Packmaster 2", Type.SVEN_PACKMASTER, "§eSven 2", isSlayer = true),
     SLAYER_WOLF_3("§cSven Packmaster 3", Type.SVEN_PACKMASTER, "§cSven 3", isSlayer = true),
     SLAYER_WOLF_4("§4Sven Packmaster 4", Type.SVEN_PACKMASTER, "§4Sven 4", isSlayer = true),
+    SLAYER_WOLF_5("§5Packmaster Soul", Type.SVEN_PACKMASTER, "§5Sven 5", isSlayer = true),
 
     SLAYER_ENDERMAN_1("§aVoidgloom Seraph 1", Type.VOIDGLOOM_SERAPH, "§aVoid 1", isSlayer = true),
     SLAYER_ENDERMAN_2("§eVoidgloom Seraph 2", Type.VOIDGLOOM_SERAPH, "§eVoid 2", isSlayer = true),

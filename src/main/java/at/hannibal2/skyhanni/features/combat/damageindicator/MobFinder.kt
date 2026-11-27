@@ -432,15 +432,19 @@ class MobFinder {
         }
     }
 
-    private fun tryAddEntityWolf(mob: Mob) = if (mob.name == "Sven Packmaster") {
-        when (mob.levelOrTier) {
-            1 -> EntityResult(bossType = BossType.SLAYER_WOLF_1)
-            2 -> EntityResult(bossType = BossType.SLAYER_WOLF_2)
-            3 -> EntityResult(bossType = BossType.SLAYER_WOLF_3)
-            4 -> EntityResult(bossType = BossType.SLAYER_WOLF_4)
+    // TODO clean it up somehow (idk)
+    private fun tryAddEntityWolf(mob: Mob) =
+        when (mob.name) {
+            "Packmaster Soul" -> EntityResult(bossType = BossType.SLAYER_WOLF_5)
+            "Sven Packmaster" -> when (mob.levelOrTier) {
+                1 -> EntityResult(bossType = BossType.SLAYER_WOLF_1)
+                2 -> EntityResult(bossType = BossType.SLAYER_WOLF_2)
+                3 -> EntityResult(bossType = BossType.SLAYER_WOLF_3)
+                4 -> EntityResult(bossType = BossType.SLAYER_WOLF_4)
+                else -> null
+            }
             else -> null
         }
-    } else null
 
     private fun tryAddEntityGuardian(mob: Mob) = if (mob.baseEntity.hasMaxHealth(35_000_000)) {
         EntityResult(bossType = BossType.THUNDER)
