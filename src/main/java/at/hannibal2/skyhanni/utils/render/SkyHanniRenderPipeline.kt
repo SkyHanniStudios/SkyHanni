@@ -193,7 +193,7 @@ enum class SkyHanniRenderPipeline(
         withVertexBinding(0, vFormat)
         withPrimitiveTopology(vDrawMode)
         //?} else
-        //.withVertexFormat(vFormat, vDrawMode)
+        //withVertexFormat(vFormat, vDrawMode)
 
         vertexShaderPath?.let { withVertexShader(SkyHanniMod.id(it)) }
         fragmentShaderPath?.let { withFragmentShader(SkyHanniMod.id(it)) }
