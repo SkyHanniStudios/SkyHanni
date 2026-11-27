@@ -1,6 +1,8 @@
 package at.hannibal2.skyhanni.utils.json
 
+import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.config.ConfigManager
+import at.hannibal2.skyhanni.config.UpdateKeybinds
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.jsonobjects.elitedev.EliteLeaderboardType
 import at.hannibal2.skyhanni.data.jsonobjects.elitedev.EliteLeaderboardTypeAdapter
@@ -222,26 +224,35 @@ enum class SkyHanniTypeAdapters(
         InputConstants.Key::class.java,
         object : TypeAdapter<InputConstants.Key>() {
             override fun write(out: JsonWriter, value: InputConstants.Key) {
-                //? if < 26.3 {
-                /*val newIdentifier = when (val identifier = value.name) {
+                // TODO: Remove for 26.3
+                val newIdentifier = when (val identifier = value.name) {
                     "key.keyboard.keypad.decimal" -> "key.keyboard.keypad.period"
                     "key.keyboard.menu" -> "key.keyboard.application"
                     else -> identifier
                 }
-                *///?} else
-                val newIdentifier = value.name
                 out.value(newIdentifier)
             }
 
             override fun read(reader: JsonReader): InputConstants.Key {
-                //? if < 26.3 {
-                /*val newIdentifier = when (val identifier = reader.nextString()) {
+                val identifier = when (val token = reader.peek()) {
+                    STRING -> reader.nextString()
+                    NUMBER -> {
+                        val code = reader.nextInt()
+                        UpdateKeybinds.glfwKeyName(code) ?: run {
+                            SkyHanniMod.logger.warn("Unknown key code to migrate: $code")
+                            "key.keyboard.unknown"
+                        }
+                    }
+                    else -> throw IllegalArgumentException("Expected STRING or INT but got $token")
+                }
+
+                // TODO: Remove for 26.3
+                val newIdentifier = when (identifier) {
                     "key.keyboard.keypad.period" -> "key.keyboard.keypad.decimal"
                     "key.keyboard.application" -> "key.keyboard.menu"
                     else -> identifier
                 }
-                *///?} else
-                val newIdentifier = reader.nextString()
+
                 return InputKeys.identifier(newIdentifier)
             }
         }
