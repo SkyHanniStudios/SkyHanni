@@ -77,14 +77,13 @@ class GuiContainerHook(guiAny: Any) {
         original: Operation<Void>,
         slot: Slot?,
         slotId: Int,
-        buttonNum: Int,
+        containerButton: Int,
         containerInput: ContainerInput,
     ) {
-        val key = InputKeys.mouse(buttonNum)
-        val event = SlotClickEvent.postEvent(gui, container, slotId, key, containerInput)
+        val event = SlotClickEvent.postEvent(gui, container, slotId, containerButton, containerInput)
 
         if (event == null) {
-            original.call(slot, slotId, buttonNum, containerInput)
+            original.call(slot, slotId, containerButton, containerInput)
             return
         }
 
