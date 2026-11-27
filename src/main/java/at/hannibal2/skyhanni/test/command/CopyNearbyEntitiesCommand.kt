@@ -353,9 +353,7 @@ object CopyNearbyEntitiesCommand {
         if (mob.hologram2Delegate.isInitialized()) {
             add("Hologram2: ${mob.hologram2?.asString()}")
         }
-        if (mob.owner != null) {
-            add("Owner: ${mob.owner.ownerName}")
-        }
+        mob.owner?.let { add("Owner: ${it.ownerName}") }
         add("Level or Tier: ${mob.levelOrTier.takeIf { it != -1 }}")
         if (mob.category == MobCategory.DUNGEON) {
             add("Is Starred: ${mob.hasStar}")
