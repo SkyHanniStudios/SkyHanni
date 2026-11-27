@@ -53,6 +53,7 @@ object SkyHanniRenderLayers {
         crossinline configure: RenderSetup.RenderSetupBuilder.() -> Unit = {},
     ): RenderType {
         val setup = RenderSetup.builder(invoke()).apply {
+            //? if >= 26.3
             oitPipelines()?.let(::setOitPipelines)
             configure()
         }.createRenderSetup()
