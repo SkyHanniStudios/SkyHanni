@@ -1,6 +1,8 @@
 package at.hannibal2.skyhanni.utils.json
 
+import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.config.ConfigManager
+import at.hannibal2.skyhanni.config.UpdateKeybinds
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.jsonobjects.elitedev.EliteLeaderboardType
 import at.hannibal2.skyhanni.data.jsonobjects.elitedev.EliteLeaderboardTypeAdapter
@@ -232,8 +234,20 @@ enum class SkyHanniTypeAdapters(
             }
 
             override fun read(reader: JsonReader): InputConstants.Key {
+                val identifier = when (val token = reader.peek()) {
+                    STRING -> reader.nextString()
+                    NUMBER -> {
+                        val code = reader.nextInt()
+                        UpdateKeybinds.glfwKeyName(code) ?: run {
+                            SkyHanniMod.logger.warn("Unknown key code to migrate: $code")
+                            "key.keyboard.unknown"
+                        }
+                    }
+                    else -> throw IllegalArgumentException("Expected STRING or INT but got $token")
+                }
+
                 // TODO: Remove for 26.3
-                val newIdentifier = when (val identifier = reader.nextString()) {
+                val newIdentifier = when (identifier) {
                     "key.keyboard.keypad.period" -> "key.keyboard.keypad.decimal"
                     "key.keyboard.application" -> "key.keyboard.menu"
                     else -> identifier
