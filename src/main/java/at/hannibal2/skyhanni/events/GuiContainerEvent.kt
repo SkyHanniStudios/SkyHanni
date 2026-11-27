@@ -2,11 +2,9 @@ package at.hannibal2.skyhanni.events
 
 import at.hannibal2.skyhanni.api.event.SkyHanniEvent
 import at.hannibal2.skyhanni.skyhannimodule.PrimaryFunction
-import at.hannibal2.skyhanni.utils.InputKeys
 import at.hannibal2.skyhanni.utils.ItemUtils.getItemCategoryOrNull
 import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.compat.SkyHanniGuiContainer
-import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.inventory.ContainerInput
@@ -82,12 +80,16 @@ abstract class GuiContainerEvent(
         override val gui: SkyHanniGuiContainer,
         override val container: AbstractContainerMenu,
         var slotId: Int,
-        private var clickedButtonRaw: InputConstants.Key,
+        private var clickedButtonRaw: Int,
         var clickType: ContainerInput,
     ) : GuiContainerEvent(gui, container), Cancellable {
 
         val mouseType: MouseClickType get() = MouseClickType.of(clickedButtonRaw, clickType)
-        fun rawButton(): InputConstants.Key = clickedButtonRaw
+        fun rawButton(): Int = clickedButtonRaw
+
+        // TODO remove in october 2026
+        @Deprecated("use mouseType, or rawButton() when the raw value is needed")
+        val clickedButton get() = clickedButtonRaw
 
         val slot: Slot?
             get() = slotId.takeIf { it > -1 }?.let(container::getSlot)
@@ -99,7 +101,7 @@ abstract class GuiContainerEvent(
             if (clickType == CLONE) return
             if (slot == null) return
 
-            clickedButtonRaw = InputKeys.MOUSE_BUTTON_MIDDLE
+            clickedButtonRaw = 2
             clickType = CLONE
         }
 
@@ -107,7 +109,7 @@ abstract class GuiContainerEvent(
             if (mouseType.isRightClick() && slot?.item?.getItemCategoryOrNull() == SACK) return
             if (slot == null) return
 
-            clickedButtonRaw = InputKeys.MOUSE_BUTTON_LEFT
+            clickedButtonRaw = 0
             clickType = QUICK_MOVE
         }
 
@@ -122,7 +124,7 @@ abstract class GuiContainerEvent(
                 gui: SkyHanniGuiContainer,
                 container: AbstractContainerMenu,
                 slotId: Int,
-                clickedButton: InputConstants.Key,
+                clickedButton: Int,
                 clickType: ContainerInput,
             ): SlotClickEvent? {
                 if (posting.get()) return null
@@ -161,19 +163,18 @@ enum class MouseClickType {
     val defaultMode: ContainerInput get() = if (this == MIDDLE_CLICK) CLONE else PICKUP
 
     /** The raw button value to send. [OTHER] is sent as a left click. */
-    val buttonId: InputConstants.Key
+    val buttonId: Int
         get() = when (this) {
-            LEFT_CLICK, OTHER -> InputKeys.MOUSE_BUTTON_LEFT
-            RIGHT_CLICK -> InputKeys.MOUSE_BUTTON_RIGHT
-            MIDDLE_CLICK -> InputKeys.MOUSE_BUTTON_MIDDLE
+            LEFT_CLICK, OTHER -> 0
+            RIGHT_CLICK -> 1
+            MIDDLE_CLICK -> 2
         }
 
     companion object {
-        fun of(button: InputConstants.Key, clickType: ContainerInput): MouseClickType = when (clickType) {
+        fun of(button: Int, clickType: ContainerInput): MouseClickType = when (clickType) {
             PICKUP, QUICK_MOVE -> when (button) {
-                InputKeys.MOUSE_BUTTON_LEFT -> LEFT_CLICK
-                InputKeys.MOUSE_BUTTON_RIGHT -> RIGHT_CLICK
-                InputKeys.MOUSE_BUTTON_MIDDLE -> MIDDLE_CLICK
+                0 -> LEFT_CLICK
+                1 -> RIGHT_CLICK
                 else -> OTHER
             }
 
