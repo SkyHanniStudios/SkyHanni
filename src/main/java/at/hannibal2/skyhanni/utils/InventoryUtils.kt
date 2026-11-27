@@ -4,6 +4,8 @@ import at.hannibal2.skyhanni.data.OtherInventoryData
 import at.hannibal2.skyhanni.data.SackApi.getAmountInSacks
 import at.hannibal2.skyhanni.events.MouseClickType
 import at.hannibal2.skyhanni.utils.EntityUtils.getArmorInventory
+import at.hannibal2.skyhanni.utils.InventoryUtils.clickSlot
+import at.hannibal2.skyhanni.utils.InventoryUtils.mouseClickSlot
 import at.hannibal2.skyhanni.utils.ItemUtils.getInternalNameOrNull
 import at.hannibal2.skyhanni.utils.ItemUtils.takeUnlessEmpty
 import at.hannibal2.skyhanni.utils.collection.TimeLimitedSet
@@ -16,7 +18,6 @@ import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.compat.SkyHanniGuiContainer
 import at.hannibal2.skyhanni.utils.compat.container
 import at.hannibal2.skyhanni.utils.compat.normalizeAsArray
-import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.gui.screens.inventory.ContainerScreen
 import net.minecraft.client.gui.screens.inventory.InventoryScreen
 import net.minecraft.client.resources.language.I18n
@@ -232,11 +233,10 @@ object InventoryUtils {
     fun clickSlotRaw(
         slotId: Int,
         windowId: Int = InventoryCompat.getWindowId(),
-        button: InputConstants.Key = InputKeys.MOUSE_BUTTON_LEFT,
+        button: Int = 0,
         mode: ContainerInput = PICKUP,
     ) {
-        require(button.type == MOUSE)
-        InventoryCompat.clickInventorySlot(windowId, slotId, button.value, mode)
+        InventoryCompat.clickInventorySlot(windowId, slotId, button, mode)
     }
 
     /**
@@ -258,11 +258,10 @@ object InventoryUtils {
      */
     fun mouseClickSlotRaw(
         slotId: Int,
-        button: InputConstants.Key = InputKeys.MOUSE_BUTTON_LEFT,
+        button: Int = 0,
         mode: ContainerInput = PICKUP,
     ) {
-        require(button.type == MOUSE)
-        InventoryCompat.mouseClickInventorySlot(slotId, button.value, mode)
+        InventoryCompat.mouseClickInventorySlot(slotId, button, mode)
     }
 
     fun SkyHanniGuiContainer.slots(): List<Slot> {

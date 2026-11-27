@@ -7,7 +7,6 @@ import at.hannibal2.skyhanni.events.GuiContainerEvent
 import at.hannibal2.skyhanni.events.GuiContainerEvent.CloseWindowEvent
 import at.hannibal2.skyhanni.events.GuiContainerEvent.SlotClickEvent
 import at.hannibal2.skyhanni.utils.DelayedRun
-import at.hannibal2.skyhanni.utils.InputKeys
 import at.hannibal2.skyhanni.utils.compat.DrawContextUtils
 import at.hannibal2.skyhanni.utils.compat.SkyHanniGuiContainer
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation
@@ -78,14 +77,13 @@ class GuiContainerHook(guiAny: Any) {
         original: Operation<Void>,
         slot: Slot?,
         slotId: Int,
-        buttonNum: Int,
+        containerButton: Int,
         containerInput: ContainerInput,
     ) {
-        val key = InputKeys.mouse(buttonNum)
-        val event = SlotClickEvent.postEvent(gui, container, slotId, key, containerInput)
+        val event = SlotClickEvent.postEvent(gui, container, slotId, containerButton, containerInput)
 
         if (event == null) {
-            original.call(slot, slotId, buttonNum, containerInput)
+            original.call(slot, slotId, containerButton, containerInput)
             return
         }
 
@@ -94,7 +92,7 @@ class GuiContainerHook(guiAny: Any) {
         original.call(
             event.slot,
             event.slotId,
-            event.rawButton().value,
+            event.rawButton(),
             event.clickType,
         )
     }

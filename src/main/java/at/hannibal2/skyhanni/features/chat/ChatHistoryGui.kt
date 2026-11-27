@@ -39,7 +39,7 @@ class ChatHistoryGui(private val history: List<ChatManager.MessageFilteringResul
 
     // TODO use Renderables instead
     override fun onDrawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        drawDefaultBackground()
+        drawDefaultBackground(mouseX, mouseY, partialTicks)
         var queuedTooltip: List<String>? = null
         val l = (width / 2.0 - w / 2.0).toInt()
         val t = (height / 2.0 - h / 2.0).toInt()
