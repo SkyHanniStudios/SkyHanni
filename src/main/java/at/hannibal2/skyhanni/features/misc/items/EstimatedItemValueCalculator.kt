@@ -12,9 +12,11 @@ import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.EssenceUtils
 import at.hannibal2.skyhanni.utils.EssenceUtils.getEssencePrices
 import at.hannibal2.skyhanni.utils.InventoryUtils
+import at.hannibal2.skyhanni.utils.ItemNameResolver
 import at.hannibal2.skyhanni.utils.ItemPriceUtils.formatCoin
 import at.hannibal2.skyhanni.utils.ItemPriceUtils.formatCoinWithBrackets
 import at.hannibal2.skyhanni.utils.ItemPriceUtils.getNpcPriceOrNull
+import at.hannibal2.skyhanni.utils.ItemPriceUtils.getPrice
 import at.hannibal2.skyhanni.utils.ItemPriceUtils.getPriceName
 import at.hannibal2.skyhanni.utils.ItemPriceUtils.getPriceOrNull
 import at.hannibal2.skyhanni.utils.ItemPriceUtils.getRawCraftCostOrNull
@@ -727,7 +729,7 @@ object EstimatedItemValueCalculator {
                 }
             }
 
-            val enchantmentName = "$rawName;$level".toInternalName()
+            val enchantmentName = ItemNameResolver.fixEnchantmentName("$rawName;$level")
 
             if (isBazaarItem(enchantmentName)) {
                 items[enchantmentName] = multiplier
@@ -941,6 +943,6 @@ object EstimatedItemValueCalculator {
         return boosters
     }
 
-    private fun NeuInternalName.getPrice(): Double = getPriceOrNull() ?: 0.0
+    private fun NeuInternalName.getPrice(): Double = getPrice(config.priceSource.get())
     private fun NeuInternalName.getPriceOrNull(): Double? = getPriceOrNull(config.priceSource.get())
 }
