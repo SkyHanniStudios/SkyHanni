@@ -12,45 +12,21 @@ import net.minecraft.util.Util
 *///?}
 
 object SkyHanniRenderLayers {
-    private val FILLED: RenderType = RenderType.create(
-        "skyhanni_filled",
-        RenderSetup.builder(SkyHanniRenderPipeline.FILLED()).createRenderSetup(),
-    )
+    private val FILLED = SkyHanniRenderPipeline.FILLED.createRenderType()
 
-    private val FILLED_XRAY: RenderType = RenderType.create(
-        "skyhanni_filled_xray",
-        RenderSetup.builder(SkyHanniRenderPipeline.FILLED_XRAY()).createRenderSetup(),
-    )
+    private val FILLED_XRAY = SkyHanniRenderPipeline.FILLED_XRAY.createRenderType()
 
-    private val TRIANGLES: RenderType = RenderType.create(
-        "skyhanni_triangles",
-        RenderSetup.builder(SkyHanniRenderPipeline.TRIANGLES()).createRenderSetup(),
-    )
+    private val TRIANGLES = SkyHanniRenderPipeline.TRIANGLES.createRenderType()
 
-    private val TRIANGLES_XRAY: RenderType = RenderType.create(
-        "skyhanni_triangles_xray",
-        RenderSetup.builder(SkyHanniRenderPipeline.TRIANGLES_XRAY()).createRenderSetup(),
-    )
+    private val TRIANGLES_XRAY = SkyHanniRenderPipeline.TRIANGLES_XRAY.createRenderType()
 
-    private val TRIANGLE_FAN: RenderType = RenderType.create(
-        "skyhanni_triangle_fan",
-        RenderSetup.builder(SkyHanniRenderPipeline.TRIANGLE_FAN()).createRenderSetup(),
-    )
+    private val TRIANGLE_FAN = SkyHanniRenderPipeline.TRIANGLE_FAN.createRenderType()
 
-    private val TRIANGLE_FAN_XRAY: RenderType = RenderType.create(
-        "skyhanni_triangle_fan_xray",
-        RenderSetup.builder(SkyHanniRenderPipeline.TRIANGLE_FAN_XRAY()).createRenderSetup(),
-    )
+    private val TRIANGLE_FAN_XRAY = SkyHanniRenderPipeline.TRIANGLE_FAN_XRAY.createRenderType()
 
-    private val QUADS: RenderType = RenderType.create(
-        "skyhanni_quads",
-        RenderSetup.builder(SkyHanniRenderPipeline.QUADS()).createRenderSetup(),
-    )
+    private val QUADS = SkyHanniRenderPipeline.QUADS.createRenderType()
 
-    private val QUADS_XRAY: RenderType = RenderType.create(
-        "skyhanni_quads_xray",
-        RenderSetup.builder(SkyHanniRenderPipeline.QUADS_XRAY()).createRenderSetup(),
-    )
+    private val QUADS_XRAY = SkyHanniRenderPipeline.QUADS_XRAY.createRenderType()
 
     private val CHROMA_TEXTURED: java.util.function.Function<Identifier, RenderType> = Util.memoize { texture ->
         //~ if < 26.2 'RenderType.create' -> 'ChromaRenderLayer'
@@ -65,19 +41,27 @@ object SkyHanniRenderLayers {
         )
     }
 
-    private val LINES: RenderType = RenderType.create(
-        "skyhanni_lines",
-        RenderSetup.builder(SkyHanniRenderPipeline.LINES())
-            .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
-            .createRenderSetup(),
-    )
+    private val LINES = SkyHanniRenderPipeline.LINES.createRenderType {
+        setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
+    }
 
-    private val LINES_XRAY: RenderType = RenderType.create(
-        "skyhanni_lines_xray",
-        RenderSetup.builder(SkyHanniRenderPipeline.LINES_XRAY())
-            .setLayeringTransform(LayeringTransform.NO_LAYERING)
-            .createRenderSetup(),
-    )
+    private val LINES_XRAY = SkyHanniRenderPipeline.LINES_XRAY.createRenderType {
+        setLayeringTransform(LayeringTransform.NO_LAYERING)
+    }
+
+    private inline fun SkyHanniRenderPipeline.createRenderType(
+        crossinline configure: RenderSetup.RenderSetupBuilder.() -> Unit = {},
+    ): RenderType {
+        val setup = RenderSetup.builder(invoke()).apply {
+            oitPipelines()?.let(::setOitPipelines)
+            configure()
+        }.createRenderSetup()
+
+        return RenderType.create(
+            "skyhanni_${name.lowercase()}",
+            setup,
+        )
+    }
 
     fun getFilled(throughWalls: Boolean): RenderType {
         return if (throughWalls) FILLED_XRAY else FILLED
