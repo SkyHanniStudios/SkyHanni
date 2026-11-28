@@ -10,7 +10,7 @@ import at.hannibal2.skyhanni.utils.KeyboardManager
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.TimeUtils
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
-import at.hannibal2.skyhanni.utils.compat.SkyHanniBaseScreen
+import at.hannibal2.skyhanni.utils.compat.SkyHanniCanvasScreen
 import net.minecraft.client.gui.screens.ChatScreen
 import kotlin.time.Duration.Companion.seconds
 
@@ -93,7 +93,7 @@ object InputSequenceTracker {
         screen.onClose()
     }
 
-    private class SequenceOverlay : SkyHanniBaseScreen() {
+    private class SequenceOverlay : SkyHanniCanvasScreen() {
 
         private val openedAt = SimpleTimeMark.now()
 
