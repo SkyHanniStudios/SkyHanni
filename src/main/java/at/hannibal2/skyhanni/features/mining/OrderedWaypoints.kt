@@ -29,6 +29,7 @@ import at.hannibal2.skyhanni.utils.NumberUtil.roundTo
 import at.hannibal2.skyhanni.utils.PlayerUtils.SNEAKING_EYE_HEIGHT
 import at.hannibal2.skyhanni.utils.PlayerUtils.STANDING_EYE_HEIGHT
 import at.hannibal2.skyhanni.utils.StringUtils
+import at.hannibal2.skyhanni.utils.coroutines.CoroutineSettings
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.draw3DLine
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawEdges
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawLineToCrosshair
@@ -42,6 +43,8 @@ object OrderedWaypoints {
     private val config get() = SkyHanniMod.feature.mining.orderedWaypoints
     private val storage get() = ProfileStorageData.orderedWaypointsRoutes
 
+    private val waypointsExportCoroutine = CoroutineSettings("ordered waypoints export").withIOContext()
+    private val waypointsLoadCoroutine = CoroutineSettings("ordered waypoints load").withIOContext()
     private var orderedWaypointsList = Waypoints<SkyHanniWaypoint>()
     private val renderWaypoints: MutableList<Int> = mutableListOf()
     private var currentOrderedWaypointIndex = 0
@@ -159,9 +162,9 @@ object OrderedWaypoints {
                 arg(
                     "name", BrigadierArguments.string(), BrigadierUtils.dynamicSuggestionProvider { getRouteNames() },
                 ) { name ->
-                    coroutineSimpleCallback { load(getArg(name)) }
+                    coroutineSimpleCallback(waypointsLoadCoroutine) { load(getArg(name)) }
                 }
-                coroutineSimpleCallback { load("") }
+                coroutineSimpleCallback(waypointsLoadCoroutine) { load("") }
             }
             literal("unload", "clear") {
                 description = "Unloads the current ordered waypoints."
@@ -203,9 +206,9 @@ object OrderedWaypoints {
             literal("export") {
                 description = "Exports the loaded ordered waypoints to clipboard."
                 arg("format", BrigadierArguments.string(), BrigadierUtils.dynamicSuggestionProvider { WaypointFormats.names() }) { format ->
-                    callback { export(getArg(format)) }
+                    coroutineSimpleCallback(waypointsExportCoroutine) { export(getArg(format)) }
                 }
-                simpleCallback { export("coleweight") }
+                coroutineSimpleCallback(waypointsExportCoroutine) { export("coleweight") }
             }
             literal("save") {
                 description = "Saves the loaded ordered waypoints to your config."
@@ -252,6 +255,7 @@ object OrderedWaypoints {
 
     private fun getRouteNames() = ProfileStorageData.orderedWaypointsRoutes?.routes?.keys.orEmpty()
 
+    // Todo we should not be calling `join()` in a suspend fun.
     private suspend fun load(name: String) {
         if (loadJob?.isActive == true) {
             return ChatUtils.userError("A route is already being loaded. Please wait until it finishes.")
@@ -368,21 +372,18 @@ object OrderedWaypoints {
         ChatUtils.chat("Inserted waypoint $number at ${pos.toCleanString()}.")
     }
 
-    private fun export(format: String) {
-        SkyHanniMod.launchIOCoroutine("ordered waypoints export format:$format") {
-            val route = if (format.isEmpty()) WaypointFormats.export(orderedWaypointsList, "coleweight")
-            else WaypointFormats.export(orderedWaypointsList, format.lowercase(Locale.getDefault()))
+    private suspend fun export(format: String) {
+        val route = if (format.isEmpty()) WaypointFormats.export(orderedWaypointsList, "coleweight")
+        else WaypointFormats.export(orderedWaypointsList, format.lowercase(Locale.getDefault()))
 
-            route?.let {
-                ClipboardUtils.copyToClipboard(it)
-                ChatUtils.chat("Route was copied to clipboard.")
-            } ?: run {
-                ChatUtils.userError(
-                    "Invalid waypoint format specified.\n" +
-                        "§cFormats: ${WaypointFormats.names().joinToString(", ")}",
-                )
-            }
-        }
+        route?.let {
+            val copied = ClipboardUtils.copyToClipboardAsync(it).await() ?: false
+            if (!copied) ChatUtils.chat("Failed to copy route to clipboard!")
+            else ChatUtils.chat("Route was copied to clipboard.")
+        } ?: ChatUtils.userError(
+            "Invalid waypoint format specified.\n" +
+                "§cFormats: ${WaypointFormats.names().joinToString(", ")}",
+        )
     }
 
     private fun save(name: String) {
