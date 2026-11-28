@@ -4,10 +4,13 @@ import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.ProfileStorageData
 import at.hannibal2.skyhanni.events.InventoryOpenEvent
+import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
 import at.hannibal2.skyhanni.events.minecraft.ToolTipTextEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ConditionalUtils.transformIf
+import at.hannibal2.skyhanni.utils.DelayedRun
 import at.hannibal2.skyhanni.utils.ItemUtils.cleanName
+import at.hannibal2.skyhanni.utils.ItemUtils.getLoreComponent
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 import at.hannibal2.skyhanni.utils.NumberUtil.formatLong
 import at.hannibal2.skyhanni.utils.RegexUtils.groupOrNull
@@ -87,13 +90,19 @@ object StockOfStonkFeature {
     }
 
     @HandleEvent(onlyOnSkyblock = true)
+    private fun onInventoryUpdated(event: InventoryUpdatedEvent) {
+        if (!inInventory) return
+        val auctionItem = event.inventoryItems.values.firstOrNull { inventoryPattern.matches(it.cleanName) } ?: return
+        // the first update comes from the packet handler, so write the storage on the main thread where the timer reads it
+        DelayedRun.runOrNextTick { updateAuctionData(auctionItem.getLoreComponent()) }
+    }
+
+    @HandleEvent(onlyOnSkyblock = true)
     private fun onToolTip(event: ToolTipTextEvent) {
+        if (!config.stonkOfStonkPrice) return
         if (!inInventory) return
         if (!inventoryPattern.matches(event.itemStack.cleanName)) return
 
-        updateAuctionData(event.toolTip)
-
-        if (!config.stonkOfStonkPrice) return
         var stonksReward = 0
         var index = 0
         var bestValueIndex = 0

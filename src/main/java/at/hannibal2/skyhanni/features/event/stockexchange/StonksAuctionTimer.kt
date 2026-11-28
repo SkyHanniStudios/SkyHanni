@@ -6,9 +6,12 @@ import at.hannibal2.skyhanni.config.storage.ProfileSpecificStorage
 import at.hannibal2.skyhanni.data.Perk
 import at.hannibal2.skyhanni.data.ProfileStorageData
 import at.hannibal2.skyhanni.data.title.TitleManager
+import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
+import at.hannibal2.skyhanni.utils.NumberUtil.formatLong
+import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RenderUtils.HorizontalAlignment
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderable
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
@@ -19,6 +22,7 @@ import at.hannibal2.skyhanni.utils.TimeUtils.timerColor
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.container.VerticalContainerRenderable.Companion.vertical
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
+import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 
@@ -28,14 +32,32 @@ object StonksAuctionTimer {
     private val config get() = SkyHanniMod.feature.event.stonksAuction
     private val storage get() = ProfileStorageData.profileSpecific?.stonksAuction
 
-    // real rounds are at least 1h40m apart; anything smaller is just re-parse jitter from re-reading the same round's tooltip
+    private val patternGroup = RepoPattern.group("event.stonksauction")
+
+    /**
+     * REGEX-TEST: Successfully placed your Stonk bid of 2,000,002 Coins!
+     */
+    private val bidPlacedPattern by patternGroup.pattern(
+        "bid.placed",
+        "Successfully placed your Stonk bid of (?<amount>[\\d,]+) Coins!",
+    )
+
+    /**
+     * REGEX-TEST: Successfully increased your Stonk bid by 200,000 Coins!
+     */
+    private val bidIncreasedPattern by patternGroup.pattern(
+        "bid.increased",
+        "Successfully increased your Stonk bid by (?<amount>[\\d,]+) Coins!",
+    )
+
+    // real rounds are at least 1h40m apart; anything smaller is just re-parse jitter from re-reading the same round's menu item
     private val ROUND_CHANGE_TOLERANCE = 5.minutes
 
     private var lastSeenRoundEnd = SimpleTimeMark.farPast()
     private var lastWarnedRoundEnd = SimpleTimeMark.farPast()
     private var display: Renderable? = null
 
-    // the tooltip value until it expires, then the calendar estimate
+    // the value read from the menu until it expires, then the calendar estimate
     private fun roundEnd(storage: ProfileSpecificStorage.StonksAuctionStorage): SimpleTimeMark {
         val exact = storage.roundEnd
         if (exact.isInFuture()) return exact
@@ -52,6 +74,24 @@ object StonksAuctionTimer {
         val now = SkyBlockTime.now()
         val monthStart = SkyBlockTime(year = now.year, month = now.month)
         return (monthStart + SkyBlockTime.SKYBLOCK_MONTH_MILLIS.milliseconds).toTimeMark()
+    }
+
+    // backup for the menu lore; matches the full chat line, so player messages (prefixed with their name) can't trigger it
+    // TODO use SystemMessageEvent once SkyHanniChatEvent and party chat stop extending it, it fires twice and lets party chat through
+    @HandleEvent(onlyOnSkyblock = true)
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
+        val message = event.cleanMessage
+        bidPlacedPattern.matchMatcher(message) {
+            val storage = storage ?: return
+            storage.lastBidRoundEnd = roundEnd(storage)
+            storage.bidAmount = group("amount").formatLong()
+        }
+        bidIncreasedPattern.matchMatcher(message) {
+            val storage = storage ?: return
+            // the message only contains the increase, so the new total needs the earlier bid from this round
+            if (!hasBidThisRound(storage, roundEnd(storage))) return
+            storage.bidAmount += group("amount").formatLong()
+        }
     }
 
     @HandleEvent(onlyOnSkyblock = true)
