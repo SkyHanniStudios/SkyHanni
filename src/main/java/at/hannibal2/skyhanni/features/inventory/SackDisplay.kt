@@ -63,7 +63,7 @@ object SackDisplay {
     private fun getSackTextInput(name: String) = textInputs.getOrPut(name) { SearchTextInput() }
 
     init {
-        RenderDisplayHelper(inventory = SackApi.inventory, condition = ::isEnabled) {
+        RenderDisplayHelper(inventoryDetector = SackApi.inventory, condition = ::isEnabled) {
             config.position.renderRenderables(
                 display, extraSpace = config.extraSpace, posLabel = "Sacks Items",
             )

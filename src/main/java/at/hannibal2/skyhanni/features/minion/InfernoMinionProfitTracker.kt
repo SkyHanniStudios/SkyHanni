@@ -4,6 +4,7 @@ import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.commands.CommandCategory
 import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
+import at.hannibal2.skyhanni.config.storage.ProfileSpecificStorage
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.jsonobjects.repo.MinionDropsJson
 import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
@@ -23,28 +24,35 @@ import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 import at.hannibal2.skyhanni.utils.NumberUtil.formatPercentage
 import at.hannibal2.skyhanni.utils.NumberUtil.shortFormat
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
-import at.hannibal2.skyhanni.utils.RenderDisplayHelper
+import at.hannibal2.skyhanni.utils.RenderDisplayConfig
 import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.collection.RenderableCollectionUtils.addSearchString
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.Searchable
 import at.hannibal2.skyhanni.utils.renderables.toSearchable
-import at.hannibal2.skyhanni.utils.tracker.ItemTrackerData
 import at.hannibal2.skyhanni.utils.tracker.SessionUptime
 import at.hannibal2.skyhanni.utils.tracker.SkyHanniItemTracker
+import at.hannibal2.skyhanni.utils.tracker.data.ItemTrackerData
 import com.google.gson.annotations.Expose
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 @SkyHanniModule
-object InfernoMinionProfitTracker {
-
-    private val config get() = SkyHanniMod.feature.misc.minions.infernoProfitTracker
-
-    private val eyedropsItem = "CAPSAICIN_EYEDROPS_NO_CHARGES".toInternalName()
+object InfernoMinionProfitTracker : SkyHanniItemTracker<InfernoMinionProfitTracker.Data>("Inferno Minion Profit Tracker") {
+    override val config get() = SkyHanniMod.feature.misc.minions.infernoProfitTracker
+    override val storageAccessor: (ProfileSpecificStorage) -> Data = { it.infernoMinionProfitTracker }
 
     private val infernoMinionInventory = InventoryDetector { InfernoMinionFeatures.infernoMinionTitlePattern }
+    override val renderConfig = RenderDisplayConfig(
+        inventoryDetector = infernoMinionInventory,
+        outsideInventory = true,
+        inOwnInventory = false,
+        onlyOnIsland = IslandType.PRIVATE_ISLAND,
+        condition = { config.enabled && (infernoMinionInventory.isInside() || isRecentCollection()) },
+    )
+
+    private val eyedropsItem = "CAPSAICIN_EYEDROPS_NO_CHARGES".toInternalName()
     private var fuelDropMap = mapOf<NeuInternalName, Set<NeuInternalName>>()
     private var minionDropMap = mapOf<String, Set<NeuInternalName>>()
 
@@ -52,16 +60,9 @@ object InfernoMinionProfitTracker {
     private var lastFuelItem: NeuInternalName? = null
     private var lastCollectionTime = SimpleTimeMark.farPast()
 
-    private val tracker = SkyHanniItemTracker(
-        "Inferno Minion Profit Tracker",
-        { Data() },
-        { it.infernoMinionProfitTracker },
-        trackerConfig = { config.perTrackerConfig },
-    ) { drawDisplay(it) }
-
     data class Data(
         @Expose var totalFuelCost: Double = 0.0,
-    ) : ItemTrackerData<SessionUptime.Normal>(SessionUptime.Normal::class) {
+    ) : ItemTrackerData<SessionUptime.Normal>() {
 
         override fun getDescription(timesGained: Long): List<String> {
             val totalItems = items.values.sumOf { it.timesGained }
@@ -78,20 +79,10 @@ object InfernoMinionProfitTracker {
         override fun getCoinDescription(item: TrackedItem) = emptyList<String>()
     }
 
-    init {
-        RenderDisplayHelper(
-            inventory = infernoMinionInventory,
-            outsideInventory = true,
-            onlyOnIsland = IslandType.PRIVATE_ISLAND,
-            condition = { config.enabled && (infernoMinionInventory.isInside() || isRecentCollection()) },
-            onRender = { tracker.renderDisplay(config.position) },
-        )
-    }
-
-    private fun drawDisplay(data: Data): List<Searchable> = buildList {
+    override fun drawDisplayF(data: Data): List<Searchable> = buildList {
         addSearchString("§e§lInferno Minion Profit Tracker")
 
-        var profit = tracker.drawItems(data, { true }, this)
+        var profit = drawItems(data, { true }, this)
         profit = addFuelCost(data, profit)
 
         val totalCollections = data.items.values.sumOf { it.timesGained }
@@ -103,9 +94,9 @@ object InfernoMinionProfitTracker {
         )
 
         val duration = data.getTotalUptime()
-        addAll(tracker.addTotalProfit(profit, totalCollections, "collection", duration, "Collections"))
+        addAll(addTotalProfit(profit, totalCollections, "collection", duration, "Collections"))
 
-        tracker.addPriceFromButton(this)
+        addPriceFromButton(this)
     }
 
     private fun MutableList<Searchable>.addFuelCost(data: Data, profit: Double): Double {
@@ -143,7 +134,7 @@ object InfernoMinionProfitTracker {
         if (!isInfernoMinion) return
         val newFuel = getFuelFromInventory(event.inventoryItems)
         if (newFuel != null && newFuel != lastFuelItem) {
-            tracker.modify { it.totalFuelCost += newFuel.getPrice() }
+            modify { it.totalFuelCost += newFuel.getPrice() }
         }
         lastFuelItem = newFuel
     }
@@ -155,7 +146,7 @@ object InfernoMinionProfitTracker {
         val isKnownDrop = minionDropMap.values.any { event.internalName in it } ||
             fuelDropMap.values.any { event.internalName in it }
         if (!isKnownDrop) return
-        tracker.addItem(event.internalName, event.amount, command = false)
+        addItem(event.internalName, event.amount, command = false)
     }
 
     @HandleEvent(MinionCloseEvent::class)
@@ -171,7 +162,7 @@ object InfernoMinionProfitTracker {
     fun onChat(event: SkyHanniChatEvent.Allow) {
         if (!config.enabled) return
         if (MinionFeatures.eyedropsRanOutPattern.matches(event.cleanMessage)) {
-            tracker.modify { it.totalFuelCost += eyedropsItem.getPrice() }
+            modify { it.totalFuelCost += eyedropsItem.getPrice() }
         }
     }
 
@@ -188,7 +179,7 @@ object InfernoMinionProfitTracker {
         event.registerBrigadier("shresetinfernominiontracker") {
             description = "Resets the Inferno Minion Profit Tracker"
             category = CommandCategory.USERS_RESET
-            simpleCallback { tracker.resetCommand() }
+            simpleCallback { resetCommand() }
         }
     }
 }

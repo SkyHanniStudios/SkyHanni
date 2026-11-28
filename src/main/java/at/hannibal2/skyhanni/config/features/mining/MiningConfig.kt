@@ -2,9 +2,9 @@ package at.hannibal2.skyhanni.config.features.mining
 
 import at.hannibal2.skyhanni.config.FeatureToggle
 import at.hannibal2.skyhanni.config.features.mining.caverns.DeepCavernsGuideConfig
-import at.hannibal2.skyhanni.config.features.mining.dwarves.DarkMonolithConfig
 import at.hannibal2.skyhanni.config.features.mining.dwarves.FallenStarCultConfig
 import at.hannibal2.skyhanni.config.features.mining.dwarves.KingTalismanConfig
+import at.hannibal2.skyhanni.config.features.mining.dwarves.monolith.DarkMonolithConfig
 import at.hannibal2.skyhanni.config.features.mining.glacite.ColdOverlayConfig
 import at.hannibal2.skyhanni.config.features.mining.glacite.FossilExcavatorConfig
 import at.hannibal2.skyhanni.config.features.mining.glacite.GlaciteMineshaftConfig
