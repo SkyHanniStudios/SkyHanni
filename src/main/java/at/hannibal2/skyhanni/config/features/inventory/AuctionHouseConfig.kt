@@ -82,4 +82,13 @@ class AuctionHouseConfig {
     @ConfigEditorBoolean
     @FeatureToggle
     var auctionOutbid: Boolean = false
+
+    @Expose
+    @ConfigOption(
+        name = "Accessory Bag Search",
+        desc = "Shows icons for missing accessories in the Accessory Bag. Right-click to search on the Auction House."
+    )
+    @ConfigEditorBoolean
+    @FeatureToggle
+    var accessoryBagAhLookup: Boolean = false
 }
