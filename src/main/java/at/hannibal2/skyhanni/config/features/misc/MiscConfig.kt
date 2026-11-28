@@ -174,6 +174,11 @@ class MiscConfig {
     val boopParty: BoopPartyConfig = BoopPartyConfig()
 
     @Expose
+    @ConfigOption(name = "DVD Logo Display", desc = "")
+    @Accordion
+    val dvdLogo: DVDLogoConfig = DVDLogoConfig()
+
+    @Expose
     @ConfigOption(name = "Reset Search on Close", desc = "Reset the search in GUIs after closing the inventory.")
     @ConfigEditorBoolean
     var resetSearchGuiOnClose: Boolean = true
