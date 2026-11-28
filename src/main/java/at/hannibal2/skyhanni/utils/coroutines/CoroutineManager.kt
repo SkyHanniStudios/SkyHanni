@@ -2,6 +2,7 @@ package at.hannibal2.skyhanni.utils.coroutines
 
 import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.test.command.ErrorManager
+import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.system.PlatformUtils
 import kotlin.coroutines.cancellation.CancellationException
 import kotlin.time.Duration
@@ -16,6 +17,8 @@ import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -25,6 +28,7 @@ import kotlinx.coroutines.withTimeout
 interface CoroutineManager {
     fun CoroutineSettings.launchCoroutine(block: suspend CoroutineScope.() -> Unit): Job
     fun CoroutineSettings.launchUnScopedCoroutine(block: suspend () -> Unit): Job
+    fun CoroutineSettings.launchRepeatingCoroutine(period: Duration, initialDelay: Duration, block: suspend CoroutineScope.() -> Unit): Job
 
     fun <T> CoroutineSettings.asyncCoroutine(block: suspend CoroutineScope.() -> T): Deferred<T?>
     fun <T> CoroutineSettings.asyncUnScopedCoroutine(block: suspend () -> T): Deferred<T?>
@@ -52,16 +56,6 @@ interface CompatCoroutineManager : CoroutineManager {
     )
     fun launchIOCoroutine(name: String, timeout: Duration = 10.seconds, block: suspend CoroutineScope.() -> Unit): Job =
         CoroutineSettings(name, timeout).withIOContext().launchCoroutine(block)
-
-    @Deprecated(
-        "Use launchUnScopedCoroutine with CoroutineSettings options instead",
-        ReplaceWith(
-            "CoroutineSettings(name, timeout).launchUnScopedCoroutine(block)",
-            "at.hannibal2.skyhanni.utils.coroutines.CoroutineSettings"
-        )
-    )
-    fun launchNoScopeCoroutine(name: String, timeout: Duration = 10.seconds, block: suspend () -> Unit): Job =
-        CoroutineSettings(name, timeout).launchUnScopedCoroutine(block)
 
     @Deprecated(
         "Use launchCoroutine with CoroutineSettings options instead",
@@ -112,6 +106,24 @@ class SkyHanniCoroutineManager(
      */
     override fun CoroutineSettings.launchUnScopedCoroutine(block: suspend () -> Unit): Job =
         launchCoroutine { block() }
+
+    override fun CoroutineSettings.launchRepeatingCoroutine(
+        period: Duration,
+        initialDelay: Duration,
+        block: suspend CoroutineScope.() -> Unit,
+    ): Job {
+        require(period.isPositive()) { "Repeating coroutine $name needs a positive period, got $period" }
+        return coroutineScope.launch(CoroutineName("SkyHanni $name")) {
+            var nextRun = SimpleTimeMark.now() + initialDelay
+            while (isActive) {
+                delay(nextRun.timeUntil())
+                launch { runWithErrorHandling(block) }.join()
+                do {
+                    nextRun += period
+                } while (nextRun.isInPast())
+            }
+        }
+    }
 
     /**
      * Executes the given [block] asynchronously with the specified configuration options from the receiver [CoroutineSettings],
