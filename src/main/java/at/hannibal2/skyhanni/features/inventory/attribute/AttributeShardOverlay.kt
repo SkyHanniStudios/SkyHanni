@@ -2,7 +2,6 @@ package at.hannibal2.skyhanni.features.inventory.attribute
 
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.storage.ProfileSpecificStorage
-import at.hannibal2.skyhanni.data.ProfileStorageData
 import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
 import at.hannibal2.skyhanni.features.inventory.bazaar.BazaarApi
 import at.hannibal2.skyhanni.features.inventory.bazaar.BazaarApi.getOpenBuyOrderAmount
@@ -33,7 +32,8 @@ import at.hannibal2.skyhanni.utils.renderables.toSearchable
 object AttributeShardOverlay {
 
     private val config get() = AttributeShardsData.config
-    private val storage get() = ProfileStorageData.profileSpecific?.attributeShards
+
+    private const val MAX_LISTED_MISSING_SHARDS = 15
 
     private var display = emptyList<Renderable>()
     private val textInput = SearchTextInput()
@@ -44,23 +44,27 @@ object AttributeShardOverlay {
     private var priceToMax = 0.0
 
     private var lastShardsData: Map<String, ProfileSpecificStorage.AttributeShardData> = emptyMap()
+    private var lastMissingShards: List<String> = emptyList()
     private var lastItemIdsInInventory: Set<NeuInternalName> = setOf()
     private var lastTotalShardsCollected = 0
     private var lastTotalInBazaarOrders = 0
 
     fun updateDisplay() {
         if (!config.enabled) return
-        val newData = storage?.toMap().orEmpty().filter { it.key !in AttributeShardsData.unconsumableAttributes }
+        val newData = AttributeShardsData.getTrackedShards()
+        val newMissingShards = AttributeShardsData.getMissingDataShards()
         val newTotalShardsCollected = newData.values.sumOf { it.amountSyphoned + it.amountInBox }
         val newTotalInBazaarOrders = if (config.includeBazaarOrders) {
             newData.keys.sumOf { openBuyOrderAmount(it) }
         } else 0
 
         if (lastShardsData == newData &&
+            lastMissingShards == newMissingShards &&
             newTotalShardsCollected == lastTotalShardsCollected &&
             newTotalInBazaarOrders == lastTotalInBazaarOrders
         ) return
         lastShardsData = newData
+        lastMissingShards = newMissingShards
         lastTotalShardsCollected = newTotalShardsCollected
         lastTotalInBazaarOrders = newTotalInBazaarOrders
 
@@ -95,7 +99,6 @@ object AttributeShardOverlay {
     )
 
     private fun reconstructDisplay() {
-        val shardsWithData = lastShardsData.size
         unlockedShards = 0
         maxedShards = 0
         totalShardLevels = 0
@@ -103,7 +106,7 @@ object AttributeShardOverlay {
 
         val lines = mutableListOf<AttributeShardDisplayLine>()
 
-        lastItemIdsInInventory = InventoryUtils.getItemIdsInOpenChest()
+        lastItemIdsInInventory = shardIdsInOpenInventory()
         val filteredShards = lastShardsData.filter { shardData ->
             !config.onlyCurrentInventory || AttributeShardsData.shardNameToInternalName(shardData.key) in lastItemIdsInInventory
         }
@@ -140,8 +143,11 @@ object AttributeShardOverlay {
 
         val adjustedMaxShards = if (config.onlyCurrentInventory) lastItemIdsInInventory.size else AttributeShardsData.maxShards
 
-        display = buildDisplay(adjustedMaxShards, shardsWithData, filtered)
+        display = buildDisplay(adjustedMaxShards, lastMissingShards, filtered)
     }
+
+    private fun shardIdsInOpenInventory(): Set<NeuInternalName> =
+        InventoryUtils.getItemIdsInOpenChest().filterTo(mutableSetOf(), AttributeShardsData::isTrackedShard)
 
     private fun AttributeShardDisplayLine.isVisible(): Boolean {
         if (config.hideMaxed && currentTier == 10) return false
@@ -151,17 +157,22 @@ object AttributeShardOverlay {
 
     private fun buildDisplay(
         adjustedMaxShards: Int,
-        shardsWithData: Int,
+        missingShards: List<String>,
         shardLines: List<AttributeShardDisplayLine>,
     ): List<Renderable> = buildList {
         addString("§eAttribute Shard Overlay")
         addString("§7Found Shards: §a$unlockedShards/$adjustedMaxShards")
         addString("§7Maxed Shards: §a$maxedShards/$adjustedMaxShards")
         addString("§7Total Shard Levels: §a$totalShardLevels/${adjustedMaxShards * 10}")
-        if (shardsWithData != AttributeShardsData.maxShards) {
-            val missingAmount = AttributeShardsData.maxShards - shardsWithData
-            val plural = StringUtils.pluralize(missingAmount, "shard")
-            addString("§cMissing shard data for $missingAmount $plural")
+        if (missingShards.isNotEmpty()) {
+            val plural = StringUtils.pluralize(missingShards.size, "shard")
+            val tips = buildList {
+                add("§cNo data for these shards yet:")
+                missingShards.take(MAX_LISTED_MISSING_SHARDS).forEach { add("§7- §f$it") }
+                val more = missingShards.size - MAX_LISTED_MISSING_SHARDS
+                if (more > 0) add("§7and $more more...")
+            }
+            add(Renderable.hoverTips("§cMissing shard data for ${missingShards.size} $plural", tips = tips))
             addString("§cPlease open /am and turn on advanced mode.")
         }
         if (shardLines.isEmpty()) {
@@ -368,7 +379,7 @@ object AttributeShardOverlay {
         if (!config.onlyCurrentInventory) return
 
         DelayedRun.runNextTick {
-            val newItemIds = InventoryUtils.getItemIdsInOpenChest()
+            val newItemIds = shardIdsInOpenInventory()
             if (lastItemIdsInInventory != newItemIds) {
                 reconstructDisplay()
             }
