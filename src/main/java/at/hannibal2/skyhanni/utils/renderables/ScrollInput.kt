@@ -1,6 +1,7 @@
 package at.hannibal2.skyhanni.utils.renderables
 
 import at.hannibal2.skyhanni.utils.KeyboardManager.LEFT_MOUSE
+import at.hannibal2.skyhanni.utils.KeyboardManager.isKeyClicked
 import at.hannibal2.skyhanni.utils.KeyboardManager.isKeyHeld
 import at.hannibal2.skyhanni.utils.compat.MouseCompat
 
@@ -88,12 +89,14 @@ abstract class ScrollInput(
                 val pressed = held && !scrollValue.wasLeftMouseHeld
                 scrollValue.wasLeftMouseHeld = held
                 if (!held) {
+                    if (scrollValue.thumbGrabOffset != null) LEFT_MOUSE.isKeyClicked()
                     scrollValue.thumbGrabOffset = null
                     return
                 }
                 val mouseY = localMouseY ?: return
                 val grabOffset = scrollValue.thumbGrabOffset ?: run {
                     if (!overTrack || !pressed) return
+                    LEFT_MOUSE.isKeyClicked()
                     (mouseY - thumbY).takeIf { it in 0 until thumbHeight } ?: (thumbHeight / 2)
                 }
                 scrollValue.thumbGrabOffset = grabOffset
