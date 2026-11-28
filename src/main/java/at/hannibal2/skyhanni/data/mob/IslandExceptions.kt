@@ -10,8 +10,8 @@ import at.hannibal2.skyhanni.utils.ItemUtils.getSkullTexture
 import at.hannibal2.skyhanni.utils.LocationUtils
 import at.hannibal2.skyhanni.utils.MobUtils
 import at.hannibal2.skyhanni.utils.MobUtils.getNextEntity
-import at.hannibal2.skyhanni.utils.MobUtils.isDefaultValue
-import at.hannibal2.skyhanni.utils.MobUtils.takeNonDefault
+import at.hannibal2.skyhanni.utils.MobUtils.isDefaultName
+import at.hannibal2.skyhanni.utils.MobUtils.takeNonDefaultName
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
@@ -68,7 +68,7 @@ object IslandExceptions {
                 MobFactories.special(baseEntity, armorStand.cleanName, armorStand),
             )
 
-        baseEntity is CaveSpider -> MobUtils.getClosestArmorStand(baseEntity, 2.0).takeNonDefault()
+        baseEntity is CaveSpider -> MobUtils.getClosestArmorStand(baseEntity, 2.0).takeNonDefaultName()
             .makeMobResult { MobFactories.dungeon(baseEntity, it) }
 
         baseEntity is RemotePlayer && baseEntity.isNpc() && baseEntity.name.formattedTextCompatLessResets() == "Shadow Assassin" ->
@@ -103,7 +103,7 @@ object IslandExceptions {
             MobFactories.special(baseEntity, "Dummy", armorStand)
         )
 
-        armorStand?.isDefaultValue() != false ->
+        armorStand?.isDefaultName() != false ->
             if (baseEntity.getLorenzVec().distanceChebyshevIgnoreY(LocationUtils.playerLocation()) < 15.0) {
                 // TODO fix to always include Valid Mobs on Private Island
                 MobData.MobResult.found(MobFactories.minionMob(baseEntity))
@@ -195,7 +195,7 @@ object IslandExceptions {
         nextEntity: LivingEntity?,
     ) = when {
         baseEntity is Ocelot &&
-            armorStand?.isDefaultValue() == false &&
+            armorStand?.isDefaultName() == false &&
             // TODO fix pattern
             armorStand.name.formattedTextCompatLessResets().startsWith("§8[§7Lv155§8] §cAzrael§r") ->
             MobUtils.getArmorStand(baseEntity, 1)
@@ -213,11 +213,11 @@ object IslandExceptions {
                 .makeMobResult { MobFactories.basic(baseEntity, it, listOf(armorStand)) }
 
         baseEntity is Zombie &&
-            armorStand?.isDefaultValue() == true &&
+            armorStand?.isDefaultName() == true &&
             MobUtils.getNextEntity(baseEntity, 4)?.name.formattedTextCompatLessResets().startsWith("§e") ->
             petCareHandler(baseEntity)
 
-        baseEntity is Zombie && armorStand != null && !armorStand.isDefaultValue() -> null // Impossible Rat
+        baseEntity is Zombie && armorStand != null && !armorStand.isDefaultName() -> null // Impossible Rat
         baseEntity is Zombie -> ratHandler(baseEntity, nextEntity) // Possible Rat
         baseEntity is Pig && MobFilter.shinyPig.matches(armorStand?.cleanName) -> MobData.MobResult.found(
             Mob(

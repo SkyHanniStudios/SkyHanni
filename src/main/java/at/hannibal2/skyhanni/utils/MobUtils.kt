@@ -7,10 +7,6 @@ import at.hannibal2.skyhanni.utils.EntityUtils.cleanName
 import at.hannibal2.skyhanni.utils.EntityUtils.getEntitiesNearby
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceTo
 import at.hannibal2.skyhanni.utils.LocationUtils.rayIntersects
-import at.hannibal2.skyhanni.utils.compat.EntityCompat.getInventoryItems
-import at.hannibal2.skyhanni.utils.compat.InventoryCompat.isNotEmpty
-import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLessResets
-import net.minecraft.client.resources.language.I18n
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.decoration.ArmorStand
@@ -19,7 +15,6 @@ import net.minecraft.world.entity.player.Player
 @SkyHanniModule
 object MobUtils {
 
-    private val defaultArmorStandName get() = I18n.get("entity.minecraft.armor_stand")
 
     // The corresponding ArmorStand for a mob has always the ID + 1 (with some exceptions)
     fun getArmorStand(entity: Entity, offset: Int = 1) = getNextEntity(entity, offset) as? ArmorStand
@@ -35,13 +30,13 @@ object MobUtils {
     fun getClosestArmorStandWithName(entity: Entity, range: Double, name: String) =
         getArmorStandByRangeAll(entity, range).filter { it.cleanName.startsWith(name) }.minByOrNull { it.distanceTo(entity) }
 
-    fun ArmorStand.isDefaultValue() = this.name.formattedTextCompatLessResets() == defaultArmorStandName
+    fun ArmorStand.isDefaultName() = !this.hasCustomName()
 
-    fun ArmorStand?.takeNonDefault() = this?.takeIf { !it.isDefaultValue() }
+    fun ArmorStand?.takeNonDefaultName() = this?.takeIf { !it.isDefaultName() }
 
-    fun ArmorStand.hasEmptyInventory() = getInventoryItems().none { it.isNotEmpty() }
+    fun ArmorStand.hasEmptyEquipment() = this.equipment.isEmpty
 
-    fun ArmorStand.isCompletelyDefault() = isDefaultValue() && hasEmptyInventory()
+    fun ArmorStand.isCompletelyDefault() = isDefaultName() && hasEmptyEquipment()
 
     class Ownership(val ownerName: String) {
         val ownerPlayer = MobData.players.firstOrNull { it.name == ownerName }
