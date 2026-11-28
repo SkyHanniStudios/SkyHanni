@@ -192,7 +192,7 @@ object VampireSlayerFeatures {
     @HandleEvent(onlyOnIsland = THE_RIFT)
     private fun onEntityClick(event: EntityClickEvent) {
         if (!isEnabled() || event.action != ATTACK) return
-        val entity = event.clickedEntity as? RemotePlayer ?: return
+        val entity = event.entity as? RemotePlayer ?: return
         val cleanName = entity.cleanName
         if (!bossNamePattern.matches(cleanName)) return
         val mob = entity.mob
