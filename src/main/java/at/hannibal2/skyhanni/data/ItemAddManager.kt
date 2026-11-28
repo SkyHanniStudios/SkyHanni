@@ -14,13 +14,12 @@ import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
 import at.hannibal2.skyhanni.events.entity.ItemAddInInventoryEvent
 import at.hannibal2.skyhanni.events.item.ShardGainEvent
 import at.hannibal2.skyhanni.features.achievements.AchievementManager
-import at.hannibal2.skyhanni.features.inventory.SuperCraftFeatures.craftedPattern
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
+import at.hannibal2.skyhanni.utils.ItemUtils
 import at.hannibal2.skyhanni.utils.ItemUtils.repoItemName
 import at.hannibal2.skyhanni.utils.NeuInternalName
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
-import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.StringUtils.removeColor
@@ -80,11 +79,10 @@ object ItemAddManager {
         for (sackChange in event.sackChanges) {
             val change = sackChange.delta
             val internalName = sackChange.internalName
-            if (change > 0 && internalName !in superCraftedItems) {
-                Source.SACKS.addItem(internalName, change)
+            if (change > 0) {
+                Source.SACKS.addItemExceptSuperCrafted(internalName, change)
             }
         }
-        superCraftedItems.clear()
     }
 
     @HandleEvent(onlyOnSkyblock = true)
@@ -97,7 +95,7 @@ object ItemAddManager {
             }
         }
 
-        Source.ITEM_ADD.addItem(internalName, event.amount)
+        Source.ITEM_ADD.addItemExceptSuperCrafted(internalName, event.amount)
     }
 
     @HandleEvent
@@ -151,7 +149,23 @@ object ItemAddManager {
     }
 
     private var lastDiceRoll = SimpleTimeMark.farPast()
-    private val superCraftedItems = TimeLimitedSet<NeuInternalName>(30.seconds)
+
+    private class SuperCraftedItem(val internalName: NeuInternalName, val source: Source, var amount: Int)
+
+    private val superCraftedItems = TimeLimitedSet<SuperCraftedItem>(30.seconds)
+
+    private fun Source.addItemExceptSuperCrafted(internalName: NeuInternalName, amount: Int) {
+        var remaining = amount
+        for (superCrafted in superCraftedItems) {
+            if (superCrafted.internalName != internalName || superCrafted.source != this) continue
+            val skipped = minOf(superCrafted.amount, remaining)
+            superCrafted.amount -= skipped
+            remaining -= skipped
+            if (superCrafted.amount == 0) superCraftedItems.remove(superCrafted)
+            if (remaining == 0) return
+        }
+        addItem(internalName, remaining)
+    }
 
     private const val DICE_ACHIEVEMENT = "100 dice rolls"
 
@@ -179,10 +193,9 @@ object ItemAddManager {
             val achievement = AchievementManager.getAchievement(DICE_ACHIEVEMENT)
             AchievementManager.updateTieredAchievement(DICE_ACHIEVEMENT, achievement.data.progress + 1)
         }
-        craftedPattern.matchMatcher(event.message) {
-            val internalName = NeuInternalName.fromItemName(group("item"))
-            if (!SackApi.sackListInternalNames.contains(internalName.asString())) return@matchMatcher
-            superCraftedItems.add(internalName)
-        }
+        val (internalName, amount) = ItemUtils.readSuperCraftedItem(event.message) ?: return
+        if (!SackApi.sackListInternalNames.contains(internalName.asString())) return
+        superCraftedItems.add(SuperCraftedItem(internalName, Source.ITEM_ADD, amount))
+        superCraftedItems.add(SuperCraftedItem(internalName, Source.SACKS, amount))
     }
 }
