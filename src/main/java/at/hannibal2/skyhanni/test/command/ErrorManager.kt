@@ -25,6 +25,7 @@ import at.hannibal2.skyhanni.utils.coroutines.CoroutineSettings
 import at.hannibal2.skyhanni.utils.system.PlatformUtils
 import net.minecraft.CrashReport
 import net.minecraft.client.Minecraft
+import org.jetbrains.annotations.VisibleForTesting
 import java.util.Collections
 import java.util.IdentityHashMap
 import kotlin.time.Duration.Companion.minutes
@@ -214,6 +215,11 @@ object ErrorManager {
 
     data class CachedError(val className: String, val lineNumber: Int, val errorMessage: String)
 
+    data class LoggedError(val message: String, val throwable: Throwable, val extraData: List<Pair<String, Any?>>)
+
+    @VisibleForTesting
+    internal var testSink: ((LoggedError) -> Unit)? = null
+
     // This is intentionally not an enum, because unnecessary object allocation can be problematic
     // if we're dealing with a stack overflow.
     private typealias ErrorStateT = Int
@@ -234,6 +240,10 @@ object ErrorManager {
         condition: () -> Boolean = { true },
     ): ErrorStateT {
         if (!condition()) return ErrorState.BLOCKED_NOT_NEEDED
+        testSink?.let {
+            it(LoggedError(message, originalThrowable, extraData.toList()))
+            return ErrorState.BLOCKED_NOT_NEEDED
+        }
 
         // TODO add missing debug enabled check
         if (betaOnly && !SkyHanniMod.isBetaVersion) return ErrorState.BLOCKED_NOT_NEEDED

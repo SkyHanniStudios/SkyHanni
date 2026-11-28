@@ -27,6 +27,12 @@ enum class KspHook(override val id: String) : ProgressHook {
     FINISH("SymbolProcessor.finish"),
 }
 
+enum class TestHook(override val id: String) : ProgressHook {
+    SUITE("TestListener.beforeSuite"),
+    TEST("TestListener.afterTest"),
+    FINISH("TestListener.afterSuite"),
+}
+
 enum class DetektHook(override val id: String) : ProgressHook {
     INIT("FileProcessListener.init"),
     START("FileProcessListener.onStart"),

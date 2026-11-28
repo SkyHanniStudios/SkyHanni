@@ -33,6 +33,7 @@ import com.google.gson.JsonPrimitive
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.Items
 import net.minecraft.world.level.block.Blocks
+import org.jetbrains.annotations.VisibleForTesting
 import java.util.NavigableMap
 import java.util.TreeMap
 import kotlin.time.Duration.Companion.minutes
@@ -130,6 +131,13 @@ object NeuItems {
     internal fun isAmbiguousDisplayName(displayName: String): Boolean {
         val name = normalizeDisplayName(displayName)
         return name in ambiguousDisplayNames || name.removeColor() in ambiguousDisplayNamesColorless
+    }
+
+    @VisibleForTesting
+    internal fun rebuildForTest() {
+        multiplierCache.clear()
+        itemIdCache.clear()
+        readAllNeuItems()
     }
 
     private fun readAllNeuItems() {

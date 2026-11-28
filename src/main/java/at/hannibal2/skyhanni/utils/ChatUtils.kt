@@ -28,6 +28,7 @@ import net.minecraft.client.multiplayer.ClientPacketListener
 import net.minecraft.client.multiplayer.chat.GuiMessage
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
+import org.jetbrains.annotations.VisibleForTesting
 import java.util.LinkedList
 import java.util.Queue
 import kotlin.concurrent.atomics.AtomicInt
@@ -140,6 +141,9 @@ object ChatUtils {
     private val messagesThatAreOnlySentOnce = mutableSetOf<String>()
     private val messagesThatAreOnlySentOnceComponent = mutableSetOf<Component>()
 
+    @VisibleForTesting
+    internal var testSink: ((Component) -> Unit)? = null
+
     private fun internalChat(
         message: String,
         replaceSameMessage: Boolean,
@@ -147,6 +151,10 @@ object ChatUtils {
         messageId: Int? = null,
     ): Boolean {
         val text = message.asComponent()
+        testSink?.let {
+            it(text)
+            return true
+        }
         if (onlySendOnce && !messagesThatAreOnlySentOnce.add(message)) return false
         return if (replaceSameMessage || messageId != null) {
             text.send(messageId ?: message.getMessageIdForString())
@@ -160,6 +168,10 @@ object ChatUtils {
         onlySendOnce: Boolean = false,
         messageId: Int? = null,
     ): Boolean {
+        testSink?.let {
+            it(message)
+            return true
+        }
         if (onlySendOnce && !messagesThatAreOnlySentOnceComponent.add(message)) return false
         return if (replaceSameMessage || messageId != null) {
             message.send(messageId ?: message.getMessageIdForString())
