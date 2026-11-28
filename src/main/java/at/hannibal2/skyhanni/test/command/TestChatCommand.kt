@@ -13,10 +13,9 @@ import at.hannibal2.skyhanni.utils.compat.addChatMessageToChat
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompat
 import at.hannibal2.skyhanni.utils.compat.unformattedTextCompat
 import at.hannibal2.skyhanni.utils.compat.unformattedTextForChatCompat
+import at.hannibal2.skyhanni.utils.json.SkyHanniTypeAdapter
 import com.google.gson.JsonParser
-import com.mojang.serialization.JsonOps
 import net.minecraft.network.chat.Component
-import net.minecraft.network.chat.ComponentSerialization
 
 @SkyHanniModule
 object TestChatCommand {
@@ -57,7 +56,7 @@ object TestChatCommand {
     private fun extracted(isComplex: Boolean, text: String, isSilent: Boolean) {
         val component = if (isComplex) {
             try {
-                ComponentSerialization.CODEC.decode(JsonOps.INSTANCE, JsonParser.parseString(text)).getOrThrow().first
+                SkyHanniTypeAdapter.COMPONENT.typed<Component>().fromJsonTree(JsonParser.parseString(text))
             } catch (_: Exception) {
                 ChatUtils.userError("Please provide a valid JSON chat component (either in the command or via -clipboard)")
                 return
