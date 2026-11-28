@@ -1,0 +1,30 @@
+package at.hannibal2.skyhanni.features.garden.tracker
+
+import at.hannibal2.skyhanni.api.event.HandleEvent
+import at.hannibal2.skyhanni.data.IslandType
+import at.hannibal2.skyhanni.data.model.SkyblockStat.FARMING_FORTUNE
+import at.hannibal2.skyhanni.data.model.SkyblockStat.OVERBLOOM
+import at.hannibal2.skyhanni.events.chat.SkyHanniChatEvent
+import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
+import at.hannibal2.skyhanni.utils.RegexUtils.matches
+
+@SkyHanniModule
+object FarmingProfitTrackerChatDrops {
+
+    /**
+     * REGEX-TEST: ABOUT TIME! You find an Overclocker 3000 (+137)!
+     * REGEX-TEST: ABOUT TIME! You find an Overclocker 3000 (+1,810)!
+     */
+    private val overclockerPityPattern by FarmingProfitTracker.patternGroup.pattern(
+        "overclocker.pity",
+        "^ABOUT TIME! You find an Overclocker 3000 \\([+]\\d[\\d,.]*" +
+            "[${FARMING_FORTUNE.hypixelIcon}${OVERBLOOM.hypixelIcon}]\\)!$",
+    )
+
+    @HandleEvent(onlyOnIsland = IslandType.GARDEN)
+    private fun onChat(event: SkyHanniChatEvent.Allow) {
+        if (overclockerPityPattern.matches(event.cleanMessage)) {
+            FarmingProfitTracker.addPestItem(PestProfitTracker.OVERCLOCKER, 1)
+        }
+    }
+}

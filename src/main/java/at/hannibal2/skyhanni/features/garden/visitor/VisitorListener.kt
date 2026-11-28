@@ -16,7 +16,6 @@ import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.events.minecraft.ToolTipEvent
 import at.hannibal2.skyhanni.events.minecraft.packet.PacketSentEvent
 import at.hannibal2.skyhanni.features.garden.GardenApi
-import at.hannibal2.skyhanni.features.garden.visitor.VisitorApi.ACCEPT_SLOT
 import at.hannibal2.skyhanni.features.garden.visitor.VisitorApi.INFO_SLOT
 import at.hannibal2.skyhanni.features.garden.visitor.VisitorApi.lastClickedNpc
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
@@ -98,12 +97,9 @@ object VisitorListener {
         val lore = npcItem.getLore()
         if (!VisitorApi.isVisitorInfo(lore)) return
 
-        val offerItem = event.inventoryItems[ACCEPT_SLOT] ?: return
-        if (offerItem.hoverName.string != "Accept Offer") return
+        val visitorOffer = VisitorApi.getVisitorOffer(event.inventoryItems) ?: return
 
         VisitorApi.inInventory = true
-
-        val visitorOffer = VisitorApi.VisitorOffer(offerItem)
 
         var name = npcItem.hoverName.formattedTextCompatLeadingWhiteLessResets()
         if (name.length == name.removeColor().length + 4) {
