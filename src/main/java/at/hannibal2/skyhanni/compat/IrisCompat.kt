@@ -1,37 +1,39 @@
 package at.hannibal2.skyhanni.compat
 
-import at.hannibal2.skyhanni.api.event.HandleEvent
-import at.hannibal2.skyhanni.events.utils.InitFinishedEvent
+//? if iris_compat {
+/*import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.render.SkyHanniRenderPipeline
 import at.hannibal2.skyhanni.utils.system.PlatformUtils
-import com.mojang.blaze3d.pipeline.RenderPipeline
+import com.mojang.renderpearl.api.pipeline.RenderPipeline
+*///?}
 
-@SkyHanniModule
+//? if iris_compat
+//@SkyHanniModule
 object IrisCompat {
 
-    private const val IRIS_BASE_PATH = "net.irisshaders.iris.api.v0"
+    enum class IrisProgram {
+        BASIC,
+        LINES,
+        TEXTURED,
+    }
+
+    //? if iris_compat {
+    /*private const val IRIS_BASE_PATH = "net.irisshaders.iris.api.v0"
     private const val IRIS_PROGRAM_PATH = "$IRIS_BASE_PATH.IrisProgram"
     private const val IRIS_API_PATH = "$IRIS_BASE_PATH.IrisApi"
 
     private val isIrisLoaded by lazy { PlatformUtils.isModInstalled("iris") }
     private val irisProgramEnum by lazy { Class.forName(IRIS_PROGRAM_PATH) }
 
-    enum class IrisProgram {
-        BASIC,
-        LINES,
-        TEXTURED,
-        ;
-
-        fun asJavaEnum(): Any = java.lang.Enum.valueOf(
-            irisProgramEnum.asSubclass(Enum::class.java),
-            this.name
-        )
-    }
+    private fun IrisProgram.asJavaEnum(): Any = java.lang.Enum.valueOf(
+        irisProgramEnum.asSubclass(Enum::class.java),
+        this.name
+    )
 
     @HandleEvent
-    fun onInitFinished(event: InitFinishedEvent) {
+    private fun onInitFinished() {
         if (!isIrisLoaded) return
         try {
             val irisApiClass = Class.forName(IRIS_API_PATH)
@@ -56,4 +58,5 @@ object IrisCompat {
             ErrorManager.logErrorWithData(exception, "Failed to initialize Iris compat!")
         }
     }
+    *///?}
 }
