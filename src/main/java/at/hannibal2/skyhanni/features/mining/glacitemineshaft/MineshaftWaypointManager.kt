@@ -4,12 +4,16 @@ import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.PartyApi
+import at.hannibal2.skyhanni.data.jsonobjects.repo.MineshaftCorpsesJson
+import at.hannibal2.skyhanni.data.title.TitleManager
 import at.hannibal2.skyhanni.events.IslandJoinEvent
+import at.hannibal2.skyhanni.events.RepositoryReloadEvent
 import at.hannibal2.skyhanni.events.minecraft.KeyPressEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
 import at.hannibal2.skyhanni.events.minecraft.packet.PacketReceivedEvent
 import at.hannibal2.skyhanni.events.mining.CorpseFoundEvent
 import at.hannibal2.skyhanni.events.mining.CorpseLootedEvent
+import at.hannibal2.skyhanni.events.mining.GlaciteMineshaftDetectEvent
 import at.hannibal2.skyhanni.features.mining.glacitemineshaft.corpse.CorpseType
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
@@ -18,6 +22,7 @@ import at.hannibal2.skyhanni.utils.LocationUtils
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
 import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
+import at.hannibal2.skyhanni.utils.SoundUtils
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawDynamicText
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawWaypointFilled
@@ -27,6 +32,7 @@ import net.minecraft.core.Vec3i
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket
 import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 @SkyHanniModule
 object MineshaftWaypointManager {
@@ -36,6 +42,8 @@ object MineshaftWaypointManager {
     private const val LADDER_BLOCKS_DOWN = -15
 
     val waypoints = mutableListOf<MineshaftWaypoint>()
+    private var potentialCorpseLocations = mapOf<MineshaftDetection.MineshaftType, List<LorenzVec>>()
+
     private var timeLastShared = SimpleTimeMark.farPast()
     private var isWorldLoaded = false
 
@@ -74,12 +82,24 @@ object MineshaftWaypointManager {
 
     @HandleEvent
     private fun onCorpseFound(event: CorpseFoundEvent) {
-        waypoints.add(MineshaftWaypoint(MineshaftWaypoint.Type.FOUND_CORPSE, event.location, event.corpseType))
+        val waypoint = waypoints.find { it.location.distance(event.location) <= 3 }
+
+        if (waypoint != null) {
+            waypoint.type = MineshaftWaypoint.Type.FOUND_CORPSE
+            waypoint.corpseType = event.corpseType
+        } else {
+            waypoints.add(MineshaftWaypoint(MineshaftWaypoint.Type.FOUND_CORPSE, event.location, event.corpseType))
+        }
 
         // Only display a message when Found Corpse waypoints are enabled.
         if (config.types.foundCorpse) {
             val article = if (event.corpseType == CorpseType.UMBER) "an" else "a"
             ChatUtils.chat("Found $article ${event.corpseType} Corpse§e at ${event.location.toLocalFormat()}.")
+        }
+
+        if (event.isLastCorpse && config.allCorpsesFoundAlert) {
+            TitleManager.sendTitle("§aAll Corpses Found", duration = 3.seconds)
+            SoundUtils.playBeepSound()
         }
     }
 
@@ -117,7 +137,7 @@ object MineshaftWaypointManager {
         waypoints
             .filter { it.shouldRender }
             .forEach {
-                event.drawWaypointFilled(it.location, it.fillColor.toColor(), seeThroughBlocks = true)
+                event.drawWaypointFilled(it.location, it.fillColor.toColor(), seeThroughBlocks = true, maximumAlpha = it.fillMaxAlpha)
                 event.drawDynamicText(it.location, it.textDisplay, it.labelScale)
             }
     }
@@ -135,5 +155,17 @@ object MineshaftWaypointManager {
 
         waypoints.add(MineshaftWaypoint(type = MineshaftWaypoint.Type.ENTRANCE, location = entranceLocation))
         waypoints.add(MineshaftWaypoint(type = MineshaftWaypoint.Type.LADDER, location = ladderLocation))
+    }
+
+    @HandleEvent
+    private fun onGlaciteMineshaftDetect(event: GlaciteMineshaftDetectEvent) {
+        potentialCorpseLocations.getOrElse(event.type) { listOf() }.forEach {
+            waypoints.add(MineshaftWaypoint(POTENTIAL_CORPSE, it))
+        }
+    }
+
+    @HandleEvent
+    private fun onRepoReload(event: RepositoryReloadEvent) {
+        potentialCorpseLocations = event.getConstant<MineshaftCorpsesJson>("FrozenCorpses").locations
     }
 }
