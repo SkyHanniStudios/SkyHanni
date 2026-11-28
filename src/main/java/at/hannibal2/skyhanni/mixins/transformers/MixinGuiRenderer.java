@@ -33,6 +33,7 @@ public abstract class MixinGuiRenderer {
     public void computeChromaBufferSlice(
         CallbackInfo ci) {
         GuiRendererHook.INSTANCE.computeChromaBufferSlice();
+        GuiRendererHook.INSTANCE.uploadShapeData();
     }
 
     //~ if < 26.2 'shift = At.Shift.AFTER' -> 'ordinal = 1'
@@ -41,6 +42,7 @@ public abstract class MixinGuiRenderer {
         CallbackInfo ci,
         @Local RenderPass renderPass) {
         GuiRendererHook.INSTANCE.insertChromaSetUniform(renderPass);
+        GuiRendererHook.INSTANCE.bindShapeData(renderPass);
     }
 
     @WrapOperation(
