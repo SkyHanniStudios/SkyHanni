@@ -1,6 +1,8 @@
 package at.hannibal2.skyhanni.features.foraging
 
 import at.hannibal2.skyhanni.SkyHanniMod
+import at.hannibal2.skyhanni.api.CompactorCraftApi
+import at.hannibal2.skyhanni.api.CompactorCraftApi.CraftState
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.config.commands.CommandCategory
@@ -127,7 +129,7 @@ object ForagingTracker : SkyHanniBucketedItemTracker<ForagingTrackerLegacy.TreeT
     }
 
     @HandleEvent
-    fun onSackChange(event: SackChangeEvent) {
+    private fun onSackChange(event: SackChangeEvent) {
         if (!isInIsland()) return
         event.addLogs()
     }
@@ -148,9 +150,19 @@ object ForagingTracker : SkyHanniBucketedItemTracker<ForagingTrackerLegacy.TreeT
         }
     }.values.forEach { (treeType, delta, deltaEnchanted) ->
         val baseLog = treeType.getBaseLog()
-        if (delta > 0) addItem(treeType, baseLog, delta, command = false)
-
         val enchantedLog = treeType.getEnchantedLog()
+        val compactionAmount = when (val craft = CompactorCraftApi.getCraftState(baseLog, 0)) {
+            is CraftState.Ambiguous -> null
+            is CraftState.Enough -> craft.upgrade.baseAmount.takeIf {
+                craft.upgrade.result == enchantedLog
+            }
+            is CraftState.Missing -> craft.upgrade.baseAmount.takeIf {
+                craft.upgrade.result == enchantedLog
+            }
+            CraftState.NoCraft, CraftState.NotLoaded -> null
+        }
+        val baseLogDelta = if (compactionAmount == null) delta else delta - deltaEnchanted * compactionAmount
+        if (baseLogDelta > 0) addItem(treeType, baseLog, baseLogDelta, command = false)
         if (deltaEnchanted > 0) addItem(treeType, enchantedLog, deltaEnchanted, command = false)
     }
 
