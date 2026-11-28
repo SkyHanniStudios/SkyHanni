@@ -77,7 +77,7 @@ object StonksAuctionTimer {
     }
 
     // backup for the menu lore; matches the full chat line, so player messages (prefixed with their name) can't trigger it
-    // not SystemMessageEvent, since SkyHanniChatEvent and party chat extend it, so it fires twice and lets party chat through
+x    // TODO use SystemMessageEvent once SkyHanniChatEvent and party chat stop extending it, it fires twice and lets party chat through
     @HandleEvent(onlyOnSkyblock = true)
     private fun onChat(event: SkyHanniChatEvent.Allow) {
         val message = event.cleanMessage

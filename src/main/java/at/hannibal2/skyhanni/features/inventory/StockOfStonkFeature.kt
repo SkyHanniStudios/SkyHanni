@@ -8,6 +8,7 @@ import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
 import at.hannibal2.skyhanni.events.minecraft.ToolTipTextEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ConditionalUtils.transformIf
+import at.hannibal2.skyhanni.utils.DelayedRun
 import at.hannibal2.skyhanni.utils.ItemUtils.cleanName
 import at.hannibal2.skyhanni.utils.ItemUtils.getLoreComponent
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
@@ -88,12 +89,11 @@ object StockOfStonkFeature {
         inInventory = false
     }
 
-    // reads the auction item's lore as soon as the menu loads or refreshes, so the timer updates without hovering the item
     @HandleEvent(onlyOnSkyblock = true)
     private fun onInventoryUpdated(event: InventoryUpdatedEvent) {
         if (!inInventory) return
         val auctionItem = event.inventoryItems.values.firstOrNull { inventoryPattern.matches(it.cleanName) } ?: return
-        updateAuctionData(auctionItem.getLoreComponent())
+        DelayedRun.runOrNextTick { updateAuctionData(auctionItem.getLoreComponent()) }
     }
 
     @HandleEvent(onlyOnSkyblock = true)
