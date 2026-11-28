@@ -118,10 +118,12 @@ object GhostTracker : SkyHanniItemTracker<GhostTracker.Data>("Ghost Tracker") {
     /**
      * REGEX-TEST: RARE DROP! Sorrow (+210%  Magic Find)
      * REGEX-TEST: RARE DROP! Sorrow (+210  Magic Find)
+     * REGEX-TEST: RARE DROP! Sorrow (+183 Magic Find)
+     * REGEX-TEST: RARE DROP! Plasma (+183 Magic Find)
      */
     private val itemDropPattern by patternGroup.pattern(
         "itemdrop.colorless",
-        "RARE DROP! (?<item>.+) \\(\\+(?<mf>\\d+)%? ${SkyblockStat.MAGIC_FIND.hypixelIcon} Magic Find\\)",
+        "RARE DROP! (?<item>.+) \\(\\+(?<mf>\\d+)%? ?${SkyblockStat.MAGIC_FIND.hypixelIcon} Magic Find\\)",
     )
 
     /**

@@ -10,10 +10,11 @@ import at.hannibal2.skyhanni.events.GuiContainerEvent
 import at.hannibal2.skyhanni.events.SackOpenEvent
 import at.hannibal2.skyhanni.features.inventory.bazaar.BazaarApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
+import at.hannibal2.skyhanni.utils.ComponentMatcherUtils.matchAllStyledComponents
 import at.hannibal2.skyhanni.utils.DelayedRun
 import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.ItemPriceSource
-import at.hannibal2.skyhanni.utils.ItemUtils.getLore
+import at.hannibal2.skyhanni.utils.ItemUtils.getLoreComponent
 import at.hannibal2.skyhanni.utils.ItemUtils.repoItemNameCompact
 import at.hannibal2.skyhanni.utils.LorenzColor
 import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
@@ -32,6 +33,9 @@ import at.hannibal2.skyhanni.utils.renderables.RenderableUtils.addRenderableButt
 import at.hannibal2.skyhanni.utils.renderables.SearchTextInput
 import at.hannibal2.skyhanni.utils.renderables.buildSearchableTable
 import at.hannibal2.skyhanni.utils.renderables.primitives.text
+import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import net.minecraft.ChatFormatting
+import net.minecraft.network.chat.TextColor
 
 private typealias GemstoneQuality = SkyBlockItemModifierUtils.GemstoneQuality
 
@@ -41,17 +45,25 @@ object SackDisplay {
 
     private var display = emptyList<Renderable>()
     private val config get() = SkyHanniMod.feature.inventory.sackDisplay
+    private val patternGroup = RepoPattern.group("inventory.sack.display")
 
+    /**
+     * REGEX-TEST: Stored: 60.5k/60.5k
+     * REGEX-TEST: Stored: 28,183/60.5k
+     */
+    private val storedPattern by patternGroup.pattern(
+        "stored",
+        "Stored: (?<stored>[\\d.,]+[kKmMbB]?)/(?<total>[\\d.,]+[kKmMbB]?)",
+    )
+
+    private val fullColor = TextColor.fromLegacyFormat(ChatFormatting.GREEN)
     private val MAGMA_FISH = "MAGMA_FISH".toInternalName()
     private val textInputs = mutableMapOf<String, SearchTextInput>()
 
     private fun getSackTextInput(name: String) = textInputs.getOrPut(name) { SearchTextInput() }
 
     init {
-        RenderDisplayHelper(
-            inventoryDetector = SackApi.inventory,
-            condition = ::isEnabled,
-        ) {
+        RenderDisplayHelper(inventoryDetector = SackApi.inventory, condition = ::isEnabled) {
             config.position.renderRenderables(
                 display, extraSpace = config.extraSpace, posLabel = "Sacks Items",
             )
@@ -62,10 +74,10 @@ object SackDisplay {
     fun onBackgroundDrawn(event: GuiContainerEvent.BackgroundDrawnEvent) {
         if (!SackApi.inventory.isInside()) return
         if (!config.highlightFull) return
+        // TODO calculate slots on inventory update, use here instead of iterating in render event
         for (slot in InventoryUtils.getItemsInOpenChest()) {
-            val lore = slot.item.getLore()
-            if (lore.any { it.startsWith("§7Stored: §a") }) {
-                slot.highlight(LorenzColor.RED)
+            storedPattern.matchAllStyledComponents(slot.item.getLoreComponent()) {
+                if (groupOrThrow("stored").sampleStyleAtStart().color == fullColor) slot.highlight(LorenzColor.RED)
             }
         }
     }

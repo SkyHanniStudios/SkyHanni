@@ -14,12 +14,11 @@ object AccessoryBagApi {
 
     /**
      * REGEX-TEST: Accessory Bag
-     * REGEX-TEST: Accessory Bag (1/2)
-     * REGEX-TEST: Accessory Bag (909/394294)
+     * REGEX-TEST: (1/6) Accessory Bag
      */
     private val inventoryNamePattern by patternGroup.pattern(
         "inventory.name",
-        "Accessory Bag(?: \\(\\d+\\/\\d+\\))?",
+        "(?:\\(\\d+\\/\\d+\\) )?Accessory Bag",
     )
 
     fun isAccessoryBag(inventoryName: String): Boolean = inventoryNamePattern.matches(inventoryName)

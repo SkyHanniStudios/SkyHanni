@@ -71,7 +71,7 @@ object ShinyOrbTracker : SkyHanniItemTracker<ShinyOrbTracker.Data>("Shiny Orb Tr
 
     @HandleEvent
     private fun onShinyOrbUsed() {
-         modify { it.orbsUsed++ }
+        modify { it.orbsUsed++ }
     }
 
     @HandleEvent
@@ -81,13 +81,13 @@ object ShinyOrbTracker : SkyHanniItemTracker<ShinyOrbTracker.Data>("Shiny Orb Tr
 
     @HandleEvent
     private fun onShinyOrbLooted(event: ShinyOrbLootedEvent) {
-        tracker.addItem(SHINY_SHARD_ITEM, 1, command = false)
+        addItem(SHINY_SHARD_ITEM, 1, command = false)
         for (reward in event.rewards) {
             when (reward) {
-                is Coins -> addCoins(event.coins, command = false)
+                is Coins -> addCoins(reward.amount, command = false)
 
                 is SkillXp -> modify {
-                    skillXpGained.addOrPut(reward.skill, reward.amount.toLong())
+                    it.skillXpGained.addOrPut(reward.skill, reward.amount.toLong())
                 }
 
                 is Loot -> {
