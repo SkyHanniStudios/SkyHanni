@@ -151,7 +151,7 @@ object VampireSlayerFeatures {
     }
 
     @HandleEvent(onlyOnIsland = THE_RIFT)
-    private fun onPlayerMove(event: EntityMoveEvent<LocalPlayer>) {
+    private fun onEntityMove(event: EntityMoveEvent<LocalPlayer>) {
         if (!isEnabled()) return
         val removed = trackedBosses.filter { it.entity.distanceToPlayer() > MAX_SLAYER_DISTANCE }
         trackedBosses.removeAll(removed)
@@ -192,7 +192,7 @@ object VampireSlayerFeatures {
     @HandleEvent(onlyOnIsland = THE_RIFT)
     private fun onEntityClick(event: EntityClickEvent) {
         if (!isEnabled() || event.action != ATTACK) return
-        val entity = event.clickedEntity as? RemotePlayer ?: return
+        val entity = event.entity as? RemotePlayer ?: return
         val cleanName = entity.cleanName
         if (!bossNamePattern.matches(cleanName)) return
         val mob = entity.mob

@@ -1,6 +1,8 @@
 package at.hannibal2.skyhanni.events.entity
 
 import at.hannibal2.skyhanni.api.event.GenericSkyHanniEvent
+import at.hannibal2.skyhanni.events.entity.abstract.SkyHanniLivingEntityEvent
+import at.hannibal2.skyhanni.skyhannimodule.PrimaryFunction
 import at.hannibal2.skyhanni.utils.LorenzVec
 import net.minecraft.world.entity.LivingEntity
 
@@ -11,9 +13,10 @@ import net.minecraft.world.entity.LivingEntity
  * @param newLocation Entity's current location as the event is being fired.
  * @param distance Amount of distance the entity moved between oldLocation and newLocation.
  */
+@PrimaryFunction("onEntityMove")
 class EntityMoveEvent<T : LivingEntity>(
-    val entity: T,
+    override val entity: T,
     val oldLocation: LorenzVec,
     val newLocation: LorenzVec,
     val distance: Double,
-) : GenericSkyHanniEvent<T>(entity.javaClass)
+) : GenericSkyHanniEvent<T>(entity.javaClass), SkyHanniLivingEntityEvent<T>

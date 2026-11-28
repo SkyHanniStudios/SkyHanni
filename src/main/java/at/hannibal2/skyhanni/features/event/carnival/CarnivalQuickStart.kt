@@ -39,7 +39,7 @@ object CarnivalQuickStart {
     fun onEntityClick(event: EntityClickEvent) {
         if (!isEnabled()) return
         if (lastChat.passedSince() > 5.0.seconds) return
-        val mob = (event.clickedEntity as? LivingEntity)?.mob ?: return
+        val mob = (event.entity as? LivingEntity)?.mob ?: return
         val type = when {
             cowboy.matches(mob.name) -> "carnival_cowboy"
             fisher.matches(mob.name) -> "carnival_fisherman"
