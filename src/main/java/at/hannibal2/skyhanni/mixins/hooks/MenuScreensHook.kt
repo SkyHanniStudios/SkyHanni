@@ -1,5 +1,7 @@
 package at.hannibal2.skyhanni.mixins.hooks
 
+import at.hannibal2.skyhanni.features.dungeon.DungeonSpiritLeapOverlay
+import at.hannibal2.skyhanni.features.dungeon.DungeonSpiritLeapScreen
 import at.hannibal2.skyhanni.features.inventory.wardrobe.CustomWardrobe
 import at.hannibal2.skyhanni.features.inventory.wardrobe.CustomWardrobeEditScreen
 import at.hannibal2.skyhanni.features.inventory.wardrobe.CustomWardrobeScreen
@@ -34,7 +36,29 @@ object MenuScreensHook {
             return true
         }
 
-        return openBlockStrengthGuide(inventoryName, name, type, client, id, inventory)
+        if (openBlockStrengthGuide(inventoryName, name, type, client, id, inventory)) {
+            return true
+        }
+
+        return openSpiritLeap(inventoryName, name, type, client, id, inventory)
+    }
+
+    private fun <T : AbstractContainerMenu> openSpiritLeap(
+        inventoryName: String,
+        name: Component,
+        type: MenuType<T>,
+        client: Minecraft,
+        id: Int,
+        inventory: Inventory,
+    ): Boolean {
+        if (!DungeonSpiritLeapOverlay.shouldReplace(inventoryName)) return false
+
+        val menu = type.create(id, inventory) as? ChestMenu ?: return false
+
+        client.player?.containerMenu = menu
+        MinecraftCompat.screen = DungeonSpiritLeapScreen(menu, name)
+
+        return true
     }
 
     private fun <T : AbstractContainerMenu> openBlockStrengthGuide(
