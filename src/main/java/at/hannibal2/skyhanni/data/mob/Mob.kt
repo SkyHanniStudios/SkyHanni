@@ -9,6 +9,7 @@ import at.hannibal2.skyhanni.utils.ColorUtils.toColor
 import at.hannibal2.skyhanni.utils.EntityUtils.baseMaxHealth
 import at.hannibal2.skyhanni.utils.EntityUtils.canBeSeen
 import at.hannibal2.skyhanni.utils.EntityUtils.cleanName
+import at.hannibal2.skyhanni.utils.EntityUtils.getEntitiesNearby
 import at.hannibal2.skyhanni.utils.EntityUtils.isCorrupted
 import at.hannibal2.skyhanni.utils.LocationUtils.distanceToPlayer
 import at.hannibal2.skyhanni.utils.LocationUtils.getBoxCenter
@@ -79,7 +80,7 @@ class Mob(
     var armorStand: ArmorStand? = null,
     val name: String = "",
     additionalEntities: List<LivingEntity>? = null,
-    private var ownerName: String? = null,
+    ownerName: String? = null,
     val hasStar: Boolean = false,
     val attribute: MobFilter.DungeonAttribute? = null,
     val levelOrTier: Int = -1,
@@ -89,7 +90,8 @@ class Mob(
     private val uniqueId: UUID = UUID.randomUUID()
     val id = baseEntity.id
 
-    val owner: MobUtils.Ownership?
+    var owner: MobUtils.Ownership? = ownerName?.let { MobUtils.Ownership(it) }
+        private set
 
     val ownerNameOrEmpty: String get() = owner?.ownerName.orEmpty()
 
@@ -196,14 +198,17 @@ class Mob(
         // Inlined updateBoundingBox()
         relativeBoundingBox = if (extraEntities.isNotEmpty()) makeRelativeBoundingBox() else null
 
-        if (ownerName == null && category == MobCategory.SLAYER) {
-            hologram2?.let {
-                summonOwnerPattern.matchMatcher(it.cleanName) {
-                    ownerName = group("name")
-                }
-            }
-        }
-        owner = ownerName?.let { MobUtils.Ownership(it) }
+        if (category == MobCategory.SLAYER) findOwner()
+    }
+
+    fun findOwner() {
+        if (owner != null) return
+        val nameStand = armorStand?.getLorenzVec()
+        val ownerStands = listOfNotNull(hologram2) +
+            nameStand?.getEntitiesNearby<ArmorStand>(1.0)?.sortedBy { it.getLorenzVec().distance(nameStand) }.orEmpty()
+        owner = ownerStands.firstNotNullOfOrNull { stand ->
+            summonOwnerPattern.matchMatcher(stand.cleanName) { group("name") }
+        }?.let { MobUtils.Ownership(it) }
     }
 
     private fun removeExtraEntitiesFromChecking() =

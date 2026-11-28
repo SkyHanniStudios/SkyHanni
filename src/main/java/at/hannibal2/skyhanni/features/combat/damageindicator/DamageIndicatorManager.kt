@@ -23,6 +23,7 @@ import at.hannibal2.skyhanni.features.dungeon.DungeonApi
 import at.hannibal2.skyhanni.features.rift.RiftApi
 import at.hannibal2.skyhanni.features.rift.area.colosseum.BacteApi
 import at.hannibal2.skyhanni.features.rift.area.colosseum.BacteApi.currentPhase
+import at.hannibal2.skyhanni.features.slayer.WolfSlayerFeatures
 import at.hannibal2.skyhanni.features.slayer.blaze.HellionShield
 import at.hannibal2.skyhanni.features.slayer.blaze.HellionShieldHelper.setHellionShield
 import at.hannibal2.skyhanni.features.slayer.spider.SlayerSpiderFeatures
@@ -338,7 +339,8 @@ object DamageIndicatorManager {
         }
     }
 
-    private fun EntityData.shouldShowNameAndHealth() = config.enabled && bossType.bossTypeToggle in config.bossesToShow
+    private fun EntityData.shouldShowNameAndHealth() =
+        config.enabled && bossType.bossTypeToggle in config.bossesToShow && !WolfSlayerFeatures.isPossessing(entity)
 
     @Suppress("Indentation")
     private fun noDeathDisplay(bossType: BossType): Boolean = when (bossType) {
