@@ -93,6 +93,7 @@ object StockOfStonkFeature {
     private fun onInventoryUpdated(event: InventoryUpdatedEvent) {
         if (!inInventory) return
         val auctionItem = event.inventoryItems.values.firstOrNull { inventoryPattern.matches(it.cleanName) } ?: return
+        // the first update comes from the packet handler, so write the storage on the main thread where the timer reads it
         DelayedRun.runOrNextTick { updateAuctionData(auctionItem.getLoreComponent()) }
     }
 
