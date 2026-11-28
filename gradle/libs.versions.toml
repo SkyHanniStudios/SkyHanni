@@ -57,7 +57,7 @@ ksp-api = { module = "com.google.devtools.ksp:symbol-processing-api", version.re
 
 [plugins]
 shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
-loom = { id = "net.fabricmc.fabric-loom-remap", version.ref = "loom" }
+loom = { id = "net.fabricmc.fabric-loom", version.ref = "loom" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 detekt = { id = "dev.detekt", version.ref = "detekt" }

@@ -157,6 +157,4 @@ stonecutter parameters {
             }
         }
     }
-
-    filters.include("**/*.fsh", "**/*.vsh")
 }
