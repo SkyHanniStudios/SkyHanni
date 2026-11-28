@@ -33,7 +33,7 @@ class EnchantedClockConfig {
     @Expose
     @ConfigOption(
         name = "Repeat Reminder",
-        desc = "Repeat reminders every §cX §7minutes until you use the boost.\n" +
+        desc = "Repeat reminders every §cX §rminutes until you use the boost.\n" +
             "§eSet to 0 to disable."
     )
     @ConfigEditorSlider(minValue = 0f, maxValue = 60f, minStep = 1f)

@@ -139,7 +139,7 @@ class ChatConfig {
     @Expose
     @ConfigOption(
         name = "Arachne Hider",
-        desc = "Hide chat messages about the Arachne Fight while outside of §eArachne's Sanctuary§7.",
+        desc = "Hide chat messages about the Arachne Fight while outside of §eArachne's Sanctuary§r.",
     )
     @ConfigEditorBoolean
     @FeatureToggle
@@ -194,7 +194,7 @@ class ChatConfig {
         name = "Show Actual Powder Gained",
         desc = "Shows both base and actual Gemstone Powder amounts in chat messages, " +
             "accounting for 2x Powder events, Sky Mall perks, and other multipliers.\n" +
-            "§eFormat: §dGemstone Powder §r§8x1,944 §7(x3,888)",
+            "§eFormat: §dGemstone Powder §r§8x1,944 §r(x3,888)",
     )
     @ConfigEditorBoolean
     @FeatureToggle
@@ -215,7 +215,7 @@ class ChatConfig {
     @ConfigOption(
         name = "Shorten Coin Amounts",
         desc = "Replace coin amounts in chat messages with their shortened version.\n" +
-            "e.g. §65,100,000 Coins §7-> §65.1M Coins",
+            "e.g. §65,100,000 Coins §r-> §65.1M Coins",
     )
     @ConfigEditorBoolean
     @SearchTag("format")

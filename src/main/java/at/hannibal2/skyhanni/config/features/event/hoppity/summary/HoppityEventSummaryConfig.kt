@@ -53,22 +53,22 @@ class HoppityEventSummaryConfig {
 
     @Suppress("MaxLineLength")
     enum class HoppityStat(private val displayName: String) {
-        MEAL_EGGS_FOUND("§7You found §b45§7/§a47 §6Chocolate Meal Eggs§7."),
-        HITMAN_EGGS("§7You recovered §b20§7/§a40 §7missed §6Meal Eggs §7from §cRabbit Hitman§7."),
-        HOPPITY_RABBITS_BOUGHT("§7You bought §b7 §fRabbits §7from §aHoppity§7."),
-        VISITOR_RABBITS("§6Hoppity §7gave you §b3 §dRabbits §7on your §aGarden§7."),
-        SIDE_DISH_EGGS("§7You found §b4 §6§lSide Dish Eggs §r§7in the §6Chocolate Factory§7."),
-        MILESTONE_RABBITS("§7You claimed §b2 §6§lMilestone Rabbits§7."),
+        MEAL_EGGS_FOUND("§rYou found §b45§r/§a47 §6Chocolate Meal Eggs§r."),
+        HITMAN_EGGS("§rYou recovered §b20§r/§a40 §rmissed §6Meal Eggs §rfrom §cRabbit Hitman§r."),
+        HOPPITY_RABBITS_BOUGHT("§rYou bought §b7 §fRabbits §rfrom §aHoppity§r."),
+        VISITOR_RABBITS("§6Hoppity §rgave you §b3 §dRabbits §ron your §aGarden§r."),
+        SIDE_DISH_EGGS("§rYou found §b4 §6§lSide Dish Eggs §r§rin the §6Chocolate Factory§r."),
+        MILESTONE_RABBITS("§rYou claimed §b2 §6§lMilestone Rabbits§r."),
         EMPTY_1(""),
-        NEW_RABBITS("§7Unique Rabbits: §f7\n §f1 §7- §a1 §7- §91 §7- §51 §7- §61 §7- §d1 §7- §b1"),
+        NEW_RABBITS("§rUnique Rabbits: §f7\n §f1 §r- §a1 §r- §91 §r- §51 §r- §61 §r- §d1 §r- §b1"),
         EMPTY_2(""),
-        DUPLICATE_RABBITS("§7Duplicate Rabbits: §f10\n §f4 §7- §a3 §7- §92 §7- §51 §7- §60 §7- §d0 §7- §b0\n §6+250,000,000 Chocolate"),
+        DUPLICATE_RABBITS("§rDuplicate Rabbits: §f10\n §f4 §r- §a3 §r- §92 §r- §51 §r- §60 §r- §d0 §r- §b0\n §6+250,000,000 Chocolate"),
         EMPTY_3(""),
-        STRAY_RABBITS("§7Stray Rabbits: §f20\n §f10 §7- §a6 §7- §93 §7- §51 §7- §60 §7- §d0 §7- §b0\n §6+8,000,000 Chocolate\n  §4* §c§oRequires Stray Tracker being enabled to work§4§o."),
+        STRAY_RABBITS("§rStray Rabbits: §f20\n §f10 §r- §a6 §r- §93 §r- §51 §r- §60 §r- §d0 §r- §b0\n §6+8,000,000 Chocolate\n  §4* §c§oRequires Stray Tracker being enabled to work§4§o."),
         EMPTY_4(""),
-        TIME_IN_CF("§7You spent §b4h 36m §7in the §6Chocolate Factory§7."),
-        RABBIT_THE_FISH_FINDS("§7You found §cRabbit the Fish §7in Meal Eggs §b2 §7times."),
-        LEADERBOARD_CHANGE("§7Leaderboard: §b#107 §c-> §b#99\n §7(§a+8 Spots§7) Top §a0.003% §c-> §7Top §a0.002%\n§4* §c§oSyncs on first §4§o/cf §c§orun per server swap§4§o."),
+        TIME_IN_CF("§rYou spent §b4h 36m §rin the §6Chocolate Factory§r."),
+        RABBIT_THE_FISH_FINDS("§rYou found §cRabbit the Fish §rin Meal Eggs §b2 §rtimes."),
+        LEADERBOARD_CHANGE("§rLeaderboard: §b#107 §c-> §b#99\n §r(§a+8 Spots§r) Top §a0.003% §c-> §rTop §a0.002%\n§4* §c§oSyncs on first §4§o/cf §c§orun per server swap§4§o."),
         ;
 
         override fun toString() = displayName
@@ -78,7 +78,7 @@ class HoppityEventSummaryConfig {
     @ConfigOption(
         name = "Show Count Diff",
         desc = "Store and display the count of Uniques/Duplicates next to their respective rabbit count.\n" +
-            ".e.g. §7Unique Rabbits: §f5 §7(270 -> 275)",
+            ".e.g. §rUnique Rabbits: §f5 §r(270 -> 275)",
     )
     @ConfigEditorBoolean
     var showCountDiff: Boolean = false

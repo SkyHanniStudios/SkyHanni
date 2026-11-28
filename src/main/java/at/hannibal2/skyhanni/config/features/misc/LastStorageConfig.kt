@@ -10,8 +10,8 @@ class LastStorageConfig {
     @Expose
     @ConfigOption(
         name = "Open Last Storage",
-        desc = "Allows running §e/shlastopened §7as a command to open the last storage you opened. " +
-            "Also allows §e/ec - §7and §e/bp - §7to open the last Ender Chest and Backpack you opened."
+        desc = "Allows running §e/shlastopened §ras a command to open the last storage you opened. " +
+            "Also allows §e/ec - §rand §e/bp - §rto open the last Ender Chest and Backpack you opened."
     )
     @FeatureToggle
     @ConfigEditorBoolean

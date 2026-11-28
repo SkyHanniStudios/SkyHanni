@@ -79,7 +79,7 @@ class EnderNodeConfig {
         ENDER_LEGGINGS("§b24 §5Ender Leggings"),
         ENDER_BOOTS("§b24 §5Ender Boots"),
         ENDER_NECKLACE("§b24 §5Ender Necklace"),
-        ENDERMAN_PET("§f10§7-§a8§7-§93§7-§52§7-§61 §fEnderman Pet"),
+        ENDERMAN_PET("§f10§r-§a8§r-§93§r-§52§r-§61 §fEnderman Pet"),
         ;
 
         override fun toString() = displayName

@@ -26,7 +26,7 @@ class BazaarConfig {
     @Expose
     @ConfigOption(
         name = "Hide Order Owner",
-        desc = "Hide the §eBy: §7line in the Bazaar order inventory, but only while every order and offer in it is your own.\n" +
+        desc = "Hide the §eBy: §rline in the Bazaar order inventory, but only while every order and offer in it is your own.\n" +
             "Hypixel only sends that line while you are in a co-op.",
     )
     @ConfigEditorBoolean
@@ -37,7 +37,7 @@ class BazaarConfig {
     @ConfigOption(
         name = "Hide Trade Partners",
         desc = "Hide the list of players that traded with your orders in the Bazaar order inventory.\n" +
-            "Buy orders show them under §eVendors§7, sell offers under §eCustomers§7.",
+            "Buy orders show them under §eVendors§r, sell offers under §eCustomers§r.",
     )
     @ConfigEditorBoolean
     @FeatureToggle
@@ -81,7 +81,7 @@ class BazaarConfig {
     @Expose
     @ConfigOption(
         name = "Price Website",
-        desc = "Add a button to the Bazaar product inventory that will open the item page in §cskyblock.bz§7.",
+        desc = "Add a button to the Bazaar product inventory that will open the item page in §cskyblock.bz§r.",
     )
     @ConfigEditorBoolean
     @FeatureToggle

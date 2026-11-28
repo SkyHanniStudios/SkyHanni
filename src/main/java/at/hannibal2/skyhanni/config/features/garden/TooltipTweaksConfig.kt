@@ -30,8 +30,8 @@ class TooltipTweaksConfig {
     @ConfigOption(
         name = "Tooltip Format",
         desc = "Show crop-specific Farming Fortune in tooltip.\n" +
-            "§fShow: §7Crop-specific Fortune indicated as §6[+196]\n" +
-            "§fReplace: §7Edits the total Fortune to include crop-specific Fortune."
+            "§fShow: §rCrop-specific Fortune indicated as §6[+196]\n" +
+            "§fReplace: §rEdits the total Fortune to include crop-specific Fortune."
     )
     @ConfigEditorDropdown
     var cropTooltipFortune: CropTooltipFortuneEntry = CropTooltipFortuneEntry.SHOW

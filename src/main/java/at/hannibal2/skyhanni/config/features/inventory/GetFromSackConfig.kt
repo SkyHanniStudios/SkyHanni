@@ -13,7 +13,7 @@ class GetFromSackConfig {
     @Expose
     @ConfigOption(
         name = "Queued GfS",
-        desc = "If §e/gfs §7or §e/getfromsacks §7is used it queues up the commands so all items are guaranteed to be received."
+        desc = "If §e/gfs §ror §e/getfromsacks §ris used it queues up the commands so all items are guaranteed to be received."
     )
     @ConfigEditorBoolean
     @FeatureToggle

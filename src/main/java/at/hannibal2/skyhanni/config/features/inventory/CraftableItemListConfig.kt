@@ -12,7 +12,7 @@ class CraftableItemListConfig {
     @ConfigOption(
         name = "Enabled",
         desc = "Shows a list of items that can be crafted with the items in inventory when inside the crafting menu. " +
-            "Click on the item to open §e/recipe§7."
+            "Click on the item to open §e/recipe§r."
     )
     @ConfigEditorBoolean
     @FeatureToggle

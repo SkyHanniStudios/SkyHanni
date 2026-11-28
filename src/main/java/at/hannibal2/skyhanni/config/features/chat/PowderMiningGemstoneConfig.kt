@@ -49,9 +49,9 @@ class PowderMiningGemstoneConfig {
     enum class GemstoneFilterEntry(private val displayName: String) {
         SHOW_ALL("Show All"),
         HIDE_ALL("Hide all"),
-        FLAWED_UP("Show §aFlawed §7or higher"),
-        FINE_UP("Show §9Fine §7or higher"),
-        FLAWLESS_ONLY("Show §5Flawless §7only"),
+        FLAWED_UP("Show §aFlawed §ror higher"),
+        FINE_UP("Show §9Fine §ror higher"),
+        FLAWLESS_ONLY("Show §5Flawless §ronly"),
         ;
 
         override fun toString() = displayName

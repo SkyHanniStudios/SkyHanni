@@ -11,7 +11,7 @@ import io.github.notenoughupdates.moulconfig.annotations.ConfigOption
 
 class GemstoneMoneyPerHourConfig {
     @Expose
-    @ConfigOption(name = "Enabled", desc = "Enable gemstone money per hour display. Use §e/shresetgemstone §7to manually reset it.")
+    @ConfigOption(name = "Enabled", desc = "Enable gemstone money per hour display. Use §e/shresetgemstone §rto manually reset it.")
     @ConfigEditorBoolean
     @FeatureToggle
     var enabled: Boolean = false

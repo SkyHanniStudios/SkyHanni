@@ -25,7 +25,7 @@ class CommandsConfig {
     @ConfigOption(
         name = "Party Commands",
         desc = "Shortens party commands and allows tab-completing for them. " +
-            "§eCommands: /pt, /pp, /pko, /pk, /pd §7(SkyBlock command §e/pt §7to check your play time will still work)",
+            "§eCommands: /pt, /pp, /pko, /pk, /pd §r(SkyBlock command §e/pt §rto check your play time will still work)",
     )
     @Expose
     @ConfigEditorBoolean
@@ -43,7 +43,7 @@ class CommandsConfig {
 
     @ConfigOption(
         name = "Party Kick Reason",
-        desc = "Send a reason when kicking people using §e/pk lrg89 Dupe Archer §7or §e/party kick nea89o Low Cata Level§7.",
+        desc = "Send a reason when kicking people using §e/pk lrg89 Dupe Archer §ror §e/party kick nea89o Low Cata Level§r.",
     )
     @Expose
     @ConfigEditorBoolean
@@ -52,7 +52,7 @@ class CommandsConfig {
 
     @ConfigOption(
         name = "Shorten §e/warp",
-        desc = "Allows warping without the need for the §ewarp §7prefix.\n(§e/warp wizard §7-> §e/wizard§7)",
+        desc = "Allows warping without the need for the §ewarp §rprefix.\n(§e/warp wizard §r-> §e/wizard§r)",
     )
     @Expose
     @ConfigEditorBoolean
@@ -60,7 +60,7 @@ class CommandsConfig {
     var shortenWarp: Boolean = false
 
     @Expose
-    @ConfigOption(name = "Replace §e/warp is", desc = "Add §e/warp is §7alongside §e/is§7. Idk why. Ask §cKaeso")
+    @ConfigOption(name = "Replace §e/warp is", desc = "Add §e/warp is §ralongside §e/is§r. Idk why. Ask §cKaeso")
     @ConfigEditorBoolean
     @FeatureToggle
     var replaceWarpIs: Boolean = false
@@ -68,7 +68,7 @@ class CommandsConfig {
     @Expose
     @ConfigOption(
         name = "Lower Case §e/viewrecipe",
-        desc = "Add support for lower case item IDs to the Hypixel command §e/viewrecipe§7.",
+        desc = "Add support for lower case item IDs to the Hypixel command §e/viewrecipe§r.",
     )
     @ConfigEditorBoolean
     @FeatureToggle

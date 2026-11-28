@@ -11,7 +11,7 @@ class GardenCommandsConfig {
     @Expose
     @ConfigOption(
         name = "Warp Commands",
-        desc = "Enable commands §e/home§7, §e/barn §7and §e/tp <plot>§7. §cOnly works while in the garden."
+        desc = "Enable commands §e/home§r, §e/barn §rand §e/tp <plot>§r. §cOnly works while in the garden."
     )
     @ConfigEditorBoolean
     @FeatureToggle

@@ -59,7 +59,7 @@ class EventConfig {
     val spook: GreatSpookConfig = GreatSpookConfig()
 
     @Expose
-    @Category(name = "The Carnival", desc = "Features for games at §eThe Carnival §7when §bFoxy §7is Mayor.")
+    @Category(name = "The Carnival", desc = "Features for games at §eThe Carnival §rwhen §bFoxy §ris Mayor.")
     val carnival: CarnivalConfig = CarnivalConfig()
 
     @Expose

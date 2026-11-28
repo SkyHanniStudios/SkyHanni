@@ -12,7 +12,7 @@ class InGameDateConfig {
     @Expose
     @ConfigOption(
         name = "Enabled",
-        desc = "Show the in-game date of SkyBlock (like in Apec, §ebut with mild delays§7).\n" +
+        desc = "Show the in-game date of SkyBlock (like in Apec, §ebut with mild delays§r).\n" +
             "(Though this one includes the SkyBlock year!)"
     )
     @ConfigEditorBoolean

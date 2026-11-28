@@ -468,7 +468,7 @@ class MiscConfig {
     val npcDayLimitTracker: NpcDayLimitTrackerConfig = NpcDayLimitTrackerConfig()
 
     @Expose
-    @ConfigOption(name = "Coral Fish Helper", desc = "Shows a helper for which fish are cheapest to buy for the NPC §dCoral§7.")
+    @ConfigOption(name = "Coral Fish Helper", desc = "Shows a helper for which fish are cheapest to buy for the NPC §dCoral§r.")
     @ConfigEditorBoolean
     @FeatureToggle
     var coralFishHelper: Boolean = true
@@ -542,7 +542,7 @@ class MiscConfig {
     @Expose
     @ConfigOption(
         name = "Show Achievement Messages",
-        desc = "You can do §e/shachievements§7 to see them all!",
+        desc = "You can do §e/shachievements§r to see them all!",
     )
     @ConfigEditorBoolean
     @FeatureToggle

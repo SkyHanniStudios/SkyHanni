@@ -55,7 +55,7 @@ class TunnelMapsConfig {
     @Expose
     @ConfigOption(
         name = "Travel Scroll",
-        desc = "Let SkyHanni know that you have unlocked the §eTravel Scroll to Dwarven Base Camp§7."
+        desc = "Let SkyHanni know that you have unlocked the §eTravel Scroll to Dwarven Base Camp§r."
     )
     @ConfigEditorBoolean
     var travelScroll: Boolean = false

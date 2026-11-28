@@ -12,7 +12,7 @@ class FrogMaskFeaturesConfig {
     @Expose
     @ConfigOption(
         name = "Frog Mask Display",
-        desc = "Displays information about the active §2Frog Mask§7 region. §eRequires a Frog Mask in your inventory.",
+        desc = "Displays information about the active §2Frog Mask§r region. §eRequires a Frog Mask in your inventory.",
     )
     @ConfigEditorDropdown
     var display: FrogMaskCondition = FrogMaskCondition.DISABLED

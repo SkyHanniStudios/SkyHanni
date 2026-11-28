@@ -53,7 +53,7 @@ class MoneyPerHourConfig {
     @Expose
     @ConfigOption(
         name = "Use Custom",
-        desc = "Use the custom format below instead of classic ➜ §eSell Offer §7and other profiles ➜ §eNPC Price.",
+        desc = "Use the custom format below instead of classic ➜ §eSell Offer §rand other profiles ➜ §eNPC Price.",
     )
     @ConfigEditorBoolean
     var useCustomFormat: Boolean = false

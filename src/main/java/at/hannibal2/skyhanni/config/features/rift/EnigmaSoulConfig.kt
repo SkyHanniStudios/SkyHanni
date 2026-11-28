@@ -12,7 +12,7 @@ class EnigmaSoulConfig {
     @Expose
     @ConfigOption(
         name = "Enabled",
-        desc = "Click on an Enigma Soul in §eRift Guide -> Area -> Enigma Souls §7to highlight their location."
+        desc = "Click on an Enigma Soul in §eRift Guide -> Area -> Enigma Souls §rto highlight their location."
     )
     @ConfigEditorBoolean
     @FeatureToggle
@@ -25,7 +25,7 @@ class EnigmaSoulConfig {
 
     @ConfigOption(
         name = "§aRift Guide",
-        desc = "Type §e/riftguide §7in chat or navigate through the SkyBlock Menu to open the §aRift Guide§7. " +
+        desc = "Type §e/riftguide §rin chat or navigate through the SkyBlock Menu to open the §aRift Guide§r. " +
             "Complete the first quest in the Rift to unlock this Hypixel feature."
     )
     @ConfigEditorInfoText

@@ -10,8 +10,8 @@ class CustomSpeedConfig {
     @ConfigOption(
         name = "Wheat",
         desc = "Suggested farm speed:\n" +
-            "§e5 Blocks§7: §f✦ 93 speed\n" +
-            "§e4 Blocks§7: §f✦ 116 speed",
+            "§e5 Blocks§r: §f✦ 93 speed\n" +
+            "§e4 Blocks§r: §f✦ 116 speed",
     )
     @ConfigEditorSlider(minValue = 1f, maxValue = 400f, minStep = 1f)
     val wheat: Property<Float> = Property.of(93f)
@@ -20,8 +20,8 @@ class CustomSpeedConfig {
     @ConfigOption(
         name = "Carrot",
         desc = "Suggested farm speed:\n" +
-            "§e5 Blocks§7: §f✦ 93 speed\n" +
-            "§e4 Blocks§7: §f✦ 116 speed",
+            "§e5 Blocks§r: §f✦ 93 speed\n" +
+            "§e4 Blocks§r: §f✦ 116 speed",
     )
     @ConfigEditorSlider(minValue = 1f, maxValue = 400f, minStep = 1f)
     val carrot: Property<Float> = Property.of(93f)
@@ -30,8 +30,8 @@ class CustomSpeedConfig {
     @ConfigOption(
         name = "Potato",
         desc = "Suggested farm speed:\n" +
-            "§e5 Blocks§7: §f✦ 93 speed\n" +
-            "§e4 Blocks§7: §f✦ 116 speed",
+            "§e5 Blocks§r: §f✦ 93 speed\n" +
+            "§e4 Blocks§r: §f✦ 116 speed",
     )
     @ConfigEditorSlider(minValue = 1f, maxValue = 400f, minStep = 1f)
     val potato: Property<Float> = Property.of(93f)
@@ -40,8 +40,8 @@ class CustomSpeedConfig {
     @ConfigOption(
         name = "Nether Wart",
         desc = "Suggested farm speed:\n" +
-            "§e5 Blocks§7: §f✦ 93 speed\n" +
-            "§e4 Blocks§7: §f✦ 116 speed",
+            "§e5 Blocks§r: §f✦ 93 speed\n" +
+            "§e4 Blocks§r: §f✦ 116 speed",
     )
     @ConfigEditorSlider(minValue = 1f, maxValue = 400f, minStep = 1f)
     val netherWart: Property<Float> = Property.of(93f)
@@ -50,8 +50,8 @@ class CustomSpeedConfig {
     @ConfigOption(
         name = "Pumpkin",
         desc = "Suggested farm speed:\n" +
-            "§e3 Blocks§7: §f✦ 155 speed\n" +
-            "§e2 Blocks§7: §f✦ 265 §7or §f400 speed",
+            "§e3 Blocks§r: §f✦ 155 speed\n" +
+            "§e2 Blocks§r: §f✦ 265 §ror §f400 speed",
     )
     @ConfigEditorSlider(minValue = 1f, maxValue = 400f, minStep = 1f)
     val pumpkin: Property<Float> = Property.of(155f)
@@ -60,8 +60,8 @@ class CustomSpeedConfig {
     @ConfigOption(
         name = "Melon",
         desc = "Suggested farm speed:\n" +
-            "§e3 Blocks§7: §f✦ 155 speed\n" +
-            "§e2 Blocks§7: §f✦ 265 or 400 speed",
+            "§e3 Blocks§r: §f✦ 155 speed\n" +
+            "§e2 Blocks§r: §f✦ 265 or 400 speed",
     )
     @ConfigEditorSlider(minValue = 1f, maxValue = 400f, minStep = 1f)
     val melon: Property<Float> = Property.of(155f)
@@ -70,8 +70,8 @@ class CustomSpeedConfig {
     @ConfigOption(
         name = "Cocoa Beans",
         desc = "Suggested farm speed:\n" +
-            "§e3 Blocks§7: §f✦ 155 speed\n" +
-            "§e4 Blocks§7: §f✦ 116 speed",
+            "§e3 Blocks§r: §f✦ 155 speed\n" +
+            "§e4 Blocks§r: §f✦ 116 speed",
     )
     @ConfigEditorSlider(minValue = 1f, maxValue = 400f, minStep = 1f)
     val cocoaBeans: Property<Float> = Property.of(155f)
@@ -81,7 +81,7 @@ class CustomSpeedConfig {
     @ConfigOption(
         name = "Sugar Cane",
         desc = "Suggested farm speed:\n" +
-            "§eYaw 45§7: §f✦ 328 speed",
+            "§eYaw 45§r: §f✦ 328 speed",
     )
     @ConfigEditorSlider(minValue = 1f, maxValue = 400f, minStep = 1f)
     val sugarCane: Property<Float> = Property.of(328f)
@@ -90,7 +90,7 @@ class CustomSpeedConfig {
     @ConfigOption(
         name = "Sunflower & Moonflower",
         desc = "Suggested farm speed:\n" +
-            "§eYaw 45§7: §f✦ 328 speed",
+            "§eYaw 45§r: §f✦ 328 speed",
     )
     @ConfigEditorSlider(minValue = 1f, maxValue = 400f, minStep = 1f)
     val sunMoonFlower: Property<Float> = Property.of(328f)
@@ -99,7 +99,7 @@ class CustomSpeedConfig {
     @ConfigOption(
         name = "Wild Flower",
         desc = "Suggested farm speed:\n" +
-            "§eYaw 45§7: §f✦ 328 speed",
+            "§eYaw 45§r: §f✦ 328 speed",
     )
     @ConfigEditorSlider(minValue = 1f, maxValue = 400f, minStep = 1f)
     val wildRose: Property<Float> = Property.of(328f)
@@ -108,7 +108,7 @@ class CustomSpeedConfig {
     @ConfigOption(
         name = "Cactus",
         desc = "Suggested farm speed:\n" +
-            "§eYaw 90§7: §f✦ 464 speed",
+            "§eYaw 90§r: §f✦ 464 speed",
     )
     @ConfigEditorSlider(minValue = 1f, maxValue = 500f, minStep = 1f)
     val cactus: Property<Float> = Property.of(464f)
@@ -118,7 +118,7 @@ class CustomSpeedConfig {
     @ConfigOption(
         name = "Mushroom",
         desc = "Suggested farm speed:\n" +
-            "§eYaw 60§7: §f✦ 233 speed",
+            "§eYaw 60§r: §f✦ 233 speed",
     )
     @ConfigEditorSlider(minValue = 1f, maxValue = 400f, minStep = 1f)
     val mushroom: Property<Float> = Property.of(233f)

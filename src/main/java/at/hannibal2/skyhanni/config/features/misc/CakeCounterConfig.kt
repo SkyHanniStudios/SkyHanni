@@ -11,7 +11,7 @@ class CakeCounterConfig {
 
     @ConfigOption(
         name = "Note",
-        desc = "§cNote§7: The following features require a Cake Counter to be placed on your Private Island." +
+        desc = "§cNote§r: The following features require a Cake Counter to be placed on your Private Island." +
             "\n§eFeatures may also not work as expected if your Cake Counter is not loaded in when on your island.",
     )
     @ConfigEditorInfoText

@@ -56,12 +56,12 @@ class ForagingTrackerConfig {
 
     @Suppress("MaxLineLength")
     enum class TreeGiftBonusDropCategory(private val displayName: String) {
-        UNCOMMON_DROPS("§fUncommon Tree-Specific Drops\n§7(e.g. §aStretching Sticks§7)"),
-        ENCHANTED_BOOKS("§fUltimate Enchantments\n§7(§d§lFirst Impression I §7& §d§lMissile I §7Books)"),
-        MOBS("§fHuntable Mobs\n§7(Phantoms)"),
-        BOOSTERS("§fBoosters\n§7(Sweep and Foraging Wisdom)"),
-        SHARDS("§fDirect Shard Drops\n§7(§9Hummingbirds§7 and §6Chameleons§7)"),
-        RUNES("§fRunes\n§7(§fFading White §7and §aFading Green§7)"),
+        UNCOMMON_DROPS("§fUncommon Tree-Specific Drops\n§r(e.g. §aStretching Sticks§r)"),
+        ENCHANTED_BOOKS("§fUltimate Enchantments\n§r(§d§lFirst Impression I §r& §d§lMissile I §rBooks)"),
+        MOBS("§fHuntable Mobs\n§r(Phantoms)"),
+        BOOSTERS("§fBoosters\n§r(Sweep and Foraging Wisdom)"),
+        SHARDS("§fDirect Shard Drops\n§r(§9Hummingbirds§r and §6Chameleons§r)"),
+        RUNES("§fRunes\n§r(§fFading White §rand §aFading Green§r)"),
         MISC("§cTree The Fish"),
         ;
 

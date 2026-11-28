@@ -33,7 +33,7 @@ class GhostProfitTrackerConfig {
 
     @ConfigOption(
         name = "Max Bestiary",
-        desc = "§7This feature will currently not work properly when having max Ghost Bestiary."
+        desc = "§rThis feature will currently not work properly when having max Ghost Bestiary."
     )
     @ConfigEditorInfoText(infoTitle = "Warning")
     val useless: String? = null

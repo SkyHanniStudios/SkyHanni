@@ -38,7 +38,7 @@ class RarityBackgroundConfig(
     @Expose
     @ConfigOption(
         name = "§fCommon §rColor",
-        desc = "§7Default: §#§f§f§f§f§f§f§/#FFFFFF"
+        desc = "§rDefault: §#§f§f§f§f§f§f§/#FFFFFF"
     )
     @ConfigEditorColour
     val commonColor: Property<ChromaColour> = Property.of(ChromaColour.fromRGB(255, 255, 255, 0, 255))
@@ -46,7 +46,7 @@ class RarityBackgroundConfig(
     @Expose
     @ConfigOption(
         name = "§aUncommon §rColor",
-        desc = "§7Default: §#§5§5§f§f§5§5§/#55FF55"
+        desc = "§rDefault: §#§5§5§f§f§5§5§/#55FF55"
     )
     @ConfigEditorColour
     val uncommonColor: Property<ChromaColour> = Property.of(ChromaColour.fromRGB(85, 255, 85, 0, 255))
@@ -54,7 +54,7 @@ class RarityBackgroundConfig(
     @Expose
     @ConfigOption(
         name = "§9Rare §rColor",
-        desc = "§7Default: §#§5§5§5§5§f§f§/#5555FF"
+        desc = "§rDefault: §#§5§5§5§5§f§f§/#5555FF"
     )
     @ConfigEditorColour
     val rareColor: Property<ChromaColour> = Property.of(ChromaColour.fromRGB(85, 85, 255, 0, 255))
@@ -62,7 +62,7 @@ class RarityBackgroundConfig(
     @Expose
     @ConfigOption(
         name = "§5Epic §rColor",
-        desc = "§7Default: §#§a§a§0§0§a§a§/#AA00AA"
+        desc = "§rDefault: §#§a§a§0§0§a§a§/#AA00AA"
     )
     @ConfigEditorColour
     val epicColor: Property<ChromaColour> = Property.of(ChromaColour.fromRGB(170, 0, 170, 0, 255))
@@ -70,7 +70,7 @@ class RarityBackgroundConfig(
     @Expose
     @ConfigOption(
         name = "§6Legendary §rColor",
-        desc = "§7Default: §#§f§f§a§a§0§0§/#FFAA00"
+        desc = "§rDefault: §#§f§f§a§a§0§0§/#FFAA00"
     )
     @ConfigEditorColour
     val legendaryColor: Property<ChromaColour> = Property.of(ChromaColour.fromRGB(255, 170, 0, 0, 255))
@@ -78,7 +78,7 @@ class RarityBackgroundConfig(
     @Expose
     @ConfigOption(
         name = "§dMythic §rColor",
-        desc = "§7Default: §#§f§f§5§5§f§f§/#FF55FF"
+        desc = "§rDefault: §#§f§f§5§5§f§f§/#FF55FF"
     )
     @ConfigEditorColour
     val mythicColor: Property<ChromaColour> = Property.of(ChromaColour.fromRGB(255, 85, 255, 0, 255))
