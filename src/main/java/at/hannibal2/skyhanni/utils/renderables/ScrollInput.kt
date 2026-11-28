@@ -1,7 +1,6 @@
 package at.hannibal2.skyhanni.utils.renderables
 
 import at.hannibal2.skyhanni.utils.KeyboardManager.LEFT_MOUSE
-import at.hannibal2.skyhanni.utils.KeyboardManager.isKeyClicked
 import at.hannibal2.skyhanni.utils.KeyboardManager.isKeyHeld
 import at.hannibal2.skyhanni.utils.compat.MouseCompat
 
@@ -85,13 +84,16 @@ abstract class ScrollInput(
             }
 
             fun updateThumbDrag(localMouseY: Int?, overTrack: Boolean, thumbY: Int, thumbHeight: Int, trackHeight: Int) {
-                if (!LEFT_MOUSE.isKeyHeld()) {
+                val held = LEFT_MOUSE.isKeyHeld()
+                val pressed = held && !scrollValue.wasLeftMouseHeld
+                scrollValue.wasLeftMouseHeld = held
+                if (!held) {
                     scrollValue.thumbGrabOffset = null
                     return
                 }
                 val mouseY = localMouseY ?: return
                 val grabOffset = scrollValue.thumbGrabOffset ?: run {
-                    if (!overTrack || !LEFT_MOUSE.isKeyClicked()) return
+                    if (!overTrack || !pressed) return
                     (mouseY - thumbY).takeIf { it in 0 until thumbHeight } ?: (thumbHeight / 2)
                 }
                 scrollValue.thumbGrabOffset = grabOffset
@@ -130,6 +132,7 @@ abstract class ScrollInput(
 class ScrollValue {
     private var field: Double? = null
     internal var thumbGrabOffset: Int? = null
+    internal var wasLeftMouseHeld = false
     private var lastMouseMoveEventId = 0L
     private var lastScrollEventId = 0L
     private var lastMouseX = 0
