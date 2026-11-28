@@ -4,6 +4,7 @@ import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.data.MaxwellApi
 import at.hannibal2.skyhanni.data.ProfileStorageData
+import at.hannibal2.skyhanni.events.DebugDataCollectEvent
 import at.hannibal2.skyhanni.events.InventoryOpenEvent
 import at.hannibal2.skyhanni.events.InventoryUpdatedEvent
 import at.hannibal2.skyhanni.features.inventory.CurrentEquipmentApi
@@ -15,9 +16,11 @@ import at.hannibal2.skyhanni.utils.ItemUtils.getLoreComponent
 import at.hannibal2.skyhanni.utils.NumberUtil.formatInt
 import at.hannibal2.skyhanni.utils.RegexUtils.find
 import at.hannibal2.skyhanni.utils.RegexUtils.findMatcher
+import at.hannibal2.skyhanni.utils.RegexUtils.groupOrNull
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.SafeItemStack
+import at.hannibal2.skyhanni.utils.StringUtils.removeColor
 import at.hannibal2.skyhanni.utils.compat.ColoredBlockCompat.Companion.isStainedGlassPane
 import at.hannibal2.skyhanni.utils.compat.DyeCompat
 import at.hannibal2.skyhanni.utils.compat.DyeCompat.Companion.isDye
@@ -25,6 +28,7 @@ import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLeadingWhiteLessRes
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLessResets
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import com.google.gson.annotations.Expose
+import java.util.regex.Matcher
 import kotlin.time.Duration.Companion.milliseconds
 
 @SkyHanniModule
@@ -41,31 +45,7 @@ object LoadoutApi {
      */
     private val inventoryPattern by patternGroup.pattern(
         "inventory.name",
-        "\\((?<currentPage>\\d+)/\\d+\\) Loadouts",
-    )
-
-    /**
-     * REGEX-TEST: Left-click to equip!
-     */
-    private val unequippedSlotPattern by patternGroup.pattern(
-        "unequippedslot",
-        "Left-click to equip!",
-    )
-
-    /**
-     * REGEX-TEST: You must customize this loadout
-     */
-    private val unusedSlotPattern by patternGroup.pattern(
-        "unusedslot",
-        "You must customize this loadout",
-    )
-
-    /**
-     * REGEX-TEST: Loadout 19 Locked
-     */
-    private val lockedSlotPattern by patternGroup.pattern(
-        "lockedslot",
-        "Loadout \\d+ Locked",
+        "\\((?<currentPage>\\d+)/(?<maxPage>\\d+)\\) Loadouts",
     )
 
     /**
@@ -86,8 +66,28 @@ object LoadoutApi {
         "Your tuning:",
     )
 
+    /**
+     * REGEX-TEST: Helmet: Empty
+     * REGEX-TEST: Chestplate: Ancient Infernal Crimson Chestplate
+     * REGEX-TEST: Gloves/Bracelet: None
+     * REGEX-TEST: Power Stone: Hurtful
+     */
+    private val componentSelectionPattern by patternGroup.pattern(
+        "component.selection",
+        "(?<component>[^:]+): (?<selection>.+)",
+    )
+
     private val ARMOR_SLOTS = listOf(11, 20, 29, 38)
     private val EQUIPMENT_SLOTS = listOf(10, 19, 28, 37)
+
+    // The names of the loadout components in the lore of the loadout icons
+    private val ARMOR_LABELS = listOf("Helmet", "Chestplate", "Leggings", "Boots")
+    private val EQUIPMENT_LABELS = listOf("Necklace", "Cloak", "Belt", "Gloves/Bracelet")
+    private const val PET_LABEL = "Pet"
+    private const val POWERSTONE_LABEL = "Power Stone"
+    private const val TUNINGS_LABEL = "Tuning Template Slot"
+    private const val HOTM_LABEL = "HOTM"
+    private const val HOTF_LABEL = "HOTF"
     private const val PET_SLOT = 21
     private const val POWERSTONE_SLOT = 27
     private const val TUNINGS_SLOT = 36
@@ -99,10 +99,16 @@ object LoadoutApi {
     private const val SLOTS_PER_ROW = 3
     private const val MAX_PAGES = 3
 
+    const val PREVIOUS_PAGE_SLOT = 17
+    const val NEXT_PAGE_SLOT = 44
+
     var slots = listOf<LoadoutSlot>()
 
     var currentPage: Int? = null
     private var inLoadouts = false
+
+    var maxPage: Int = MAX_PAGES
+        private set
 
     internal fun emptyArmor(): List<SafeItemStack?> = listOf(null, null, null, null)
     internal fun emptyEquipment(): List<SafeItemStack?> = listOf(null, null, null, null)
@@ -131,15 +137,23 @@ object LoadoutApi {
     private fun getLoadoutItem(itemStack: SafeItemStack?) =
         if (itemStack == null || itemStack.isStainedGlassPane()) null else itemStack
 
+    private fun Matcher.readMaxPage() {
+        groupOrNull("maxPage")?.formatInt()?.let { maxPage = it.coerceIn(1, MAX_PAGES) }
+    }
+
     private fun getLoadoutSlotFromId(id: Int?) = slots.find { it.id == id }
 
-    fun inLoadouts() = InventoryUtils.inInventory() && inLoadouts
+    fun inLoadouts() = inLoadouts && (InventoryUtils.inInventory() || CustomLoadout.inCustomMenu)
 
     @HandleEvent
     fun onInventoryOpen(event: InventoryOpenEvent) {
-        inventoryPattern.matches(event.inventoryName).let {
-            inLoadouts = it
-        }
+        matchesInventoryName(event.inventoryName)
+    }
+
+    internal fun matchesInventoryName(inventoryName: String): Boolean {
+        val matched = inventoryPattern.matchMatcher(inventoryName) { readMaxPage() } != null
+        inLoadouts = matched
+        return matched
     }
 
     @HandleEvent(priority = HandleEvent.HIGH, onlyOnSkyblock = true)
@@ -147,20 +161,22 @@ object LoadoutApi {
         inventoryPattern.matchMatcher(event.inventoryName) {
             inLoadouts = true
             currentPage = group("currentPage").formatInt()
+            readMaxPage()
         } ?: return
 
         val itemsList = event.inventoryItems
 
         processIcons(itemsList)
         processSelectedLoadout(itemsList)
+        slots.filter { it.isInCurrentPage() }.forEach { it.removeUnsetComponents() }
     }
 
-    // Loadouts are supposed to change stuff on the Player.
-    // If a loadout doesn't change anything, it doesn't have the "Left-click to equip!" so it's considered as equipped here
     private fun processIcons(itemsList: Map<Int, SafeItemStack>) {
-        var anyLoadoutEquipped = false
+        val currentComponents = getCurrentComponents(itemsList)
+        val matchingSlots = mutableListOf<LoadoutSlot>()
         for (slot in slots.filter { it.isInCurrentPage() }) {
             val icon = itemsList[slot.inventorySlot]
+            slot.icon = icon
 
             if (icon?.isDye(DyeCompat.GRAY) == true) {
                 slot.getData()?.clear()
@@ -169,24 +185,40 @@ object LoadoutApi {
                 slot.getData()?.clear()
                 slot.locked = true
             } else slot.locked = false
-            if (icon.isCurrentSelectedLoadout()) {
-                currentSlot = slot.id
-                anyLoadoutEquipped = true
-            }
+            if (!slot.locked && icon.matchesCurrentLoadout(currentComponents)) matchingSlots.add(slot)
             slot.getData()?.name = icon?.hoverName?.formattedTextCompatLeadingWhiteLessResets()
         }
-        if (!anyLoadoutEquipped) currentSlot = null
+        val match = matchingSlots.firstOrNull { it.id == currentSlot } ?: matchingSlots.firstOrNull()
+        if (match != null) currentSlot = match.id
+        else if (getLoadoutSlotFromId(currentSlot)?.isInCurrentPage() == true) currentSlot = null
     }
 
-    private fun SafeItemStack?.isCurrentSelectedLoadout(): Boolean {
-        if (this == null) return false
-        if (lockedSlotPattern.matches(hoverName)) return false
-        val lore = this.getLoreComponent()
-        return lore.none { unequippedSlotPattern.find(it) } && lore.none { unusedSlotPattern.find(it) }
+    private fun getCurrentComponents(itemsList: Map<Int, SafeItemStack>): Map<String, String?> = buildMap {
+        ARMOR_SLOTS.forEachIndexed { index, slot -> put(ARMOR_LABELS[index], getLoadoutItem(itemsList[slot])?.hoverName?.string) }
+        EQUIPMENT_SLOTS.forEachIndexed { index, slot -> put(EQUIPMENT_LABELS[index], getLoadoutItem(itemsList[slot])?.hoverName?.string) }
+        put(PET_LABEL, getLoadoutItem(itemsList[PET_SLOT])?.hoverName?.string)
+        put(POWERSTONE_LABEL, itemsList[POWERSTONE_SLOT].parseCurrentSelection()?.removeColor())
+        put(HOTM_LABEL, itemsList[HOTM_SLOT].parseCurrentSelection()?.removeColor())
+        put(HOTF_LABEL, itemsList[HOTF_SLOT].parseCurrentSelection()?.removeColor())
+    }
+
+    internal fun SafeItemStack?.matchesCurrentLoadout(currentComponents: Map<String, String?>): Boolean {
+        val configured = getComponents().filter { (component, selection) -> component in currentComponents && selection != "None" }
+        if (configured.isEmpty()) return false
+        return configured.all { (component, selection) ->
+            if (selection == "Empty") currentComponents[component] == null else selection == currentComponents[component]
+        }
+    }
+
+    private fun SafeItemStack?.getComponents(): Map<String, String> {
+        if (this == null) return emptyMap()
+        return getLoreComponent().mapNotNull { line ->
+            componentSelectionPattern.matchMatcher(line) { group("component") to group("selection") }
+        }.toMap()
     }
 
     private fun processSelectedLoadout(itemsList: Map<Int, SafeItemStack>) {
-        val data = getLoadoutSlotFromId(currentSlot)?.getData() ?: return
+        val data = getLoadoutSlotFromId(currentSlot)?.takeIf { it.isInCurrentPage() }?.getData() ?: return
 
         data.armor = ARMOR_SLOTS.map { getLoadoutItem(itemsList[it]) }
         data.equipment = EQUIPMENT_SLOTS.map { getLoadoutItem(itemsList[it]) }
@@ -202,6 +234,20 @@ object LoadoutApi {
         data.tunings?.let { tuningLines ->
             MaxwellApi.tunings = tuningLines.mapNotNull { MaxwellApi.readTuningFromLine(it) }
         }
+    }
+
+    private fun LoadoutSlot.removeUnsetComponents() {
+        val unset = icon.getComponents().filterValues { it == "None" || it == "Empty" }.keys
+        if (unset.isEmpty()) return
+        val data = getData() ?: return
+
+        data.armor = data.armor.mapIndexed { index, item -> item.takeIf { ARMOR_LABELS.getOrNull(index) !in unset } }
+        data.equipment = data.equipment.mapIndexed { index, item -> item.takeIf { EQUIPMENT_LABELS.getOrNull(index) !in unset } }
+        if (PET_LABEL in unset) data.pet = null
+        if (POWERSTONE_LABEL in unset) data.powerstone = null
+        if (TUNINGS_LABEL in unset) data.tunings = null
+        if (HOTM_LABEL in unset) data.hotm = null
+        if (HOTF_LABEL in unset) data.hotf = null
     }
 
     // This is for Hotm, Hotf and Powerstone
@@ -230,6 +276,11 @@ object LoadoutApi {
     }
 
     @HandleEvent
+    private fun onProfileJoin() {
+        slots.forEach { it.icon = null }
+    }
+
+    @HandleEvent
     fun onInventoryClose() {
         if (!inLoadouts) return
         DelayedRun.runDelayed(250.milliseconds) {
@@ -238,6 +289,44 @@ object LoadoutApi {
                 currentPage = null
             }
         }
+    }
+
+    @HandleEvent
+    private fun onDebugDataCollect(event: DebugDataCollectEvent) {
+        event.title("Loadout")
+        event.addIrrelevant {
+            if (slots.isEmpty()) {
+                add("No slots")
+                return@addIrrelevant
+            }
+
+            for (slot in slots) {
+                val slotInfo = "Slot ${slot.id} (${slot.inventorySlot})"
+                when {
+                    slot.locked -> add("$slotInfo is locked")
+                    slot.isEmpty() -> add("$slotInfo is empty")
+                    else -> {
+                        add(slotInfo)
+                        slot.getData()?.let { data ->
+                            data.armor.forEachIndexed { index, item ->
+                                addItem("   Armor $index", item)
+                            }
+                            data.equipment.forEachIndexed { index, item -> addItem("   Equipment $index", item) }
+                            addItem("   Pet", data.pet)
+                            data.powerstone?.let { add("   Powerstone: $it") }
+                            data.tunings?.let { add("   Tunings: ${it.joinToString(", ")}") }
+                            data.hotm?.let { add("   HotM: $it") }
+                            data.hotf?.let { add("   HotF: $it") }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun MutableList<String>.addItem(label: String, item: SafeItemStack?) {
+        val name = item?.hoverName?.formattedTextCompatLeadingWhiteLessResets() ?: return
+        add("$label: $name")
     }
 
     class LoadoutData(
