@@ -14,6 +14,7 @@ import at.hannibal2.skyhanni.utils.NeuInternalName.Companion.toInternalName
 import at.hannibal2.skyhanni.utils.NeuItems.getItemStackOrNull
 import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
+import kotlin.time.Duration.Companion.seconds
 
 @SkyHanniModule
 object GardenBurrowingSporesNotifier {
@@ -42,7 +43,7 @@ object GardenBurrowingSporesNotifier {
         if (!sporeDropMessage.matches(event.message)) return
 
         if (titleEnabled) TitleManager.sendTitle("§9Burrowing Spores!")
-        if (blinkEnabled) ItemBlink.setBlink(BURROWING_SPORES.getItemStackOrNull(), 5_000)
+        if (blinkEnabled) ItemBlink.setBlink(BURROWING_SPORES.getItemStackOrNull(), 5.seconds)
     }
 
     @HandleEvent

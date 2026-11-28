@@ -211,7 +211,7 @@ object MineshaftDetection {
         return when (original.last()) {
             '1' -> {
                 newList.add("${type}_1")
-                enumValues<MineshaftType>().find { it.name == "${type}_2" }?.let {
+                MineshaftType.entries.find { it.name == "${type}_2" }?.let {
                     newList.add(it.name)
                 }
                 newList

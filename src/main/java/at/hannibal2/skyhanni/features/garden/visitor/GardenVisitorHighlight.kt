@@ -13,6 +13,7 @@ import at.hannibal2.skyhanni.utils.NeuItems.getItemStackOrNull
 import at.hannibal2.skyhanni.utils.StringUtils.removeColor
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.drawString
 import net.minecraft.world.entity.LivingEntity
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Handles all world-space visitor rendering:
@@ -100,9 +101,9 @@ object GardenVisitorHighlight {
     private fun triggerArrivalEffects(visitorName: String) {
         val cleanName = visitorName.removeColor()
         when {
-            cleanName == "Jerry" -> ItemBlink.setBlink(LEGENDARY_JERRY.getItemStackOrNull(), 5_000)
-            cleanName.contains("Spaceman") -> ItemBlink.setBlink(SPACE_HELM.getItemStackOrNull(), 5_000)
-            cleanName.contains("Rhino") -> ItemBlink.setBlink(DEDICATION_4.getItemStackOrNull(), 5_000)
+            cleanName == "Jerry" -> ItemBlink.setBlink(LEGENDARY_JERRY.getItemStackOrNull(), 5.seconds)
+            cleanName.contains("Spaceman") -> ItemBlink.setBlink(SPACE_HELM.getItemStackOrNull(), 5.seconds)
+            cleanName.contains("Rhino") -> ItemBlink.setBlink(DEDICATION_4.getItemStackOrNull(), 5.seconds)
         }
     }
 }

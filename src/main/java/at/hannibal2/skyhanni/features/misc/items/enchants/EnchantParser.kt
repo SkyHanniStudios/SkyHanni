@@ -330,7 +330,7 @@ object EnchantParser {
         var startEnchant = -1
         var endEnchant = -1
 
-        for (i in 0 until loreList.size) {
+        for (i in loreList.indices) {
             val strippedLine = loreList[i].unformattedTextCompat()
 
             if (startEnchant == -1) {

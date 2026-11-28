@@ -75,7 +75,7 @@ object PaginatedListHelper {
         if (list.isNotEmpty()) {
             val start = (page - 1) * maxPerPage
             val end = (page * maxPerPage).coerceAtMost(list.size)
-            for (i in start until end) {
+            for (i in start..<end) {
                 text.add(formatter(list[i]))
             }
         } else {

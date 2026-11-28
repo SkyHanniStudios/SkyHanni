@@ -45,7 +45,7 @@ class FruitDiggingSolver(private val size: Int = 7) {
                         if (dr == 0 && dc == 0) continue
                         val r = row + dr
                         val c = col + dc
-                        if (r in 0 until n && c in 0 until n) add(r * n + c)
+                        if (r in 0..<n && c in 0..<n) add(r * n + c)
                     }
                 }
             }.toIntArray()
@@ -87,8 +87,8 @@ class FruitDiggingSolver(private val size: Int = 7) {
         private val sampleCount: Int
 
         init {
-            for (row in 0 until size) {
-                for (col in 0 until size) {
+            for (row in 0..<size) {
+                for (col in 0..<size) {
                     val id = row * size + col
                     val cell = grid[row][col]
                     val content = cell.content?.takeIf { it != Fruit.UNKNOWN && it != Fruit.NO_FRUIT }
@@ -129,8 +129,8 @@ class FruitDiggingSolver(private val size: Int = 7) {
         }
 
         private fun gatherClues(grid: Array<Array<CellInput>>): List<FruitDiggingBelief.Clue> = buildList {
-            for (row in 0 until size) {
-                for (col in 0 until size) {
+            for (row in 0..<size) {
+                for (col in 0..<size) {
                     val id = row * size + col
                     val cell = grid[row][col]
                     val hiddenNeighbors = neighborsOf[id].filter { it in openCellsOnBoard }

@@ -105,7 +105,7 @@ class PathRenderer(val path: Graph, private val color: Color, private val target
 
         val firstFar = pathPoints[curveEnd.nextIdx]
         event.draw3DLine(curveEnd.pos, firstFar.pos, color, NEAR_LINE_WIDTH, bezierDepth && !firstFar.isPeek)
-        for (i in curveEnd.nextIdx until pathPoints.lastIndex) {
+        for (i in curveEnd.nextIdx..<pathPoints.lastIndex) {
             val a = pathPoints[i]
             val b = pathPoints[i + 1]
             event.draw3DLine(a.pos, b.pos, color, NEAR_LINE_WIDTH, !a.isPeek && !b.isPeek)
@@ -136,7 +136,7 @@ class PathRenderer(val path: Graph, private val color: Color, private val target
     private fun walkTangent(walkPositions: List<LorenzVec>, startSegIdx: Int, startPos: LorenzVec): LorenzVec {
         var remaining = TANGENT_LOOKAHEAD
         var prev = startPos
-        for (i in startSegIdx until walkPositions.size) {
+        for (i in startSegIdx..<walkPositions.size) {
             val next = walkPositions[i]
             val d = prev.distance(next)
             if (d >= remaining) {
@@ -171,7 +171,7 @@ class PathRenderer(val path: Graph, private val color: Color, private val target
         var bestDistSq = Double.MAX_VALUE
         var bestPos = pathPoints[0].pos
         var bestNextIdx = 1
-        for (i in 0 until pathPoints.lastIndex) {
+        for (i in 0..<pathPoints.lastIndex) {
             val proj = eyePos.nearestPointOnLine(pathPoints[i].pos, pathPoints[i + 1].pos)
             val distSq = eyePos.distanceSq(proj)
             if (distSq < bestDistSq) {
@@ -199,7 +199,7 @@ class PathRenderer(val path: Graph, private val color: Color, private val target
         }
         nearCurveLength = totalDist.coerceAtLeast(SUBDIVISION_STEP)
         val peekSteps = (PEEK_DISTANCE / SUBDIVISION_STEP).toInt()
-        for (i in maxOf(0, closestIdx - 1) until pathPoints.lastIndex) {
+        for (i in maxOf(0, closestIdx - 1)..<pathPoints.lastIndex) {
             if (pathPoints[i].isWater == pathPoints[i + 1].isWater) continue
             if (!pathPoints[i].pos.canBeSeen()) break
             val peekStart = maxOf(0, i + 1 - peekSteps)
@@ -210,7 +210,7 @@ class PathRenderer(val path: Graph, private val color: Color, private val target
 
     private fun calculateDistance(closestIdx: Int): Double {
         var distance = pathPoints[closestIdx].pos.distance(playerPosition)
-        for (i in closestIdx until pathPoints.lastIndex) {
+        for (i in closestIdx..<pathPoints.lastIndex) {
             distance += pathPoints[i].pos.distance(pathPoints[i + 1].pos)
         }
         return distance + pathPoints.last().pos.distance(targetLocation.addHalf())
@@ -235,7 +235,7 @@ class PathRenderer(val path: Graph, private val color: Color, private val target
         if (positions.size < 2) return positions
         val result = mutableListOf<LorenzVec>()
         result.add(positions.first())
-        for (i in 0 until positions.lastIndex) {
+        for (i in 0..<positions.lastIndex) {
             val p0 = positions.getOrElse(i - 1) { positions[i] }
             val p1 = positions[i]
             val p2 = positions[i + 1]

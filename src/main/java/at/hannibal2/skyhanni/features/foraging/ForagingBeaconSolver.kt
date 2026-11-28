@@ -47,6 +47,7 @@ import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.resources.Identifier
 import net.minecraft.world.inventory.Slot
 import net.minecraft.world.item.Item
+import kotlin.enums.enumEntries
 import kotlin.math.abs
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -443,7 +444,7 @@ object ForagingBeaconSolver {
     }
 
     private inline fun <reified E : Enum<E>> E.internalGetOffset(other: E): Int {
-        val size = enumValues<E>().size
+        val size = enumEntries<E>().size
         val offset = ((this.ordinal - other.ordinal) + size) % size
         return if (offset > size / 2) offset - size else offset
     }

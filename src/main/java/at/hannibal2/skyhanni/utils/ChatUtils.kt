@@ -45,7 +45,7 @@ object ChatUtils {
 
     // TODO log based on chat category (error, warning, debug, user error, normal)
     private val log = SkyHanniLogger("chat/mod_sent")
-    var lastButtonClicked = 0L
+    var lastButtonClicked = SimpleTimeMark.farPast()
 
     fun Component.hoverTextLines(): List<String> = buildList {
         addHoverTextLines(this@hoverTextLines)

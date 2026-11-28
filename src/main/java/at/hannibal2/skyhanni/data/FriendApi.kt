@@ -17,6 +17,7 @@ import at.hannibal2.skyhanni.utils.DelayedRun
 import at.hannibal2.skyhanni.utils.PlayerUtils
 import at.hannibal2.skyhanni.utils.RegexUtils.matchMatcher
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
+import at.hannibal2.skyhanni.utils.StringUtils
 import at.hannibal2.skyhanni.utils.StringUtils.cleanPlayerName
 import at.hannibal2.skyhanni.utils.compat.command
 import at.hannibal2.skyhanni.utils.compat.hover
@@ -24,7 +25,6 @@ import at.hannibal2.skyhanni.utils.compat.takeUnlessEmpty
 import at.hannibal2.skyhanni.utils.compat.unformattedTextCompat
 import at.hannibal2.skyhanni.utils.repopatterns.RepoPattern
 import net.minecraft.network.chat.Component
-import java.util.UUID
 import kotlin.time.Duration.Companion.minutes
 
 @SkyHanniModule
@@ -178,7 +178,7 @@ object FriendApi {
             val uuid = readFriendListPattern.matchMatcher(value) {
                 group("uuid")?.let {
                     try {
-                        UUID.fromString(it)
+                        StringUtils.parseUUID(it)
                     } catch (e: IllegalArgumentException) {
                         ErrorManager.logErrorWithData(
                             e, "Error reading friend list.",

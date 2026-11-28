@@ -216,10 +216,10 @@ object CustomWardrobe {
 
         // This is needed to keep the background size the same as the player renderable size
         val hoverableSizes = MutableList(4) { height / 4 }.apply {
-            for (k in 0 until height % 4) this[k]++
+            for (k in 0..<height % 4) this[k]++
         }
 
-        for (armorIndex in 0 until 4) {
+        for (armorIndex in 0..<4) {
             val stack = slot.armor.getOrNull(armorIndex)?.copy()
             var renderable = Renderable.placeholder(containerWidth, hoverableSizes[armorIndex])
             if (stack != null) {

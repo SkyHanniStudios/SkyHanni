@@ -1,8 +1,8 @@
 package skyhannibuildsystem.progress
 
 import java.io.File
-import java.util.concurrent.atomic.AtomicLong
-import java.util.concurrent.atomic.AtomicReference
+import kotlin.concurrent.atomics.AtomicLong
+import kotlin.concurrent.atomics.AtomicReference
 import kotlin.time.Duration.Companion.milliseconds
 
 class ProgressReport(private val reportFile: File) {
@@ -21,7 +21,7 @@ class ProgressReport(private val reportFile: File) {
     }
 
     private val lastWriteNanos = AtomicLong(System.nanoTime() - WRITE_INTERVAL_NANOS)
-    private val written = AtomicReference<Status>()
+    private val written = AtomicReference<Status?>(null)
 
     fun enter(hook: ProgressHook, fileCount: Int = 0) = publish(Status.Entered(hook, fileCount))
 
@@ -30,9 +30,9 @@ class ProgressReport(private val reportFile: File) {
 
     private fun publish(status: Status) {
         if (!status.isTerminal && !claimWriteSlot()) return
-        val previous = written.get()
+        val previous = written.load()
         if (status.regresses(previous) || !written.compareAndSet(previous, status)) return
-        if (status.isTerminal) lastWriteNanos.set(System.nanoTime())
+        if (status.isTerminal) lastWriteNanos.store(System.nanoTime())
         runCatching {
             reportFile.parentFile?.mkdirs()
             reportFile.writeText(status.render())
@@ -44,7 +44,7 @@ class ProgressReport(private val reportFile: File) {
 
     private fun claimWriteSlot(): Boolean {
         val now = System.nanoTime()
-        val last = lastWriteNanos.get()
+        val last = lastWriteNanos.load()
         return now - last >= WRITE_INTERVAL_NANOS && lastWriteNanos.compareAndSet(last, now)
     }
 

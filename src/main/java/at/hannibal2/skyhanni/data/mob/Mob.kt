@@ -30,7 +30,7 @@ import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.entity.monster.zombie.Zombie
 import net.minecraft.world.phys.AABB
 import java.awt.Color
-import java.util.UUID
+import kotlin.uuid.Uuid
 
 /**
  * Represents a Mob in Hypixel Skyblock.
@@ -86,7 +86,7 @@ class Mob(
     val hypixelTypes: String = "",
 ) {
 
-    private val uniqueId: UUID = UUID.randomUUID()
+    private val uniqueId = Uuid.random()
     val id = baseEntity.id
 
     val owner: MobUtils.Ownership?
