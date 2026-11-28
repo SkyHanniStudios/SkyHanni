@@ -1,6 +1,8 @@
 package at.hannibal2.skyhanni.utils.json
 
+import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.config.ConfigManager
+import at.hannibal2.skyhanni.config.UpdateKeybinds
 import at.hannibal2.skyhanni.data.IslandType
 import at.hannibal2.skyhanni.data.jsonobjects.elitedev.EliteLeaderboardType
 import at.hannibal2.skyhanni.data.jsonobjects.elitedev.EliteLeaderboardTypeAdapter
@@ -18,6 +20,7 @@ import at.hannibal2.skyhanni.features.garden.CropType
 import at.hannibal2.skyhanni.features.garden.pests.PestType
 import at.hannibal2.skyhanni.features.misc.update.ModrinthVersionType
 import at.hannibal2.skyhanni.test.command.ErrorManager
+import at.hannibal2.skyhanni.utils.InputKeys
 import at.hannibal2.skyhanni.utils.LorenzRarity
 import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NeuInternalName
@@ -39,6 +42,7 @@ import com.google.gson.TypeAdapter
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonToken
 import com.google.gson.stream.JsonWriter
+import com.mojang.blaze3d.platform.InputConstants
 import com.mojang.serialization.JsonOps
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.ComponentSerialization
@@ -216,6 +220,43 @@ enum class SkyHanniTypeAdapters(
         },
     ),
     SESSION_UPTIME(SessionUptime::class.java, SessionUptimeTypeAdapter()),
+    INPUT_CONSTANTS_KEY(
+        InputConstants.Key::class.java,
+        object : TypeAdapter<InputConstants.Key>() {
+            override fun write(out: JsonWriter, value: InputConstants.Key) {
+                // TODO: Remove for 26.3
+                val newIdentifier = when (val identifier = value.name) {
+                    "key.keyboard.keypad.decimal" -> "key.keyboard.keypad.period"
+                    "key.keyboard.menu" -> "key.keyboard.application"
+                    else -> identifier
+                }
+                out.value(newIdentifier)
+            }
+
+            override fun read(reader: JsonReader): InputConstants.Key {
+                val identifier = when (val token = reader.peek()) {
+                    STRING -> reader.nextString()
+                    NUMBER -> {
+                        val code = reader.nextInt()
+                        UpdateKeybinds.glfwKeyName(code) ?: run {
+                            SkyHanniMod.logger.warn("Unknown key code to migrate: $code")
+                            "key.keyboard.unknown"
+                        }
+                    }
+                    else -> throw IllegalArgumentException("Expected STRING or INT but got $token")
+                }
+
+                // TODO: Remove for 26.3
+                val newIdentifier = when (identifier) {
+                    "key.keyboard.keypad.period" -> "key.keyboard.keypad.decimal"
+                    "key.keyboard.application" -> "key.keyboard.menu"
+                    else -> identifier
+                }
+
+                return InputKeys.identifier(newIdentifier)
+            }
+        }
+    ),
     COMPONENT(
         Component::class.java,
         object : TypeAdapter<Component>() {

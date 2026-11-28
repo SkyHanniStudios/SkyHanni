@@ -80,16 +80,13 @@ abstract class GuiContainerEvent(
         override val gui: SkyHanniGuiContainer,
         override val container: AbstractContainerMenu,
         var slotId: Int,
-        private var clickedButtonRaw: Int,
+        private var clickedContainerButton: Int,
         var clickType: ContainerInput,
     ) : GuiContainerEvent(gui, container), Cancellable {
 
-        val mouseType: MouseClickType get() = MouseClickType.of(clickedButtonRaw, clickType)
-        fun rawButton(): Int = clickedButtonRaw
-
-        // TODO remove in october 2026
-        @Deprecated("use mouseType, or rawButton() when the raw value is needed")
-        val clickedButton get() = clickedButtonRaw
+        val mouseType: MouseClickType get() = MouseClickType.of(clickedContainerButton, clickType)
+        // This is NOT a mouse button, but a container input value
+        fun rawButton(): Int = clickedContainerButton
 
         val slot: Slot?
             get() = slotId.takeIf { it > -1 }?.let(container::getSlot)
@@ -101,7 +98,7 @@ abstract class GuiContainerEvent(
             if (clickType == CLONE) return
             if (slot == null) return
 
-            clickedButtonRaw = 2
+            clickedContainerButton = 2
             clickType = CLONE
         }
 
@@ -109,7 +106,7 @@ abstract class GuiContainerEvent(
             if (mouseType.isRightClick() && slot?.item?.getItemCategoryOrNull() == SACK) return
             if (slot == null) return
 
-            clickedButtonRaw = 0
+            clickedContainerButton = 0
             clickType = QUICK_MOVE
         }
 
@@ -124,14 +121,14 @@ abstract class GuiContainerEvent(
                 gui: SkyHanniGuiContainer,
                 container: AbstractContainerMenu,
                 slotId: Int,
-                clickedButton: Int,
+                containerButton: Int,
                 clickType: ContainerInput,
             ): SlotClickEvent? {
                 if (posting.get()) return null
 
                 posting.set(true)
                 try {
-                    val event = SlotClickEvent(gui, container, slotId, clickedButton, clickType)
+                    val event = SlotClickEvent(gui, container, slotId, containerButton, clickType)
                     event.post()
                     return event
                 } finally {
