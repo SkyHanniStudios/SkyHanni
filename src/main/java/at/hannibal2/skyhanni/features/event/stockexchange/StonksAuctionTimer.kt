@@ -8,6 +8,7 @@ import at.hannibal2.skyhanni.data.ProfileStorageData
 import at.hannibal2.skyhanni.data.title.TitleManager
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
+import at.hannibal2.skyhanni.utils.HypixelCommands
 import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
 import at.hannibal2.skyhanni.utils.RenderUtils.HorizontalAlignment
 import at.hannibal2.skyhanni.utils.RenderUtils.renderRenderable
@@ -108,6 +109,11 @@ object StonksAuctionTimer {
         val sound = SoundUtils.createSound("block.note_block.pling", pitch = 0.5f, isWarning = true)
         SoundUtils.repeatSound(delay = 100, repeat = 2, sound)
         TitleManager.sendTitle("§6Stonks Auction ending soon!$bidWarning")
-        ChatUtils.notifyOrDisable("§6The Stonks Auction round ends in less than a minute!$bidWarning", config::oneMinuteWarning)
+        ChatUtils.clickToActionOrDisable(
+            "§6The Stonks Auction round ends in less than a minute!$bidWarning",
+            config::oneMinuteWarning,
+            actionName = "warp to the Stonks Auction",
+            action = { HypixelCommands.warp("stonks") },
+        )
     }
 }
