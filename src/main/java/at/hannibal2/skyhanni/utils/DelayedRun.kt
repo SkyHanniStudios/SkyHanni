@@ -63,10 +63,16 @@ object DelayedRun {
 
     /**
      * Runs [runnable] now if we are on the main thread, otherwise schedules it for the start of the
-     * next game tick, same as [runNextTick].
+     * next game tick, same as [runNextTick]. Runs immediately if Minecraft is not initialized
      */
-    fun runOrNextTick(label: String?, runnable: Runnable) =
-        Minecraft.getInstance().execute(runnable.withErrorHandling("DelayedRun.runOrNextTick", label))
+    fun runOrNextTick(label: String?, runnable: Runnable) {
+        val task = runnable.withErrorHandling("DelayedRun.runOrNextTick", label)
+        try {
+            Minecraft.getInstance().execute(task)
+        } catch (_: NullPointerException) {
+            task.run()
+        }
+    }
 
     fun runOrNextTick(runnable: Runnable) = runOrNextTick(null, runnable)
 
