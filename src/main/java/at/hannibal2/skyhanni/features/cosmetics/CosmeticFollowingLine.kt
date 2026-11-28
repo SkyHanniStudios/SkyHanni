@@ -4,8 +4,8 @@ import at.hannibal2.skyhanni.SkyHanniMod
 import at.hannibal2.skyhanni.api.event.HandleEvent
 import at.hannibal2.skyhanni.config.ConfigUpdaterMigrator
 import at.hannibal2.skyhanni.config.enums.OutsideSBFeature
+import at.hannibal2.skyhanni.events.entity.EntityMoveEvent
 import at.hannibal2.skyhanni.events.minecraft.SkyHanniRenderWorldEvent
-import at.hannibal2.skyhanni.events.minecraft.SkyHanniTickEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ColorUtils.toColor
 import at.hannibal2.skyhanni.utils.LocationUtils
@@ -15,6 +15,7 @@ import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.compat.MinecraftCompat
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.draw3DLine
 import at.hannibal2.skyhanni.utils.render.WorldRenderUtils.exactLocation
+import net.minecraft.client.player.LocalPlayer
 import java.awt.Color
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -30,15 +31,15 @@ object CosmeticFollowingLine {
     class LocationSpot(val time: SimpleTimeMark, val onGround: Boolean)
 
     @HandleEvent
-    fun onWorldChange() {
+    private fun onWorldChange() {
         locations = LinkedHashMap()
     }
 
     @HandleEvent(onlyOnSkyblockOrFeatures = [OutsideSBFeature.FOLLOWING_LINE])
-    fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
+    private fun onRenderWorld(event: SkyHanniRenderWorldEvent) {
         if (!config.enabled) return
 
-        updateClose(event)
+        event.updateClose()
 
         val firstPerson = PlayerUtils.isFirstPersonView()
         val color = config.lineColor.toColor()
@@ -60,8 +61,8 @@ object CosmeticFollowingLine {
         }
     }
 
-    private fun updateClose(event: SkyHanniRenderWorldEvent) {
-        val playerLocation = event.exactLocation(MinecraftCompat.localPlayerOrThrow).up(0.3)
+    private fun SkyHanniRenderWorldEvent.updateClose() {
+        val playerLocation = this.exactLocation(MinecraftCompat.localPlayerOrThrow).up(0.3)
         latestLocations[playerLocation] = LocationSpot(SimpleTimeMark.now(), PlayerUtils.onGround())
         latestLocations.values.removeIf { it.time.passedSince() > 600.milliseconds }
     }
@@ -84,25 +85,21 @@ object CosmeticFollowingLine {
     }
 
     @HandleEvent(onlyOnSkyblockOrFeatures = [OutsideSBFeature.FOLLOWING_LINE])
-    fun onTick(event: SkyHanniTickEvent) {
+    private fun onLocalPlayerMove(event: EntityMoveEvent<LocalPlayer>) {
         if (!config.enabled) return
 
-        if (event.isMod(5)) {
-            locations.values.removeIf { it.time.passedSince() > config.secondsAlive.seconds }
+        locations.values.removeIf { it.time.passedSince() > config.secondsAlive.seconds }
 
-            // Safety check to not cause lags
-            while (locations.size > 5_000) locations.remove(locations.keys.first())
-        }
+        // Safety check to not cause lags
+        while (locations.size > 5_000) locations.remove(locations.keys.first())
 
-        if (event.isMod(2)) {
-            val playerLocation = LocationUtils.playerLocation().up(0.3)
-            if (locations.keys.lastOrNull()?.distance(playerLocation)?.let { it < 0.1 } == true) return
-            locations[playerLocation] = LocationSpot(SimpleTimeMark.now(), PlayerUtils.onGround())
-        }
+        val playerLocation = LocationUtils.playerLocation().up(0.3)
+        if (locations.keys.lastOrNull()?.distance(playerLocation)?.let { it < 0.1 } == true) return
+        locations[playerLocation] = LocationSpot(SimpleTimeMark.now(), PlayerUtils.onGround())
     }
 
     @HandleEvent
-    fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
+    private fun onConfigFix(event: ConfigUpdaterMigrator.ConfigFixEvent) {
         event.move(9, "misc.cosmeticConfig", "misc.cosmetic")
         event.move(9, "misc.cosmeticConfig.followingLineConfig", "misc.cosmetic.followingLine")
         event.move(9, "misc.cosmeticConfig.arrowTrailConfig", "misc.cosmetic.arrowTrail")
