@@ -82,12 +82,12 @@ import at.hannibal2.skyhanni.utils.collection.CollectionUtils.sorted
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.sortedDesc
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.sumByKey
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.takeIfNotEmpty
-import at.hannibal2.skyhanni.utils.compat.NbtCompat
 import at.hannibal2.skyhanni.utils.compat.formattedTextCompatLeadingWhiteLessResets
 import at.hannibal2.skyhanni.utils.compat.getCompoundOrDefault
-import at.hannibal2.skyhanni.utils.compat.getStringOrDefault
 import io.github.notenoughupdates.moulconfig.observer.Property
 import java.util.Locale
+import kotlin.jvm.optionals.getOrElse
+import kotlin.jvm.optionals.getOrNull
 
 // TODO split into smaller sub classes
 @Suppress("LargeClass")
@@ -930,17 +930,26 @@ object EstimatedItemValueCalculator {
         return unlockedSlots
     }
 
+    // Credit to SkyblockAPI
     private fun SafeItemStack.readBoosters(): List<NeuInternalName> {
-        val list = NbtCompat.getStringTagList(extraAttributes, "boosters")
-        if (list.isEmpty) return emptyList()
-        val boosters = mutableListOf<NeuInternalName>()
-        for (i in 0 until list.size) {
-            var internalName = list.getStringOrDefault(i)
-            if (internalName.isBlank()) continue
-            internalName += "_BOOSTER"
-            boosters.add(internalName.toInternalName())
+        val boosters = extraAttributes.getCompound("booster_tiers").getOrNull()?.entrySet()?.associate { (key, value) ->
+            key to value.asInt().getOrElse { 0 }
+        }.orEmpty()
+        if (boosters.isEmpty()) return emptyList()
+
+        return buildList {
+            for ((type, maxTier) in boosters) {
+                for (tier in 1..maxTier) {
+                    if (tier == 1 && !type.equals("hunting_wisdom", true)) {
+                        add("${type}_BOOSTER".toInternalName())
+                    } else {
+                        // TODO: verify/fix for special & very special rarity
+                        val rarity = LorenzRarity.fromNeuPetIndex(tier - 1) ?: continue
+                        add("${type}_BOOSTER_${rarity.name}".toInternalName())
+                    }
+                }
+            }
         }
-        return boosters
     }
 
     private fun NeuInternalName.getPrice(): Double = getPrice(config.priceSource.get())
