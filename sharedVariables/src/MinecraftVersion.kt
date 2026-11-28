@@ -4,14 +4,12 @@ import org.gradle.jvm.toolchain.JavaLanguageVersion
 
 /**
  * @param versionNameOverride Specify a version name override for stuff like snapshots
- * @param moulconfigMinecraftVersionOverride Specify a version of moulconfig that isn't the same
  * as the mc version for when you are still waiting for the next moulconfig release
  */
 enum class MinecraftVersion(
     val versionName: String,
     val javaVersion: Int,
     val versionNameOverride: String? = null,
-    val moulconfigMinecraftVersionOverride: String? = null,
 ) {
     MC26100("26.1", 25, versionNameOverride = "26.1.2"),
     MC26200("26.2", 25),
