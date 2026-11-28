@@ -58,13 +58,12 @@ interface Renderable {
     val horizontalAlign: HorizontalAlignment
     val verticalAlign: VerticalAlignment
 
-    fun isHovered(mouseOffsetX: Int, mouseOffsetY: Int) = currentRenderPassMousePosition?.let { (x, y) ->
-        x >= mouseOffsetX && x < mouseOffsetX + width && y >= mouseOffsetY && y < mouseOffsetY + height
-    } ?: false
+    fun isHovered(mouseOffsetX: Int, mouseOffsetY: Int) = isBoxHovered(mouseOffsetX, width, mouseOffsetY, height)
 
-    fun isBoxHovered(mouseOffsetX: Int, width: Int, mouseOffsetY: Int, height: Int) = currentRenderPassMousePosition?.let { (x, y) ->
-        x >= mouseOffsetX && x < mouseOffsetX + width && y >= mouseOffsetY && y < mouseOffsetY + height
-    } ?: false
+    fun isBoxHovered(mouseOffsetX: Int, width: Int, mouseOffsetY: Int, height: Int) =
+        !hoverSuppressed && currentRenderPassMousePosition?.let { (x, y) ->
+            x >= mouseOffsetX && x < mouseOffsetX + width && y >= mouseOffsetY && y < mouseOffsetY + height
+        } ?: false
 
     /**
      * Render the renderable. Enough said?
@@ -80,6 +79,7 @@ interface Renderable {
 
         val logger = SkyHanniLogger("debug/renderable")
         var currentRenderPassMousePosition: Pair<Int, Int>? = null
+        private var hoverSuppressed = false
 
         const val SCROLLBAR_WIDTH = 7
 
@@ -899,7 +899,12 @@ interface Renderable {
             if (topTipHeight > 0) renderAtY(scrollUpTip, mouseOffsetX, mouseOffsetY, width, 0.0)
 
             if (contentHeight > 0) {
+                val wasHoverSuppressed = hoverSuppressed
+                val mouseInContent = currentRenderPassMousePosition?.let { (x, y) ->
+                    x - mouseOffsetX in 0 until width && y - mouseOffsetY in topTipHeight until contentBottom
+                } ?: false
                 GuiRenderUtils.enableScissor(0, topTipHeight, width, contentBottom)
+                if (!mouseInContent) hoverSuppressed = true
                 try {
                     val scrollOffset = scroll.asDouble()
                     val visibleEnd = scrollOffset + contentHeight
@@ -917,6 +922,7 @@ interface Renderable {
                         virtualY = renderableEnd
                     }
                 } finally {
+                    hoverSuppressed = wasHoverSuppressed
                     GuiRenderUtils.disableScissor()
                 }
             }

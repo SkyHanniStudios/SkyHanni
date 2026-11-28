@@ -8,6 +8,7 @@ import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.containsKeys
 import at.hannibal2.skyhanni.utils.collection.CollectionUtils.takeIfNotEmpty
 import at.hannibal2.skyhanni.utils.compat.SkyHanniChromeScreen
+import at.hannibal2.skyhanni.utils.compat.SkyHanniScreenTheme
 import at.hannibal2.skyhanni.utils.renderables.Renderable
 import at.hannibal2.skyhanni.utils.renderables.ScrollValue
 import at.hannibal2.skyhanni.utils.renderables.container.HorizontalContainerRenderable.Companion.horizontal
@@ -117,11 +118,11 @@ class ChangeLogViewerScreen : SkyHanniChromeScreen() {
         changelogList: NavigableMap<ModVersion, Map<String, List<String>>>,
         width: Int,
         height: Int,
-    ): Renderable = Renderable.scrollList(
+    ): Renderable = SkyHanniScreenTheme.scrollList(
         changelogList.filter { ChangelogViewer.shouldShowBeta || !it.key.isBeta }.map { (version, body) ->
             listOf(
                 Renderable.text("§l§9Version $version", horizontalAlign = RenderUtils.HorizontalAlignment.CENTER),
-            ) + makeChangeLogToRenderable(body, width) + listOf(
+            ) + makeChangeLogToRenderable(body, width - Renderable.SCROLLBAR_WIDTH) + listOf(
                 Renderable.placeholder(0, 15),
             )
         }.flatten().transformIf(
@@ -142,10 +143,9 @@ class ChangeLogViewerScreen : SkyHanniChromeScreen() {
             },
         ),
         height,
+        changelogScroll,
         velocity = 12.0,
         horizontalAlign = RenderUtils.HorizontalAlignment.CENTER,
-        scrollValue = changelogScroll,
-        button = 0,
     )
 
     private fun makeChangeLogToRenderable(

@@ -6,7 +6,6 @@ import at.hannibal2.skyhanni.config.commands.CommandRegistrationEvent
 import at.hannibal2.skyhanni.data.hotx.HotmData
 import at.hannibal2.skyhanni.data.hotx.HotmReward
 import at.hannibal2.skyhanni.data.model.SkyblockStat
-import at.hannibal2.skyhanni.events.GuiContainerEvent
 import at.hannibal2.skyhanni.events.InventoryFullyOpenedEvent
 import at.hannibal2.skyhanni.features.dungeon.DungeonApi
 import at.hannibal2.skyhanni.features.inventory.CurrentEquipmentApi
@@ -15,51 +14,27 @@ import at.hannibal2.skyhanni.features.rift.RiftApi
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.test.command.ErrorManager
 import at.hannibal2.skyhanni.utils.ChatUtils
-import at.hannibal2.skyhanni.utils.ConditionalUtils.transformIf
 import at.hannibal2.skyhanni.utils.DelayedRun
 import at.hannibal2.skyhanni.utils.HypixelCommands
 import at.hannibal2.skyhanni.utils.InventoryUtils
 import at.hannibal2.skyhanni.utils.ItemUtils.getInternalNameOrNull
-import at.hannibal2.skyhanni.utils.KeyboardManager
 import at.hannibal2.skyhanni.utils.LocationUtils
-import at.hannibal2.skyhanni.utils.LorenzColor
-import at.hannibal2.skyhanni.utils.NumberUtil.addSeparators
-import at.hannibal2.skyhanni.utils.NumberUtil.fractionOf
-import at.hannibal2.skyhanni.utils.NumberUtil.roundTo
-import at.hannibal2.skyhanni.utils.RenderUtils
+import at.hannibal2.skyhanni.utils.RegexUtils.matches
 import at.hannibal2.skyhanni.utils.SafeItemStack
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
 import at.hannibal2.skyhanni.utils.SkyBlockItemModifierUtils.getHypixelEnchantments
 import at.hannibal2.skyhanni.utils.SkyBlockUtils
 import at.hannibal2.skyhanni.utils.StringUtils.allLettersFirstUppercase
-import at.hannibal2.skyhanni.utils.StringUtils.insert
-import at.hannibal2.skyhanni.utils.StringUtils.pluralize
-import at.hannibal2.skyhanni.utils.TimeUtils.format
-import at.hannibal2.skyhanni.utils.TimeUtils.ticks
-import at.hannibal2.skyhanni.utils.collection.CollectionUtils.distribute
-import at.hannibal2.skyhanni.utils.collection.RenderableCollectionUtils.addString
 import at.hannibal2.skyhanni.utils.compat.BlockCompat
 import at.hannibal2.skyhanni.utils.compat.ColoredBlockCompat
-import at.hannibal2.skyhanni.utils.renderables.Renderable
-import at.hannibal2.skyhanni.utils.renderables.RenderableUtils.renderAndScale
-import at.hannibal2.skyhanni.utils.renderables.RenderableUtils.renderXYAligned
-import at.hannibal2.skyhanni.utils.renderables.container.HorizontalContainerRenderable.Companion.horizontal
-import at.hannibal2.skyhanni.utils.renderables.container.VerticalContainerRenderable.Companion.vertical
-import at.hannibal2.skyhanni.utils.renderables.container.table.TableRenderable.Companion.table
-import at.hannibal2.skyhanni.utils.renderables.primitives.ItemStackRenderable.Companion.item
-import at.hannibal2.skyhanni.utils.renderables.primitives.WrappedStringRenderable.Companion.wrappedText
-import at.hannibal2.skyhanni.utils.renderables.primitives.placeholder
-import at.hannibal2.skyhanni.utils.renderables.primitives.text
 import net.minecraft.world.level.block.Blocks
-import java.awt.Color
-import kotlin.math.ceil
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 @SkyHanniModule
 object BlockStrengthGuide {
 
-    private enum class DisplayOres(private val iconDel: () -> SafeItemStack, val oreBlocks: Set<OreBlock>) {
+    internal enum class DisplayOres(private val iconDel: () -> SafeItemStack, val oreBlocks: Set<OreBlock>) {
         VANILLA_ORES(
             { SafeItemStack(Blocks.REDSTONE_BLOCK) },
             setOf(
@@ -174,141 +149,14 @@ object BlockStrengthGuide {
         val icon by lazy(this.iconDel)
 
         val hoverText get() = oreBlocks.joinToString(", ") { it.name.allLettersFirstUppercase() }
-
-        fun renderable(rawSpeed: SpeedClass): Renderable {
-            val ore = oreBlocks.first()
-
-            val speed = rawSpeed.base + when (ore.category) {
-                OreCategory.DWARVEN_METAL -> rawSpeed.metal
-                OreCategory.GEMSTONE -> rawSpeed.gemstone
-                OreCategory.ORE -> rawSpeed.ore
-                OreCategory.BLOCK -> rawSpeed.block
-            }
-
-            val ticks = ore.miningTicks(speed)
-            val time = ticks.ticks.format(showMilliSeconds = true).transformIf({ ticks % 2 == 1 }) {
-                this.insert(this.length - 1, '5')
-            }
-
-            val (progressBar, percentLine, untilNextLine) = processProgressData(ticks, speed, ore)
-
-            return Renderable.hoverTips(
-                Renderable.horizontal(
-                    Renderable.item(icon),
-                    progressBar,
-                    Renderable.text("$ticks"),
-                    spacing = 0,
-                ),
-                tips = buildList<Renderable> {
-                    val blockName = name.allLettersFirstUppercase()
-                    addString(blockName)
-                    add(Renderable.placeholder(0, 5))
-
-                    addString("§3Ticks: §f$ticks §7(§b$time§7)")
-                    addExtraInfo("It takes you §b$time§7 to break $blockName.")
-                    addExtraInfo("Only correct if the server has 20 TPS.")
-
-                    addString("§3Your: §6${speed.toInt().addSeparators()} ${SkyblockStat.MINING_SPEED.icon}")
-                    addExtraInfo("You have §6${speed.toInt().addSeparators()} mining speed")
-                    addExtraInfo("when breaking $blockName :)")
-
-                    untilNextLine?.let {
-                        addString(it)
-                        addExtraInfo("The mining speed you need more")
-                        addExtraInfo("to mine $blockName in §b${ticks - 1}")
-                    }
-                    addString(percentLine)
-                    add(Renderable.placeholder(0, 5))
-
-                    addString("§3Block Strength: §f${ore.strength.addSeparators()}")
-                    addExtraInfo("This defines the \"toughness\" of a block.")
-                    addExtraInfo("A higher number means it takes longer")
-                    addExtraInfo("to break $blockName.")
-
-                    addString("§3Softcap: §6${ore.speedSoftCap.addSeparators()} ${SkyblockStat.MINING_SPEED.icon}")
-                    addExtraInfo("Having more than §6${ore.speedSoftCap.addSeparators()} mining speed")
-                    addExtraInfo("will §c§lNOT §r§7break $blockName any faster.")
-
-                    addString("§3Instant: §6${ore.speedForInstantMine.addSeparators()} ${SkyblockStat.MINING_SPEED.icon}")
-                    addExtraInfo("Once you reach §6${ore.speedForInstantMine.addSeparators()} mining speed")
-                    addExtraInfo("you break $blockName in §e§lone click§7.")
-
-                    add(Renderable.placeholder(0, 5))
-                    addString("§3Category: §f${ore.category.toString().allLettersFirstUppercase()}")
-                    addString("§3Blocks in that group:")
-                    add(Renderable.wrappedText(hoverText, setWidth = 200))
-
-                    if (!showExtraInfos) {
-                        add(Renderable.placeholder(0, 5))
-                        addString("§eHold ${KeyboardManager.getModifierKeyName()} key to show extra infos!")
-                    }
-                },
-            )
-        }
     }
 
-    private fun processProgressData(ticks: Int, speed: Double, ore: OreBlock): Triple<Renderable, String, String?> {
-        val progressBar: Renderable
-        val percentLine: String
-        val untilNextLine: String?
-        when (ticks) {
-            1 -> {
-                progressBar = Renderable.progressBar(1.0, InstantMineColor, InstantMineColor, width = 100)
-                percentLine = "§6Instant Mine"
-                untilNextLine = null
-            }
-
-            4 -> {
-                progressBar = Renderable.progressBar(
-                    speed.fractionOf(ore.speedForInstantMine),
-                    SoftCapColor,
-                    InstantMineColor,
-                    width = 100,
-                )
-                percentLine = "§a${speed.fractionOf(ore.speedForInstantMine).times(100).roundTo(1)}% §fto Instant Mine"
-                untilNextLine = "§6${
-                    ceil(ore.speedForInstantMine - speed).toInt().addSeparators()
-                } ${SkyblockStat.MINING_SPEED.icon} §cmissing §fto §b1 §ftick"
-            }
-
-            else -> {
-                progressBar = Renderable.progressBar(
-                    speed.fractionOf(ore.speedSoftCap),
-                    BaseColor,
-                    SoftCapColor,
-                    width = 100,
-                )
-                percentLine = "§a${speed.fractionOf(ore.speedSoftCap).times(100).roundTo(1)}% §fto Soft Cap"
-                val next = ticks - 1
-                val nextTicksFormat = "tick".pluralize(next)
-                untilNextLine = "§6${
-                    ceil(ore.speedNeededForNextTick(speed)).toInt().addSeparators()
-                } ${SkyblockStat.MINING_SPEED.icon} §cmissing §fto §b$next §f$nextTicksFormat"
-            }
-        }
-        return Triple(progressBar, percentLine, untilNextLine)
-    }
-
-    private fun MutableList<Renderable>.addExtraInfo(info: String) {
-        if (showExtraInfos) {
-            addString("  §7$info")
-        }
-    }
-
-    private val InstantMineColor = Color(0x1E, 0x90, 0xFF)
-    private val SoftCapColor = Color(0x00, 0xFA, 0x9A)
-    private val BaseColor = Color(0xFF, 0x63, 0x37)
-
-    private var showExtraInfos = false
-
-    private lateinit var speed: SpeedClass
-
-    private var inMineshaft = false
+    internal var inMineshaft = false
 
     // TODO Dwarven Equip (Needs a Equipment API) , Goblin Pet and Mithril Pet (need the PetAPI v2)
-    private fun requestSpeed(): SpeedClass {
+    internal fun requestSpeed(): SpeedClass {
         val itemInHand = InventoryUtils.getItemInHand()
-        speed = SpeedClass(
+        return SpeedClass(
             base = (
                 SkyblockStat.MINING_SPEED.lastKnownValue ?: 0.0
                 ) + if (inMineshaft) HotmData.EAGER_ADVENTURER.getReward()[HotmReward.MINING_SPEED] ?: 0.0 else 0.0,
@@ -324,96 +172,20 @@ object BlockStrengthGuide {
             ore = 0.0,
             block = 0.0,
         )
-
-        return speed
     }
 
-    private data class SpeedClass(
+    internal data class SpeedClass(
         val base: Double,
         val metal: Double,
         val gemstone: Double,
         val ore: Double,
         val block: Double,
-    ) {
-        fun toRenderables() = listOf(
-            base.toInt().addSeparators(),
-            gemstone.toInt().addSeparators(),
-            metal.toInt().addSeparators(),
-        ).map { Renderable.text("§6$it", horizontalAlign = RenderUtils.HorizontalAlignment.CENTER) }
-    }
-
-    private val headerHeaderLine = listOf("Base", "Gemstone", "Metal").map {
-        Renderable.text(
-            text = it,
-            scale = 0.75,
-            horizontalAlign = RenderUtils.HorizontalAlignment.CENTER,
-        )
-    }
-
-    private var display: Renderable? = null
-
-    private fun createDisplay(): Renderable {
-        requestSpeed()
-        return Renderable.drawInsideRoundedRectWithOutline(
-            Renderable.vertical(
-                Renderable.vertical(
-                    createHeader(),
-                    horizontalAlign = RenderUtils.HorizontalAlignment.CENTER,
-                ),
-                Renderable.table(
-                    createTableContent(), 5, 3,
-                ),
-                spacing = 8,
-            ),
-            color = LorenzColor.GRAY.addOpacity(180),
-            topOutlineColor = Color(0, 0, 0, 200).rgb,
-            bottomOutlineColor = Color(0, 0, 0, 200).rgb,
-            borderOutlineThickness = 3,
-            verticalAlign = RenderUtils.VerticalAlignment.CENTER,
-            horizontalAlign = RenderUtils.HorizontalAlignment.CENTER,
-        )
-    }
-
-    private fun createTableContent(): List<List<Renderable>> = DisplayOres.entries.map {
-        it.renderable(speed)
-    }.distribute(3)
-
-    private fun createHeader(): List<Renderable> = listOf(
-        Renderable.text(
-            SkyblockStat.MINING_SPEED.iconWithName,
-            horizontalAlign = RenderUtils.HorizontalAlignment.CENTER,
-        ),
-        Renderable.horizontal(
-            Renderable.table(
-                listOf(
-                    headerHeaderLine,
-                    speed.toRenderables(),
-                ),
-                xSpacing = 5,
-            ),
-            Renderable.clickable(
-                Renderable.text(
-                    "§${if (inMineshaft) 'b' else '7'}Mineshaft",
-                    scale = 0.5,
-                    verticalAlign = RenderUtils.VerticalAlignment.CENTER,
-                ),
-                onLeftClick = {
-                    inMineshaft = !inMineshaft
-                    display = createDisplay()
-                },
-            ),
-            spacing = 3,
-        ),
     )
 
     private var shouldBlockSHMenu = false
         set(value) {
             field = value
-            if (!value) {
-                display = null
-            } else {
-                lastSet = SimpleTimeMark.now()
-            }
+            if (value) lastSet = SimpleTimeMark.now()
         }
 
     private var statsOpened = false
@@ -447,56 +219,36 @@ object BlockStrengthGuide {
         HypixelCommands.stats()
     }
 
-    @HandleEvent
-    fun onGuiContainerPreDraw(event: GuiContainerEvent.PreDraw) {
-        if (!shouldBlockSHMenu) return
+    internal enum class LoadState {
+        LOADING,
+        READY,
+        FAILED,
+    }
 
-        if (waitingForStats) {
-            if (statsMenuOpened) {
-                statsOpened = SkyblockStat.MINING_SPEED.lastAssignment.passedSince() < 1.0.seconds
-                if (statsOpened) {
-                    waitingForStats = false
-                }
-            }
-            if (lastRunCommand.passedSince() < 2.seconds) {
-                if (waitingForStats) {
-                    Renderable.text(
-                        "Loading...",
-                        scale = 2.0,
-                        horizontalAlign = RenderUtils.HorizontalAlignment.CENTER,
-                        verticalAlign = RenderUtils.VerticalAlignment.CENTER,
-                    ).renderXYAligned(0, 0, event.gui.width, event.gui.height)
-                    event.cancel()
-                }
-            } else {
-                shouldBlockSHMenu = false
-                waitingForStats = false
-                ErrorManager.logErrorStateWithData(
-                    "could not load mining data for /shblockstrength command",
-                    "opened /stats and found no mining speed in the next 2s",
-                    "island" to SkyBlockUtils.currentIsland,
-                    "graph area" to SkyBlockUtils.graphArea,
-                    "scoreboard area" to SkyBlockUtils.scoreboardArea,
-                    "location" to LocationUtils.playerLocation(),
-                    betaOnly = true,
-                )
-            }
-            if (waitingForStats) return
-        }
+    internal fun shouldReplace(inventoryName: String): Boolean =
+        shouldBlockSHMenu && waitingForStats && lastRunCommand.passedSince() < 3.seconds &&
+            CurrentEquipmentApi.equipmentAndStatsMenuPattern.matches(inventoryName)
 
-        if (!statsOpened) {
-            shouldBlockSHMenu = false
-            return
+    internal fun pollStats(): LoadState {
+        if (!waitingForStats) return if (statsOpened) LoadState.READY else LoadState.FAILED
+        if (statsMenuOpened && SkyblockStat.MINING_SPEED.lastAssignment.passedSince() < 1.0.seconds) {
+            statsOpened = true
+            waitingForStats = false
+            return LoadState.READY
         }
-        event.cancel()
-
-        val display = display ?: createDisplay().also {
-            display = it
-        }
-
-        Renderable.withMousePosition(event.mouseX, event.mouseY) {
-            display.renderAndScale(0, 0, event.gui.width, event.gui.height, 20)
-        }
+        if (lastRunCommand.passedSince() < 2.seconds) return LoadState.LOADING
+        shouldBlockSHMenu = false
+        waitingForStats = false
+        ErrorManager.logErrorStateWithData(
+            "could not load mining data for /shblockstrength command",
+            "opened /stats and found no mining speed in the next 2s",
+            "island" to SkyBlockUtils.currentIsland,
+            "graph area" to SkyBlockUtils.graphArea,
+            "scoreboard area" to SkyBlockUtils.scoreboardArea,
+            "location" to LocationUtils.playerLocation(),
+            betaOnly = true,
+        )
+        return LoadState.FAILED
     }
 
     @HandleEvent(onlyOnSkyblock = true)
@@ -509,15 +261,6 @@ object BlockStrengthGuide {
             if (lastRunCommand.passedSince() < 3.seconds && !waitingForStats) {
                 lastRunCommand = SimpleTimeMark.farPast()
             }
-        }
-    }
-
-    @HandleEvent
-    fun onTick() {
-        val now = KeyboardManager.isModifierKeyDown()
-        if (showExtraInfos != now) {
-            showExtraInfos = now
-            display = createDisplay()
         }
     }
 

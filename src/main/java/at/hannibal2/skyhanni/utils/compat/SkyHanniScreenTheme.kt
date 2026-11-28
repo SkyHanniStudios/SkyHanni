@@ -47,6 +47,7 @@ object SkyHanniScreenTheme {
         velocity: Double = 2.0,
         button: Int? = null,
         bypassChecks: Boolean = false,
+        horizontalAlign: HorizontalAlignment = HorizontalAlignment.LEFT,
     ): Renderable = Renderable.scrollList(
         list,
         height,
@@ -54,6 +55,7 @@ object SkyHanniScreenTheme {
         velocity = velocity,
         button = button,
         bypassChecks = bypassChecks,
+        horizontalAlign = horizontalAlign,
         showScrollbar = true,
     )
 

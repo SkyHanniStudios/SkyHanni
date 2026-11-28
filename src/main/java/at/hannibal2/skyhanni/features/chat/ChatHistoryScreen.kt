@@ -32,12 +32,13 @@ class ChatHistoryScreen(
 
     override val screenTitle = "Chat History"
     private val scrollValue = ScrollValue().apply { setValue(Double.MAX_VALUE) }
+    private val newTextLabel = Renderable.text("§e§lNEW TEXT")
 
     private val ChatManager.MessageFilteringResult.reason: String? get() = actionReason ?: modifiedReason
 
     override fun buildContent(): Renderable {
         val reasonMaxLength = history.maxOfOrNull { msg -> msg.reason?.let { mc.font.width(it) } ?: 0 } ?: 0
-        val xOffset = ChatManager.ActionKind.maxLength + reasonMaxLength + 10
+        val xOffset = (ChatManager.ActionKind.maxLength + reasonMaxLength + 10).coerceAtLeast(newTextLabel.width + 10)
         val wrapWidth = LIST_WIDTH.coerceAtMost(maxContentWidth) - xOffset - Renderable.SCROLLBAR_WIDTH
 
         val rows = history.map { buildRow(it, wrapWidth, xOffset) }
@@ -81,14 +82,13 @@ class ChatHistoryScreen(
             msg.reason?.let { Renderable.text(it) } ?: Renderable.empty(),
             width = xOffset - ChatManager.ActionKind.maxLength,
         )
-        val messageBlock = wrappedLines(msg.message, wrapWidth)
-        val msgBlock = msg.modified?.let {
-            Renderable.vertical(
-                listOf(messageBlock, Renderable.text("§e§lNEW TEXT"), wrappedLines(it, wrapWidth)),
-                spacing = 1,
-            )
-        } ?: messageBlock
-        return Renderable.horizontal(listOf(actionLabel, reasonLabel, msgBlock), spacing = 0)
+        val originalLine = Renderable.horizontal(listOf(actionLabel, reasonLabel, wrappedLines(msg.message, wrapWidth)), spacing = 0)
+        val modified = msg.modified ?: return originalLine
+        val modifiedLine = Renderable.horizontal(
+            listOf(Renderable.fixedSizeLine(newTextLabel, width = xOffset), wrappedLines(modified, wrapWidth)),
+            spacing = 0,
+        )
+        return Renderable.vertical(listOf(originalLine, modifiedLine), spacing = 1)
     }
 
     private fun wrappedLines(component: Component, wrapWidth: Int): Renderable = Renderable.vertical(

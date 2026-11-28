@@ -269,7 +269,7 @@ object DungeonSpiritLeapOverlay {
         InventoryUtils.clickSlot(player.slotNumber, button = MIDDLE_CLICK)
     }
 
-    private val deadTeammateColor = colorConfig.deadTeammateColor
+    private val deadTeammateColor get() = colorConfig.deadTeammateColor
 
     private fun getClassColor(dungeonClass: DungeonApi.DungeonClass?): ChromaColour = when (dungeonClass) {
         DungeonApi.DungeonClass.ARCHER -> colorConfig.archerClassColor
