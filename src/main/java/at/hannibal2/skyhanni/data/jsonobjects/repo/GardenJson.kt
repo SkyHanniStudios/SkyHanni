@@ -2,6 +2,7 @@ package at.hannibal2.skyhanni.data.jsonobjects.repo
 
 import at.hannibal2.skyhanni.features.garden.CropType
 import at.hannibal2.skyhanni.features.garden.pests.PestType
+import at.hannibal2.skyhanni.utils.KSerializable
 import at.hannibal2.skyhanni.utils.LorenzRarity
 import at.hannibal2.skyhanni.utils.LorenzVec
 import at.hannibal2.skyhanni.utils.NeuInternalName
@@ -22,6 +23,13 @@ data class GardenJson(
     @Expose @SerializedName("hoe_exp_overflow") val hoeExpOverflow: Int,
     @Expose @SerializedName("dna_solver_allows_ends") val dnaSolverAllowsEnds: Boolean = false,
     @Expose @SerializedName("money_per_hour_ignored_items") val moneyPerHourIgnoredItems: List<NeuInternalName>,
+    @Expose @SerializedName("visitor_rewards") val visitorRewards: Map<String, GardenVisitorReward>,
+)
+
+@KSerializable
+data class GardenVisitorReward(
+    @Expose @SerializedName("internal_name") val internalName: NeuInternalName,
+    @Expose val aliases: List<NeuInternalName> = emptyList(),
 )
 
 data class GardenVisitor(
