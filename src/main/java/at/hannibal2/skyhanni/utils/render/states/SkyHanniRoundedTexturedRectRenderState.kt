@@ -1,9 +1,6 @@
 package at.hannibal2.skyhanni.utils.render.states
 
 import at.hannibal2.skyhanni.utils.render.SkyHanniRenderPipeline
-import at.hannibal2.skyhanni.utils.render.SkyHanniVertexFormats
-import at.hannibal2.skyhanni.utils.render.SkyHanniVertexFormats.writeParams
-import com.mojang.blaze3d.vertex.BufferBuilder
 import com.mojang.blaze3d.vertex.VertexConsumer
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.navigation.ScreenRectangle
@@ -25,25 +22,15 @@ class SkyHanniRoundedTexturedRectRenderState(
     override val padding = 5
     override fun pipeline() = SkyHanniRenderPipeline.ROUNDED_TEXTURED_RECT_DEFERRED()
 
+    override fun shapeParams() = roundedParams(smoothness, alpha)
+
     override fun textureSetup(): TextureSetup {
         val fetchTexture = Minecraft.getInstance().textureManager.getTexture(texture)
         val view = fetchTexture.textureView
         return TextureSetup.singleTexture(view, fetchTexture.sampler)
     }
 
-    override fun buildVertices(consumer: VertexConsumer) {
-        val p = padding.toFloat()
-        writeTexturedVertex(consumer, (x - p), (y - p), 0f, 0f)
-        writeTexturedVertex(consumer, (x - p), (y + height + p), 0f, 1f)
-        writeTexturedVertex(consumer, (x + width + p), (y + height + p), 1f, 1f)
-        writeTexturedVertex(consumer, (x + width + p), (y - p), 1f, 0f)
-    }
-
-    private fun writeTexturedVertex(consumer: VertexConsumer, vx: Float, vy: Float, u: Float, v: Float) = with(params) {
-        val buf = consumer as BufferBuilder
-        buf.addVertex(matXScale * vx + matXTranslation, matYScale * vy + matYTranslation, 0f)
-        buf.setUv(u, v)
-        buf.writeParams(radius, smoothness, adjustedHalfSizeX, adjustedHalfSizeY, SkyHanniVertexFormats.VertexElement.ROUNDED_PARAMS_0)
-        buf.writeParams(adjustedCenterPosX, adjustedCenterPosY, alpha, 0f, SkyHanniVertexFormats.VertexElement.ROUNDED_PARAMS_1)
+    override fun writeVertex(vertex: VertexConsumer, u: Float, v: Float) {
+        vertex.setUv(u, v)
     }
 }
