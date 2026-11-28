@@ -274,7 +274,7 @@ object PetUtils {
             UNCOMMON -> 6
             RARE -> 11
             EPIC -> 16
-            LEGENDARY, MYTHIC, SPECIAL, VERY_SPECIAL -> 20
+            LEGENDARY, MYTHIC, DIVINE, SPECIAL, VERY_SPECIAL -> 20
             else -> ErrorManager.skyHanniError("Unknown pet rarity $rarity")
         }
     }
