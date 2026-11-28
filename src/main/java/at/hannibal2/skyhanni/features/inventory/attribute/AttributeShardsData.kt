@@ -235,8 +235,8 @@ object AttributeShardsData {
      * REGEX-FAIL: +43 Essence of Ice Attribute (Level 10) MAXED
      */
     private val shardSyphonedPattern by patternGroup.pattern(
-        "chat.syphoned.colorless-formatted",
-        """\+(?<amount>[\d,]+) (?<attributeName>.+) Attribute \(Level (?<level>[\d,]+)\) - (?<untilNext>[\d,]+) more to upgrade!""",
+        "chat.syphoned.colorless",
+        """\+(?<amount>\d+) (?<attributeName>.+) Attribute \(Level (?<level>\d+)\) - (?<untilNext>\d+) more to upgrade!""",
     )
 
     /**
@@ -244,16 +244,16 @@ object AttributeShardsData {
      * REGEX-FAIL: +2 Essence of Ice Attribute (Level 2) - 1 more to upgrade!
      */
     private val shardSyphonedMaxedPattern by patternGroup.pattern(
-        "chat.syphoned.maxed.colorless-formatted",
-        """\+(?<amount>[\d,]+) (?<attributeName>.+) Attribute \(Level (?<level>[\d,]+)\) MAXED""",
+        "chat.syphoned.maxed.colorless",
+        """\+(?<amount>\d+) (?<attributeName>.+) Attribute \(Level (?<level>\d+)\) MAXED""",
     )
 
     /**
      * REGEX-TEST: and 7 more...
      */
     private val andMoreMessagePattern by patternGroup.pattern(
-        "chat.and.more.colorless-formatted",
-        """and (?<amount>[\d,]+) more\.\.\.""",
+        "chat.and.more.colorless",
+        """and (?<amount>\d+) more\.\.\.""",
     )
 
     private val advancedModeNotUnlockedPattern by patternGroup.pattern(
@@ -286,8 +286,8 @@ object AttributeShardsData {
      * REGEX-TEST: You caught x2 Voracious Spider Shards!
      */
     private val caughtShardsPattern by patternGroup.pattern(
-        "caught.shards.colorless-formatted",
-        """You caught(?: [an]+)?(?: x(?<amount>[\d,]+))? (?<shardName>.+) Shards?!""",
+        "caught.shards.colorless",
+        """You caught(?: [an]+)?(?: x(?<amount>\d+))? (?<shardName>.+) Shards?!""",
     )
 
     /**
@@ -296,8 +296,8 @@ object AttributeShardsData {
      * REGEX-TEST:  GOOD CATCH! You caught a Water Snake Shard!
      */
     private val caughtMultipleShardsPattern by patternGroup.pattern(
-        "caught-multiple.shards-formatted",
-        """\uE025 .+ CATCH! You caught(?: [an]+)? (?<shardName>.+) Shard(?: x(?<amount>[\d,]+))?!"""
+        "caught-multiple.shards",
+        """\uE025 .+ CATCH! You caught(?: [an]+)? (?<shardName>.+) Shard(?: x(?<amount>\d+))?!"""
     )
 
     /**
@@ -307,8 +307,8 @@ object AttributeShardsData {
      * REGEX-TEST: LOOT SHARE! You received an Areita Shard from VirulentNyx catching an Areita!
      */
     private val lootShareShardPattern by patternGroup.pattern(
-        "loot.share.shard.colorless-formatted",
-        """LOOT SHARE!? You received (?:an?|(?<amount>[\d,]+)x?) (?<shardName>.+) Shards? (?:for assisting .*|from .*)!""",
+        "loot.share.shard.colorless",
+        """LOOT SHARE!? You received (?:an?|(?<amount>\d+)x?) (?<shardName>.+) Shards? (?:for assisting .*|from .*)!""",
     )
 
     /**
@@ -318,8 +318,8 @@ object AttributeShardsData {
      * REGEX-TEST: FUSION! You obtained a Tadgang Shard! NEW!
      */
     private val fusionShardPattern by patternGroup.pattern(
-        "fusion.shard.colorless-formatted",
-        """FUSION! You obtained(?: an?)? (?<shardName>.+) Shard(?: x(?<amount>[\d,]+))?!(?: NEW!)?""",
+        "fusion.shard.colorless",
+        """FUSION! You obtained(?: an?)? (?<shardName>.+) Shard(?: x(?<amount>\d+))?!(?: NEW!)?""",
     )
 
     /**
@@ -327,8 +327,8 @@ object AttributeShardsData {
      * REGEX-TEST: CHARM! You charmed the Slug and received 1 Keeled Slug Shard!
      */
     private val charmedShardPattern by patternGroup.pattern(
-        "charmed.shard.colorless-formatted",
-        """CHARM! You charmed the .+ and received (?<amount>[\d,]+) (?<shardName>.+) Shards?!""",
+        "charmed.shard.colorless",
+        """CHARM! You charmed the .+ and received (?<amount>\d+) (?<shardName>.+) Shards?!""",
     )
 
     /**
@@ -338,8 +338,8 @@ object AttributeShardsData {
      * REGEX-TEST: You sent a Verdant Shard to your Hunting Box.
      */
     private val sentToHuntingBoxPattern by patternGroup.pattern(
-        "sent.to.hunting.box.colorless-formatted",
-        """You sent (?:an?|(?<amount>[\d,]+)) (?<shardName>.+) Shards? to your Hunting Box.""",
+        "sent.to.hunting.box.colorless",
+        """You sent (?:an?|(?<amount>\d+)) (?<shardName>.+) Shards? to your Hunting Box.""",
     )
 
     /**
@@ -353,8 +353,8 @@ object AttributeShardsData {
      */
     @Suppress("MaxLineLength")
     private val capturedShardPattern by patternGroup.pattern(
-        "captured.shard-formatted",
-        """CAPTURE! You (?:caught an?|found) .+ and (?:gained|as a reward (?:he|she|they|it) gave you) (?:an?|(?<amount>[\d,]+)x) (?<shardName>.+) Shard!""",
+        "captured.shard",
+        """CAPTURE! You (?:caught an?|found) .+ and (?:gained|as a reward (?:he|she|they|it) gave you) (?:an?|(?<amount>\d+)x) (?<shardName>.+) Shard!""",
     )
 
     /**

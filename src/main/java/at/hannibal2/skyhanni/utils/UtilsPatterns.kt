@@ -201,6 +201,6 @@ object UtilsPatterns {
      */
     val attributeSourcePattern by patternGroup.pattern(
         "attribute.shard.source.colorless",
-        """Source: (?<source>.+) Shard \((?<id>\w\d+)\)""",
+        "Source: (?<source>.+) Shard \\((?<id>\\w\\d+)\\)",
     )
 }
