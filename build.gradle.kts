@@ -441,6 +441,9 @@ tasks.withType<GradleJar> {
 tasks.shadowJar {
     destinationDirectory.set(rootProject.layout.buildDirectory.dir("libs"))
     archiveClassifier.set("")
+    from(zipTree(buildSrcJar.singleFile)) {
+        include("at/hannibal2/skyhanni/utils/**")
+    }
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     filesMatching("META-INF/services/**") {
         duplicatesStrategy = DuplicatesStrategy.INCLUDE

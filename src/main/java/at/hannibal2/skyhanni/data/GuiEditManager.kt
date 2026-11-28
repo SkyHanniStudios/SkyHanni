@@ -6,11 +6,13 @@ import at.hannibal2.skyhanni.config.core.config.Position
 import at.hannibal2.skyhanni.config.core.config.gui.GuiPositionEditor
 import at.hannibal2.skyhanni.events.GuiPositionMovedEvent
 import at.hannibal2.skyhanni.events.GuiRenderEvent
-import at.hannibal2.skyhanni.events.minecraft.KeyPressEvent
 import at.hannibal2.skyhanni.skyhannimodule.SkyHanniModule
 import at.hannibal2.skyhanni.utils.ChatUtils
+import at.hannibal2.skyhanni.utils.KeyBindContext
+import at.hannibal2.skyhanni.utils.RegisterKeyBind
 import at.hannibal2.skyhanni.utils.SignUtils.isGardenSign
 import at.hannibal2.skyhanni.utils.SimpleTimeMark
+import at.hannibal2.skyhanni.utils.SkyHanniKeyBind
 import at.hannibal2.skyhanni.utils.StringUtils
 import at.hannibal2.skyhanni.utils.collection.TimeLimitedCache
 import at.hannibal2.skyhanni.utils.compat.DrawContextUtils
@@ -22,24 +24,22 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen
 import net.minecraft.client.gui.screens.inventory.SignEditScreen
 import org.joml.Vector2i
 import org.lwjgl.glfw.GLFW
-import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
 @SkyHanniModule
 object GuiEditManager {
 
-    private var lastHotkeyPressed = SimpleTimeMark.farPast()
-
     private val currentPositions = TimeLimitedCache<String, CurrentPosition>(15.seconds)
     private val currentBorderSize = mutableMapOf<String, Pair<Int, Int>>()
     private var lastMovedGui: String? = null
     private var addingChestGuiPosition = false
 
-    @HandleEvent
-    fun onKeyPress(event: KeyPressEvent) {
-        if (event.keyCode != SkyHanniMod.feature.gui.keyBindOpen) return
-        if (event.keyCode == GLFW.GLFW_KEY_ENTER) {
+    @RegisterKeyBind(name = "Open GUI Editor", context = KeyBindContext.ALL)
+    internal val openKeyBind = SkyHanniKeyBind(configOption = { it.gui.keyBindOpen }, onTrigger = ::onOpenHotkey)
+
+    private fun onOpenHotkey() {
+        if (openKeyBind.keyCode == GLFW.GLFW_KEY_ENTER) {
             ChatUtils.chat("You can't use Enter as a keybind to open the gui editor!")
             return
         }
@@ -53,9 +53,6 @@ object GuiEditManager {
             if (it !is InventoryScreen && it !is ContainerScreen && it !is SignEditScreen) return
             if (it is SignEditScreen && !it.isGardenSign()) return
         }
-
-        if (lastHotkeyPressed.passedSince() < 500.milliseconds) return
-        lastHotkeyPressed = SimpleTimeMark.now()
 
         openGuiPositionEditor(hotkeyReminder = false)
     }
@@ -101,21 +98,18 @@ object GuiEditManager {
 
     @JvmStatic
     fun renderLast(context: GuiGraphicsExtractor) {
-        if (GlobalRender.renderDisabled) return
-        if (!isInGui()) return
+        if (GlobalRender.renderDisabled || !isInGui()) return
 
-        DrawContextUtils.setContext(context)
-        DrawContextUtils.translate(0f, 0f)
+        DrawContextUtils.withContext(context) {
+            DrawContextUtils.translated(0, 0) {
+                RenderData.renderOverlay(context)
 
-        RenderData.renderOverlay(context)
-
-        val editor = MinecraftCompat.screen as? GuiPositionEditor
-        editor?.renderWithOldScreenMetrics {
-            renderChestOverlay(context)
-        } ?: renderChestOverlay(context)
-
-        DrawContextUtils.translate(0f, 0f)
-        DrawContextUtils.clearContext()
+                val editor = MinecraftCompat.screen as? GuiPositionEditor
+                editor?.renderWithOldScreenMetrics {
+                    renderChestOverlay(context)
+                } ?: renderChestOverlay(context)
+            }
+        }
     }
 
     private fun renderChestOverlay(context: GuiGraphicsExtractor) = DrawContextUtils.pushPop {
@@ -142,8 +136,10 @@ object GuiEditManager {
         return Vector2i((x * effectiveScale).toInt(), (y * effectiveScale).toInt())
     }
 
+    // Todo why in the world are these in GuiEditManager? -Dae
     fun Position.getAbsX() = getAbsX0(getDummySize(true).x)
 
+    // Todo why in the world are these in GuiEditManager? -Dae
     fun Position.getAbsY() = getAbsY0(getDummySize(true).y)
 
     fun handleGuiPositionMoved(guiName: String) {
